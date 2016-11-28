@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
@@ -14,7 +15,7 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        private CodeDocumentViewModel codeDocumentVM;
+        private readonly CodeDocumentViewModel codeDocumentVM;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
@@ -34,7 +35,20 @@ namespace CodeNav
 
                             foreach (CodeElement classMember in (namespaceMember as CodeClass).Members)
                             {
-                                classItem.Members.Add(new CodeItem { Name = classMember.Name, StartPoint = classMember.StartPoint});
+                                if (classMember.Kind == vsCMElement.vsCMElementFunction)
+                                {
+                                    classItem.Members.Add(new CodeFunctionItem
+                                    {
+                                        Name = classMember.Name,
+                                        StartPoint = classMember.StartPoint,
+                                        Type = (classMember as CodeFunction).Type.AsString,
+                                        Parameters = CodeItemMapper.MapParameters(classMember as CodeFunction)
+                                    });
+                                }
+                                else
+                                {
+                                    classItem.Members.Add(new CodeItem { Name = classMember.Name, StartPoint = classMember.StartPoint });
+                                }
                             }  
                             
                             document.Add(classItem);                         

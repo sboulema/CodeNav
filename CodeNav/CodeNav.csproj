@@ -54,8 +54,10 @@
     <Compile Include="CodeViewUserControl.xaml.cs">
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Mappers\CodeItemMapper.cs" />
     <Compile Include="Models\CodeClassItem.cs" />
     <Compile Include="Models\CodeDocumentViewModel.cs" />
+    <Compile Include="Models\CodeFunctionItem.cs" />
     <Compile Include="Models\CodeItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

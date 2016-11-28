@@ -3,13 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:models="clr-namespace:CodeNav.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
         <!-- This DataTemplate will be used to render the CodeItem items-->
-        <DataTemplate x:Key="MembersTemplate">
-            <!--<Button Content="{Binding Name}" Tag="{Binding StartPoint}" Click="ButtonBase_OnClick"></Button>-->
+
+
+        <DataTemplate DataType="{x:Type models:CodeFunctionItem}">
+            <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
+                <Label Content="{Binding Name}" />
+                <Label Content="{Binding Type}" />
+                <Label Content="{Binding Parameters}" />
+            </StackPanel>
+            <!--<TextBlock Content="{Binding Name}" Tag="{Binding StartPoint}"></TextBlock>-->
+        </DataTemplate>
+
+        <DataTemplate  DataType="{x:Type models:CodeItem}">
             <Label Content="{Binding Name}" Tag="{Binding StartPoint}" />
         </DataTemplate>
 
@@ -19,7 +30,7 @@
 
             <Expander Header="{Binding Name}">
 
-                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" ItemTemplate="{StaticResource MembersTemplate}" />
+                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged"  />
 
             </Expander>
         </DataTemplate>
