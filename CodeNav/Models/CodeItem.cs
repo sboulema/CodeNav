@@ -2,9 +2,9 @@
 {
     public class CodeItem
     {
-        public string Name;
-        public int Codepoint;
-        public ModifierEnum Modifier;
+        public string Name { get; set; }
+        public int Codepoint { get; set; }
+        public ModifierEnum Modifier { get; set; }
     }
 
     public enum ModifierEnum

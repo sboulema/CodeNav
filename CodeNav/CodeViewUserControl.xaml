@@ -7,9 +7,30 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid>
-        <Label>test</Label>
-    </Grid>
+    <UserControl.Resources>
+        <!-- This DataTemplate will be used to render the CodeClassItem Items -->
+        <DataTemplate x:Key="CodeDocumentTemplate" >
+            <Label Content="{Binding Name}"></Label>
+            <!--<Label Content="member"></Label>-->
+            <!--<Expander Header="{Binding Name}">
+                
+            <ListBox ItemsSource="{Binding Members}" ItemTemplate="{StaticResource MembersTemplate}">
+                    <ListBox.Template>
+                        <ControlTemplate TargetType="ListBox">
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                </ListBox>
+            
+            </Expander>-->
+        </DataTemplate>
 
+        <!-- This DataTemplate will be used to render the CodeItem items-->
+        <!--<DataTemplate x:Key="MembersTemplate">
+            <Label Content="{Binding Name}"></Label>
+        </DataTemplate>-->
+    </UserControl.Resources>
+
+    <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" />
 
 </UserControl>
