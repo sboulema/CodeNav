@@ -1,0 +1,5 @@
+/.vs
+/CodeNav/*.user
+/CodeNav/bin
+/CodeNav/obj
+/packages
