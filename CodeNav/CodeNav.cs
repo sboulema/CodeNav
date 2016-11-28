@@ -34,7 +34,7 @@ namespace CodeNav
 
                             foreach (CodeElement classMember in (namespaceMember as CodeClass).Members)
                             {
-                                classItem.Members.Add(new CodeItem { Name = classMember.Name });
+                                classItem.Members.Add(new CodeItem { Name = classMember.Name, StartPoint = classMember.StartPoint});
                             }  
                             
                             document.Add(classItem);                         
@@ -46,10 +46,10 @@ namespace CodeNav
             codeDocumentVM.LoadCodeDocument(document);
 
 
-            Children.Add(CreateGrid(textViewHost));
+            Children.Add(CreateGrid(textViewHost, dte));
         }
 
-        private Grid CreateGrid(IWpfTextViewHost textViewHost)
+        private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
         {
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(200, GridUnitType.Pixel) });
@@ -67,7 +67,7 @@ namespace CodeNav
             splitter.DragCompleted += LeftDragCompleted;
             grid.Children.Add(splitter);
 
-            var codeDocumentView = new CodeViewUserControl { DataContext = codeDocumentVM };
+            var codeDocumentView = new CodeViewUserControl(dte) { DataContext = codeDocumentVM };
             grid.Children.Add(codeDocumentView);
 
             Grid.SetColumn(codeDocumentView, 0);

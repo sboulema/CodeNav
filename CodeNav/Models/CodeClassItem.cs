@@ -9,6 +9,6 @@ namespace CodeNav.Models
             Members = new List<CodeItem>();
         }
 
-        public List<CodeItem> Members;
+        public List<CodeItem> Members { get; set; }
     }
 }

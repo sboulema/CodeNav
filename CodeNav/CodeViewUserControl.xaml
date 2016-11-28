@@ -3,32 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:models="clr-namespace:CodeNav.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <!-- This DataTemplate will be used to render the CodeClassItem Items -->
-        <DataTemplate x:Key="CodeDocumentTemplate" >
-            <Label Content="{Binding Name}"></Label>
-            <!--<Label Content="member"></Label>-->
-            <!--<Expander Header="{Binding Name}">
-                
-            <ListBox ItemsSource="{Binding Members}" ItemTemplate="{StaticResource MembersTemplate}">
-                    <ListBox.Template>
-                        <ControlTemplate TargetType="ListBox">
-                            <ItemsPresenter/>
-                        </ControlTemplate>
-                    </ListBox.Template>
-                </ListBox>
-            
-            </Expander>-->
+        <!-- This DataTemplate will be used to render the CodeItem items-->
+        <DataTemplate x:Key="MembersTemplate">
+            <!--<Button Content="{Binding Name}" Tag="{Binding StartPoint}" Click="ButtonBase_OnClick"></Button>-->
+            <Label Content="{Binding Name}" Tag="{Binding StartPoint}" />
         </DataTemplate>
 
-        <!-- This DataTemplate will be used to render the CodeItem items-->
-        <!--<DataTemplate x:Key="MembersTemplate">
-            <Label Content="{Binding Name}"></Label>
-        </DataTemplate>-->
+        <!-- This DataTemplate will be used to render the CodeClassItem Items -->
+        <DataTemplate x:Key="CodeDocumentTemplate" >
+            <!--<Label Content="{Binding Name}"></Label>-->
+
+            <Expander Header="{Binding Name}">
+
+                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" ItemTemplate="{StaticResource MembersTemplate}" />
+
+            </Expander>
+        </DataTemplate>
     </UserControl.Resources>
 
     <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" />
