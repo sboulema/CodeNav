@@ -6,14 +6,6 @@ namespace CodeNav.Models
     {
         public string Name { get; set; }
         public TextPoint StartPoint { get; set; }
-        public ModifierEnum Modifier { get; set; }
-    }
-
-    public enum ModifierEnum
-    {
-        Unkown,
-        Public,
-        Private,
-        Protected
+        public string IconPath { get; set; }
     }
 }

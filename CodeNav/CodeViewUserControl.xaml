@@ -8,16 +8,14 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <!-- This DataTemplate will be used to render the CodeItem items-->
-
 
         <DataTemplate DataType="{x:Type models:CodeFunctionItem}">
             <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
+                <Frame Source="{Binding IconPath}" />
                 <Label Content="{Binding Name}" />
                 <Label Content="{Binding Type}" />
                 <Label Content="{Binding Parameters}" />
             </StackPanel>
-            <!--<TextBlock Content="{Binding Name}" Tag="{Binding StartPoint}"></TextBlock>-->
         </DataTemplate>
 
         <DataTemplate  DataType="{x:Type models:CodeItem}">

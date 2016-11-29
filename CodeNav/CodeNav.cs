@@ -37,13 +37,7 @@ namespace CodeNav
                             {
                                 if (classMember.Kind == vsCMElement.vsCMElementFunction)
                                 {
-                                    classItem.Members.Add(new CodeFunctionItem
-                                    {
-                                        Name = classMember.Name,
-                                        StartPoint = classMember.StartPoint,
-                                        Type = (classMember as CodeFunction).Type.AsString,
-                                        Parameters = CodeItemMapper.MapParameters(classMember as CodeFunction)
-                                    });
+                                    classItem.Members.Add(CodeItemMapper.MapFunction(classMember));
                                 }
                                 else
                                 {
