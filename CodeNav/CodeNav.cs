@@ -19,10 +19,11 @@ namespace CodeNav
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
+            if (dte.ActiveDocument == null) return;
+
             codeDocumentVM = new CodeDocumentViewModel();           
-
             var document = new List<CodeItem>();
-
+           
             foreach (CodeElement codeElement in dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements)
             {
                 if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
@@ -31,28 +32,13 @@ namespace CodeNav
                     {
                         if (namespaceMember.Kind == vsCMElement.vsCMElementClass)
                         {
-                            var classItem = new CodeClassItem {Name = namespaceMember.Name};
-
-                            foreach (CodeElement classMember in (namespaceMember as CodeClass).Members)
-                            {
-                                if (classMember.Kind == vsCMElement.vsCMElementFunction)
-                                {
-                                    classItem.Members.Add(CodeItemMapper.MapFunction(classMember));
-                                }
-                                else
-                                {
-                                    classItem.Members.Add(new CodeItem { Name = classMember.Name, StartPoint = classMember.StartPoint });
-                                }
-                            }  
-                            
-                            document.Add(classItem);                         
+                            document.Add(CodeItemMapper.MapClass(namespaceMember));
                         }
-                    }  
+                    }
                 }
             }
 
             codeDocumentVM.LoadCodeDocument(document);
-
 
             Children.Add(CreateGrid(textViewHost, dte));
         }
