@@ -3,37 +3,34 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:models="clr-namespace:CodeNav.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
 
-        <DataTemplate DataType="{x:Type models:CodeFunctionItem}">
+        <DataTemplate x:Key="CodeItemTemplate">
             <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
-                <Frame Source="{Binding IconPath}" />
-                <Label Content="{Binding Name}" />
-                <Label Content="{Binding Type}" />
-                <Label Content="{Binding Parameters}" />
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate  DataType="{x:Type models:CodeItem}">
-            <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
-                <Frame Source="{Binding IconPath}" />
-                <Label Content="{Binding Name}" />
+                <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
+                <TextBlock>
+                    <Run Text="{Binding Name}" FontSize="11" />
+                    <Run Text="{Binding Type}" FontSize="10" Foreground="DarkGray" />
+                    <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="CodeDocumentTemplate" >
-            <Expander>
+            <Expander IsExpanded="True">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal">
-                        <Frame Source="{Binding IconPath}" />
-                        <Label Content="{Binding Name}"></Label>
+                        <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
+                        <TextBlock>
+                            <Run Text="{Binding Name}" FontSize="11" />
+                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
+                        </TextBlock>
                     </StackPanel>
                 </Expander.Header>
-                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged"  />
+                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" ItemTemplate="{StaticResource CodeItemTemplate}" />
             </Expander>
         </DataTemplate>
     </UserControl.Resources>

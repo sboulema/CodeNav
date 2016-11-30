@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Mappers;
 using CodeNav.Models;
+using CodeNav.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
@@ -15,6 +16,7 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
+        private CodeViewUserControl codeViewUserControl;
         private readonly CodeDocumentViewModel codeDocumentVM;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
@@ -30,9 +32,17 @@ namespace CodeNav
                 {
                     foreach (CodeElement namespaceMember in (codeElement as CodeNamespace).Members)
                     {
-                        if (namespaceMember.Kind == vsCMElement.vsCMElementClass)
+                        switch (namespaceMember.Kind)
                         {
-                            document.Add(CodeItemMapper.MapClass(namespaceMember));
+                            case vsCMElement.vsCMElementClass:
+                                document.Add(CodeItemMapper.MapClass(namespaceMember));
+                                break;
+                            case vsCMElement.vsCMElementEnum:
+                                document.Add(CodeItemMapper.MapEnum(namespaceMember));
+                                break;
+                            case vsCMElement.vsCMElementInterface:
+                                document.Add(CodeItemMapper.MapInterface(namespaceMember));
+                                break;
                         }
                     }
                 }
@@ -46,7 +56,7 @@ namespace CodeNav
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
         {
             var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(200, GridUnitType.Pixel) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(Settings.Default.Width, GridUnitType.Pixel) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Pixel) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
             grid.RowDefinitions.Add(new RowDefinition());
@@ -61,23 +71,25 @@ namespace CodeNav
             splitter.DragCompleted += LeftDragCompleted;
             grid.Children.Add(splitter);
 
-            var codeDocumentView = new CodeViewUserControl(dte) { DataContext = codeDocumentVM };
-            grid.Children.Add(codeDocumentView);
+            codeViewUserControl = new CodeViewUserControl(dte) { DataContext = codeDocumentVM };
+            codeViewUserControl.BorderThickness = new Thickness(0);
+            codeViewUserControl.ClipToBounds = Enabled;
+            grid.Children.Add(codeViewUserControl);
 
-            Grid.SetColumn(codeDocumentView, 0);
+            Grid.SetColumn(codeViewUserControl, 0);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, 2);
 
             return grid;
         }
 
-        void LeftDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        private void LeftDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            //if (!double.IsNaN(label.ActualWidth))
-            //{
-            //    //MarkdownEditorPackage.Options.PreviewWindowWidth = Browser.Control.ActualWidth;
-            //    //MarkdownEditorPackage.Options.SaveSettingsToStorage();
-            //}
+            if (!double.IsNaN(codeViewUserControl.ActualWidth))
+            {
+                Settings.Default.Width = codeViewUserControl.ActualWidth;
+                Settings.Default.Save();
+            }
         }
 
         #region IWpfTextViewMargin

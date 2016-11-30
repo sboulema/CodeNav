@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 using CodeNav.Models;
 using EnvDTE;
 
@@ -9,14 +10,66 @@ namespace CodeNav.Mappers
         public static CodeFunctionItem MapFunction(CodeElement element)
         {
             var function = element as CodeFunction;
+
             return new CodeFunctionItem
             {
                 Name = function.Name,
                 StartPoint = function.StartPoint,
                 Type = function.Type.AsString,
                 Parameters = MapParameters(function),
-                IconPath = MapIcon(function)
+                IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor ? "Icons/Method/MethodAdded_16x.xaml" : MapIcon<CodeFunction>(element)
             };
+        }
+
+        public static CodeClassItem MapEnum(CodeElement element)
+        {
+            var enumItem = new CodeClassItem
+            {
+                Name = element.Name,
+                StartPoint = element.StartPoint,
+                IconPath = MapIcon<CodeEnum>(element),
+                Parameters = MapMembers(element as CodeEnum)
+            };
+
+            foreach (CodeElement enumMember in (element as CodeEnum).Members)
+            {
+                enumItem.Members.Add(new CodeItem
+                {
+                    Name = enumMember.Name,
+                    StartPoint = enumMember.StartPoint,
+                    IconPath = MapIcon<CodeVariable>(enumMember, true)
+                });
+            }
+
+            return enumItem;
+        }
+
+        private static string MapInheritance(CodeElement element)
+        {
+            var codeClass = element as CodeClass;
+
+            var basesList = (from CodeElement bases in codeClass.Bases select bases.Name).ToList();
+            var interfaceList = (from CodeElement interfaces in codeClass.ImplementedInterfaces select interfaces.Name).ToList();
+            basesList.AddRange(interfaceList);
+
+            return $" : {string.Join(", ", basesList)}";
+        }
+
+        public static CodeClassItem MapInterface(CodeElement element)
+        {
+            var item = new CodeClassItem
+            {
+                Name = element.Name,
+                StartPoint = element.StartPoint,
+                IconPath = MapIcon<CodeInterface>(element)
+            };
+
+            foreach (CodeElement member in (element as CodeInterface).Members)
+            {
+                item.Members.Add(MapFunction(member));
+            }
+
+            return item;
         }
 
         public static CodeClassItem MapClass(CodeElement element)
@@ -25,7 +78,8 @@ namespace CodeNav.Mappers
             {
                 Name = element.Name,
                 StartPoint = element.StartPoint,
-                IconPath = MapIcon(element as CodeClass)
+                IconPath = MapIcon<CodeClass>(element),
+                Parameters = MapInheritance(element)
             };
 
             foreach (CodeElement classMember in (element as CodeClass).Members)
@@ -36,11 +90,11 @@ namespace CodeNav.Mappers
                 }
                 else if (classMember.Kind == vsCMElement.vsCMElementVariable)
                 {
-                    var variable = MapVariable(classMember);
-                    if (variable != null)
+                    var variable = classMember as CodeVariable;
+                    if (variable.IsConstant && variable.Access != vsCMAccess.vsCMAccessPrivate)
                     {
-                        classItem.Members.Add(variable);
-                    }                 
+                        classItem.Members.Add(MapConstant(classMember));
+                    }
                 }
                 else if (classMember.Kind == vsCMElement.vsCMElementProperty)
                 {
@@ -59,15 +113,13 @@ namespace CodeNav.Mappers
             return classItem;
         }
 
-        private static CodeItem MapVariable(CodeElement element)
+        private static CodeItem MapConstant(CodeElement element)
         {
-            var variable = element as CodeVariable;
-            if (variable.Access == vsCMAccess.vsCMAccessPrivate) return null;
             return new CodeItem
             {
-                Name = variable.Name,
-                StartPoint = variable.StartPoint,
-                IconPath = MapIcon(variable)
+                Name = element.Name,
+                StartPoint = element.StartPoint,
+                IconPath = MapIcon<CodeVariable>(element)
             };
         }
 
@@ -77,10 +129,16 @@ namespace CodeNav.Mappers
             if (property.Access == vsCMAccess.vsCMAccessPrivate) return null;
             return new CodeItem
             {
-                Name = property.Name,
-                StartPoint = property.StartPoint,
-                IconPath = MapIcon(property)
+                Name = element.Name,
+                StartPoint = element.StartPoint,
+                IconPath = MapIcon<CodeProperty>(element)
             };
+        }
+
+        private static string MapMembers(CodeEnum element)
+        {
+            var memberList = (from CodeElement member in element.Members select member.Name).ToList();
+            return $"{string.Join(", ", memberList)}";
         }
 
         private static string MapParameters(CodeFunction function)
@@ -89,70 +147,100 @@ namespace CodeNav.Mappers
             return $"({string.Join(", ", paramList)})";
         }
 
-        public static string MapIcon(CodeFunction function)
+        public static T Cast<T>(object o)
         {
-            switch (function.Access)
-            {
-                case vsCMAccess.vsCMAccessPublic:
-                    return "Icons/Method/MethodFriend_16x.xaml";
-                case vsCMAccess.vsCMAccessPrivate:
-                    return "Icons/Method/MethodPrivate_16x.xaml";
-                case vsCMAccess.vsCMAccessProjectOrProtected:
-                case vsCMAccess.vsCMAccessProtected:
-                    return "Icons/Method/MethodProtect_16x.xaml";
-                default:
-                    return "Icons/Method/Method_purple_16x.xaml";
-            }
+            return (T)o;
         }
 
-        public static string MapIcon(CodeClass codeClass)
+        public static string MapIcon<T>(CodeElement element, bool isEnumMember = false)
         {
-            switch (codeClass.Access)
+            if (typeof(T) == typeof(CodeFunction))
             {
-                case vsCMAccess.vsCMAccessPublic:
-                    return "Icons/Class/ClassFriend_16x.xaml";
-                case vsCMAccess.vsCMAccessPrivate:
-                    return "Icons/Class/ClassPrivate_16x.xaml";
-                case vsCMAccess.vsCMAccessProtected:
-                case vsCMAccess.vsCMAccessProjectOrProtected:
-                    return "Icons/Class/ClassProtected_16x.xaml";
-                default:
-                    return "Icons/Class/Class_yellow_16x.xaml";
+                switch ((element as CodeFunction).Access)
+                {
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return "Icons/Method/MethodPrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                    case vsCMAccess.vsCMAccessProtected:
+                        return "Icons/Method/MethodProtect_16x.xaml";
+                    default:
+                        return "Icons/Method/Method_purple_16x.xaml";
+                }
             }
-        }
 
-        public static string MapIcon(CodeProperty property)
-        {
-            switch (property.Access)
+            if (typeof(T) == typeof(CodeClass))
             {
-                case vsCMAccess.vsCMAccessPublic:
-                    return "Icons/Property/PropertyFriend_16x.xaml";
-                case vsCMAccess.vsCMAccessPrivate:
-                    return "Icons/Property/PropertyPrivate_16x.xaml";
-                case vsCMAccess.vsCMAccessProtected:
-                case vsCMAccess.vsCMAccessProjectOrProtected:
-                    return "Icons/Property/PropertyProtected_16x.xaml";
-                default:
-                    return "Icons/Property/Property_16x.xaml";
+                switch ((element as CodeClass).Access)
+                {
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return "Icons/Class/ClassPrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProtected:
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                        return "Icons/Class/ClassProtected_16x.xaml";
+                    default:
+                        return "Icons/Class/Class_yellow_16x.xaml";
+                }
             }
-        }
 
-        public static string MapIcon(CodeVariable variable)
-        {
-            if (!variable.IsConstant) return string.Empty;
-
-            switch (variable.Access)
+            if (typeof(T) == typeof(CodeProperty))
             {
-                case vsCMAccess.vsCMAccessPublic:
-                    return "Icons/Constant/ConstantFriend_16x.xaml";
-                case vsCMAccess.vsCMAccessPrivate:
-                    return "Icons/Constant/ConstantPrivate_16x.xaml";
-                case vsCMAccess.vsCMAccessProtected:
-                case vsCMAccess.vsCMAccessProjectOrProtected:
-                    return "Icons/Constant/ConstantProtected_16x.xaml";
-                default:
-                    return "Icons/Constant/Constant_16x.xaml";
+                switch ((element as CodeProperty).Access)
+                {
+                    case vsCMAccess.vsCMAccessPublic:
+                        return "Icons/Property/PropertyFriend_16x.xaml";
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return "Icons/Property/PropertyPrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProtected:
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                        return "Icons/Property/PropertyProtected_16x.xaml";
+                    default:
+                        return "Icons/Property/Property_16x.xaml";
+                }
             }
+
+            if (typeof(T) == typeof(CodeEnum))
+            {
+                switch ((element as CodeEnum).Access)
+                {
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return "Icons/Enum/EnumPrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProtected:
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                        return "Icons/Enum/EnumProtect_16x";
+                    default:
+                        return "Icons/Enum/Enumerator_orange_16x.xaml";
+                }
+            }
+
+            if (typeof(T) == typeof(CodeVariable))
+            {
+                switch ((element as CodeVariable).Access)
+                {
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return isEnumMember ? "Icons/Enum/EnumItemPrivate_16x.xaml" : "Icons/Constant/ConstantPrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProtected:
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                        return isEnumMember ? "Icons/Enum/EnumItemProtect_16x.xaml" : "Icons/Constant/ConstantProtect_16x.xaml";
+                    default:
+                        return isEnumMember ? "Icons/Enum/EnumItem_16x.xaml" : "Icons/Constant/Constant_16x.xaml";
+                }
+            }
+
+            if (typeof(T) == typeof(CodeInterface))
+            {
+                switch ((element as CodeInterface).Access)
+                {
+                    case vsCMAccess.vsCMAccessPrivate:
+                        return "Icons/Interface/InterfacePrivate_16x.xaml";
+                    case vsCMAccess.vsCMAccessProtected:
+                    case vsCMAccess.vsCMAccessProjectOrProtected:
+                        return "Icons/Interface/InterfaceProtect_16x";
+                    default:
+                        return "Icons/Interface/Interface_blue_16x.xaml";
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

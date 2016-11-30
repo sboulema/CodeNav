@@ -10,5 +10,6 @@ namespace CodeNav.Models
         }
 
         public List<CodeItem> Members { get; set; }
+        public string Parameters { get; set; }
     }
 }
