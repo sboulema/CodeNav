@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Mappers;
@@ -18,41 +17,45 @@ namespace CodeNav
 
         private CodeViewUserControl codeViewUserControl;
         private readonly CodeDocumentViewModel codeDocumentVM;
+        private readonly DTE _dte;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
+            _dte = dte;
             if (dte.ActiveDocument == null) return;
 
             codeDocumentVM = new CodeDocumentViewModel();
 
-            var document = new List<CodeItem>();
-
-            foreach (CodeElement codeElement in dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements)
-            {
-                if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
-                {
-                    foreach (CodeElement namespaceMember in (codeElement as CodeNamespace).Members)
-                    {
-                        switch (namespaceMember.Kind)
-                        {
-                            case vsCMElement.vsCMElementClass:
-                                document.Add(CodeItemMapper.MapClass(namespaceMember));
-                                break;
-                            case vsCMElement.vsCMElementEnum:
-                                document.Add(CodeItemMapper.MapEnum(namespaceMember));
-                                break;
-                            case vsCMElement.vsCMElementInterface:
-                                document.Add(CodeItemMapper.MapInterface(namespaceMember));
-                                break;
-                        }
-                    }
-                }
-            }
+            var document = CodeItemMapper.MapDocument(dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements);
 
             codeDocumentVM.LoadCodeDocument(document);
             codeDocumentVM.LoadMaxWidth();
 
             Children.Add(CreateGrid(textViewHost, dte));
+
+            var events = dte.Events;
+            var windowEvents = events.WindowEvents;
+            var textEditorEvents = events.TextEditorEvents;
+            windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            //textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
+        }
+
+        //private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint)
+        //{
+        //    //var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
+        //    //if (elements == null) return;
+
+        //    //var document = CodeItemMapper.MapDocument(elements);
+        //    //codeDocumentVM.LoadCodeDocument(document);
+        //}
+
+        private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+        {
+            var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
+            if (elements == null) return;
+
+            var document = CodeItemMapper.MapDocument(elements);
+            codeDocumentVM.LoadCodeDocument(document);
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)

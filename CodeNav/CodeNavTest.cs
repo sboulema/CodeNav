@@ -1,4 +1,6 @@
-﻿namespace CodeNav
+﻿using System.Collections.Generic;
+
+namespace CodeNav
 {
     public class CodeNavTest
     {
@@ -31,6 +33,8 @@
         }
 
         public float Property { get; set; }
+
+        private void GetListOfStrings(List<string> lines) { }
 
         #region Region
 

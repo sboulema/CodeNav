@@ -11,9 +11,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
+                <!--<ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />-->
                 <ResourceDictionary>
                     <DataTemplate x:Key="CodeItemTemplate">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxItemWidth}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
                                 <Run Text="{Binding Name}" FontSize="11" />
@@ -23,7 +24,7 @@
                         </StackPanel>
                     </DataTemplate>
 
-                    <DataTemplate x:Key="CodeDocumentTemplate" >
+                    <DataTemplate x:Key="CodeDocumentTemplate">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
                             <Expander.Header>

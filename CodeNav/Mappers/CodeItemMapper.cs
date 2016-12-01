@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CodeNav.Models;
 using EnvDTE;
 
@@ -7,6 +7,35 @@ namespace CodeNav.Mappers
 {
     public static class CodeItemMapper
     {
+        public static List<CodeItem> MapDocument(CodeElements elements)
+        {
+            var document = new List<CodeItem>();
+
+            foreach (CodeElement codeElement in elements)
+            {
+                if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
+                {
+                    foreach (CodeElement namespaceMember in (codeElement as CodeNamespace).Members)
+                    {
+                        switch (namespaceMember.Kind)
+                        {
+                            case vsCMElement.vsCMElementClass:
+                                document.Add(MapClass(namespaceMember));
+                                break;
+                            case vsCMElement.vsCMElementEnum:
+                                document.Add(MapEnum(namespaceMember));
+                                break;
+                            case vsCMElement.vsCMElementInterface:
+                                document.Add(MapInterface(namespaceMember));
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return document;
+        }
+
         public static CodeFunctionItem MapFunction(CodeElement element)
         {
             var function = element as CodeFunction;
