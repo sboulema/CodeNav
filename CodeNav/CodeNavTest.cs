@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Caliburn.Micro;
-
-namespace CodeNav
+﻿namespace CodeNav
 {
     public class CodeNavTest
     {
@@ -34,6 +31,15 @@ namespace CodeNav
         }
 
         public float Property { get; set; }
+
+        #region Region
+
+        public bool RegionMethod()
+        {
+            return false;
+        }  
+
+        #endregion
     }
 
     public interface ICodeNavTest2

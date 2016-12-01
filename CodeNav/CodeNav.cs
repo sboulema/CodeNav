@@ -23,9 +23,10 @@ namespace CodeNav
         {
             if (dte.ActiveDocument == null) return;
 
-            codeDocumentVM = new CodeDocumentViewModel();           
+            codeDocumentVM = new CodeDocumentViewModel();
+
             var document = new List<CodeItem>();
-           
+
             foreach (CodeElement codeElement in dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements)
             {
                 if (codeElement.Kind == vsCMElement.vsCMElementNamespace)
@@ -49,6 +50,7 @@ namespace CodeNav
             }
 
             codeDocumentVM.LoadCodeDocument(document);
+            codeDocumentVM.LoadMaxWidth();
 
             Children.Add(CreateGrid(textViewHost, dte));
         }
@@ -72,8 +74,6 @@ namespace CodeNav
             grid.Children.Add(splitter);
 
             codeViewUserControl = new CodeViewUserControl(dte) { DataContext = codeDocumentVM };
-            codeViewUserControl.BorderThickness = new Thickness(0);
-            codeViewUserControl.ClipToBounds = Enabled;
             grid.Children.Add(codeViewUserControl);
 
             Grid.SetColumn(codeViewUserControl, 0);
@@ -89,6 +89,7 @@ namespace CodeNav
             {
                 Settings.Default.Width = codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
+                codeDocumentVM.LoadMaxWidth();
             }
         }
 

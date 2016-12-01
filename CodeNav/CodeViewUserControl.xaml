@@ -8,33 +8,46 @@
 
     <UserControl.Resources>
 
-        <DataTemplate x:Key="CodeItemTemplate">
-            <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
-                <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
-                <TextBlock>
-                    <Run Text="{Binding Name}" FontSize="11" />
-                    <Run Text="{Binding Type}" FontSize="10" Foreground="DarkGray" />
-                    <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
-                </TextBlock>
-            </StackPanel>
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
+                <ResourceDictionary>
+                    <DataTemplate x:Key="CodeItemTemplate">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}">
+                            <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
+                            <TextBlock>
+                                <Run Text="{Binding Name}" FontSize="11" />
+                                <Run Text="{Binding Type}" FontSize="10" Foreground="LightGray" />
+                                <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
 
-        <DataTemplate x:Key="CodeDocumentTemplate" >
-            <Expander IsExpanded="True">
-                <Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
-                        <TextBlock>
-                            <Run Text="{Binding Name}" FontSize="11" />
-                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
-                        </TextBlock>
-                    </StackPanel>
-                </Expander.Header>
-                <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" ItemTemplate="{StaticResource CodeItemTemplate}" />
-            </Expander>
-        </DataTemplate>
+                    <DataTemplate x:Key="CodeDocumentTemplate" >
+                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
+                                    <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
+                                        <TextBlock>
+                                            <Run Text="{Binding Name}" FontSize="11" />
+                                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
+                                        </TextBlock>
+                                    </Border>
+                                </StackPanel>
+                            </Expander.Header>
+                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" 
+                                     ItemTemplate="{StaticResource CodeItemTemplate}" BorderThickness="0" />
+                        </Expander>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
     </UserControl.Resources>
 
-    <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" />
+    <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
+             BorderThickness="0" />
 
 </UserControl>
