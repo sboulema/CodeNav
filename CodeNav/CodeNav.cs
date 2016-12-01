@@ -18,10 +18,17 @@ namespace CodeNav
         private CodeViewUserControl codeViewUserControl;
         private readonly CodeDocumentViewModel codeDocumentVM;
         private readonly DTE _dte;
+        private readonly IWpfTextView _textView;
+        private readonly TextEditorEvents _textEditorEvents;
+        private readonly DocumentEvents _documentEvents;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
             _dte = dte;
+            _textView = textViewHost.TextView;
+            _textEditorEvents = dte.Events.TextEditorEvents;
+            _documentEvents = dte.Events.DocumentEvents;
+
             if (dte.ActiveDocument == null) return;
 
             codeDocumentVM = new CodeDocumentViewModel();
@@ -33,23 +40,30 @@ namespace CodeNav
 
             Children.Add(CreateGrid(textViewHost, dte));
 
-            var events = dte.Events;
-            var windowEvents = events.WindowEvents;
-            var textEditorEvents = events.TextEditorEvents;
-            windowEvents.WindowActivated += WindowEvents_WindowActivated;
-            //textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
+            var windowEvents = dte.Events.WindowEvents;
+            windowEvents.WindowActivated += WindowEvents_WindowActivated;          
         }
 
-        //private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint)
-        //{
-        //    //var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
-        //    //if (elements == null) return;
+        public void RegisterEvents()
+        {
+            //_textView.LayoutChanged += TextView_LayoutChanged;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            //_textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
+        }
 
-        //    //var document = CodeItemMapper.MapDocument(elements);
-        //    //codeDocumentVM.LoadCodeDocument(document);
-        //}
+        public void UnRegisterEvents()
+        {
+            //_textView.LayoutChanged -= TextView_LayoutChanged;
+            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            //_textEditorEvents.LineChanged -= TextEditorEvents_LineChanged;
+        }
 
-        private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus)
+        private void TextEditorEvents_LineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint) => UpdateDocument();
+        private void DocumentEvents_DocumentSaved(Document Document) => UpdateDocument();
+        private void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e) => UpdateDocument();
+        private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) => UpdateDocument();
+
+        private void UpdateDocument()
         {
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
@@ -175,15 +189,16 @@ namespace CodeNav
         public void Dispose()
         {
             if (_isDisposed) return;
+            UnRegisterEvents();
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }
 
         #endregion
 
-        /// <summary>
-        /// Checks and throws <see cref="ObjectDisposedException"/> if the object is disposed.
-        /// </summary>
+            /// <summary>
+            /// Checks and throws <see cref="ObjectDisposedException"/> if the object is disposed.
+            /// </summary>
         private void ThrowIfDisposed()
         {
             if (_isDisposed)

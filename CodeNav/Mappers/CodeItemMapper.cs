@@ -215,8 +215,6 @@ namespace CodeNav.Mappers
             {
                 switch ((element as CodeProperty).Access)
                 {
-                    case vsCMAccess.vsCMAccessPublic:
-                        return "Icons/Property/PropertyFriend_16x.xaml";
                     case vsCMAccess.vsCMAccessPrivate:
                         return "Icons/Property/PropertyPrivate_16x.xaml";
                     case vsCMAccess.vsCMAccessProtected:

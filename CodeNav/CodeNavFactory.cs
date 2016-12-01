@@ -34,7 +34,9 @@ namespace CodeNav
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
-            return new CodeNav(wpfTextViewHost, dte);
+            var codeNav = new CodeNav(wpfTextViewHost, dte);
+            codeNav.RegisterEvents();
+            return codeNav;
         }
 
         #endregion

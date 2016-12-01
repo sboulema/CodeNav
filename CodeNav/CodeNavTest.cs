@@ -41,7 +41,14 @@ namespace CodeNav
         public bool RegionMethod()
         {
             return false;
-        }  
+        }
+
+        public int RegionProperty
+        {
+            get; set;
+        }
+
+        public const string RegionString = "CodeNav";
 
         #endregion
     }
