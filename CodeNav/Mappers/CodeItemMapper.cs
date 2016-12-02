@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Documents;
 using CodeNav.Models;
 using EnvDTE;
+using TextSelection = EnvDTE.TextSelection;
 
 namespace CodeNav.Mappers
 {
     public static class CodeItemMapper
     {
-        public static List<CodeItem> MapDocument(CodeElements elements)
+        public static List<CodeItem> MapDocument(CodeElements elements, dynamic selection)
         {
             var document = new List<CodeItem>();
 
@@ -20,7 +22,7 @@ namespace CodeNav.Mappers
                         switch (namespaceMember.Kind)
                         {
                             case vsCMElement.vsCMElementClass:
-                                document.Add(MapClass(namespaceMember));
+                                document.Add(MapClass(namespaceMember, selection));
                                 break;
                             case vsCMElement.vsCMElementEnum:
                                 document.Add(MapEnum(namespaceMember));
@@ -101,7 +103,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeClassItem MapClass(CodeElement element)
+        public static CodeClassItem MapClass(CodeElement element, dynamic selection)
         {
             var classItem = new CodeClassItem
             {
@@ -111,18 +113,29 @@ namespace CodeNav.Mappers
                 Parameters = MapInheritance(element)
             };
 
+            var classRegions = MapRegions(selection, element.StartPoint, element.EndPoint);
+            classItem.Members.AddRange(classRegions);
+
             foreach (CodeElement classMember in (element as CodeClass).Members)
             {
                 if (classMember.Kind == vsCMElement.vsCMElementFunction)
                 {
-                    classItem.Members.Add(MapFunction(classMember));
+                    var function = MapFunction(classMember);
+                    if (!AddToRegion(classRegions, function))
+                    {
+                        classItem.Members.Add(function);
+                    }                 
                 }
                 else if (classMember.Kind == vsCMElement.vsCMElementVariable)
                 {
                     var variable = classMember as CodeVariable;
+                    var constant = MapConstant(classMember);
                     if (variable.IsConstant && variable.Access != vsCMAccess.vsCMAccessPrivate)
                     {
-                        classItem.Members.Add(MapConstant(classMember));
+                        if (!AddToRegion(classRegions, constant))
+                        {
+                            classItem.Members.Add(constant);
+                        }
                     }
                 }
                 else if (classMember.Kind == vsCMElement.vsCMElementProperty)
@@ -130,16 +143,62 @@ namespace CodeNav.Mappers
                     var property = MapProperty(classMember);
                     if (property != null)
                     {
-                        classItem.Members.Add(property);
+                        if (!AddToRegion(classRegions, property))
+                        {
+                            classItem.Members.Add(property);
+                        }
                     }
                 }
                 else
                 {
-                    classItem.Members.Add(new CodeItem { Name = classMember.Name, StartPoint = classMember.StartPoint });
+                    var item = new CodeItem {Name = classMember.Name, StartPoint = classMember.StartPoint};
+                    if (!AddToRegion(classRegions, item))
+                    {
+                        classItem.Members.Add(item);
+                    }
                 }
             }
 
             return classItem;
+        }
+
+        public static List<CodeRegionItem> MapRegions(TextSelection selection, TextPoint lowerBound, TextPoint upperBound)
+        {
+            var regionList = new List<CodeRegionItem>();
+            if (selection == null) return regionList;
+
+            selection.MoveToPoint(lowerBound);
+
+            while (selection.FindText("#region"))
+            {             
+                var start = selection.TopPoint.CreateEditPoint();
+
+                selection.SelectLine();
+                var name = selection.Text.Replace("#region", string.Empty).Trim();
+
+                selection.FindText("#endregion");
+                var end = selection.TopPoint;
+
+                if (end.LessThan(upperBound))
+                {
+                    regionList.Add(new CodeRegionItem { Name = name, StartPoint = start, EndPoint = end });
+                }               
+            }
+
+            return regionList;
+        }
+
+        public static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
+        {
+            foreach (var region in regions)
+            {
+                if (item.StartPoint.GreaterThan(region.StartPoint) && item.StartPoint.LessThan(region.EndPoint))
+                {
+                    region.Members.Add(item);
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static CodeItem MapConstant(CodeElement element)
@@ -174,11 +233,6 @@ namespace CodeNav.Mappers
         {
             var paramList = (from CodeElement parameter in function.Parameters select (parameter as CodeParameter).Type.AsString).ToList();
             return $"({string.Join(", ", paramList)})";
-        }
-
-        public static T Cast<T>(object o)
-        {
-            return (T)o;
         }
 
         public static string MapIcon<T>(CodeElement element, bool isEnumMember = false)

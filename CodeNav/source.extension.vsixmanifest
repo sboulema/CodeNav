@@ -3,7 +3,10 @@
   <Metadata>
     <Identity Id="CodeNav.Samir Boulema.19687465-dc94-413d-ad72-6141e90c94d4" Version="0.1" Language="en-US" Publisher="Samir Boulema" />
     <DisplayName>CodeNav</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description xml:space="preserve">Show the code structure of your current document</Description>
+    <MoreInfo>https://github.com/sboulema/CodeNav</MoreInfo>
+    <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
+    <Tags>code, structure, navigation, map, overview, codemap</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />

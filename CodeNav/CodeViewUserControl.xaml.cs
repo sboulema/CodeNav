@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Navigation;
 using CodeNav.Models;
 using EnvDTE;
 
@@ -18,7 +19,8 @@ namespace CodeNav
         }
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {            
+        {
+            if (((ListBox) sender).SelectedItem == null) return;           
             (_dte.ActiveDocument.Selection as TextSelection).MoveToPoint(((CodeItem)((ListBox)sender).SelectedItem).StartPoint);
         }
     }

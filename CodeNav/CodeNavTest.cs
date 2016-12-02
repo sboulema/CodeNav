@@ -6,7 +6,7 @@ namespace CodeNav
     {
         public CodeNavTest()
         {
-            
+
         }
 
         public const string Constant = "CodeNav";

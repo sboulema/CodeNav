@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:models="clr-namespace:CodeNav.Models"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -13,7 +14,24 @@
                 <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
                 <!--<ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />-->
                 <ResourceDictionary>
-                    <DataTemplate x:Key="CodeItemTemplate">
+                    <DataTemplate DataType="{x:Type models:CodeRegionItem}">
+                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
+                            <!--<Expander.BorderBrush>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Rectangle StrokeThickness="1" Stroke="LightGray" StrokeDashArray="1 2" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Expander.BorderBrush>-->
+                            <Expander.Header>
+                                <Label Content="{Binding Name}" FontSize="9" FontWeight="SemiBold" Foreground="DarkGray" Margin="-3" />
+                            </Expander.Header>
+                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" />
+                        </Expander>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type models:CodeItem}">
                         <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxItemWidth}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
@@ -39,7 +57,7 @@
                                 </StackPanel>
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" 
-                                     ItemTemplate="{StaticResource CodeItemTemplate}" BorderThickness="0" />
+                                     BorderThickness="0" />
                         </Expander>
                     </DataTemplate>
                 </ResourceDictionary>
