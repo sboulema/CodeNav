@@ -55,6 +55,7 @@
     <Compile Include="CodeViewUserControl.xaml.cs">
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\WidthMinusMarginConverter.cs" />
     <Compile Include="Mappers\CodeItemMapper.cs" />
     <Compile Include="Models\CodeRegionItem.cs" />
     <Compile Include="Models\CodeClassItem.cs" />

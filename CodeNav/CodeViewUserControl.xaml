@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:CodeNav.Models"
+             xmlns:converters="clr-namespace:CodeNav.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -14,9 +15,13 @@
                 <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
                 <!--<ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />-->
                 <ResourceDictionary>
+                    <converters:WidthMinusMarginConverter x:Key="WidthMinusMarginConverter" />
+                </ResourceDictionary>
+                <ResourceDictionary>
                     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth, 
+                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
                             <Expander.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
@@ -36,7 +41,8 @@
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type models:CodeItem}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxItemWidth}">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, 
+                            Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
                                 <Run Text="{Binding Name}" FontSize="11" />
