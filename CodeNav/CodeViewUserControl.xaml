@@ -17,15 +17,19 @@
                     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
-                            <!--<Expander.BorderBrush>
+                            <Expander.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
-                                        <Rectangle StrokeThickness="1" Stroke="LightGray" StrokeDashArray="1 2" />
+                                        <Rectangle StrokeThickness="1"
+                                            Stroke="DarkGray" 
+                                            StrokeDashArray="5 3"
+                                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                            Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
                                     </VisualBrush.Visual>
                                 </VisualBrush>
-                            </Expander.BorderBrush>-->
+                            </Expander.BorderBrush>
                             <Expander.Header>
-                                <Label Content="{Binding Name}" FontSize="9" FontWeight="SemiBold" Foreground="DarkGray" Margin="-3" />
+                                <TextBlock Text="{Binding Name}" FontSize="9" FontWeight="SemiBold" Foreground="DarkGray" />
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" />
                         </Expander>
@@ -44,7 +48,7 @@
 
                     <DataTemplate x:Key="CodeDocumentTemplate">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}">
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}" BorderBrush="DarkGray">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />

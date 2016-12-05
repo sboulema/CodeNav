@@ -113,8 +113,7 @@ namespace CodeNav.Mappers
                 Parameters = MapInheritance(element)
             };
 
-            var classRegions = MapRegions(selection, element.StartPoint, element.EndPoint);
-            classItem.Members.AddRange(classRegions);
+            List<CodeRegionItem> classRegions = MapRegions(selection, element.StartPoint, element.EndPoint);
 
             foreach (CodeElement classMember in (element as CodeClass).Members)
             {
@@ -157,6 +156,11 @@ namespace CodeNav.Mappers
                         classItem.Members.Add(item);
                     }
                 }
+            }
+
+            if (classRegions.Any())
+            {
+                classItem.Members.AddRange(classRegions);
             }
 
             return classItem;
