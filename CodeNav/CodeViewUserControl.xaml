@@ -45,7 +45,7 @@
                             Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
-                                <Run Text="{Binding Name}" FontSize="11" />
+                                <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" Tag="{Binding Name}" />
                                 <Run Text="{Binding Type}" FontSize="10" Foreground="LightGray" />
                                 <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
                             </TextBlock>
@@ -54,13 +54,13 @@
 
                     <DataTemplate x:Key="CodeDocumentTemplate">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}" BorderBrush="DarkGray">
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}" BorderBrush="{Binding BorderBrush}">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                                     <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
                                         <TextBlock>
-                                            <Run Text="{Binding Name}" FontSize="11" />
+                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
                                             <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
                                         </TextBlock>
                                     </Border>
@@ -77,6 +77,6 @@
     </UserControl.Resources>
 
     <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
-             BorderThickness="0" />
+             BorderThickness="0" x:Name="CodeDocumentListBox" />
 
 </UserControl>

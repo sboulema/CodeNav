@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -15,28 +16,26 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        private CodeViewUserControl codeViewUserControl;
-        private readonly CodeDocumentViewModel codeDocumentVM;
+        private CodeViewUserControl _codeViewUserControl;
+        private readonly CodeDocumentViewModel _codeDocumentVm;
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
-        private readonly TextEditorEvents _textEditorEvents;
         private readonly DocumentEvents _documentEvents;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
             _dte = dte;
             _textView = textViewHost.TextView;
-            _textEditorEvents = dte.Events.TextEditorEvents;
             _documentEvents = dte.Events.DocumentEvents;
 
             if (dte.ActiveDocument == null) return;
 
-            codeDocumentVM = new CodeDocumentViewModel();
+            _codeDocumentVm = new CodeDocumentViewModel();
 
             var document = CodeItemMapper.MapDocument(dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements, dte.ActiveDocument.Selection);
 
-            codeDocumentVM.LoadCodeDocument(document);
-            codeDocumentVM.LoadMaxWidth();
+            _codeDocumentVm.LoadCodeDocument(document);
+            _codeDocumentVm.LoadMaxWidth();
 
             Children.Add(CreateGrid(textViewHost, dte));
 
@@ -46,22 +45,63 @@ namespace CodeNav
 
         public void RegisterEvents()
         {
-            //_textView.LayoutChanged += TextView_LayoutChanged;
+            _textView.Caret.PositionChanged += Caret_PositionChanged;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            //_textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
         }
 
         public void UnRegisterEvents()
         {
-            //_textView.LayoutChanged -= TextView_LayoutChanged;
+            _textView.Caret.PositionChanged -= Caret_PositionChanged;
             _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            //_textEditorEvents.LineChanged -= TextEditorEvents_LineChanged;
         }
 
-        private void TextEditorEvents_LineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint) => UpdateDocument();
-        private void DocumentEvents_DocumentSaved(Document Document) => UpdateDocument();
-        private void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e) => UpdateDocument();
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
         private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) => UpdateDocument();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
+
+        private void UpdateCurrentItem()
+        {
+            if (_dte.ActiveDocument?.Selection == null) return;
+
+            var textSelection = _dte.ActiveDocument.Selection as TextSelection;
+
+            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
+            var currentClassElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementClass] ??
+                                      textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementInterface];
+
+            if (currentFunctionElement == null) return;
+
+            CodeItem currentCodeItem = null;
+            CodeClassItem currentClassItem = null;
+            foreach (var classItem in _codeDocumentVm.CodeDocument)
+            {
+                classItem.Foreground = new SolidColorBrush(Colors.Black);
+                ((CodeClassItem)classItem).BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                if (classItem.Id.Equals(currentClassElement.Name))
+                {
+                    currentClassItem = (CodeClassItem)classItem;
+                }
+
+                foreach (var functionItem in ((CodeClassItem)classItem).Members)
+                {
+                    functionItem.Foreground = new SolidColorBrush(Colors.Black);
+                    if (functionItem.Id.Equals(currentFunctionElement.Name))
+                    {
+                        currentCodeItem = functionItem;
+                    }
+                }
+            }
+
+            if (currentCodeItem != null)
+            {
+                currentCodeItem.Foreground = new SolidColorBrush(Colors.SteelBlue);
+            }
+
+            if (currentClassItem != null)
+            {
+                currentClassItem.BorderBrush = currentClassItem.Foreground = new SolidColorBrush(Colors.SteelBlue);                
+            }               
+        }
 
         private void UpdateDocument()
         {
@@ -69,7 +109,7 @@ namespace CodeNav
             if (elements == null) return;
 
             var document = CodeItemMapper.MapDocument(elements, _dte.ActiveDocument.Selection);
-            codeDocumentVM.LoadCodeDocument(document);          
+            _codeDocumentVm.LoadCodeDocument(document);          
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
@@ -90,10 +130,10 @@ namespace CodeNav
             splitter.DragCompleted += LeftDragCompleted;
             grid.Children.Add(splitter);
 
-            codeViewUserControl = new CodeViewUserControl(dte) { DataContext = codeDocumentVM };
-            grid.Children.Add(codeViewUserControl);
+            _codeViewUserControl = new CodeViewUserControl(dte) { DataContext = _codeDocumentVm };
+            grid.Children.Add(_codeViewUserControl);
 
-            Grid.SetColumn(codeViewUserControl, 0);
+            Grid.SetColumn(_codeViewUserControl, 0);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, 2);
 
@@ -102,11 +142,11 @@ namespace CodeNav
 
         private void LeftDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (!double.IsNaN(codeViewUserControl.ActualWidth))
+            if (!double.IsNaN(_codeViewUserControl.ActualWidth))
             {
-                Settings.Default.Width = codeViewUserControl.ActualWidth;
+                Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
-                codeDocumentVM.LoadMaxWidth();
+                _codeDocumentVm.LoadMaxWidth();
             }
         }
 

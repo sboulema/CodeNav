@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
+using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
 using TextSelection = EnvDTE.TextSelection;
@@ -48,7 +48,9 @@ namespace CodeNav.Mappers
                 StartPoint = function.StartPoint,
                 Type = function.Type.AsString,
                 Parameters = MapParameters(function),
-                IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor ? "Icons/Method/MethodAdded_16x.xaml" : MapIcon<CodeFunction>(element)
+                IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor ? "Icons/Method/MethodAdded_16x.xaml" : MapIcon<CodeFunction>(element),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black)
             };
         }
 
@@ -59,7 +61,10 @@ namespace CodeNav.Mappers
                 Name = element.Name,
                 StartPoint = element.StartPoint,
                 IconPath = MapIcon<CodeEnum>(element),
-                Parameters = MapMembers(element as CodeEnum)
+                Parameters = MapMembers(element as CodeEnum),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black),
+                BorderBrush = new SolidColorBrush(Colors.DarkGray)
             };
 
             foreach (CodeElement enumMember in (element as CodeEnum).Members)
@@ -68,7 +73,9 @@ namespace CodeNav.Mappers
                 {
                     Name = enumMember.Name,
                     StartPoint = enumMember.StartPoint,
-                    IconPath = MapIcon<CodeVariable>(enumMember, true)
+                    IconPath = MapIcon<CodeVariable>(enumMember, true),
+                    Id = element.Name,
+                    Foreground = new SolidColorBrush(Colors.Black)
                 });
             }
 
@@ -92,7 +99,10 @@ namespace CodeNav.Mappers
             {
                 Name = element.Name,
                 StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeInterface>(element)
+                IconPath = MapIcon<CodeInterface>(element),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black),
+                BorderBrush = new SolidColorBrush(Colors.DarkGray)
             };
 
             foreach (CodeElement member in (element as CodeInterface).Members)
@@ -110,7 +120,10 @@ namespace CodeNav.Mappers
                 Name = element.Name,
                 StartPoint = element.StartPoint,
                 IconPath = MapIcon<CodeClass>(element),
-                Parameters = MapInheritance(element)
+                Parameters = MapInheritance(element),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black),
+                BorderBrush = new SolidColorBrush(Colors.DarkGray)
             };
 
             List<CodeRegionItem> classRegions = MapRegions(selection, element.StartPoint, element.EndPoint);
@@ -170,6 +183,7 @@ namespace CodeNav.Mappers
         {
             var regionList = new List<CodeRegionItem>();
             if (selection == null) return regionList;
+            var activepoint = selection.ActivePoint.CreateEditPoint();
 
             selection.MoveToPoint(lowerBound);
 
@@ -181,13 +195,18 @@ namespace CodeNav.Mappers
                 var name = selection.Text.Replace("#region", string.Empty).Trim();
 
                 selection.FindText("#endregion");
-                var end = selection.TopPoint;
+                var end = selection.TopPoint.CreateEditPoint();
 
                 if (end.LessThan(upperBound))
                 {
-                    regionList.Add(new CodeRegionItem { Name = name, StartPoint = start, EndPoint = end });
+                    regionList.Add(new CodeRegionItem { Name = name, StartPoint = start, EndPoint = end, Id = name,
+                        Foreground = new SolidColorBrush(Colors.Black),
+                        BorderBrush = new SolidColorBrush(Colors.DarkGray)
+                    });
                 }               
             }
+
+            selection.MoveToPoint(activepoint);
 
             return regionList;
         }
@@ -211,7 +230,9 @@ namespace CodeNav.Mappers
             {
                 Name = element.Name,
                 StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeVariable>(element)
+                IconPath = MapIcon<CodeVariable>(element),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black)
             };
         }
 
@@ -223,7 +244,9 @@ namespace CodeNav.Mappers
             {
                 Name = element.Name,
                 StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeProperty>(element)
+                IconPath = MapIcon<CodeProperty>(element),
+                Id = element.Name,
+                Foreground = new SolidColorBrush(Colors.Black)
             };
         }
 

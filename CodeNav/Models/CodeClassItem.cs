@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Media;
 
 namespace CodeNav.Models
 {
@@ -11,5 +13,19 @@ namespace CodeNav.Models
 
         public List<CodeItem> Members { get; set; }
         public string Parameters { get; set; }
+
+        private SolidColorBrush _borderBrush;
+        public SolidColorBrush BorderBrush
+        {
+            get
+            {
+                return _borderBrush;
+            }
+            set
+            {
+                _borderBrush = value;
+                NotifyOfPropertyChange();
+            }
+        }
     }
 }
