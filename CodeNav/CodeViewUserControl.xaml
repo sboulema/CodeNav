@@ -13,7 +13,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
-                <!--<ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />-->
+                <ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />
                 <ResourceDictionary>
                     <converters:WidthMinusMarginConverter x:Key="WidthMinusMarginConverter" />
                 </ResourceDictionary>
@@ -66,8 +66,7 @@
                                     </Border>
                                 </StackPanel>
                             </Expander.Header>
-                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" 
-                                     BorderThickness="0" />
+                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" />
                         </Expander>
                     </DataTemplate>
                 </ResourceDictionary>
@@ -77,6 +76,6 @@
     </UserControl.Resources>
 
     <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
-             BorderThickness="0" x:Name="CodeDocumentListBox" />
+             BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" />
 
 </UserControl>
