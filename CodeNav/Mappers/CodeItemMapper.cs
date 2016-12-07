@@ -54,13 +54,18 @@ namespace CodeNav.Mappers
             var function = element as CodeFunction;
 
             var output = MapBase<CodeFunctionItem>(element);
-            output.Type = function.Type.AsString;
+            output.Type = MapType(function.Type);
             output.Parameters = MapParameters(function);
             output.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
                 ? "Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
 
             return output;
+        }
+
+        private static string MapType(CodeTypeRef type)
+        {
+            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
         }
 
         public static CodeClassItem MapEnum(CodeElement element)
@@ -231,7 +236,7 @@ namespace CodeNav.Mappers
 
         private static string MapParameters(CodeFunction function)
         {
-            var paramList = (from CodeElement parameter in function.Parameters select (parameter as CodeParameter).Type.AsString).ToList();
+            var paramList = (from object parameter in function.Parameters select MapType((parameter as CodeParameter).Type)).ToList();
             return $"({string.Join(", ", paramList)})";
         }
 
