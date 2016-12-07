@@ -24,11 +24,11 @@ namespace CodeNav
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
+            if (dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements == null) return;
+
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-
-            if (dte.ActiveDocument == null) return;
 
             _codeDocumentVm = new CodeDocumentViewModel();
 
@@ -45,7 +45,10 @@ namespace CodeNav
 
         public void RegisterEvents()
         {
-            _textView.Caret.PositionChanged += Caret_PositionChanged;
+            if (_textView?.Caret != null)
+            {
+                _textView.Caret.PositionChanged += Caret_PositionChanged;
+            }             
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
         }
 
@@ -61,7 +64,7 @@ namespace CodeNav
 
         private void UpdateCurrentItem()
         {
-            if (_dte.ActiveDocument?.Selection == null) return;
+            if (_dte.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
 
             var textSelection = _dte.ActiveDocument.Selection as TextSelection;
 

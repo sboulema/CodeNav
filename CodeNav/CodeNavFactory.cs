@@ -14,7 +14,7 @@ namespace CodeNav
     [Name(CodeNav.MarginName)]
     [Order(Before = PredefinedMarginNames.Left)]  // Ensure that the margin occurs below the horizontal scrollbar
     [MarginContainer(PredefinedMarginNames.Left)]         // Set the container to the left of the editor window
-    [ContentType("code")]                                 // Show this margin for all code-based types
+    [ContentType("CSharp")]                                 // Show this margin for all code-based types
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]    // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavFactory : IWpfTextViewMarginProvider
     {
