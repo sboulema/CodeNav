@@ -19,7 +19,7 @@
                         <Grid Background="Transparent" SnapsToDevicePixels="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="17"/>
                             </Grid.ColumnDefinitions>
                             <ContentPresenter HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                             <Image Grid.Column="1" x:Name="arrow" Source="../Icons/ExpanderHeader/Expand_16xSM.png" />

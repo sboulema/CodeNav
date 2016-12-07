@@ -51,6 +51,27 @@ namespace CodeNav
         public const string RegionString = "CodeNav";
 
         #endregion
+
+        public struct Structure
+        {
+            public int StructureProperty { get; }
+            public const int StructureConstant = 42;
+
+            private void StructureMethod()
+            {              
+            }
+        }
+
+        internal class InternalClass
+        {
+            internal const int InternalConstant = 42;
+            internal int InternalMethod()
+            {
+                return 42;
+            }
+
+            internal string InternalProperty { get; set; }
+        }
     }
 
     public interface ICodeNavTest2
