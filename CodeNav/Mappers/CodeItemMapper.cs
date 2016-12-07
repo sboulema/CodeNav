@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
-using TextSelection = EnvDTE.TextSelection;
 
 namespace CodeNav.Mappers
 {
     public static class CodeItemMapper
     {
-        public static List<CodeItem> MapDocument(CodeElements elements, dynamic selection)
+        public static List<CodeItem> MapDocument(CodeElements elements)
         {
             var document = new List<CodeItem>();
 
@@ -22,7 +22,7 @@ namespace CodeNav.Mappers
                         switch (namespaceMember.Kind)
                         {
                             case vsCMElement.vsCMElementClass:
-                                document.Add(MapClass(namespaceMember, selection));
+                                document.Add(MapClass(namespaceMember));
                                 break;
                             case vsCMElement.vsCMElementEnum:
                                 document.Add(MapEnum(namespaceMember));
@@ -38,45 +38,43 @@ namespace CodeNav.Mappers
             return document;
         }
 
+        public static T MapBase<T>(CodeElement source) where T : CodeItem
+        {
+            var element = Activator.CreateInstance<T>();
+            element.Name = source.Name;
+            element.Id = source.Name;
+            element.StartPoint = source.StartPoint;
+            element.Foreground = new SolidColorBrush(Colors.Black);
+            element.FullName = source.FullName;
+            return element;
+        }
+
         public static CodeFunctionItem MapFunction(CodeElement element)
         {
             var function = element as CodeFunction;
 
-            return new CodeFunctionItem
-            {
-                Name = function.Name,
-                StartPoint = function.StartPoint,
-                Type = function.Type.AsString,
-                Parameters = MapParameters(function),
-                IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor ? "Icons/Method/MethodAdded_16x.xaml" : MapIcon<CodeFunction>(element),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black)
-            };
+            var output = MapBase<CodeFunctionItem>(element);
+            output.Type = function.Type.AsString;
+            output.Parameters = MapParameters(function);
+            output.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
+                ? "Icons/Method/MethodAdded_16x.xaml"
+                : MapIcon<CodeFunction>(element);
+
+            return output;
         }
 
         public static CodeClassItem MapEnum(CodeElement element)
         {
-            var enumItem = new CodeClassItem
-            {
-                Name = element.Name,
-                StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeEnum>(element),
-                Parameters = MapMembers(element as CodeEnum),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black),
-                BorderBrush = new SolidColorBrush(Colors.DarkGray)
-            };
+            var enumItem = MapBase<CodeClassItem>(element);
+            enumItem.IconPath = MapIcon<CodeEnum>(element);
+            enumItem.Parameters = MapMembers(element as CodeEnum);
+            enumItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
             foreach (CodeElement enumMember in (element as CodeEnum).Members)
             {
-                enumItem.Members.Add(new CodeItem
-                {
-                    Name = enumMember.Name,
-                    StartPoint = enumMember.StartPoint,
-                    IconPath = MapIcon<CodeVariable>(enumMember, true),
-                    Id = element.Name,
-                    Foreground = new SolidColorBrush(Colors.Black)
-                });
+                var item = MapBase<CodeItem>(enumMember);
+                item.IconPath = MapIcon<CodeVariable>(enumMember, true);
+                enumItem.Members.Add(item);
             }
 
             return enumItem;
@@ -95,15 +93,9 @@ namespace CodeNav.Mappers
 
         public static CodeClassItem MapInterface(CodeElement element)
         {
-            var item = new CodeClassItem
-            {
-                Name = element.Name,
-                StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeInterface>(element),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black),
-                BorderBrush = new SolidColorBrush(Colors.DarkGray)
-            };
+            var item = MapBase<CodeClassItem>(element);
+            item.IconPath = MapIcon<CodeInterface>(element);
+            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
             foreach (CodeElement member in (element as CodeInterface).Members)
             {
@@ -113,20 +105,14 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeClassItem MapClass(CodeElement element, dynamic selection)
+        public static CodeClassItem MapClass(CodeElement element)
         {
-            var classItem = new CodeClassItem
-            {
-                Name = element.Name,
-                StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeClass>(element),
-                Parameters = MapInheritance(element),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black),
-                BorderBrush = new SolidColorBrush(Colors.DarkGray)
-            };
+            var classItem = MapBase<CodeClassItem>(element);
+            classItem.IconPath = MapIcon<CodeClass>(element);
+            classItem.Parameters = MapInheritance(element);
+            classItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
-            List<CodeRegionItem> classRegions = MapRegions(selection, element.StartPoint, element.EndPoint);
+            var classRegions = MapRegions(element.StartPoint, element.EndPoint);
 
             foreach (CodeElement classMember in (element as CodeClass).Members)
             {
@@ -179,34 +165,30 @@ namespace CodeNav.Mappers
             return classItem;
         }
 
-        public static List<CodeRegionItem> MapRegions(TextSelection selection, TextPoint lowerBound, TextPoint upperBound)
+        public static List<CodeRegionItem> MapRegions(TextPoint lowerBound, TextPoint upperBound)
         {
             var regionList = new List<CodeRegionItem>();
-            if (selection == null) return regionList;
-            var activepoint = selection.ActivePoint.CreateEditPoint();
 
-            selection.MoveToPoint(lowerBound);
+            var searchPoint = lowerBound.CreateEditPoint();
+            var endPoint = upperBound.CreateEditPoint();
 
-            while (selection.FindText("#region"))
-            {             
-                var start = selection.TopPoint.CreateEditPoint();
-
-                selection.SelectLine();
-                var name = selection.Text.Replace("#region", string.Empty).Trim();
-
-                selection.FindText("#endregion");
-                var end = selection.TopPoint.CreateEditPoint();
-
-                if (end.LessThan(upperBound))
+            while (searchPoint.FindPattern("#region", 0, ref endPoint))
+            {
+                var start = searchPoint.CreateEditPoint();
+                var name = start.GetLines(start.Line, start.Line + 1).Replace("#region", string.Empty).Trim();
+                searchPoint.FindPattern("#endregion", 0, ref endPoint);
+                var end = searchPoint.CreateEditPoint();
+                var region = new CodeRegionItem
                 {
-                    regionList.Add(new CodeRegionItem { Name = name, StartPoint = start, EndPoint = end, Id = name,
-                        Foreground = new SolidColorBrush(Colors.Black),
-                        BorderBrush = new SolidColorBrush(Colors.DarkGray)
-                    });
-                }               
+                    Name = name,
+                    StartPoint = start,
+                    EndPoint = end,
+                    Id = name,
+                    Foreground = new SolidColorBrush(Colors.Black),
+                    BorderBrush = new SolidColorBrush(Colors.DarkGray)
+                };
+                regionList.Add(region);
             }
-
-            selection.MoveToPoint(activepoint);
 
             return regionList;
         }
@@ -226,28 +208,19 @@ namespace CodeNav.Mappers
 
         private static CodeItem MapConstant(CodeElement element)
         {
-            return new CodeItem
-            {
-                Name = element.Name,
-                StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeVariable>(element),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black)
-            };
+            var constantItem = MapBase<CodeItem>(element);
+            constantItem.IconPath = MapIcon<CodeVariable>(element);
+            return constantItem;
         }
 
         private static CodeItem MapProperty(CodeElement element)
         {
             var property = element as CodeProperty;
             if (property.Access == vsCMAccess.vsCMAccessPrivate) return null;
-            return new CodeItem
-            {
-                Name = element.Name,
-                StartPoint = element.StartPoint,
-                IconPath = MapIcon<CodeProperty>(element),
-                Id = element.Name,
-                Foreground = new SolidColorBrush(Colors.Black)
-            };
+
+            var item = MapBase<CodeItem>(element);
+            item.IconPath = MapIcon<CodeProperty>(element);
+            return item;
         }
 
         private static string MapMembers(CodeEnum element)

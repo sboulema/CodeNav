@@ -32,7 +32,7 @@ namespace CodeNav
 
             _codeDocumentVm = new CodeDocumentViewModel();
 
-            var document = CodeItemMapper.MapDocument(dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements, dte.ActiveDocument.Selection);
+            var document = CodeItemMapper.MapDocument(dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements);
 
             _codeDocumentVm.LoadCodeDocument(document);
             _codeDocumentVm.LoadMaxWidth();
@@ -111,7 +111,7 @@ namespace CodeNav
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
-            var document = CodeItemMapper.MapDocument(elements, _dte.ActiveDocument.Selection);
+            var document = CodeItemMapper.MapDocument(elements);
             _codeDocumentVm.LoadCodeDocument(document);          
         }
 
