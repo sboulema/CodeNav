@@ -17,17 +17,17 @@ namespace CodeNav
         
         private int _secret = 2;
 
-        public int Add(int a, int b)
+        public int PublicMethod(int a, int b)
         {
             return a + b;
         }
 
-        private int Subtract(int a, int b)
+        private int PrivateMethod(int a, int b)
         {
             return a - b;
         }
 
-        protected void Divide(int a, int b)
+        protected void ProtectedMethod(int a, int b)
         {
             
         }

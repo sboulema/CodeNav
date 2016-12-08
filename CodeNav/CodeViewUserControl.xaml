@@ -51,7 +51,7 @@
                                     <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
                                         <TextBlock>
                                             <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
-                                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
+                                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                                         </TextBlock>
                                     </Border>
                                 </StackPanel>
@@ -67,8 +67,8 @@
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
                                 <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" Tag="{Binding Name}" />
-                                <Run Text="{Binding Type}" FontSize="10" Foreground="LightGray" />
-                                <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
+                                <Run Text="{Binding Type}" FontSize="10" Foreground="DarkGray" />
+                                <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                             </TextBlock>
                         </StackPanel>
                     </DataTemplate>
@@ -83,7 +83,7 @@
                                     <Border BorderThickness="0,0,0,1" BorderBrush="LightGray">
                                         <TextBlock>
                                             <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
-                                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="LightGray" />
+                                            <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                                         </TextBlock>
                                     </Border>
                                 </StackPanel>

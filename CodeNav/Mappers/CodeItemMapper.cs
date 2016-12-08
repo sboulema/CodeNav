@@ -43,13 +43,20 @@ namespace CodeNav.Mappers
             var element = Activator.CreateInstance<T>();
             element.Name = source.Name;
             element.Id = source.Name;
-            element.StartPoint = source.StartPoint;
+            try
+            {
+                element.StartPoint = source.StartPoint;
+            }
+            catch (Exception)
+            {
+
+            }          
             element.Foreground = new SolidColorBrush(Colors.Black);
             element.FullName = source.FullName;
             return element;
         }
 
-        private static CodeFunctionItem MapFunction(CodeElement element)
+        private static CodeItem MapFunction(CodeElement element)
         {
             var function = element as CodeFunction;
 
@@ -158,13 +165,30 @@ namespace CodeNav.Mappers
             item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
             var classRegions = MapRegions(element.StartPoint, element.EndPoint);
+            var implementedInterfaces = MapImplementedInterfaces(element);
 
             foreach (CodeElement member in itemType.Members)
             {
                 var memberItem = MapMember(member);
-                if (memberItem != null && !AddToRegion(classRegions, memberItem))
+                if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem) 
+                    && !AddToRegion(classRegions, memberItem))
                 {
                     item.Members.Add(memberItem);
+                }
+            }
+
+            // Add implemented interfaces to class or region if they have a interface member inside them
+            if (implementedInterfaces.Any())
+            {
+                foreach (var interfaceItem in implementedInterfaces)
+                {
+                    if (interfaceItem.Members.Any())
+                    {
+                        if (!AddToRegion(classRegions, interfaceItem))
+                        {
+                            item.Members.Add(interfaceItem);
+                        }                       
+                    }
                 }
             }
 
@@ -229,6 +253,25 @@ namespace CodeNav.Mappers
             return item;
         }
 
+        private static List<CodeRegionItem> MapImplementedInterfaces(CodeElement element)
+        {
+            var implementedInterfaces = new List<CodeRegionItem>();
+            var codeClass = element as CodeClass;
+            foreach (CodeElement implementedInterface in codeClass.ImplementedInterfaces)
+            {
+                var item = new CodeRegionItem {Name = implementedInterface.Name, Id = implementedInterface.Name};
+
+                foreach (CodeElement implementedInterfaceMember in (implementedInterface as CodeInterface).Members)
+                {
+                    item.Members.Add(MapMember(implementedInterfaceMember));
+                }
+
+                implementedInterfaces.Add(item);
+            }
+
+            return implementedInterfaces;
+        }
+
         #region Helpers
         private static string MapReturnType(CodeTypeRef type)
         {
@@ -248,13 +291,41 @@ namespace CodeNav.Mappers
 
         private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
         {
-            if (item == null) return false;
+            if (item?.StartPoint == null) return false;
             foreach (var region in regions)
             {
                 if (item.StartPoint.GreaterThan(region.StartPoint) && item.StartPoint.LessThan(region.EndPoint))
                 {
                     region.Members.Add(item);
                     return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool AddToImplementedInterface(List<CodeRegionItem> implementedInterfaces, CodeItem item)
+        {
+            if (item == null) return false;
+            foreach (var interfaceItem in implementedInterfaces)
+            {
+                foreach (var interfaceMember in interfaceItem.Members)
+                {
+                    if (interfaceMember.Name.Equals(item.Name))
+                    {
+                        interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
+
+                        // Determing the start/end point of and implemented interface by the start/end point of its members
+                        if (interfaceItem.StartPoint == null || item.StartPoint.LessThan(interfaceItem.StartPoint))
+                        {
+                            interfaceItem.StartPoint = item.StartPoint;
+                        }
+                        if (interfaceItem.EndPoint == null || item.StartPoint.GreaterThan(interfaceItem.EndPoint))
+                        {
+                            interfaceItem.EndPoint = item.StartPoint;
+                        }
+
+                        return true;
+                    }
                 }
             }
             return false;

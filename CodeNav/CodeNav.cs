@@ -84,7 +84,7 @@ namespace CodeNav
                 foreach (var functionItem in ((CodeClassItem)classItem).Members)
                 {
                     functionItem.Foreground = new SolidColorBrush(Colors.Black);
-                    if (functionItem.Id.Equals(currentFunctionElement.Name))
+                    if (functionItem.FullName.Equals(currentFunctionElement.FullName))
                     {
                         currentCodeItem = functionItem;
                     }
