@@ -223,9 +223,10 @@ namespace CodeNav.Mappers
                 var region = new CodeRegionItem
                 {
                     Name = name,
+                    FullName = name,
+                    Id = name,
                     StartPoint = start,
                     EndPoint = end,
-                    Id = name,
                     Foreground = new SolidColorBrush(Colors.Black),
                     BorderBrush = new SolidColorBrush(Colors.DarkGray)
                 };
@@ -244,11 +245,15 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        private static CodeItem MapProperty(CodeElement element)
+        private static CodeFunctionItem MapProperty(CodeElement element)
         {
             if (MapAccess(element).Equals("Private")) return null;
 
-            var item = MapBase<CodeItem>(element);
+            var prop = element as CodeProperty;
+
+            var item = MapBase<CodeFunctionItem>(element);
+            item.Type = MapReturnType(prop.Type);
+            item.Parameters = $"{prop.Name} {{{(prop.Getter != null ? "get" : string.Empty)} {(prop.Setter != null ? ", set" : string.Empty)}}}" ;
             item.IconPath = MapIcon<CodeProperty>(element);
             return item;
         }
