@@ -21,7 +21,7 @@
                     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth, 
-                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=20}">
+                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
                             <Expander.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
@@ -43,7 +43,7 @@
                     <DataTemplate DataType="{x:Type models:CodeClassItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth, 
-                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=20}" BorderBrush="{Binding BorderBrush}">
+                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" BorderBrush="{Binding BorderBrush}">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
@@ -73,7 +73,8 @@
 
                     <DataTemplate x:Key="CodeDocumentTemplate">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.MaxWidth}" BorderBrush="{Binding BorderBrush}">
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth, 
+                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=6}" BorderBrush="{Binding BorderBrush}">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />

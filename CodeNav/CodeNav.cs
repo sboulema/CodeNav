@@ -31,10 +31,6 @@ namespace CodeNav
             _documentEvents = dte.Events.DocumentEvents;
 
             _codeDocumentVm = new CodeDocumentViewModel();
-
-            var document = CodeItemMapper.MapDocument(dte.ActiveDocument.ProjectItem.FileCodeModel.CodeElements);
-
-            _codeDocumentVm.LoadCodeDocument(document);
             _codeDocumentVm.LoadMaxWidth();
 
             Children.Add(CreateGrid(textViewHost, dte));
@@ -112,7 +108,8 @@ namespace CodeNav
             if (elements == null) return;
 
             var document = CodeItemMapper.MapDocument(elements);
-            _codeDocumentVm.LoadCodeDocument(document);          
+            _codeDocumentVm.LoadCodeDocument(document);
+            _codeDocumentVm.LoadMaxWidth();
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)

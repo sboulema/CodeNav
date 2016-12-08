@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/CodeNav.png)
+![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/CodeNav.png)
 
 # CodeNav
 Visual Studio extension to show the code structure of your current document
@@ -7,4 +7,4 @@ Visual Studio extension to show the code structure of your current document
 Currently only C#
 
 ## Screenshot
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Preview.png)
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png)

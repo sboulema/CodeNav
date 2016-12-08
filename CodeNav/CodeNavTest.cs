@@ -13,8 +13,8 @@ namespace CodeNav
 
         protected int Version = 1;
 
-        public bool Boolean = true;
-
+        public bool Field = true;
+        
         private int _secret = 2;
 
         public int Add(int a, int b)

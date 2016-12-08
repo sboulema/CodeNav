@@ -63,11 +63,6 @@ namespace CodeNav.Mappers
             return output;
         }
 
-        private static string MapReturnType(CodeTypeRef type)
-        {
-            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
-        }
-
         private static CodeItem MapMember(CodeElement element)
         {
             if (element.Kind == vsCMElement.vsCMElementFunction)
@@ -84,7 +79,7 @@ namespace CodeNav.Mappers
             }
             if (element.Kind == vsCMElement.vsCMElementVariable)
             {
-                return MapConstant(element);
+                return MapVariable(element);
             }
             if (element.Kind == vsCMElement.vsCMElementProperty)
             {
@@ -103,32 +98,21 @@ namespace CodeNav.Mappers
 
         private static CodeClassItem MapEnum(CodeElement element)
         {
-            var enumType = (element as CodeEnum);
+            var enumType = element as CodeEnum;
 
-            var enumItem = MapBase<CodeClassItem>(element);
-            enumItem.IconPath = MapIcon<CodeEnum>(element);
-            enumItem.Parameters = MapMembers(element as CodeEnum);
-            enumItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            var item = MapBase<CodeClassItem>(element);
+            item.IconPath = MapIcon<CodeEnum>(element);
+            item.Parameters = MapMembers(element as CodeEnum);
+            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
-            foreach (CodeElement enumMember in enumType.Members)
+            foreach (CodeElement member in enumType.Members)
             {
-                var item = MapBase<CodeItem>(enumMember);
-                item.IconPath = MapIcon<CodeVariable>(enumMember, true);
-                enumItem.Members.Add(item);
+                var memberItem = MapMember(member);
+                memberItem.IconPath = MapIcon<CodeVariable>(member, true);
+                item.Members.Add(memberItem);
             }
 
-            return enumItem;
-        }
-
-        private static string MapInheritance(CodeElement element)
-        {
-            var codeClass = element as CodeClass;
-
-            var basesList = (from CodeElement bases in codeClass.Bases select bases.Name).ToList();
-            var interfaceList = (from CodeElement interfaces in codeClass.ImplementedInterfaces select interfaces.Name).ToList();
-            basesList.AddRange(interfaceList);
-
-            return $" : {string.Join(", ", basesList)}";
+            return item;
         }
 
         private static CodeClassItem MapInterface(CodeElement element)
@@ -149,18 +133,16 @@ namespace CodeNav.Mappers
 
         private static CodeClassItem MapStruct(CodeElement element)
         {
-            var structType = element as CodeStruct;
+            var itemType = element as CodeStruct;
 
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeStruct>(element);
-            item.Parameters = MapMembers(structType);
+            item.Parameters = MapMembers(itemType);
             item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
-            foreach (CodeElement member in structType.Members)
+            foreach (CodeElement member in itemType.Members)
             {
-                var memberItem = MapMember(member);
-                memberItem.IconPath = MapIcon(member);
-                item.Members.Add(memberItem);
+                item.Members.Add(MapMember(member));
             }
 
             return item;
@@ -168,63 +150,21 @@ namespace CodeNav.Mappers
 
         private static CodeClassItem MapClass(CodeElement element)
         {
-            var classType = element as CodeClass;
+            var itemType = element as CodeClass;
 
-            var classItem = MapBase<CodeClassItem>(element);
-            classItem.IconPath = MapIcon<CodeClass>(element);
-            classItem.Parameters = MapInheritance(element);
-            classItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            var item = MapBase<CodeClassItem>(element);
+            item.IconPath = MapIcon<CodeClass>(element);
+            item.Parameters = MapInheritance(element);
+            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
 
             var classRegions = MapRegions(element.StartPoint, element.EndPoint);
 
-            foreach (CodeElement classMember in classType.Members)
+            foreach (CodeElement member in itemType.Members)
             {
-                if (classMember.Kind == vsCMElement.vsCMElementFunction)
+                var memberItem = MapMember(member);
+                if (memberItem != null && !AddToRegion(classRegions, memberItem))
                 {
-                    var function = MapFunction(classMember);
-                    if (!AddToRegion(classRegions, function))
-                    {
-                        classItem.Members.Add(function);
-                    }                 
-                }
-                else if (classMember.Kind == vsCMElement.vsCMElementVariable)
-                {
-                    var variable = classMember as CodeVariable;
-                    var constant = MapConstant(classMember);
-                    if (variable.IsConstant && variable.Access != vsCMAccess.vsCMAccessPrivate)
-                    {
-                        if (!AddToRegion(classRegions, constant))
-                        {
-                            classItem.Members.Add(constant);
-                        }
-                    }
-                }
-                else if (classMember.Kind == vsCMElement.vsCMElementProperty)
-                {
-                    var property = MapProperty(classMember);
-                    if (property != null)
-                    {
-                        if (!AddToRegion(classRegions, property))
-                        {
-                            classItem.Members.Add(property);
-                        }
-                    }
-                }
-                else if (classMember.Kind == vsCMElement.vsCMElementStruct)
-                {
-                    var item = MapStruct(classMember);
-                    if (!AddToRegion(classRegions, item))
-                    {
-                        classItem.Members.Add(item);
-                    }
-                }
-                else
-                {
-                    var item = new CodeItem {Name = classMember.Name, StartPoint = classMember.StartPoint};
-                    if (!AddToRegion(classRegions, item))
-                    {
-                        classItem.Members.Add(item);
-                    }
+                    item.Members.Add(memberItem);
                 }
             }
 
@@ -235,12 +175,12 @@ namespace CodeNav.Mappers
                 {
                     if (region.Members.Any())
                     {
-                        classItem.Members.Add(region);
+                        item.Members.Add(region);
                     }
                 }              
             }
 
-            return classItem;
+            return item;
         }
 
         private static List<CodeRegionItem> MapRegions(TextPoint lowerBound, TextPoint upperBound)
@@ -271,24 +211,13 @@ namespace CodeNav.Mappers
             return regionList;
         }
 
-        private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
+        private static CodeItem MapVariable(CodeElement element)
         {
-            foreach (var region in regions)
-            {
-                if (item.StartPoint.GreaterThan(region.StartPoint) && item.StartPoint.LessThan(region.EndPoint))
-                {
-                    region.Members.Add(item);
-                    return true;
-                }
-            }
-            return false;
-        }
+            if (MapAccess(element).Equals("Private") || MapAccess(element).Equals("Protect")) return null;
 
-        private static CodeItem MapConstant(CodeElement element)
-        {
-            var constantItem = MapBase<CodeItem>(element);
-            constantItem.IconPath = MapIcon<CodeVariable>(element);
-            return constantItem;
+            var item = MapBase<CodeItem>(element);
+            item.IconPath = (element as CodeVariable).IsConstant ? MapIcon<CodeVariable>(element) : "Icons/Field/Field_16x.xaml";
+            return item;
         }
 
         private static CodeItem MapProperty(CodeElement element)
@@ -298,6 +227,37 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(element);
             item.IconPath = MapIcon<CodeProperty>(element);
             return item;
+        }
+
+        #region Helpers
+        private static string MapReturnType(CodeTypeRef type)
+        {
+            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
+        }
+
+        private static string MapInheritance(CodeElement element)
+        {
+            var codeClass = element as CodeClass;
+
+            var basesList = (from CodeElement bases in codeClass.Bases select bases.Name).ToList();
+            var interfaceList = (from CodeElement interfaces in codeClass.ImplementedInterfaces select interfaces.Name).ToList();
+            basesList.AddRange(interfaceList);
+
+            return $" : {string.Join(", ", basesList)}";
+        }
+
+        private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
+        {
+            if (item == null) return false;
+            foreach (var region in regions)
+            {
+                if (item.StartPoint.GreaterThan(region.StartPoint) && item.StartPoint.LessThan(region.EndPoint))
+                {
+                    region.Members.Add(item);
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static string MapMembers(CodeEnum element)
@@ -362,49 +322,6 @@ namespace CodeNav.Mappers
             }
         }
 
-        private static string MapIcon(CodeElement element, bool isEnumMember = false)
-        {
-            var accessString = MapAccess(element);
-            var type = element.GetType();
-
-            if (type == typeof(CodeFunction))
-            {
-                return $"Icons/Method/Method{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeClass))
-            {
-                return $"Icons/Class/Class{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeProperty))
-            {
-                return $"Icons/Property/Property{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeEnum))
-            {
-                return $"Icons/Enum/Enum{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeVariable))
-            {
-                return isEnumMember ? $"Icons/Enum/EnumItem{accessString}_16x.xaml" : $"Icons/Constant/Constant{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeInterface))
-            {
-                return $"Icons/Interface/Interface{accessString}_16x.xaml";
-            }
-
-            if (type == typeof(CodeStruct))
-            {
-                return $"Icons/Structure/Structure{accessString}_16x.xaml";
-            }
-
-            return string.Empty;
-        }
-
         private static string MapIcon<T>(CodeElement element, bool isEnumMember = false)
         {
             var accessString = MapAccess(element);
@@ -446,5 +363,6 @@ namespace CodeNav.Mappers
 
             return string.Empty;
         }
+        #endregion
     }
 }
