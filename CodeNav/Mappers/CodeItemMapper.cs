@@ -50,7 +50,7 @@ namespace CodeNav.Mappers
             catch (Exception)
             {
 
-            }          
+            }
             element.Foreground = new SolidColorBrush(Colors.Black);
             element.FullName = source.FullName;
             return element;
@@ -170,7 +170,7 @@ namespace CodeNav.Mappers
             foreach (CodeElement member in itemType.Members)
             {
                 var memberItem = MapMember(member);
-                if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem) 
+                if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem)
                     && !AddToRegion(classRegions, memberItem))
                 {
                     item.Members.Add(memberItem);
@@ -187,7 +187,7 @@ namespace CodeNav.Mappers
                         if (!AddToRegion(classRegions, interfaceItem))
                         {
                             item.Members.Add(interfaceItem);
-                        }                       
+                        }
                     }
                 }
             }
@@ -201,7 +201,7 @@ namespace CodeNav.Mappers
                     {
                         item.Members.Add(region);
                     }
-                }              
+                }
             }
 
             return item;
@@ -241,7 +241,9 @@ namespace CodeNav.Mappers
             if (MapAccess(element).Equals("Private") || MapAccess(element).Equals("Protect")) return null;
 
             var item = MapBase<CodeItem>(element);
-            item.IconPath = (element as CodeVariable).IsConstant ? MapIcon<CodeVariable>(element) : "Icons/Field/Field_16x.xaml";
+            item.IconPath = (element as CodeVariable).IsConstant
+                ? MapIcon<CodeVariable>(element)
+                : "Icons/Field/Field_16x.xaml";
             return item;
         }
 
@@ -253,7 +255,29 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeFunctionItem>(element);
             item.Type = MapReturnType(prop.Type);
-            item.Parameters = $"{prop.Name} {{{(prop.Getter != null ? "get" : string.Empty)} {(prop.Setter != null ? ", set" : string.Empty)}}}" ;
+
+            try
+            {
+                if (prop.Getter != null)
+                {
+                    item.Parameters += "get";
+                }
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                if (prop.Setter != null)
+                {
+                    item.Parameters += ",set";
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            item.Parameters = $"{prop.Name} {{{item.Parameters}}}";
             item.IconPath = MapIcon<CodeProperty>(element);
             return item;
         }
@@ -264,7 +288,12 @@ namespace CodeNav.Mappers
             var codeClass = element as CodeClass;
             foreach (CodeElement implementedInterface in codeClass.ImplementedInterfaces)
             {
-                var item = new CodeRegionItem {Name = implementedInterface.Name, Id = implementedInterface.Name};
+                var item = new CodeRegionItem
+                {
+                    Name = implementedInterface.Name,
+                    Id = implementedInterface.Name,
+                    FullName = implementedInterface.Name
+                };
 
                 foreach (CodeElement implementedInterfaceMember in (implementedInterface as CodeInterface).Members)
                 {

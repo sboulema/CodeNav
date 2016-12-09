@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Mappers;
 using CodeNav.Models;
@@ -8,6 +11,7 @@ using CodeNav.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
+using Window = EnvDTE.Window;
 
 namespace CodeNav
 {
@@ -21,10 +25,13 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
+        private List<string> _highlightedItems;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
             if (dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements == null) return;
+
+            _highlightedItems = new List<string>();
 
             _dte = dte;
             _textView = textViewHost.TextView;
@@ -55,7 +62,7 @@ namespace CodeNav
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
-        private void WindowEvents_WindowActivated(EnvDTE.Window gotFocus, EnvDTE.Window lostFocus) => UpdateDocument();
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument();
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void UpdateCurrentItem()
@@ -65,41 +72,90 @@ namespace CodeNav
             var textSelection = _dte.ActiveDocument.Selection as TextSelection;
 
             var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
-            var currentClassElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementClass] ??
-                                      textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementInterface];
 
-            if (currentFunctionElement == null) return;
-
-            CodeItem currentCodeItem = null;
-            CodeClassItem currentClassItem = null;
-            foreach (var classItem in _codeDocumentVm.CodeDocument)
+            if (currentFunctionElement == null)
             {
-                classItem.Foreground = new SolidColorBrush(Colors.Black);
-                ((CodeClassItem)classItem).BorderBrush = new SolidColorBrush(Colors.DarkGray);
-                if (classItem.Id.Equals(currentClassElement.Name))
+                UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+                return;
+            }
+
+            UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+
+            _highlightedItems = new List<string>();
+            GetItemsToHighlight(_highlightedItems, currentFunctionElement);
+
+            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);         
+        }
+
+        private static void GetItemsToHighlight(List<string> list, CodeElement element)
+        {
+            list.Add(element.FullName);
+
+            try
+            {
+                var parent = element.Collection.Parent;
+                GetItemsToHighlight(list, parent);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private static void UnHighlight(List<CodeItem> document, List<string> itemNames)
+        {
+            foreach (var name in itemNames)
+            {
+                var item = FindCodeItem(document, name);
+                if (item == null) return;
+
+                item.Foreground = new SolidColorBrush(Colors.Black);
+
+                if (item is CodeClassItem)
                 {
-                    currentClassItem = (CodeClassItem)classItem;
+                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                }
+            }
+        }
+
+        private static void Highlight(List<CodeItem> document, List<string> itemNames)
+        {
+            foreach (var name in itemNames)
+            {
+                var item = FindCodeItem(document, name);
+                if (item == null) return;
+
+                item.Foreground = new SolidColorBrush(Colors.SteelBlue);
+
+                if (item is CodeClassItem)
+                {
+                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.SteelBlue);
+                }
+            }
+        }
+
+        private static CodeItem FindCodeItem(List<CodeItem> items, string itemFullName)
+        {
+            foreach (var item in items)
+            {
+                if (item.FullName.Equals(itemFullName))
+                {
+                    return item;
                 }
 
-                foreach (var functionItem in ((CodeClassItem)classItem).Members)
+                if (item is CodeClassItem)
                 {
-                    functionItem.Foreground = new SolidColorBrush(Colors.Black);
-                    if (functionItem.FullName.Equals(currentFunctionElement.FullName))
+                    var classItem = (CodeClassItem)item;
+                    if (classItem.Members.Any())
                     {
-                        currentCodeItem = functionItem;
+                        var found = FindCodeItem(classItem.Members, itemFullName);
+                        if (found != null)
+                        {
+                            return found;
+                        }
                     }
                 }
             }
-
-            if (currentCodeItem != null)
-            {
-                currentCodeItem.Foreground = new SolidColorBrush(Colors.SteelBlue);
-            }
-
-            if (currentClassItem != null)
-            {
-                currentClassItem.BorderBrush = currentClassItem.Foreground = new SolidColorBrush(Colors.SteelBlue);                
-            }               
+            return null;
         }
 
         private void UpdateDocument()
@@ -140,9 +196,9 @@ namespace CodeNav
             return grid;
         }
 
-        private void LeftDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!double.IsNaN(_codeViewUserControl.ActualWidth))
+            if (!Double.IsNaN(_codeViewUserControl.ActualWidth))
             {
                 Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
@@ -220,7 +276,7 @@ namespace CodeNav
         /// <exception cref="ArgumentNullException"><paramref name="marginName"/> is null.</exception>
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
-            return string.Equals(marginName, MarginName, StringComparison.OrdinalIgnoreCase) ? this : null;
+            return String.Equals(marginName, MarginName, StringComparison.OrdinalIgnoreCase) ? this : null;
         }
 
         /// <summary>
