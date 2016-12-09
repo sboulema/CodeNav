@@ -164,10 +164,7 @@ namespace CodeNav
             var document = CodeItemMapper.MapDocument(elements);
             _codeDocumentVm.LoadCodeDocument(document);
 
-            if (!document.Any())
-            {
-                ((Grid) Children[0]).ColumnDefinitions[0].Width = new GridLength(0);
-            }
+            ((Grid) Children[0]).ColumnDefinitions[0].Width = !document.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)

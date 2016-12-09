@@ -287,7 +287,11 @@ namespace CodeNav.Mappers
         {
             var implementedInterfaces = new List<CodeRegionItem>();
             var codeClass = element as CodeClass;
-            foreach (CodeElement implementedInterface in codeClass.ImplementedInterfaces)
+
+            var list = new List<CodeInterface>();
+            GetImplementedInterfaces(list, codeClass.ImplementedInterfaces);
+
+            foreach (var implementedInterface in list)
             {
                 var item = new CodeRegionItem
                 {
@@ -296,7 +300,7 @@ namespace CodeNav.Mappers
                     FullName = implementedInterface.Name
                 };
 
-                foreach (CodeElement implementedInterfaceMember in (implementedInterface as CodeInterface).Members)
+                foreach (CodeElement implementedInterfaceMember in implementedInterface.Members)
                 {
                     item.Members.Add(MapMember(implementedInterfaceMember));
                 }
@@ -308,6 +312,15 @@ namespace CodeNav.Mappers
         }
 
         #region Helpers
+        private static void GetImplementedInterfaces(List<CodeInterface> list, CodeElements implementedInterfaces)
+        {
+            foreach (CodeInterface implementedInterface in implementedInterfaces)
+            {
+                list.Add(implementedInterface);
+                GetImplementedInterfaces(list, implementedInterface.Bases);
+            }
+        }
+
         private static string MapReturnType(CodeTypeRef type)
         {
             var match = new Regex("(.*)<(.*)>").Match(type.AsString);
