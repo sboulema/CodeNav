@@ -21,7 +21,7 @@ namespace CodeNav
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (((ListBox) sender).SelectedItem == null) return;           
+            if (((CodeItem)((ListBox)sender)?.SelectedItem)?.StartPoint == null) return;           
             (_dte.ActiveDocument.Selection as TextSelection).MoveToPoint(((CodeItem)((ListBox)sender).SelectedItem).StartPoint);
         }
 
