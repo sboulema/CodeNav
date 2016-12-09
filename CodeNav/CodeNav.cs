@@ -32,7 +32,7 @@ namespace CodeNav
             if (dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements == null) return;
 
             _highlightedItems = new List<string>();
-
+            
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
@@ -60,7 +60,7 @@ namespace CodeNav
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument();
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void UpdateCurrentItem()
@@ -156,15 +156,16 @@ namespace CodeNav
             return null;
         }
 
-        private void UpdateDocument()
+        private void UpdateDocument(Window gotFocus = null)
         {
+            if (gotFocus?.Document == null) return;
+
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
-            var document = CodeItemMapper.MapDocument(elements);
-            _codeDocumentVm.LoadCodeDocument(document);
+            _codeDocumentVm.CodeDocument = CodeItemMapper.MapDocument(elements);
 
-            ((Grid) Children[0]).ColumnDefinitions[0].Width = !document.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
