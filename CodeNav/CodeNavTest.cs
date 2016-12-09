@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CodeNav.Models;
 
 namespace CodeNav
 {
@@ -35,6 +36,11 @@ namespace CodeNav
         public float Property { get; set; }
 
         private void GetListOfStrings(List<string> lines) { }
+
+        public List<CodeItem> ReturnListOfCodeItems()
+        {
+            return new List<CodeItem>();
+        }
 
         #region Region
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
@@ -309,7 +310,12 @@ namespace CodeNav.Mappers
         #region Helpers
         private static string MapReturnType(CodeTypeRef type)
         {
-            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
+            var match = new Regex("(.*)<(.*)>").Match(type.AsString);
+            if (match.Success)
+            {
+                return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
+            }
+            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;            
         }
 
         private static string MapInheritance(CodeElement element)
