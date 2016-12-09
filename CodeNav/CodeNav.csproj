@@ -52,7 +52,9 @@
   <ItemGroup>
     <Compile Include="CodeNav.cs" />
     <Compile Include="CodeNavFactory.cs" />
-    <Compile Include="CodeNavTest.cs" />
+    <Compile Include="Tests\CodeNavTest.cs" />
+    <Compile Include="Tests\CodeNavTestEmpty.cs" />
+    <Compile Include="Tests\CodeNavTestEmptyClass.cs" />
     <Compile Include="CodeViewUserControl.xaml.cs">
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>

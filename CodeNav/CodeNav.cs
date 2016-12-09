@@ -36,9 +36,7 @@ namespace CodeNav
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-
             _codeDocumentVm = new CodeDocumentViewModel();
-            _codeDocumentVm.LoadMaxWidth();
 
             Children.Add(CreateGrid(textViewHost, dte));
 
@@ -165,7 +163,11 @@ namespace CodeNav
 
             var document = CodeItemMapper.MapDocument(elements);
             _codeDocumentVm.LoadCodeDocument(document);
-            _codeDocumentVm.LoadMaxWidth();
+
+            if (!document.Any())
+            {
+                ((Grid) Children[0]).ColumnDefinitions[0].Width = new GridLength(0);
+            }
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
@@ -198,11 +200,10 @@ namespace CodeNav
 
         private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!Double.IsNaN(_codeViewUserControl.ActualWidth))
+            if (!double.IsNaN(_codeViewUserControl.ActualWidth))
             {
                 Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
-                _codeDocumentVm.LoadMaxWidth();
             }
         }
 
