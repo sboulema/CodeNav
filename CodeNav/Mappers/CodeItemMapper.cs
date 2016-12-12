@@ -52,7 +52,7 @@ namespace CodeNav.Mappers
             {
 
             }
-            element.Foreground = new SolidColorBrush(Colors.Black);
+            element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.FullName = source.FullName;
             return element;
         }
@@ -111,7 +111,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeEnum>(element);
             item.Parameters = MapMembers(element as CodeEnum);
-            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
             foreach (CodeElement member in enumType.Members)
             {
@@ -129,7 +129,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeInterface>(element);
-            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
             foreach (CodeElement member in interfaceItem.Members)
             {
@@ -146,7 +146,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeStruct>(element);
             item.Parameters = MapMembers(itemType);
-            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
             foreach (CodeElement member in itemType.Members)
             {
@@ -163,7 +163,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeClass>(element);
             item.Parameters = MapInheritance(element);
-            item.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
             var classRegions = MapRegions(element.StartPoint, element.EndPoint);
             var implementedInterfaces = MapImplementedInterfaces(element);
@@ -228,9 +228,9 @@ namespace CodeNav.Mappers
                     Id = name,
                     StartPoint = start,
                     EndPoint = end,
-                    Foreground = new SolidColorBrush(Colors.Black),
-                    BorderBrush = new SolidColorBrush(Colors.DarkGray)
-                };
+                    Foreground = CreateSolidColorBrush(Colors.Black),
+                    BorderBrush = CreateSolidColorBrush(Colors.DarkGray)
+            };
                 regionList.Add(region);
             }
 
@@ -332,6 +332,13 @@ namespace CodeNav.Mappers
                 return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
             }
             return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;            
+        }
+
+        private static SolidColorBrush CreateSolidColorBrush(Color color)
+        {
+            var brush = new SolidColorBrush(color);
+            brush.Freeze();
+            return brush;
         }
 
         private static string MapInheritance(CodeElement element)

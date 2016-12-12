@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Threading;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -26,6 +28,7 @@ namespace CodeNav
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
         private List<string> _highlightedItems;
+        private readonly BackgroundWorker _backgroundWorker;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
@@ -38,10 +41,28 @@ namespace CodeNav
             _documentEvents = dte.Events.DocumentEvents;
             _codeDocumentVm = new CodeDocumentViewModel();
 
+            _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
+            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
+            _backgroundWorker.RunWorkerCompleted += _backgroundWorker_RunWorkerCompleted;
+
             Children.Add(CreateGrid(textViewHost, dte));
 
             var windowEvents = dte.Events.WindowEvents;
             windowEvents.WindowActivated += WindowEvents_WindowActivated;          
+        }
+
+        private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+            {
+                _codeDocumentVm.CodeDocument = (List<CodeItem>) e.Result;
+                ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            } ));           
+        }
+
+        private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = CodeItemMapper.MapDocument((CodeElements)e.Argument);
         }
 
         public void RegisterEvents()
@@ -163,9 +184,25 @@ namespace CodeNav
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
-            _codeDocumentVm.CodeDocument = CodeItemMapper.MapDocument(elements);
+            if (_backgroundWorker.IsBusy)
+            {
+                _backgroundWorker.CancelAsync();
+            }
 
-            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            _codeDocumentVm.CodeDocument = new List<CodeItem>
+            {
+                new CodeClassItem
+                {
+                    Name = "Loading...",
+                    FullName = "Loading...",
+                    Id = "Loading...",
+                    Foreground = new SolidColorBrush(Colors.Black),
+                    BorderBrush = new SolidColorBrush(Colors.DarkGray),
+                    IconPath = "Icons/Refresh/Refresh_16x.xaml"
+                }
+            };
+
+            _backgroundWorker.RunWorkerAsync(elements);
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
