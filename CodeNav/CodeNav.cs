@@ -179,7 +179,7 @@ namespace CodeNav
 
         private void UpdateDocument(Window gotFocus = null)
         {
-            if (gotFocus?.Document == null) return;
+            if (gotFocus != null && gotFocus.Document == null) return;
 
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;

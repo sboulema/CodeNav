@@ -23,6 +23,12 @@ namespace CodeNav.Tests
             return a + b;
         }
 
+        public int PublicMethod(int a, int b, int c)
+        {
+            // Overloading method
+            return a + b + c;
+        }
+
         private int PrivateMethod(int a, int b)
         {
             return a - b;
@@ -56,6 +62,11 @@ namespace CodeNav.Tests
 
         public const string RegionString = "CodeNav";
 
+        public bool RegionMethod(bool overload)
+        {
+            return true;
+        }
+
         #endregion
 
         public struct Structure
@@ -83,6 +94,7 @@ namespace CodeNav.Tests
     public interface ICodeNavTest2
     {
         int InterfaceMethod();
+        int InterfaceMethod(int input);
     }
 
     public class CodeNavTest2 : ICodeNavTest2
@@ -90,6 +102,18 @@ namespace CodeNav.Tests
         public int InterfaceMethod()
         {
             return 0;
+        }
+
+        public int InterfaceMethod(int input)
+        {
+            // Overloading within the same interface
+            return input;
+        }
+
+        public int InterfaceMethod(int a, int b)
+        {
+            // Overloading outside the interface
+            return a + b;
         }
 
         public void NonInterfaceMethod()

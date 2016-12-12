@@ -69,6 +69,7 @@ namespace CodeNav.Mappers
                 ? "Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
             output.Tooltip = $"{MapAccess(element)} {function.Type.AsString} {output.Name}{MapParameters(function, true)}";
+            output.Id = output.Name + MapParameters(function, true, false);
             return output;
         }
 
@@ -377,7 +378,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var interfaceMember in interfaceItem.Members)
                 {
-                    if (interfaceMember.Name.Equals(item.Name))
+                    if (interfaceMember.Id.Equals(item.Id))
                     {
                         interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
 
@@ -410,10 +411,10 @@ namespace CodeNav.Mappers
             return $"{string.Join(", ", memberList)}";
         }
 
-        private static string MapParameters(CodeFunction function, bool useLongNames = false)
+        private static string MapParameters(CodeFunction function, bool useLongNames = false, bool prettyPrint = true)
         {
             var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type, useLongNames)).ToList();
-            return $"({string.Join(", ", paramList)})";
+            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
         private static string MapAccess(CodeElement element)
