@@ -63,7 +63,7 @@
 
                     <DataTemplate DataType="{x:Type models:CodeItem}">
                         <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, 
-                            Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
+                            Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" ToolTip="{Binding Tooltip}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
                                 <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" Tag="{Binding Name}" />

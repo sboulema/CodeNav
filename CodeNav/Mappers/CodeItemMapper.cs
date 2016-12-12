@@ -43,6 +43,7 @@ namespace CodeNav.Mappers
         {
             var element = Activator.CreateInstance<T>();
             element.Name = source.Name;
+            element.FullName = source.FullName;
             element.Id = source.Name;
             try
             {
@@ -53,7 +54,7 @@ namespace CodeNav.Mappers
 
             }
             element.Foreground = CreateSolidColorBrush(Colors.Black);
-            element.FullName = source.FullName;
+            element.Tooltip = element.FullName;
             return element;
         }
 
@@ -67,7 +68,7 @@ namespace CodeNav.Mappers
             output.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
                 ? "Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
-
+            output.Tooltip = $"{MapAccess(element)} {function.Type.AsString} {output.Name}{MapParameters(function, true)}";
             return output;
         }
 
@@ -280,6 +281,7 @@ namespace CodeNav.Mappers
 
             item.Parameters = $"{prop.Name} {{{item.Parameters}}}";
             item.IconPath = MapIcon<CodeProperty>(element);
+            item.Tooltip = $"{prop.Type.AsString} {item.Name}";
             return item;
         }
 
@@ -324,8 +326,10 @@ namespace CodeNav.Mappers
             }
         }
 
-        private static string MapReturnType(CodeTypeRef type)
+        private static string MapReturnType(CodeTypeRef type, bool useLongNames = false)
         {
+            if (useLongNames) return type.AsString;
+
             var match = new Regex("(.*)<(.*)>").Match(type.AsString);
             if (match.Success)
             {
@@ -406,9 +410,9 @@ namespace CodeNav.Mappers
             return $"{string.Join(", ", memberList)}";
         }
 
-        private static string MapParameters(CodeFunction function)
+        private static string MapParameters(CodeFunction function, bool useLongNames = false)
         {
-            var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type)).ToList();
+            var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type, useLongNames)).ToList();
             return $"({string.Join(", ", paramList)})";
         }
 

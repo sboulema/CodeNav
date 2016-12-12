@@ -12,6 +12,7 @@ namespace CodeNav.Models
         public string IconPath { get; set; }
         public string Id { get; set; }
         internal string FullName;
+        public string Tooltip { get; set; }
 
         private SolidColorBrush _foreground;
         public SolidColorBrush Foreground
