@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CodeNav.Models;
 
-namespace CodeNav
+namespace CodeNav.Tests
 {
     public class CodeNavTest
     {

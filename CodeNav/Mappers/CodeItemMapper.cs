@@ -316,7 +316,10 @@ namespace CodeNav.Mappers
         {
             foreach (CodeInterface implementedInterface in implementedInterfaces)
             {
-                list.Add(implementedInterface);
+                if (!list.Any(i => i.Name.Equals(implementedInterface.Name)))
+                {
+                    list.Add(implementedInterface);
+                }               
                 GetImplementedInterfaces(list, implementedInterface.Bases);
             }
         }
