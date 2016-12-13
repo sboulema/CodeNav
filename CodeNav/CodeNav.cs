@@ -70,8 +70,11 @@ namespace CodeNav
             if (_textView?.Caret != null)
             {
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
-            }             
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            }
+            if (_documentEvents != null)
+            {
+                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            }                     
         }
 
         public void UnRegisterEvents()
