@@ -21,7 +21,15 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="17"/>
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                            <Border BorderThickness="0,0,0,1" x:Name="ExpanderHeaderBorder" HorizontalAlignment="Left">
+                                <Border.BorderBrush>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="DarkGray" Offset="0.0" />
+                                        <GradientStop Color="LightGray" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Border.BorderBrush>
+                                <ContentPresenter HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center" />
+                            </Border>
                             <Image Grid.Column="1" x:Name="arrow" Source="../Icons/ExpanderHeader/Expand_16xSM.png" />
                         </Grid>
                     </Border>
@@ -29,9 +37,11 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Source" TargetName="arrow" Value="../Icons/ExpanderHeader/Collapse_16xSM.png" />
+                            <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0,0,0,1" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="False">
                             <Setter Property="Source" TargetName="arrow" Value="../Icons/ExpanderHeader/Expand_16xSM.png" />
+                            <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
