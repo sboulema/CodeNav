@@ -48,6 +48,7 @@ namespace CodeNav
             Children.Add(CreateGrid(textViewHost, dte));
 
             var windowEvents = dte.Events.WindowEvents;
+            windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             windowEvents.WindowActivated += WindowEvents_WindowActivated;          
         }
 
@@ -69,10 +70,12 @@ namespace CodeNav
         {
             if (_textView?.Caret != null)
             {
+                _textView.Caret.PositionChanged -= Caret_PositionChanged;
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
             }
             if (_documentEvents != null)
             {
+                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
                 _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
             }                     
         }
@@ -84,7 +87,12 @@ namespace CodeNav
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
+
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
+        {
+            UpdateDocument(gotFocus);
+            RegisterEvents();
+        } 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void UpdateCurrentItem()
