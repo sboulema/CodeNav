@@ -108,6 +108,10 @@ namespace CodeNav.Mappers
             {
                 return MapEvent(element);
             }
+            if (element.Kind == vsCMElement.vsCMElementDelegate)
+            {
+                return MapDelegate(element);
+            }
             return MapBase<CodeItem>(element);
         }
 
@@ -252,6 +256,15 @@ namespace CodeNav.Mappers
             item.IconPath = (element as CodeVariable).IsConstant
                 ? MapIcon<CodeVariable>(element)
                 : "Icons/Field/Field_16x.xaml";
+            return item;
+        }
+
+        private static CodeItem MapDelegate(CodeElement element)
+        {
+            if (MapAccess(element).Equals("Private")) return null;
+
+            var item = MapBase<CodeItem>(element);
+            item.IconPath = MapIcon<CodeDelegate>(element);
             return item;
         }
 
@@ -462,6 +475,9 @@ namespace CodeNav.Mappers
                 case vsCMElement.vsCMElementEvent:
                     access = (element as CodeEvent).Access;
                     break;
+                case vsCMElement.vsCMElementDelegate:
+                    access = (element as CodeDelegate).Access;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -516,6 +532,11 @@ namespace CodeNav.Mappers
             if (typeof(T) == typeof(CodeStruct))
             {
                 return $"Icons/Structure/Structure{accessString}_16x.xaml";
+            }
+
+            if (typeof(T) == typeof(CodeDelegate))
+            {
+                return $"Icons/Delegate/Delegate{accessString}_16x.xaml";
             }
 
             return string.Empty;
