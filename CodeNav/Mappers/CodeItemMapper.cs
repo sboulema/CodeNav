@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
+using EnvDTE80;
 
 namespace CodeNav.Mappers
 {
@@ -102,6 +103,10 @@ namespace CodeNav.Mappers
             if (element.Kind == vsCMElement.vsCMElementClass)
             {
                 return MapClass(element);
+            }
+            if (element.Kind == vsCMElement.vsCMElementEvent)
+            {
+                return MapEvent(element);
             }
             return MapBase<CodeItem>(element);
         }
@@ -247,6 +252,16 @@ namespace CodeNav.Mappers
             item.IconPath = (element as CodeVariable).IsConstant
                 ? MapIcon<CodeVariable>(element)
                 : "Icons/Field/Field_16x.xaml";
+            return item;
+        }
+
+        private static CodeItem MapEvent(CodeElement element)
+        {
+            if (MapAccess(element).Equals("Private")) return null;
+
+            var item = MapBase<CodeItem>(element);
+            var accessString = MapAccess(element);
+            item.IconPath = $"Icons/Event/Event{accessString}_16x.xaml";
             return item;
         }
 
@@ -443,6 +458,9 @@ namespace CodeNav.Mappers
                     break;
                 case vsCMElement.vsCMElementStruct:
                     access = (element as CodeStruct).Access;
+                    break;
+                case vsCMElement.vsCMElementEvent:
+                    access = (element as CodeEvent).Access;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

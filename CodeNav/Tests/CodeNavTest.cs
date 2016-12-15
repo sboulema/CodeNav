@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Caliburn.Micro;
 using CodeNav.Models;
 
 namespace CodeNav.Tests
@@ -47,6 +49,9 @@ namespace CodeNav.Tests
         {
             return new List<CodeItem>();
         }
+
+        public delegate void ChangedEventHandler(object sender, EventArgs e);
+        protected event ChangedEventHandler Changed;
 
         #region Region
 
