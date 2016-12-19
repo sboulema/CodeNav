@@ -29,6 +29,7 @@ namespace CodeNav
         private readonly DocumentEvents _documentEvents;
         private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
+        private Dictionary<string, List<CodeItem>> _cache;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
@@ -40,6 +41,7 @@ namespace CodeNav
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
             _codeDocumentVm = new CodeDocumentViewModel();
+            _cache = new Dictionary<string, List<CodeItem>>();
 
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _backgroundWorker.DoWork += _backgroundWorker_DoWork;
@@ -56,7 +58,11 @@ namespace CodeNav
         {
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
             {
-                _codeDocumentVm.CodeDocument = (List<CodeItem>) e.Result;
+                var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
+                if (areEqual) return;
+
+                _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
+                _cache[_dte.ActiveDocument.Path] = (List<CodeItem>)e.Result;
                 ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
             } ));           
         }
@@ -200,18 +206,26 @@ namespace CodeNav
                 _backgroundWorker.CancelAsync();
             }
 
-            _codeDocumentVm.CodeDocument = new List<CodeItem>
+            if (_cache.ContainsKey(_dte.ActiveDocument.Path))
             {
-                new CodeClassItem
+                _codeDocumentVm.CodeDocument = _cache[_dte.ActiveDocument.Path];
+            }
+
+            if (_codeDocumentVm.CodeDocument == null)
+            {
+                _codeDocumentVm.CodeDocument = new List<CodeItem>
                 {
-                    Name = "Loading...",
-                    FullName = "Loading...",
-                    Id = "Loading...",
-                    Foreground = new SolidColorBrush(Colors.Black),
-                    BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/Refresh/Refresh_16x.xaml"
-                }
-            };
+                    new CodeClassItem
+                    {
+                        Name = "Loading...",
+                        FullName = "Loading...",
+                        Id = "Loading...",
+                        Foreground = new SolidColorBrush(Colors.Black),
+                        BorderBrush = new SolidColorBrush(Colors.DarkGray),
+                        IconPath = "Icons/Refresh/Refresh_16x.xaml"
+                    }
+                };
+            }
 
             _backgroundWorker.RunWorkerAsync(elements);
         }
