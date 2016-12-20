@@ -56,15 +56,12 @@ namespace CodeNav
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-            {
-                var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
-                if (areEqual) return;
+            var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
+            if (areEqual) return;
 
-                _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
-                _cache[_dte.ActiveDocument.Path] = (List<CodeItem>)e.Result;
-                ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
-            } ));           
+            _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
+            _cache[_dte.ActiveDocument.Path] = (List<CodeItem>)e.Result;
+            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);         
         }
 
         private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -227,7 +224,10 @@ namespace CodeNav
                 };
             }
 
-            _backgroundWorker.RunWorkerAsync(elements);
+            if (!_backgroundWorker.CancellationPending)
+            {
+                _backgroundWorker.RunWorkerAsync(elements);
+            }            
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
