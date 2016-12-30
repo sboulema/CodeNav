@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,12 +57,23 @@ namespace CodeNav
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
-            if (areEqual) return;
+            if (areEqual)
+            {
+                stopwatch.Stop();
+                Logger.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
+                return;
+            }
 
             _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
             _cache[_dte.ActiveDocument.Path] = (List<CodeItem>)e.Result;
-            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);         
+            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
+
+            stopwatch.Stop();
+            Logger.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
