@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
-using System.Windows.Threading;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -28,31 +27,33 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
+        private readonly WindowEvents _windowEvents;
         private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
-        private Dictionary<string, List<CodeItem>> _cache;
+        private readonly Dictionary<string, List<CodeItem>> _cache;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
+            // If there are no code elements in the document, don't do anything
             if (dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements == null) return;
 
             _highlightedItems = new List<string>();
-            
-            _dte = dte;
-            _textView = textViewHost.TextView;
-            _documentEvents = dte.Events.DocumentEvents;
             _codeDocumentVm = new CodeDocumentViewModel();
             _cache = new Dictionary<string, List<CodeItem>>();
 
+            // Wire up references for the event handlers in RegisterEvents
+            _dte = dte;
+            _textView = textViewHost.TextView;
+            _documentEvents = dte.Events.DocumentEvents;
+            _windowEvents = dte.Events.WindowEvents[dte.ActiveWindow];     
+
+            // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _backgroundWorker.DoWork += _backgroundWorker_DoWork;
             _backgroundWorker.RunWorkerCompleted += _backgroundWorker_RunWorkerCompleted;
 
-            Children.Add(CreateGrid(textViewHost, dte));
-
-            var windowEvents = dte.Events.WindowEvents;
-            windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-            windowEvents.WindowActivated += WindowEvents_WindowActivated;          
+            // Add the view/content to the margin area
+            Children.Add(CreateGrid(textViewHost, dte));       
         }
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -92,13 +93,19 @@ namespace CodeNav
             {
                 _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
                 _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            }                     
+            }
+            if (_windowEvents != null)
+            {
+                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+                _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            }                               
         }
 
         public void UnRegisterEvents()
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
             _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
@@ -205,21 +212,20 @@ namespace CodeNav
 
         private void UpdateDocument(Window gotFocus = null)
         {
-            if (gotFocus != null && gotFocus.Document == null) return;
+            // Do we have a text document in the activated window
+            if (gotFocus?.Document == null) return;
 
+            // Do we have code items in the text document
             var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
-            if (_backgroundWorker.IsBusy)
-            {
-                _backgroundWorker.CancelAsync();
-            }
-
+            // Do we have a cached version of this document
             if (_cache.ContainsKey(_dte.ActiveDocument.Path))
             {
                 _codeDocumentVm.CodeDocument = _cache[_dte.ActiveDocument.Path];
             }
 
+            // If not show a loading item
             if (_codeDocumentVm.CodeDocument == null)
             {
                 _codeDocumentVm.CodeDocument = new List<CodeItem>
@@ -236,6 +242,13 @@ namespace CodeNav
                 };
             }
 
+            // Is the backgroundworker already doing something, if so stop it
+            if (_backgroundWorker.IsBusy)
+            {
+                _backgroundWorker.CancelAsync();
+            }
+
+            // Start the backgroundworker to update the list of code items
             if (!_backgroundWorker.CancellationPending)
             {
                 _backgroundWorker.RunWorkerAsync(elements);

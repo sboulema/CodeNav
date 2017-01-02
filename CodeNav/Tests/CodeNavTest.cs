@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Caliburn.Micro;
 using CodeNav.Models;
 
 namespace CodeNav.Tests
