@@ -65,7 +65,7 @@ namespace CodeNav
             if (areEqual)
             {
                 stopwatch.Stop();
-                Logger.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
+                Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace CodeNav
             ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
 
             stopwatch.Stop();
-            Logger.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
+            Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -290,6 +290,13 @@ namespace CodeNav
                 Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
             }
+        }
+
+        private void Log(string message)
+        {
+            #if DEBUG
+                Logger.Log(message);
+            #endif
         }
 
         #region IWpfTextViewMargin
