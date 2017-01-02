@@ -108,7 +108,7 @@ namespace CodeNav
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument();
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_dte.ActiveWindow);
 
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
         {
