@@ -27,7 +27,7 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
-        private readonly WindowEvents _windowEvents;
+        private WindowEvents _windowEvents;
         private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
         private readonly Dictionary<string, List<CodeItem>> _cache;
@@ -45,7 +45,7 @@ namespace CodeNav
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-            _windowEvents = dte.Events.WindowEvents[dte.ActiveWindow];     
+               
 
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -84,21 +84,24 @@ namespace CodeNav
 
         public void RegisterEvents()
         {
+            // Subscribe to Cursor move event
             if (_textView?.Caret != null)
             {
                 _textView.Caret.PositionChanged -= Caret_PositionChanged;
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
             }
+
+            // Subscribe to Document Save event
             if (_documentEvents != null)
             {
                 _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
                 _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
             }
-            if (_windowEvents != null)
-            {
-                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-                _windowEvents.WindowActivated += WindowEvents_WindowActivated;
-            }                               
+
+            // Subscribe to Code window activated event
+            _windowEvents = _dte.Events.WindowEvents[_dte.ActiveDocument.ActiveWindow];
+            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            _windowEvents.WindowActivated += WindowEvents_WindowActivated;                           
         }
 
         public void UnRegisterEvents()
@@ -108,13 +111,8 @@ namespace CodeNav
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_dte.ActiveWindow);
-
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
-        {
-            UpdateDocument(gotFocus);
-            RegisterEvents();
-        } 
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_dte.ActiveDocument.ActiveWindow);
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void UpdateCurrentItem()
