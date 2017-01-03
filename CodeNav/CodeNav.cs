@@ -143,7 +143,7 @@ namespace CodeNav
             list.Add(element.FullName);
 
             var parent = element.Collection.Parent;
-            if (parent == null) return;
+            if (parent == null || parent is CodeElement == false) return;
 
             GetItemsToHighlight(list, parent);
         }
