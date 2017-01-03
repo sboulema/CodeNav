@@ -99,6 +99,7 @@ namespace CodeNav
             }
 
             // Subscribe to Code window activated event
+            if (_dte?.ActiveDocument?.ActiveWindow == null) return;
             _windowEvents = _dte.Events.WindowEvents[_dte.ActiveDocument.ActiveWindow];
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;                           
@@ -117,7 +118,7 @@ namespace CodeNav
 
         private void UpdateCurrentItem()
         {
-            if (_dte.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
+            if (_dte?.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
 
             var textSelection = _dte.ActiveDocument.Selection as TextSelection;
 
@@ -141,14 +142,10 @@ namespace CodeNav
         {
             list.Add(element.FullName);
 
-            try
-            {
-                var parent = element.Collection.Parent;
-                GetItemsToHighlight(list, parent);
-            }
-            catch (Exception)
-            {
-            }
+            var parent = element.Collection.Parent;
+            if (parent == null) return;
+
+            GetItemsToHighlight(list, parent);
         }
 
         private static void UnHighlight(List<CodeItem> document, List<string> itemNames)
@@ -290,7 +287,7 @@ namespace CodeNav
             }
         }
 
-        private void Log(string message)
+        private static void Log(string message)
         {
             #if DEBUG
                 Logger.Log(message);
