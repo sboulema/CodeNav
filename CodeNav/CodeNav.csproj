@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="CodeNav.cs" />
     <Compile Include="CodeNavFactory.cs" />
+    <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Tests\CodeNavTest.cs" />
     <Compile Include="Tests\CodeNavTestEmpty.cs" />
     <Compile Include="Tests\CodeNavTestEmptyClass.cs" />
@@ -356,6 +357,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Icons\Refresh\Refresh_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Icons\Sort\SortAscending_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Icons\Sort\SortingGrouping_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

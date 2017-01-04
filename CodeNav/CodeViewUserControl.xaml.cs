@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CodeNav.Helpers;
 using CodeNav.Models;
 using EnvDTE;
 
@@ -12,11 +15,13 @@ namespace CodeNav
     public partial class CodeViewUserControl
     {
         private readonly DTE _dte;
+        private readonly CodeNav _codeNav;
 
-        public CodeViewUserControl(DTE dte)
+        public CodeViewUserControl(DTE dte, CodeNav codeNav)
         {
             InitializeComponent();
             _dte = dte;
+            _codeNav = codeNav;
         }
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -36,6 +41,22 @@ namespace CodeNav
                 var parent = ((Control)sender).Parent as UIElement;
                 parent.RaiseEvent(eventArg);
             }
+        }
+
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+        {
+            _codeNav.RegisterEvents();
+            _codeNav.UpdateDocument(_dte?.ActiveDocument?.ActiveWindow);
+        }
+
+        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
+        {
+            _codeNav._codeDocumentVm.CodeDocument = SortHelper.SortByFile(_codeNav._codeDocumentVm.CodeDocument);
+        }
+
+        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
+        {
+            _codeNav._codeDocumentVm.CodeDocument = SortHelper.SortByName(_codeNav._codeDocumentVm.CodeDocument);
         }
     }
 }

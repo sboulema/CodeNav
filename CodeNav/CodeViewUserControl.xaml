@@ -94,8 +94,48 @@
 
     </UserControl.Resources>
 
-    <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
-             BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
-             ScrollViewer.CanContentScroll="False" Padding="0,2,0,0"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="19" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,0,0,0">
+            <Button.Template>
+                <ControlTemplate>
+                    <Frame Source="Icons/Refresh/Refresh_16x.xaml" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="-3">
+            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" >
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <Frame Source="Icons/Sort/SortingGrouping_16x.xaml"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <Frame Source="Icons/Sort/SortAscending_16x.xaml"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
+            <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
+                BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
+                Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+        </ScrollViewer>
+
+    </Grid>
 
 </UserControl>

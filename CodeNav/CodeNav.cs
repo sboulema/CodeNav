@@ -17,13 +17,13 @@ using Window = EnvDTE.Window;
 
 namespace CodeNav
 {
-    internal class CodeNav : DockPanel, IWpfTextViewMargin
+    public class CodeNav : DockPanel, IWpfTextViewMargin
     {
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
         private CodeViewUserControl _codeViewUserControl;
-        private readonly CodeDocumentViewModel _codeDocumentVm;
+        public CodeDocumentViewModel _codeDocumentVm;
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
@@ -205,7 +205,7 @@ namespace CodeNav
             return null;
         }
 
-        private void UpdateDocument(Window gotFocus = null)
+        public void UpdateDocument(Window gotFocus = null)
         {
             // Do we have a text document in the activated window
             if (gotFocus?.Document == null) return;
@@ -268,7 +268,7 @@ namespace CodeNav
             splitter.DragCompleted += LeftDragCompleted;
             grid.Children.Add(splitter);
 
-            _codeViewUserControl = new CodeViewUserControl(dte) { DataContext = _codeDocumentVm };
+            _codeViewUserControl = new CodeViewUserControl(dte, this) { DataContext = _codeDocumentVm };
             grid.Children.Add(_codeViewUserControl);
 
             Grid.SetColumn(_codeViewUserControl, 0);
