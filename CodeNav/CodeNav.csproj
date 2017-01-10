@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="CodeNav.cs" />
     <Compile Include="CodeNavFactory.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Tests\CodeNavTest.cs" />
     <Compile Include="Tests\CodeNavTestEmpty.cs" />

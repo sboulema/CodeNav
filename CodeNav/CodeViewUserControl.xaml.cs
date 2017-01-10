@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CodeNav.Helpers;
@@ -26,8 +24,24 @@ namespace CodeNav
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (((CodeItem)((ListBox)sender)?.SelectedItem)?.StartPoint == null) return;           
-            (_dte.ActiveDocument.Selection as TextSelection).MoveToPoint(((CodeItem)((ListBox)sender).SelectedItem).StartPoint);
+            var listBox = (ListBox) sender;
+            var selectedItem = (CodeItem) listBox?.SelectedItem;
+
+            if (selectedItem.StartPoint == null)
+            {
+                LogHelper.Log($"{selectedItem.FullName} has no StartPoint");
+                return;
+            }
+
+            var textSelection = _dte.ActiveDocument.Selection as TextSelection;
+            if (textSelection == null)
+            {
+                LogHelper.Log($"TextSelection is null for {_dte.ActiveDocument.FullName}");
+                return;
+            }
+                  
+            textSelection.MoveToPoint(selectedItem.StartPoint);
+            listBox.UnselectAll();
         }
 
         private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

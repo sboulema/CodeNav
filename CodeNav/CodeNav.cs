@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -45,7 +46,6 @@ namespace CodeNav
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-               
 
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -53,7 +53,7 @@ namespace CodeNav
             _backgroundWorker.RunWorkerCompleted += _backgroundWorker_RunWorkerCompleted;
 
             // Add the view/content to the margin area
-            Children.Add(CreateGrid(textViewHost, dte));       
+            Children.Add(CreateGrid(textViewHost, dte));
         }
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -65,7 +65,7 @@ namespace CodeNav
             if (areEqual)
             {
                 stopwatch.Stop();
-                Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
+                LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
                 return;
             }
 
@@ -74,7 +74,7 @@ namespace CodeNav
             ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
 
             stopwatch.Stop();
-            Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
+            LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -135,7 +135,7 @@ namespace CodeNav
             _highlightedItems = new List<string>();
             GetItemsToHighlight(_highlightedItems, currentFunctionElement);
 
-            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);         
+            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);      
         }
 
         private static void GetItemsToHighlight(List<string> list, CodeElement element)
@@ -285,13 +285,6 @@ namespace CodeNav
                 Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
             }
-        }
-
-        private static void Log(string message)
-        {
-            #if DEBUG
-                Logger.Log(message);
-            #endif
         }
 
         #region IWpfTextViewMargin
