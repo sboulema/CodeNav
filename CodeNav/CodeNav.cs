@@ -12,6 +12,7 @@ using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
 using EnvDTE;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Window = EnvDTE.Window;
@@ -32,12 +33,10 @@ namespace CodeNav
         private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
         private readonly Dictionary<string, List<CodeItem>> _cache;
+        private readonly Window _window;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
-            // If there are no code elements in the document, don't do anything
-            if (dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements == null) return;
-
             _highlightedItems = new List<string>();
             _codeDocumentVm = new CodeDocumentViewModel();
             _cache = new Dictionary<string, List<CodeItem>>();
@@ -47,6 +46,26 @@ namespace CodeNav
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
 
+            // Get window belonging to textViewHost
+            ITextDocument document;
+            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+
+            for (var i = 1; i < _dte.Windows.Count + 1; i++)
+            {
+                var window = _dte.Windows.Item(i);
+                try
+                {
+                    if (window.Document == null) continue;
+                    if (!window.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase)) continue;
+                    _window = window;
+                    break;
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Log($"Exception getting parent window: {e.Message}");
+                }
+            }
+
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _backgroundWorker.DoWork += _backgroundWorker_DoWork;
@@ -54,6 +73,9 @@ namespace CodeNav
 
             // Add the view/content to the margin area
             Children.Add(CreateGrid(textViewHost, dte));
+
+            RegisterEvents();
+            LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
         private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -70,7 +92,7 @@ namespace CodeNav
             }
 
             _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
-            _cache[_dte.ActiveDocument.Path] = (List<CodeItem>)e.Result;
+            _cache[_window.Document.Path] = (List<CodeItem>)e.Result;
             ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
 
             stopwatch.Stop();
@@ -99,8 +121,8 @@ namespace CodeNav
             }
 
             // Subscribe to Code window activated event
-            if (_dte?.ActiveDocument?.ActiveWindow == null) return;
-            _windowEvents = _dte.Events.WindowEvents[_dte.ActiveDocument.ActiveWindow];
+            if (_window == null) return;
+            _windowEvents = _dte.Events.WindowEvents[_window];
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;                           
         }
@@ -112,7 +134,7 @@ namespace CodeNav
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_dte.ActiveDocument.ActiveWindow);
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_window);
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
@@ -211,13 +233,13 @@ namespace CodeNav
             if (gotFocus?.Document == null) return;
 
             // Do we have code items in the text document
-            var elements = _dte.ActiveDocument?.ProjectItem?.FileCodeModel?.CodeElements;
+            var elements = _window.ProjectItem.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
             // Do we have a cached version of this document
-            if (_cache.ContainsKey(_dte.ActiveDocument.Path))
+            if (_cache.ContainsKey(_window.Document.Path))
             {
-                _codeDocumentVm.CodeDocument = _cache[_dte.ActiveDocument.Path];
+                _codeDocumentVm.CodeDocument = _cache[_window.Document.Path];
             }
 
             // If not show a loading item

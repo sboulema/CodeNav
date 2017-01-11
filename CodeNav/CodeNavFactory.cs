@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using CodeNav.Helpers;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
@@ -36,7 +37,6 @@ namespace CodeNav
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             Logger.Initialize(_serviceProvider, "CodeNav");
             var codeNav = new CodeNav(wpfTextViewHost, dte);
-            codeNav.RegisterEvents();
             return codeNav;
         }
 
