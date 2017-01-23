@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:CodeNav.Models"
              xmlns:converters="clr-namespace:CodeNav.Converters"
+             xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -37,7 +38,7 @@
                                 <TextBlock Text="{Binding Name}" FontSize="9" FontWeight="SemiBold" Foreground="DarkGray" />
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
                         </Expander>
                     </DataTemplate>
 
@@ -49,13 +50,13 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                                     <TextBlock>
-                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
+                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" />
                                             <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                                     </TextBlock>
                                 </StackPanel>
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
                         </Expander>
                     </DataTemplate>
 
@@ -64,7 +65,7 @@
                             Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" ToolTip="{Binding Tooltip}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
-                                <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" Tag="{Binding Name}" />
+                                <Run Text="{Binding Name}" FontSize="11" Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" Tag="{Binding Name}" />
                                 <Run Text="{Binding Type}" FontSize="10" Foreground="DarkGray" />
                                 <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                             </TextBlock>
@@ -79,13 +80,13 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                                     <TextBlock>
-                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
+                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" />
                                             <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                                     </TextBlock>
                                 </StackPanel>
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
                         </Expander>
                     </DataTemplate>
                 </ResourceDictionary>
@@ -133,7 +134,7 @@
         <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
             <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
                 BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
-                Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+                Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
         </ScrollViewer>
 
     </Grid>

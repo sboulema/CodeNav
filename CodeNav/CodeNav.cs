@@ -6,12 +6,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Forms;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
 using EnvDTE;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
@@ -285,7 +288,8 @@ namespace CodeNav
                 Width = 5,
                 ResizeDirection = GridResizeDirection.Columns,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Background = ToBrush(EnvironmentColors.ScrollBarThumbPressedBackgroundColorKey)
             };
             splitter.DragCompleted += LeftDragCompleted;
             grid.Children.Add(splitter);
@@ -298,6 +302,12 @@ namespace CodeNav
             Grid.SetColumn(textViewHost.HostControl, 2);
 
             return grid;
+        }
+
+        public static SolidColorBrush ToBrush(ThemeResourceKey key)
+        {
+            var color = VSColorTheme.GetThemedColor(key);
+            return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
         private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
