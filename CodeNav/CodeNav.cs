@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Forms;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Mappers;
@@ -71,8 +70,8 @@ namespace CodeNav
 
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            _backgroundWorker.DoWork += _backgroundWorker_DoWork;
-            _backgroundWorker.RunWorkerCompleted += _backgroundWorker_RunWorkerCompleted;
+            _backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 
             // Add the view/content to the margin area
             Children.Add(CreateGrid(textViewHost, dte));
@@ -80,66 +79,6 @@ namespace CodeNav
             RegisterEvents();
             LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
-
-        private void _backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
-            if (areEqual)
-            {
-                stopwatch.Stop();
-                LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
-                return;
-            }
-
-            _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
-            _cache[_window.Document.Path] = (List<CodeItem>)e.Result;
-            ((Grid)Children[0]).ColumnDefinitions[0].Width = !_codeDocumentVm.CodeDocument.Any() ? new GridLength(0) : new GridLength(Settings.Default.Width);
-
-            stopwatch.Stop();
-            LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
-        }
-
-        private void _backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            e.Result = CodeItemMapper.MapDocument((CodeElements)e.Argument);
-        }
-
-        public void RegisterEvents()
-        {
-            // Subscribe to Cursor move event
-            if (_textView?.Caret != null)
-            {
-                _textView.Caret.PositionChanged -= Caret_PositionChanged;
-                _textView.Caret.PositionChanged += Caret_PositionChanged;
-            }
-
-            // Subscribe to Document Save event
-            if (_documentEvents != null)
-            {
-                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            }
-
-            // Subscribe to Code window activated event
-            if (_window == null) return;
-            _windowEvents = _dte.Events.WindowEvents[_window];
-            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivated;                           
-        }
-
-        public void UnRegisterEvents()
-        {
-            _textView.Caret.PositionChanged -= Caret_PositionChanged;
-            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-        }
-
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_window);
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void UpdateCurrentItem()
         {
@@ -289,9 +228,13 @@ namespace CodeNav
                 ResizeDirection = GridResizeDirection.Columns,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = ToBrush(EnvironmentColors.ScrollBarThumbPressedBackgroundColorKey)
+                Background = ToBrush(EnvironmentColors.ScrollBarThumbPressedBackgroundColorKey),
+                ToolTip = "What you can do with this bar:" + Environment.NewLine +
+                "- double-click it to toggle CodeNav visibility" + Environment.NewLine +
+                "- click and drag it to adjust CodeNav width"
             };
             splitter.DragCompleted += LeftDragCompleted;
+            splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
             _codeViewUserControl = new CodeViewUserControl(dte, this) { DataContext = _codeDocumentVm };
@@ -304,20 +247,101 @@ namespace CodeNav
             return grid;
         }
 
-        public static SolidColorBrush ToBrush(ThemeResourceKey key)
+        private static SolidColorBrush ToBrush(ThemeResourceKey key)
         {
             var color = VSColorTheme.GetThemedColor(key);
             return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
+        #region Events
+
+        private static void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var grid = (Grid) ((GridSplitter) sender).Parent;
+            ToggleVisibility(grid, grid.ColumnDefinitions[0].Width != new GridLength(0));
+        }
+
+        /// <summary>
+        /// Toggle visibility of the CodeNav control
+        /// </summary>
+        /// <param name="grid">the grid of which the left column visibility will be toggled</param>
+        /// <param name="condition">if condition is True visibility will be set to hidden</param>
+        private static void ToggleVisibility(Grid grid, bool condition)
+        {
+            grid.ColumnDefinitions[0].Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+        }
+
         private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!double.IsNaN(_codeViewUserControl.ActualWidth))
+            if (!double.IsNaN(_codeViewUserControl.ActualWidth) && _codeViewUserControl.ActualWidth != 0)
             {
                 Settings.Default.Width = _codeViewUserControl.ActualWidth;
                 Settings.Default.Save();
             }
         }
+
+        public void RegisterEvents()
+        {
+            // Subscribe to Cursor move event
+            if (_textView?.Caret != null)
+            {
+                _textView.Caret.PositionChanged -= Caret_PositionChanged;
+                _textView.Caret.PositionChanged += Caret_PositionChanged;
+            }
+
+            // Subscribe to Document Save event
+            if (_documentEvents != null)
+            {
+                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            }
+
+            // Subscribe to Code window activated event
+            if (_window == null) return;
+            _windowEvents = _dte.Events.WindowEvents[_window];
+            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+        }
+
+        public void UnRegisterEvents()
+        {
+            _textView.Caret.PositionChanged -= Caret_PositionChanged;
+            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+        }
+
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_window);
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
+
+        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
+            if (areEqual)
+            {
+                stopwatch.Stop();
+                LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
+                return;
+            }
+
+            _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
+            _cache[_window.Document.Path] = (List<CodeItem>)e.Result;
+
+            ToggleVisibility((Grid)Children[0], !_codeDocumentVm.CodeDocument.Any());
+
+            stopwatch.Stop();
+            LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
+        }
+
+        private static void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = CodeItemMapper.MapDocument((CodeElements)e.Argument);
+        }
+
+        #endregion
 
         #region IWpfTextViewMargin
 
@@ -403,11 +427,9 @@ namespace CodeNav
             _isDisposed = true;
         }
 
-        #endregion
-
-            /// <summary>
-            /// Checks and throws <see cref="ObjectDisposedException"/> if the object is disposed.
-            /// </summary>
+        /// <summary>
+        /// Checks and throws <see cref="ObjectDisposedException"/> if the object is disposed.
+        /// </summary>
         private void ThrowIfDisposed()
         {
             if (_isDisposed)
@@ -415,5 +437,7 @@ namespace CodeNav
                 throw new ObjectDisposedException(MarginName);
             }
         }
+
+        #endregion
     }
 }
