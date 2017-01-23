@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Models;
+using CodeNav.Properties;
 using EnvDTE;
 using EnvDTE80;
 
@@ -71,7 +74,16 @@ namespace CodeNav.Mappers
                 : MapIcon<CodeFunction>(element);
             output.Tooltip = $"{MapAccess(element)} {function.Type.AsString} {output.Name}{MapParameters(function, true)}";
             output.Id = output.Name + MapParameters(function, true, false);
+            output.IsVisible = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor 
+                ? BoolToVisibility(Settings.Default.ShowConstructors)
+                : BoolToVisibility(Settings.Default.ShowMethods);
+
             return output;
+        }
+
+        private static Visibility BoolToVisibility(bool visible)
+        {
+            return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private static CodeItem MapMember(CodeElement element)
@@ -122,12 +134,13 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeClassItem>(element);
             item.IconPath = MapIcon<CodeEnum>(element);
             item.Parameters = MapMembers(element as CodeEnum);
-            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);            
 
             foreach (CodeElement member in enumType.Members)
             {
                 var memberItem = MapMember(member);
                 memberItem.IconPath = MapIcon<CodeVariable>(member, true);
+                memberItem.IsVisible = BoolToVisibility(Settings.Default.ShowEnumItems);
                 item.Members.Add(memberItem);
             }
 
@@ -256,6 +269,9 @@ namespace CodeNav.Mappers
             item.IconPath = (element as CodeVariable).IsConstant
                 ? MapIcon<CodeVariable>(element)
                 : "Icons/Field/Field_16x.xaml";
+            item.IsVisible = (element as CodeVariable).IsConstant 
+                ? BoolToVisibility(Settings.Default.ShowConstants)
+                : BoolToVisibility(Settings.Default.ShowVariables);
             return item;
         }
 
@@ -275,6 +291,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(element);
             var accessString = MapAccess(element);
             item.IconPath = $"Icons/Event/Event{accessString}_16x.xaml";
+            item.IsVisible = BoolToVisibility(Settings.Default.ShowEvents);
             return item;
         }
 
@@ -311,6 +328,7 @@ namespace CodeNav.Mappers
             item.Parameters = $"{prop.Name} {{{item.Parameters}}}";
             item.IconPath = MapIcon<CodeProperty>(element);
             item.Tooltip = $"{prop.Type.AsString} {item.Name}";
+            item.IsVisible = BoolToVisibility(Settings.Default.ShowProperties);
             return item;
         }
 

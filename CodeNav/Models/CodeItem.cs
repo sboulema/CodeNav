@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Caliburn.Micro;
 using EnvDTE;
@@ -15,6 +16,7 @@ namespace CodeNav.Models
         public string Id { get; set; }
         internal string FullName;
         public string Tooltip { get; set; }
+        public Visibility IsVisible { get; set; }
 
         private SolidColorBrush _foreground;
         public SolidColorBrush Foreground

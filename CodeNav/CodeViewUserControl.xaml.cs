@@ -27,6 +27,8 @@ namespace CodeNav
             var listBox = (ListBox) sender;
             var selectedItem = (CodeItem) listBox?.SelectedItem;
 
+            if (selectedItem == null) return;
+
             if (selectedItem.StartPoint == null)
             {
                 LogHelper.Log($"{selectedItem.FullName} has no StartPoint");
@@ -71,6 +73,11 @@ namespace CodeNav
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
             _codeNav._codeDocumentVm.CodeDocument = SortHelper.SortByName(_codeNav._codeDocumentVm.CodeDocument);
+        }
+
+        private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
+        {
+            new FilterToolWindow().ShowDialog();
         }
     }
 }

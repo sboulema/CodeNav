@@ -34,5 +34,89 @@ namespace CodeNav.Properties {
                 this["Width"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowConstants {
+            get {
+                return ((bool)(this["ShowConstants"]));
+            }
+            set {
+                this["ShowConstants"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowConstructors {
+            get {
+                return ((bool)(this["ShowConstructors"]));
+            }
+            set {
+                this["ShowConstructors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowEnumItems {
+            get {
+                return ((bool)(this["ShowEnumItems"]));
+            }
+            set {
+                this["ShowEnumItems"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowEvents {
+            get {
+                return ((bool)(this["ShowEvents"]));
+            }
+            set {
+                this["ShowEvents"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowMethods {
+            get {
+                return ((bool)(this["ShowMethods"]));
+            }
+            set {
+                this["ShowMethods"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowProperties {
+            get {
+                return ((bool)(this["ShowProperties"]));
+            }
+            set {
+                this["ShowProperties"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowVariables {
+            get {
+                return ((bool)(this["ShowVariables"]));
+            }
+            set {
+                this["ShowVariables"] = value;
+            }
+        }
     }
 }
