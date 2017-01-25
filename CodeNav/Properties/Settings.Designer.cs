@@ -118,5 +118,41 @@ namespace CodeNav.Properties {
                 this["ShowVariables"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowEnums {
+            get {
+                return ((bool)(this["ShowEnums"]));
+            }
+            set {
+                this["ShowEnums"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowStructs {
+            get {
+                return ((bool)(this["ShowStructs"]));
+            }
+            set {
+                this["ShowStructs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDelegates {
+            get {
+                return ((bool)(this["ShowDelegates"]));
+            }
+            set {
+                this["ShowDelegates"] = value;
+            }
+        }
     }
 }

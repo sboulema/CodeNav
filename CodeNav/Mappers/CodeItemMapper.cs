@@ -130,6 +130,7 @@ namespace CodeNav.Mappers
             item.IconPath = MapIcon<CodeEnum>(element);
             item.Parameters = MapMembers(element as CodeEnum);
             item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);            
+            item.Kind = CodeItemKindEnum.Enum;
 
             foreach (CodeElement member in enumType.Members)
             {
@@ -166,6 +167,7 @@ namespace CodeNav.Mappers
             item.IconPath = MapIcon<CodeStruct>(element);
             item.Parameters = MapMembers(itemType);
             item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.Kind = CodeItemKindEnum.Struct;
 
             foreach (CodeElement member in itemType.Members)
             {
@@ -275,6 +277,7 @@ namespace CodeNav.Mappers
             if (MapAccess(element).Equals("Private")) return null;
 
             var item = MapBase<CodeItem>(element);
+            item.Kind = CodeItemKindEnum.Delegate;
             item.IconPath = MapIcon<CodeDelegate>(element);
             return item;
         }

@@ -9,6 +9,7 @@ Visual Studio extension to show the code structure of your current document
 - Clicking on an item in the list will take you to that location in the document.
 - Sort by file order or by name 
 - Toggle visibility by double-clicking the splitter bar
+- Dark theme support
 
 ## Language support
 Currently only C#

@@ -27,6 +27,12 @@ namespace CodeNav.Helpers
                     case CodeItemKindEnum.Constructor:
                         shouldBeVisible = Settings.Default.ShowConstructors;
                         break;
+                    case CodeItemKindEnum.Delegate:
+                        shouldBeVisible = Settings.Default.ShowConstructors;
+                        break;
+                    case CodeItemKindEnum.Enum:
+                        shouldBeVisible = Settings.Default.ShowEnums;
+                        break;
                     case CodeItemKindEnum.EnumItem:
                         shouldBeVisible = Settings.Default.ShowEnumItems;
                         break;
@@ -38,6 +44,9 @@ namespace CodeNav.Helpers
                         break;
                     case CodeItemKindEnum.Property:
                         shouldBeVisible = Settings.Default.ShowProperties;
+                        break;
+                    case CodeItemKindEnum.Struct:
+                        shouldBeVisible = Settings.Default.ShowStructs;
                         break;
                     case CodeItemKindEnum.Variable:
                         shouldBeVisible = Settings.Default.ShowVariables;

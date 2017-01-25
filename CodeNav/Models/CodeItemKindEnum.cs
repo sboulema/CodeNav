@@ -4,11 +4,13 @@
     {
         Constant,
         Constructor,
+        Delegate,
         Enum,
         EnumItem,
         Event,
         Method,
         Property,
+        Struct,
         Variable
     }
 }
