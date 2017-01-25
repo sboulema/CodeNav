@@ -205,11 +205,12 @@ namespace CodeNav
                 ResizeDirection = GridResizeDirection.Columns,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = ToBrush(EnvironmentColors.ScrollBarThumbPressedBackgroundColorKey),
+                Background = ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey),
                 ToolTip = "What you can do with this bar:" + Environment.NewLine +
                 "- double-click it to toggle CodeNav visibility" + Environment.NewLine +
                 "- click and drag it to adjust CodeNav width"
             };
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             splitter.DragCompleted += LeftDragCompleted;
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
@@ -231,6 +232,12 @@ namespace CodeNav
         }
 
         #region Events
+
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
+        {
+            ((GridSplitter)((Grid)Children[0]).Children[0]).Background =
+                ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+        }
 
         private void UpdateCurrentItem()
         {
