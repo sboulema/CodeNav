@@ -31,17 +31,16 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
+        private readonly BackgroundWorker _backgroundWorker; 
+        private readonly Window _window;
         private WindowEvents _windowEvents;
         private List<string> _highlightedItems;
-        private readonly BackgroundWorker _backgroundWorker;
-        private readonly Dictionary<string, List<CodeItem>> _cache;
-        private readonly Window _window;
+        private List<CodeItem> _cache;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
             _highlightedItems = new List<string>();
             _codeDocumentVm = new CodeDocumentViewModel();
-            _cache = new Dictionary<string, List<CodeItem>>();
 
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
@@ -157,9 +156,9 @@ namespace CodeNav
             if (elements == null) return;
 
             // Do we have a cached version of this document
-            if (_cache.ContainsKey(_window.Document.Path))
+            if (_cache != null)
             {
-                _codeDocumentVm.CodeDocument = _cache[_window.Document.Path];
+                _codeDocumentVm.CodeDocument = _cache;
             }
 
             // If not show a loading item
@@ -318,7 +317,7 @@ namespace CodeNav
             }
 
             _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
-            _cache[_window.Document.Path] = (List<CodeItem>)e.Result;
+            _cache = (List<CodeItem>)e.Result;
 
             VisibilityHelper.SetControlVisibility((Grid)Children[0], !_codeDocumentVm.CodeDocument.Any());
 

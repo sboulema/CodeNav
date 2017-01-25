@@ -157,7 +157,7 @@
             </Button.Template>
         </Button>
 
-        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
             <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
                 BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
                 Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
