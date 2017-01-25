@@ -14,10 +14,27 @@ namespace CodeNav.Models
         public TextPoint StartPoint { get; set; }
         public string IconPath { get; set; }
         public string Id { get; set; }
-        internal string FullName;
         public string Tooltip { get; set; }
-        public Visibility IsVisible { get; set; }
+        internal string FullName;
+        internal CodeItemKindEnum Kind;
 
+        #region IsVisible
+        private Visibility _visibility;
+        public Visibility IsVisible
+        {
+            get
+            {
+                return _visibility;
+            }
+            set
+            {
+                _visibility = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("IsVisible"));
+            }
+        }
+        #endregion
+
+        #region Foreground
         private SolidColorBrush _foreground;
         public SolidColorBrush Foreground
         {
@@ -31,6 +48,7 @@ namespace CodeNav.Models
                 OnPropertyChanged(new PropertyChangedEventArgs("Foreground"));
             }
         }
+        #endregion
     }
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>

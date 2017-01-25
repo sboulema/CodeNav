@@ -27,7 +27,11 @@ namespace CodeNav
             var listBox = (ListBox) sender;
             var selectedItem = (CodeItem) listBox?.SelectedItem;
 
-            if (selectedItem == null) return;
+            if (selectedItem == null)
+            {
+                LogHelper.Log("ListBox or SelectedItem is null");
+                return;
+            }
 
             if (selectedItem.StartPoint == null)
             {
@@ -44,6 +48,7 @@ namespace CodeNav
                   
             textSelection.MoveToPoint(selectedItem.StartPoint);
             listBox.UnselectAll();
+            e.Handled = true;
         }
 
         private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -78,6 +83,7 @@ namespace CodeNav
         private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
         {
             new FilterToolWindow().ShowDialog();
+            VisibilityHelper.SetCodeItemVisibility(_codeNav._codeDocumentVm.CodeDocument);
         }
     }
 }

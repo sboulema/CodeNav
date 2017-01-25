@@ -66,24 +66,19 @@ namespace CodeNav.Mappers
         {
             var function = element as CodeFunction;
 
-            var output = MapBase<CodeFunctionItem>(element);
-            output.Type = MapReturnType(function.Type);
-            output.Parameters = MapParameters(function);
-            output.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
+            var item = MapBase<CodeFunctionItem>(element);
+            item.Type = MapReturnType(function.Type);
+            item.Parameters = MapParameters(function);
+            item.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
                 ? "Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
-            output.Tooltip = $"{MapAccess(element)} {function.Type.AsString} {output.Name}{MapParameters(function, true)}";
-            output.Id = output.Name + MapParameters(function, true, false);
-            output.IsVisible = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor 
-                ? BoolToVisibility(Settings.Default.ShowConstructors)
-                : BoolToVisibility(Settings.Default.ShowMethods);
+            item.Tooltip = $"{MapAccess(element)} {function.Type.AsString} {item.Name}{MapParameters(function, true)}";
+            item.Id = item.Name + MapParameters(function, true, false);
+            item.Kind = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor 
+                ? CodeItemKindEnum.Constructor 
+                : CodeItemKindEnum.Method;
 
-            return output;
-        }
-
-        private static Visibility BoolToVisibility(bool visible)
-        {
-            return visible ? Visibility.Visible : Visibility.Collapsed;
+            return item;
         }
 
         private static CodeItem MapMember(CodeElement element)
@@ -140,7 +135,7 @@ namespace CodeNav.Mappers
             {
                 var memberItem = MapMember(member);
                 memberItem.IconPath = MapIcon<CodeVariable>(member, true);
-                memberItem.IsVisible = BoolToVisibility(Settings.Default.ShowEnumItems);
+                memberItem.Kind = CodeItemKindEnum.EnumItem;
                 item.Members.Add(memberItem);
             }
 
@@ -269,9 +264,9 @@ namespace CodeNav.Mappers
             item.IconPath = (element as CodeVariable).IsConstant
                 ? MapIcon<CodeVariable>(element)
                 : "Icons/Field/Field_16x.xaml";
-            item.IsVisible = (element as CodeVariable).IsConstant 
-                ? BoolToVisibility(Settings.Default.ShowConstants)
-                : BoolToVisibility(Settings.Default.ShowVariables);
+            item.Kind = (element as CodeVariable).IsConstant 
+                ? CodeItemKindEnum.Constant
+                : CodeItemKindEnum.Variable;
             return item;
         }
 
@@ -291,7 +286,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(element);
             var accessString = MapAccess(element);
             item.IconPath = $"Icons/Event/Event{accessString}_16x.xaml";
-            item.IsVisible = BoolToVisibility(Settings.Default.ShowEvents);
+            item.Kind = CodeItemKindEnum.Event;
             return item;
         }
 
@@ -328,7 +323,7 @@ namespace CodeNav.Mappers
             item.Parameters = $"{prop.Name} {{{item.Parameters}}}";
             item.IconPath = MapIcon<CodeProperty>(element);
             item.Tooltip = $"{prop.Type.AsString} {item.Name}";
-            item.IsVisible = BoolToVisibility(Settings.Default.ShowProperties);
+            item.Kind = CodeItemKindEnum.Property;
             return item;
         }
 

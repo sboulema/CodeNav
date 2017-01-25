@@ -80,28 +80,6 @@ namespace CodeNav
             LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
-        private void UpdateCurrentItem()
-        {
-            if (_dte?.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
-
-            var textSelection = _dte.ActiveDocument.Selection as TextSelection;
-
-            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
-
-            if (currentFunctionElement == null)
-            {
-                UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
-                return;
-            }
-
-            UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
-
-            _highlightedItems = new List<string>();
-            GetItemsToHighlight(_highlightedItems, currentFunctionElement);
-
-            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);      
-        }
-
         private static void GetItemsToHighlight(List<string> list, CodeElement element)
         {
             list.Add(element.FullName);
@@ -255,20 +233,32 @@ namespace CodeNav
 
         #region Events
 
+        private void UpdateCurrentItem()
+        {
+            if (_dte?.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
+
+            var textSelection = _dte.ActiveDocument.Selection as TextSelection;
+
+            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
+
+            if (currentFunctionElement == null)
+            {
+                UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+                return;
+            }
+
+            UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+
+            _highlightedItems = new List<string>();
+            GetItemsToHighlight(_highlightedItems, currentFunctionElement);
+
+            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+        }
+
         private static void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var grid = (Grid) ((GridSplitter) sender).Parent;
-            ToggleVisibility(grid, grid.ColumnDefinitions[0].Width != new GridLength(0));
-        }
-
-        /// <summary>
-        /// Toggle visibility of the CodeNav control
-        /// </summary>
-        /// <param name="grid">the grid of which the left column visibility will be toggled</param>
-        /// <param name="condition">if condition is True visibility will be set to hidden</param>
-        private static void ToggleVisibility(Grid grid, bool condition)
-        {
-            grid.ColumnDefinitions[0].Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            VisibilityHelper.SetControlVisibility(grid, grid.ColumnDefinitions[0].Width != new GridLength(0));
         }
 
         private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
@@ -330,7 +320,7 @@ namespace CodeNav
             _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
             _cache[_window.Document.Path] = (List<CodeItem>)e.Result;
 
-            ToggleVisibility((Grid)Children[0], !_codeDocumentVm.CodeDocument.Any());
+            VisibilityHelper.SetControlVisibility((Grid)Children[0], !_codeDocumentVm.CodeDocument.Any());
 
             stopwatch.Stop();
             LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");

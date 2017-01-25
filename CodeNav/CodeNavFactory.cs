@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using CodeNav.Helpers;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
