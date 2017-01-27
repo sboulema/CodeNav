@@ -63,6 +63,12 @@
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
+    <Compile Include="OptionsToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionsToolWindow.Designer.cs">
+      <DependentUpon>OptionsToolWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tests\CodeNavTest.cs" />
     <Compile Include="Tests\CodeNavTestEmpty.cs" />
     <Compile Include="Tests\CodeNavTestEmptyClass.cs" />
@@ -375,6 +381,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Icons\Settings\Settings_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Icons\Sort\SortAscending_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -444,6 +454,9 @@
   <ItemGroup>
     <EmbeddedResource Include="FilterToolWindow.resx">
       <DependentUpon>FilterToolWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsToolWindow.resx">
+      <DependentUpon>OptionsToolWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

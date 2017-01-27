@@ -117,7 +117,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="19" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="19" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -149,14 +149,24 @@
             </RadioButton>
         </StackPanel>
 
-        <Button Grid.Column="2" Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind" Margin="0,0,3,0">
-            <Button.Template>
-                <ControlTemplate>
-                    <Frame Source="Icons/Filter/Filter_16x.xaml" />
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Width="Auto" Margin="-3,-3,3,-3">
+            <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Frame Source="Icons/Filter/Filter_16x.xaml" />
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
 
+            <Button Click="ButtonOptions_OnClick" ToolTip="CodeNav options">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Frame Source="Icons/Settings/Settings_16x.xaml" />
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+        
         <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
             <ListBox ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
                 BorderThickness="0" x:Name="CodeDocumentListBox" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 

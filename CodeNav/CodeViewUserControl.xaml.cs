@@ -85,5 +85,10 @@ namespace CodeNav
             new FilterToolWindow().ShowDialog();
             VisibilityHelper.SetCodeItemVisibility(_codeNav._codeDocumentVm.CodeDocument);
         }
+
+        private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
+        {
+            new OptionsToolWindow().ShowDialog();
+        }
     }
 }
