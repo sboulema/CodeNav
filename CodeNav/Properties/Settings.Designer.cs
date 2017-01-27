@@ -154,5 +154,17 @@ namespace CodeNav.Properties {
                 this["ShowDelegates"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseLeftSide {
+            get {
+                return ((bool)(this["UseLeftSide"]));
+            }
+            set {
+                this["UseLeftSide"] = value;
+            }
+        }
     }
 }
