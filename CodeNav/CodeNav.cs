@@ -26,46 +26,29 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        private CodeViewUserControl _codeViewUserControl;
-        public CodeDocumentViewModel _codeDocumentVm;
+        public CodeDocumentViewModel CodeDocumentViewModel;
+        private CodeViewUserControl _codeViewUserControl;      
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
         private readonly BackgroundWorker _backgroundWorker; 
         private readonly Window _window;
+        private readonly ColumnDefinition _codeNavColumn;
+        private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private List<string> _highlightedItems;
-        private List<CodeItem> _cache;
+        private List<CodeItem> _cache;   
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
             _highlightedItems = new List<string>();
-            _codeDocumentVm = new CodeDocumentViewModel();
+            CodeDocumentViewModel = new CodeDocumentViewModel();
 
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-
-            // Get window belonging to textViewHost
-            ITextDocument document;
-            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            for (var i = 1; i < _dte.Windows.Count + 1; i++)
-            {
-                var window = _dte.Windows.Item(i);
-                try
-                {
-                    if (window.Document == null) continue;
-                    if (!window.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase)) continue;
-                    _window = window;
-                    break;
-                }
-                catch (Exception e)
-                {
-                    LogHelper.Log($"Exception getting parent window: {e.Message}");
-                }
-            }
+            _window = GetWindow(textViewHost, dte);
 
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -73,10 +56,41 @@ namespace CodeNav
             _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 
             // Add the view/content to the margin area
-            Children.Add(CreateGrid(textViewHost, dte));
+            _codeNavGrid = CreateGrid(textViewHost, dte);
+            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.UseLeftSide ? 0 : 2];
+            Children.Add(_codeNavGrid);        
 
             RegisterEvents();
             LogHelper.Log($"CodeNav initialized for {_window.Caption}");
+        }
+
+        /// <summary>
+        /// Get window belonging to textViewHost
+        /// </summary>
+        /// <param name="textViewHost"></param>
+        /// <param name="dte"></param>
+        /// <returns></returns>
+        private static Window GetWindow(IWpfTextViewHost textViewHost, _DTE dte)
+        {            
+            ITextDocument document;
+            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+
+            for (var i = 1; i < dte.Windows.Count + 1; i++)
+            {
+                var window = dte.Windows.Item(i);
+                try
+                {
+                    if (window.Document == null) continue;
+                    if (!window.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase)) continue;
+                    return window;
+                }
+                catch (Exception e)
+                {
+                    LogHelper.Log($"Exception getting parent window: {e.Message}");
+                }
+            }
+
+            return null;
         }
 
         private static void GetItemsToHighlight(List<string> list, CodeElement element)
@@ -158,13 +172,13 @@ namespace CodeNav
             // Do we have a cached version of this document
             if (_cache != null)
             {
-                _codeDocumentVm.CodeDocument = _cache;
+                CodeDocumentViewModel.CodeDocument = _cache;
             }
 
             // If not show a loading item
-            if (_codeDocumentVm.CodeDocument == null)
+            if (CodeDocumentViewModel.CodeDocument == null)
             {
-                _codeDocumentVm.CodeDocument = new List<CodeItem>
+                CodeDocumentViewModel.CodeDocument = new List<CodeItem>
                 {
                     new CodeClassItem
                     {
@@ -193,10 +207,22 @@ namespace CodeNav
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
         {
+            var leftColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
+            if (!Settings.Default.UseLeftSide)
+            {
+                leftColumnWidth = new GridLength(0, GridUnitType.Star);
+            }
+
+            var rightColumnWidth = new GridLength(0, GridUnitType.Star);
+            if (!Settings.Default.UseLeftSide)
+            {
+                rightColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
+            }
+
             var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(Settings.Default.Width, GridUnitType.Pixel) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = leftColumnWidth });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = rightColumnWidth });
             grid.RowDefinitions.Add(new RowDefinition());
 
             var splitter = new GridSplitter
@@ -211,16 +237,16 @@ namespace CodeNav
                 "- click and drag it to adjust CodeNav width"
             };
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
-            splitter.DragCompleted += LeftDragCompleted;
+            splitter.DragCompleted += DragCompleted;
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _codeViewUserControl = new CodeViewUserControl(dte, this) { DataContext = _codeDocumentVm };
+            _codeViewUserControl = new CodeViewUserControl(dte, this) { DataContext = CodeDocumentViewModel };
             grid.Children.Add(_codeViewUserControl);
 
-            Grid.SetColumn(_codeViewUserControl, 0);
+            Grid.SetColumn(_codeViewUserControl, Settings.Default.UseLeftSide ? 0 : 2);
             Grid.SetColumn(splitter, 1);
-            Grid.SetColumn(textViewHost.HostControl, 2);
+            Grid.SetColumn(textViewHost.HostControl, Settings.Default.UseLeftSide ? 2 : 0);
 
             return grid;
         }
@@ -235,13 +261,13 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
         {
-            ((GridSplitter)((Grid)Children[0]).Children[0]).Background =
+            ((GridSplitter)_codeNavGrid.Children[0]).Background =
                 ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
         }
 
         private void UpdateCurrentItem()
         {
-            if (_dte?.ActiveDocument?.Selection == null || _codeDocumentVm?.CodeDocument == null) return;
+            if (_dte?.ActiveDocument?.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
 
             var textSelection = _dte.ActiveDocument.Selection as TextSelection;
 
@@ -249,25 +275,22 @@ namespace CodeNav
 
             if (currentFunctionElement == null)
             {
-                UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+                UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
                 return;
             }
 
-            UnHighlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+            UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
 
             _highlightedItems = new List<string>();
             GetItemsToHighlight(_highlightedItems, currentFunctionElement);
 
-            Highlight(_codeDocumentVm.CodeDocument, _highlightedItems);
+            Highlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
         }
 
-        private static void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var grid = (Grid) ((GridSplitter) sender).Parent;
-            VisibilityHelper.SetControlVisibility(grid, grid.ColumnDefinitions[0].Width != new GridLength(0));
-        }
+        private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
+            VisibilityHelper.SetControlVisibility(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
 
-        private void LeftDragCompleted(object sender, DragCompletedEventArgs e)
+        private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (!double.IsNaN(_codeViewUserControl.ActualWidth) && _codeViewUserControl.ActualWidth != 0)
             {
@@ -315,7 +338,7 @@ namespace CodeNav
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var areEqual = _codeDocumentVm.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
+            var areEqual = CodeDocumentViewModel.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
             if (areEqual)
             {
                 stopwatch.Stop();
@@ -323,10 +346,10 @@ namespace CodeNav
                 return;
             }
 
-            _codeDocumentVm.CodeDocument = (List<CodeItem>)e.Result;
+            CodeDocumentViewModel.CodeDocument = (List<CodeItem>)e.Result;
             _cache = (List<CodeItem>)e.Result;
 
-            VisibilityHelper.SetControlVisibility((Grid)Children[0], !_codeDocumentVm.CodeDocument.Any());
+            VisibilityHelper.SetControlVisibility(_codeNavColumn, !CodeDocumentViewModel.CodeDocument.Any());
 
             stopwatch.Stop();
             LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
@@ -376,9 +399,9 @@ namespace CodeNav
             {
                 ThrowIfDisposed();
 
-                // Since this is a horizontal margin, its width will be bound to the width of the text view.
-                // Therefore, its size is its height.
-                return ActualHeight;
+                // Since this is a vertical margin, its height will be bound to the height of the text view.
+                // Therefore, its size is its width.
+                return ActualWidth;
             }
         }
 
@@ -409,7 +432,7 @@ namespace CodeNav
         /// <exception cref="ArgumentNullException"><paramref name="marginName"/> is null.</exception>
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
-            return String.Equals(marginName, MarginName, StringComparison.OrdinalIgnoreCase) ? this : null;
+            return string.Equals(marginName, MarginName, StringComparison.OrdinalIgnoreCase) ? this : null;
         }
 
         /// <summary>

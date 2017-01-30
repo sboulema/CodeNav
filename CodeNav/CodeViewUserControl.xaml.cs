@@ -72,18 +72,18 @@ namespace CodeNav
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
         {
-            _codeNav._codeDocumentVm.CodeDocument = SortHelper.SortByFile(_codeNav._codeDocumentVm.CodeDocument);
+            _codeNav.CodeDocumentViewModel.CodeDocument = SortHelper.SortByFile(_codeNav.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
-            _codeNav._codeDocumentVm.CodeDocument = SortHelper.SortByName(_codeNav._codeDocumentVm.CodeDocument);
+            _codeNav.CodeDocumentViewModel.CodeDocument = SortHelper.SortByName(_codeNav.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
         {
             new FilterToolWindow().ShowDialog();
-            VisibilityHelper.SetCodeItemVisibility(_codeNav._codeDocumentVm.CodeDocument);
+            VisibilityHelper.SetCodeItemVisibility(_codeNav.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)

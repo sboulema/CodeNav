@@ -71,11 +71,11 @@ namespace CodeNav.Helpers
         /// <summary>
         /// Toggle visibility of the CodeNav control
         /// </summary>
-        /// <param name="grid">the grid of which the left column visibility will be toggled</param>
+        /// <param name="column">the grid column of which the visibility will be toggled</param>
         /// <param name="condition">if condition is True visibility will be set to hidden</param>
-        public static void SetControlVisibility(Grid grid, bool condition)
+        public static void SetControlVisibility(ColumnDefinition column, bool condition)
         {
-            grid.ColumnDefinitions[0].Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            column.Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
         }
     }
 }
