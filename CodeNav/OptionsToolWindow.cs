@@ -18,7 +18,7 @@ namespace CodeNav
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.UseLeftSide = useLeftSideComboBox.SelectedText.Equals("Left");
+            Settings.Default.UseLeftSide = useLeftSideComboBox.Text.Equals("Left");
             Close();
         }
 

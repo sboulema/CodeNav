@@ -58,7 +58,6 @@
     <Compile Include="FilterToolWindow.Designer.cs">
       <DependentUpon>FilterToolWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\FindHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
