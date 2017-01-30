@@ -77,7 +77,7 @@
                             Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" ToolTip="{Binding Tooltip}">
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
-                                <Run Text="{Binding Name}" FontSize="11" Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" Tag="{Binding Name}" />
+                                <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" Tag="{Binding Name}" />
                                 <Run Text="{Binding Type}" FontSize="10" Foreground="DarkGray" />
                                 <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                             </TextBlock>
@@ -92,7 +92,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                                     <TextBlock>
-                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                                            <Run Text="{Binding Name}" FontSize="11" Foreground="{Binding Foreground}" />
                                             <Run Text="{Binding Parameters}" FontSize="10" Foreground="DarkGray" />
                                     </TextBlock>
                                 </StackPanel>

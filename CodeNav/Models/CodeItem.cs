@@ -29,7 +29,7 @@ namespace CodeNav.Models
             set
             {
                 _visibility = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsVisible"));
+                NotifyOfPropertyChange();
             }
         }
         #endregion
@@ -45,7 +45,7 @@ namespace CodeNav.Models
             set
             {
                 _foreground = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Foreground"));
+                NotifyOfPropertyChange();
             }
         }
         #endregion

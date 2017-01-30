@@ -93,73 +93,6 @@ namespace CodeNav
             return null;
         }
 
-        private static void GetItemsToHighlight(List<string> list, CodeElement element)
-        {
-            list.Add(element.FullName);
-
-            var parent = element.Collection.Parent;
-            if (parent == null || parent is CodeElement == false) return;
-
-            GetItemsToHighlight(list, parent);
-        }
-
-        private static void UnHighlight(List<CodeItem> document, List<string> itemNames)
-        {
-            foreach (var name in itemNames)
-            {
-                var item = FindCodeItem(document, name);
-                if (item == null) return;
-
-                item.Foreground = new SolidColorBrush(Colors.Black);
-
-                if (item is CodeClassItem)
-                {
-                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.DarkGray);
-                }
-            }
-        }
-
-        private static void Highlight(List<CodeItem> document, List<string> itemNames)
-        {
-            foreach (var name in itemNames)
-            {
-                var item = FindCodeItem(document, name);
-                if (item == null) return;
-
-                item.Foreground = new SolidColorBrush(Colors.SteelBlue);
-
-                if (item is CodeClassItem)
-                {
-                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.SteelBlue);
-                }
-            }
-        }
-
-        private static CodeItem FindCodeItem(List<CodeItem> items, string itemFullName)
-        {
-            foreach (var item in items)
-            {
-                if (item.FullName.Equals(itemFullName))
-                {
-                    return item;
-                }
-
-                if (item is CodeClassItem)
-                {
-                    var classItem = (CodeClassItem)item;
-                    if (classItem.Members.Any())
-                    {
-                        var found = FindCodeItem(classItem.Members, itemFullName);
-                        if (found != null)
-                        {
-                            return found;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
         public void UpdateDocument(Window gotFocus = null)
         {
             // Do we have a text document in the activated window
@@ -263,6 +196,7 @@ namespace CodeNav
         {
             ((GridSplitter)_codeNavGrid.Children[0]).Background =
                 ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+            HighlightHelper.SetForeground(CodeDocumentViewModel?.CodeDocument);
         }
 
         private void UpdateCurrentItem()
@@ -275,16 +209,16 @@ namespace CodeNav
 
             if (currentFunctionElement == null)
             {
-                UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
+                HighlightHelper.UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
                 return;
             }
 
-            UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
+            HighlightHelper.UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
 
             _highlightedItems = new List<string>();
-            GetItemsToHighlight(_highlightedItems, currentFunctionElement);
+            HighlightHelper.GetItemsToHighlight(_highlightedItems, currentFunctionElement);
 
-            Highlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
+            HighlightHelper.Highlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
         }
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
@@ -350,6 +284,7 @@ namespace CodeNav
             _cache = (List<CodeItem>)e.Result;
 
             VisibilityHelper.SetControlVisibility(_codeNavColumn, !CodeDocumentViewModel.CodeDocument.Any());
+            HighlightHelper.SetForeground(CodeDocumentViewModel?.CodeDocument);
 
             stopwatch.Stop();
             LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
