@@ -166,5 +166,53 @@ namespace CodeNav.Properties {
                 this["UseLeftSide"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowPublic {
+            get {
+                return ((bool)(this["ShowPublic"]));
+            }
+            set {
+                this["ShowPublic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowPrivate {
+            get {
+                return ((bool)(this["ShowPrivate"]));
+            }
+            set {
+                this["ShowPrivate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowInternal {
+            get {
+                return ((bool)(this["ShowInternal"]));
+            }
+            set {
+                this["ShowInternal"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowProtected {
+            get {
+                return ((bool)(this["ShowProtected"]));
+            }
+            set {
+                this["ShowProtected"] = value;
+            }
+        }
     }
 }

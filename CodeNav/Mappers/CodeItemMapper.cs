@@ -59,6 +59,7 @@ namespace CodeNav.Mappers
             }
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Tooltip = element.FullName;
+            element.Access = MapAccessToEnum(source);
             return element;
         }
 
@@ -459,6 +460,60 @@ namespace CodeNav.Mappers
         {
             var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type, useLongNames)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
+        }
+
+        private static CodeItemAccessEnum MapAccessToEnum(CodeElement element)
+        {
+            vsCMAccess access;
+
+            switch (element.Kind)
+            {
+                case vsCMElement.vsCMElementClass:
+                    access = (element as CodeClass).Access;
+                    break;
+                case vsCMElement.vsCMElementFunction:
+                    access = (element as CodeFunction).Access;
+                    break;
+                case vsCMElement.vsCMElementVariable:
+                    access = (element as CodeVariable).Access;
+                    break;
+                case vsCMElement.vsCMElementProperty:
+                    access = (element as CodeProperty).Access;
+                    break;
+                case vsCMElement.vsCMElementInterface:
+                    access = (element as CodeInterface).Access;
+                    break;
+                case vsCMElement.vsCMElementEnum:
+                    access = (element as CodeEnum).Access;
+                    break;
+                case vsCMElement.vsCMElementStruct:
+                    access = (element as CodeStruct).Access;
+                    break;
+                case vsCMElement.vsCMElementEvent:
+                    access = (element as CodeEvent).Access;
+                    break;
+                case vsCMElement.vsCMElementDelegate:
+                    access = (element as CodeDelegate).Access;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            switch (access)
+            {
+                case vsCMAccess.vsCMAccessPrivate:
+                    return CodeItemAccessEnum.Private;
+                case vsCMAccess.vsCMAccessProject:
+                case vsCMAccess.vsCMAccessProtected:
+                case vsCMAccess.vsCMAccessProjectOrProtected:
+                    return CodeItemAccessEnum.Protected;
+                case vsCMAccess.vsCMAccessPublic:
+                    return CodeItemAccessEnum.Public;
+                case vsCMAccess.vsCMAccessAssemblyOrFamily:
+                    return CodeItemAccessEnum.Internal;
+                default:
+                    return CodeItemAccessEnum.Unknown;
+            }
         }
 
         private static string MapAccess(CodeElement element)

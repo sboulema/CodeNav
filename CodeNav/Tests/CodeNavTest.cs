@@ -34,7 +34,7 @@ namespace CodeNav.Tests
         {
             return a - b;
         }
-
+        
         protected void ProtectedMethod(int a, int b)
         {
             

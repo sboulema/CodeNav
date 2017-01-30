@@ -39,6 +39,10 @@
             System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Properties", 5);
             System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Structs", 9);
             System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Variables", 6);
+            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Public", 10);
+            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Private", 12);
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Internal", 11);
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Protected", 13);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterToolWindow));
             this.okButton = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -71,6 +75,10 @@
             listViewItem8.StateImageIndex = 0;
             listViewItem9.StateImageIndex = 0;
             listViewItem10.StateImageIndex = 0;
+            listViewItem11.StateImageIndex = 0;
+            listViewItem12.StateImageIndex = 0;
+            listViewItem13.StateImageIndex = 0;
+            listViewItem14.StateImageIndex = 0;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2,
@@ -81,7 +89,11 @@
             listViewItem7,
             listViewItem8,
             listViewItem9,
-            listViewItem10});
+            listViewItem10,
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14});
             this.listView1.Location = new System.Drawing.Point(12, 12);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(239, 140);
@@ -104,6 +116,10 @@
             this.imageList1.Images.SetKeyName(7, "Delegate_purple_16x.png");
             this.imageList1.Images.SetKeyName(8, "Enumerator_orange_16x.png");
             this.imageList1.Images.SetKeyName(9, "Structure_16x.png");
+            this.imageList1.Images.SetKeyName(10, "AzureTeam_16x.png");
+            this.imageList1.Images.SetKeyName(11, "Mail_16x.png");
+            this.imageList1.Images.SetKeyName(12, "Lock_16x.png");
+            this.imageList1.Images.SetKeyName(13, "Key_16x.png");
             // 
             // cancelButton
             // 

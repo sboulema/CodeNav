@@ -44,6 +44,11 @@ namespace CodeNav
             listView1.Items[7].Checked = Settings.Default.ShowProperties;
             listView1.Items[8].Checked = Settings.Default.ShowStructs;
             listView1.Items[9].Checked = Settings.Default.ShowVariables;
+
+            listView1.Items[10].Checked = Settings.Default.ShowPublic;
+            listView1.Items[11].Checked = Settings.Default.ShowPrivate;
+            listView1.Items[12].Checked = Settings.Default.ShowInternal;
+            listView1.Items[13].Checked = Settings.Default.ShowProtected;
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -58,6 +63,11 @@ namespace CodeNav
             Settings.Default.ShowProperties = listView1.Items[7].Checked;
             Settings.Default.ShowStructs = listView1.Items[8].Checked;
             Settings.Default.ShowVariables = listView1.Items[9].Checked;
+
+            Settings.Default.ShowPublic = listView1.Items[10].Checked;
+            Settings.Default.ShowPrivate = listView1.Items[11].Checked;
+            Settings.Default.ShowInternal = listView1.Items[12].Checked;
+            Settings.Default.ShowProtected = listView1.Items[13].Checked;
 
             Close();
         }

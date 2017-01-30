@@ -69,6 +69,49 @@ namespace CodeNav.Helpers
         }
 
         /// <summary>
+        /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
+        /// </summary>
+        /// <param name="document">List of codeItems</param>
+        public static void SetCodeItemVisibilityOnAccess(List<CodeItem> document)
+        {
+            foreach (var item in document)
+            {
+                bool shouldBeVisible;
+                switch (item.Access)
+                {
+                    case CodeItemAccessEnum.Private:
+                        shouldBeVisible = Settings.Default.ShowPrivate;
+                        break;
+                    case CodeItemAccessEnum.Protected:
+                        shouldBeVisible = Settings.Default.ShowProtected;
+                        break;
+                    case CodeItemAccessEnum.Public:
+                        shouldBeVisible = Settings.Default.ShowPublic;
+                        break;
+                    case CodeItemAccessEnum.Internal:
+                        shouldBeVisible = Settings.Default.ShowInternal;
+                        break;
+                    case CodeItemAccessEnum.Unknown:
+                        shouldBeVisible = Settings.Default.ShowEnumItems;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                item.IsVisible = shouldBeVisible ? Visibility.Visible : Visibility.Collapsed;
+
+                if (item is CodeClassItem)
+                {
+                    var classItem = (CodeClassItem)item;
+                    if (classItem.Members.Any())
+                    {
+                        SetCodeItemVisibilityOnAccess(classItem.Members);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Toggle visibility of the CodeNav control
         /// </summary>
         /// <param name="column">the grid column of which the visibility will be toggled</param>

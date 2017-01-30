@@ -17,6 +17,7 @@ namespace CodeNav.Models
         public string Tooltip { get; set; }
         internal string FullName;
         internal CodeItemKindEnum Kind;
+        internal CodeItemAccessEnum Access;
 
         #region IsVisible
         private Visibility _visibility;

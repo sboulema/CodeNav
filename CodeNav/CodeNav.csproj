@@ -62,6 +62,7 @@
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
+    <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
     <Compile Include="OptionsToolWindow.cs">
       <SubType>Form</SubType>
