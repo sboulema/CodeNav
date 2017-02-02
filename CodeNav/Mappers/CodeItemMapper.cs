@@ -154,7 +154,7 @@ namespace CodeNav.Mappers
 
             foreach (CodeElement member in interfaceItem.Members)
             {
-                item.Members.Add(MapFunction(member));
+                item.Members.Add(MapMember(member));
             }
 
             return item;

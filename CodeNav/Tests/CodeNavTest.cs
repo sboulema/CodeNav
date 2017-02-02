@@ -99,6 +99,7 @@ namespace CodeNav.Tests
     {
         int InterfaceMethod();
         int InterfaceMethod(int input);
+        int InterfaceProperty { get; }
     }
 
     public class CodeNavTest2 : ICodeNavTest2
@@ -124,6 +125,8 @@ namespace CodeNav.Tests
         {
             
         }
+
+        public int InterfaceProperty { get; }
     }
 
     public enum DayEnum
