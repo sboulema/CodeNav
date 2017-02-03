@@ -63,6 +63,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+	<DeployExtension Condition=" '$(AppVeyor)' != '' ">False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeNav.cs" />

@@ -1,5 +1,7 @@
 version: 1.4.{build}
-configuration: Release
+configuration: 
+- Release
+- Debug
 install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 before_build:
