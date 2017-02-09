@@ -6,6 +6,7 @@
         Public,
         Private,
         Protected,
-        Internal
+        Internal,
+        Sealed
     }
 }

@@ -201,9 +201,9 @@ namespace CodeNav
 
         private void UpdateCurrentItem()
         {
-            if (_dte?.ActiveDocument?.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
+            if (_window.Document.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
 
-            var textSelection = _dte.ActiveDocument.Selection as TextSelection;
+            var textSelection = _window.Document.Selection as TextSelection;
 
             var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
 
