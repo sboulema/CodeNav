@@ -12,4 +12,4 @@ before_build:
 build:
   verbosity: minimal
 after_build:
-- ps: Vsix-PushArtifacts
+- ps: Vsix-PushArtifacts | Vsix-PublishToGallery
