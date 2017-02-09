@@ -16,10 +16,16 @@ Visual Studio extension to show the code structure of your current document
 ## Language support
 Currently only C#
 
-## Screenshot
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
-
 ## Installing
 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
 
 [Github Releases](https://github.com/sboulema/CodeNav/releases)
+
+## Screenshots
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
+
+#### Filter window
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/FilterWindow.png) 
+
+#### Options window
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
