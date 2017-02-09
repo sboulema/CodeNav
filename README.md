@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/CodeNav.png)
+![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/DocumentOutline_256x.png)
 
 # CodeNav
 Visual Studio extension to show the code structure of your current document
@@ -20,6 +20,8 @@ Currently only C#
 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
 
 [Github Releases](https://github.com/sboulema/CodeNav/releases)
+
+[Open VSIX Gallery](http://vsixgallery.com/extension/CodeNav.Samir%20Boulema.19687465-dc94-413d-ad72-6141e90c94d4/)
 
 ## Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
