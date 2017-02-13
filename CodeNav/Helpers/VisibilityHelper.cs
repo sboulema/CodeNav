@@ -16,6 +16,8 @@ namespace CodeNav.Helpers
         /// <param name="document">List of codeItems</param>
         public static void SetCodeItemVisibility(List<CodeItem> document)
         {
+            if (document == null || !document.Any()) return;
+
             foreach (var item in document)
             {
                 bool shouldBeVisible;
@@ -74,6 +76,8 @@ namespace CodeNav.Helpers
         /// <param name="document">List of codeItems</param>
         public static void SetCodeItemVisibilityOnAccess(List<CodeItem> document)
         {
+            if (document == null || !document.Any()) return;
+
             foreach (var item in document)
             {
                 bool shouldBeVisible;
