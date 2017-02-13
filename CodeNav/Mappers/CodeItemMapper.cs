@@ -38,14 +38,7 @@ namespace CodeNav.Mappers
             element.Name = source.Name;
             element.FullName = source.FullName;
             element.Id = source.Name;
-            try
-            {
-                element.StartPoint = source.StartPoint;
-            }
-            catch (Exception)
-            {
-                LogHelper.Log($"Could not find a startpoint for {element.FullName}");
-            }
+            element.StartPoint = source.StartPoint;
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Tooltip = element.FullName;
             element.Access = MapAccessToEnum(source);
@@ -110,7 +103,7 @@ namespace CodeNav.Mappers
             {
                 return MapDelegate(element);
             }
-            return MapBase<CodeItem>(element);
+            return null;
         }
 
         private static CodeClassItem MapEnum(CodeElement2 element)

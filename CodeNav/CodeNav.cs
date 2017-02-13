@@ -280,7 +280,9 @@ namespace CodeNav
                 return;
             }
 
-            CodeDocumentViewModel.CodeDocument = (List<CodeItem>)e.Result;
+            var codeItems = (List<CodeItem>) e.Result;
+            codeItems.RemoveAll(item => item == null);
+            CodeDocumentViewModel.CodeDocument = codeItems;
             _cache = (List<CodeItem>)e.Result;
 
             VisibilityHelper.SetControlVisibility(_codeNavColumn, !CodeDocumentViewModel.CodeDocument.Any());

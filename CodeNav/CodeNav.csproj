@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Tests\CodeNavTestSealed.cs" />
     <Compile Include="Tests\ICodeNavTestInterface.cs" />
+    <Compile Include="Tests\TestUsingsInNamespace.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
