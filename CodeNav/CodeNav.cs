@@ -50,6 +50,9 @@ namespace CodeNav
             _documentEvents = dte.Events.DocumentEvents;
             _window = GetWindow(textViewHost, dte);
 
+            // If we can not find the window we belong to we can not do anything
+            if (_window == null) return;
+
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -61,6 +64,7 @@ namespace CodeNav
             Children.Add(_codeNavGrid);        
 
             RegisterEvents();
+
             LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
