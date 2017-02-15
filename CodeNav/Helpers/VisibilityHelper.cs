@@ -14,50 +14,72 @@ namespace CodeNav.Helpers
         /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
         /// </summary>
         /// <param name="document">List of codeItems</param>
-        public static void SetCodeItemVisibility(List<CodeItem> document)
+        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document)
         {
-            if (document == null || !document.Any()) return;
+            if (document == null || !document.Any()) return new List<CodeItem>();
 
             foreach (var item in document)
             {
-                bool shouldBeVisible;
+                bool shouldBeVisibleBasedOnKind;
                 switch (item.Kind)
                 {
                     case CodeItemKindEnum.Constant:
-                        shouldBeVisible = Settings.Default.ShowConstants;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstants;
                         break;
                     case CodeItemKindEnum.Constructor:
-                        shouldBeVisible = Settings.Default.ShowConstructors;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstructors;
                         break;
                     case CodeItemKindEnum.Delegate:
-                        shouldBeVisible = Settings.Default.ShowConstructors;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstructors;
                         break;
                     case CodeItemKindEnum.Enum:
-                        shouldBeVisible = Settings.Default.ShowEnums;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEnums;
                         break;
                     case CodeItemKindEnum.EnumItem:
-                        shouldBeVisible = Settings.Default.ShowEnumItems;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEnumItems;
                         break;
                     case CodeItemKindEnum.Event:
-                        shouldBeVisible = Settings.Default.ShowEvents;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEvents;
                         break;
                     case CodeItemKindEnum.Method:
-                        shouldBeVisible = Settings.Default.ShowMethods;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowMethods;
                         break;
                     case CodeItemKindEnum.Property:
-                        shouldBeVisible = Settings.Default.ShowProperties;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowProperties;
                         break;
                     case CodeItemKindEnum.Struct:
-                        shouldBeVisible = Settings.Default.ShowStructs;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowStructs;
                         break;
                     case CodeItemKindEnum.Variable:
-                        shouldBeVisible = Settings.Default.ShowVariables;
+                        shouldBeVisibleBasedOnKind = Settings.Default.ShowVariables;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-                item.IsVisible = shouldBeVisible ? Visibility.Visible : Visibility.Collapsed;
+                bool shouldBeVisibleBasedOnAccess;
+                switch (item.Access)
+                {
+                    case CodeItemAccessEnum.Private:
+                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowPrivate;
+                        break;
+                    case CodeItemAccessEnum.Protected:
+                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowProtected;
+                        break;
+                    case CodeItemAccessEnum.Public:
+                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowPublic;
+                        break;
+                    case CodeItemAccessEnum.Internal:
+                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowInternal;
+                        break;
+                    case CodeItemAccessEnum.Unknown:
+                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowEnumItems;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                item.IsVisible = shouldBeVisibleBasedOnKind && shouldBeVisibleBasedOnAccess ? Visibility.Visible : Visibility.Collapsed;
 
                 if (item is CodeClassItem)
                 {
@@ -68,51 +90,8 @@ namespace CodeNav.Helpers
                     }
                 }
             }
-        }
 
-        /// <summary>
-        /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
-        /// </summary>
-        /// <param name="document">List of codeItems</param>
-        public static void SetCodeItemVisibilityOnAccess(List<CodeItem> document)
-        {
-            if (document == null || !document.Any()) return;
-
-            foreach (var item in document)
-            {
-                bool shouldBeVisible;
-                switch (item.Access)
-                {
-                    case CodeItemAccessEnum.Private:
-                        shouldBeVisible = Settings.Default.ShowPrivate;
-                        break;
-                    case CodeItemAccessEnum.Protected:
-                        shouldBeVisible = Settings.Default.ShowProtected;
-                        break;
-                    case CodeItemAccessEnum.Public:
-                        shouldBeVisible = Settings.Default.ShowPublic;
-                        break;
-                    case CodeItemAccessEnum.Internal:
-                        shouldBeVisible = Settings.Default.ShowInternal;
-                        break;
-                    case CodeItemAccessEnum.Unknown:
-                        shouldBeVisible = Settings.Default.ShowEnumItems;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                item.IsVisible = shouldBeVisible ? Visibility.Visible : Visibility.Collapsed;
-
-                if (item is CodeClassItem)
-                {
-                    var classItem = (CodeClassItem)item;
-                    if (classItem.Members.Any())
-                    {
-                        SetCodeItemVisibilityOnAccess(classItem.Members);
-                    }
-                }
-            }
+            return document;
         }
 
         /// <summary>
@@ -122,6 +101,7 @@ namespace CodeNav.Helpers
         /// <param name="condition">if condition is True visibility will be set to hidden</param>
         public static void SetControlVisibility(ColumnDefinition column, bool condition)
         {
+            if (column == null) return;
             column.Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
         }
     }

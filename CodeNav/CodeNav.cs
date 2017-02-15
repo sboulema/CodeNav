@@ -32,12 +32,12 @@ namespace CodeNav
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
         private readonly BackgroundWorker _backgroundWorker; 
-        private readonly Window _window;
+        public readonly Window Window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private List<string> _highlightedItems;
-        private List<CodeItem> _cache;   
+        private List<CodeItem> _cache;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
@@ -48,10 +48,10 @@ namespace CodeNav
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-            _window = GetWindow(textViewHost, dte);
+            Window = GetWindow(textViewHost, dte);
 
             // If we can not find the window we belong to we can not do anything
-            if (_window == null) return;
+            if (Window == null) return;
 
             // Setup the backgroundworker that will map the document to the codeitems
             _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -65,7 +65,7 @@ namespace CodeNav
 
             RegisterEvents();
 
-            LogHelper.Log($"CodeNav initialized for {_window.Caption}");
+            LogHelper.Log($"CodeNav initialized for {Window.Caption}");
         }
 
         /// <summary>
@@ -97,13 +97,10 @@ namespace CodeNav
             return null;
         }
 
-        public void UpdateDocument(Window gotFocus = null)
+        public void UpdateDocument()
         {
-            // Do we have a text document in the activated window
-            if (gotFocus?.Document == null) return;
-
             // Do we have code items in the text document
-            var elements = _window.ProjectItem.FileCodeModel?.CodeElements;
+            var elements = Window.ProjectItem.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
             // Do we have a cached version of this document
@@ -178,7 +175,7 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _codeViewUserControl = new CodeViewUserControl(dte, this) { DataContext = CodeDocumentViewModel };
+            _codeViewUserControl = new CodeViewUserControl(Window) { DataContext = CodeDocumentViewModel };
             grid.Children.Add(_codeViewUserControl);
 
             Grid.SetColumn(_codeViewUserControl, Settings.Default.UseLeftSide ? 0 : 2);
@@ -205,9 +202,9 @@ namespace CodeNav
 
         private void UpdateCurrentItem()
         {
-            if (_window.Document.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
+            if (Window.Document.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
 
-            var textSelection = _window.Document.Selection as TextSelection;
+            var textSelection = Window.Document.Selection as TextSelection;
 
             var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
 
@@ -254,8 +251,8 @@ namespace CodeNav
             }
 
             // Subscribe to Code window activated event
-            if (_window == null) return;
-            _windowEvents = _dte.Events.WindowEvents[_window];
+            if (Window == null) return;
+            _windowEvents = _dte.Events.WindowEvents[Window];
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
         }
@@ -267,8 +264,8 @@ namespace CodeNav
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(_window);
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
+        private void DocumentEvents_DocumentSaved(Document document) => _codeViewUserControl.UpdateDocument();
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _codeViewUserControl.UpdateDocument();
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -382,7 +379,15 @@ namespace CodeNav
         public void Dispose()
         {
             if (_isDisposed) return;
+
             UnRegisterEvents();
+
+            // If the backgroundworker is still doing something, stop it
+            if (_backgroundWorker.IsBusy)
+            {
+                _backgroundWorker.CancelAsync();
+            }
+
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }

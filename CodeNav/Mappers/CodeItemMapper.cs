@@ -18,6 +18,8 @@ namespace CodeNav.Mappers
         {
             var document = new List<CodeItem>();
 
+            if (elements == null) return document;
+
             foreach (CodeElement2 element in elements)
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace && element is CodeNamespace)
