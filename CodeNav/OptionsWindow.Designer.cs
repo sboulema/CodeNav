@@ -49,7 +49,8 @@
             this.useLeftSideComboBox.FormattingEnabled = true;
             this.useLeftSideComboBox.Items.AddRange(new object[] {
             "Left",
-            "Right"});
+            "Right",
+            "None"});
             this.useLeftSideComboBox.Location = new System.Drawing.Point(245, 12);
             this.useLeftSideComboBox.Name = "useLeftSideComboBox";
             this.useLeftSideComboBox.Size = new System.Drawing.Size(121, 21);
@@ -75,7 +76,7 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // OptionsToolWindow
+            // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -85,7 +86,7 @@
             this.Controls.Add(this.useLeftSideComboBox);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "OptionsToolWindow";
+            this.Name = "OptionsWindow";
             this.Text = "CodeNav - Options";
             this.Load += new System.EventHandler(this.OptionsToolWindow_Load);
             this.ResumeLayout(false);

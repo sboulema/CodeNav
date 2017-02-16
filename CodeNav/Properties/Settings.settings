@@ -35,8 +35,8 @@
     <Setting Name="ShowDelegates" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="UseLeftSide" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="MarginSide" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left</Value>
     </Setting>
     <Setting Name="ShowPublic" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

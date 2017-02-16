@@ -42,6 +42,11 @@ namespace CodeNav.ToolWindow
             _control.ShowWaitingForDocument();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            _control.Dispose();
+        }
+
         private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint) => _control.HighlightCurrentItem();
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(document.ActiveWindow);
 

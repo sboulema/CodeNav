@@ -10,8 +10,10 @@ Visual Studio extension to show the code structure of your current document
 - Sort by file order or by name 
 - Toggle visibility by double-clicking the splitter bar
 - Dark theme support
-- Show on the left or right side
+- Show as an editor margin (left side / right side / hidden) 
+- Show as a seperate toolwindow (View -> Other Windows -> CodeNav)
 - Filter items by kind (method, property) and access (public, private) 
+- Cursor position will be reflected by highlighting the current method in the list
 
 ## Language support
 Currently only C#
@@ -31,3 +33,6 @@ Currently only C#
 
 #### Options window
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
+
+#### Tool window
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 

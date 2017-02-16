@@ -34,7 +34,7 @@ namespace CodeNav
         /// </returns>
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            if (!Settings.Default.UseLeftSide) return null;
+            if (!Settings.Default.MarginSide.Equals("Left")) return null;
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             Logger.Initialize(_serviceProvider, "CodeNav");
@@ -71,7 +71,7 @@ namespace CodeNav
         /// </returns>
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            if (Settings.Default.UseLeftSide) return null;
+            if (!Settings.Default.MarginSide.Equals("Right")) return null;
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             Logger.Initialize(_serviceProvider, "CodeNav");

@@ -18,14 +18,14 @@ namespace CodeNav
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.UseLeftSide = useLeftSideComboBox.Text.Equals("Left");
+            Settings.Default.MarginSide = useLeftSideComboBox.Text;
             Settings.Default.Save();
             Close();
         }
 
         private void OptionsToolWindow_Load(object sender, EventArgs e)
         {
-            useLeftSideComboBox.SelectedItem = Settings.Default.UseLeftSide ? useLeftSideComboBox.Items[0] : useLeftSideComboBox.Items[1];
+            useLeftSideComboBox.SelectedItem = Settings.Default.MarginSide;
         }
     }
 }

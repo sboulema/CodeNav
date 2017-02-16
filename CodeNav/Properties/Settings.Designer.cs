@@ -157,13 +157,13 @@ namespace CodeNav.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseLeftSide {
+        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        public string MarginSide {
             get {
-                return ((bool)(this["UseLeftSide"]));
+                return ((string)(this["MarginSide"]));
             }
             set {
-                this["UseLeftSide"] = value;
+                this["MarginSide"] = value;
             }
         }
         

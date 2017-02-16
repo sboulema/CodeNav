@@ -22,7 +22,7 @@ namespace CodeNav
         private bool _isDisposed;
 
         public CodeDocumentViewModel CodeDocumentViewModel;
-        private CodeViewUserControl _codeViewUserControl;      
+        private CodeViewUserControl _control;      
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
@@ -46,7 +46,7 @@ namespace CodeNav
 
             // Add the view/content to the margin area
             _codeNavGrid = CreateGrid(textViewHost, dte);
-            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.UseLeftSide ? 0 : 2];
+            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide.Equals("Left") ? 0 : 2];
             Children.Add(_codeNavGrid);        
 
             RegisterEvents();
@@ -86,13 +86,13 @@ namespace CodeNav
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
         {
             var leftColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
-            if (!Settings.Default.UseLeftSide)
+            if (!Settings.Default.MarginSide.Equals("Left"))
             {
                 leftColumnWidth = new GridLength(0, GridUnitType.Star);
             }
 
             var rightColumnWidth = new GridLength(0, GridUnitType.Star);
-            if (!Settings.Default.UseLeftSide)
+            if (!Settings.Default.MarginSide.Equals("Left"))
             {
                 rightColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
             }
@@ -119,12 +119,12 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _codeViewUserControl = new CodeViewUserControl(_window) { DataContext = CodeDocumentViewModel };
-            grid.Children.Add(_codeViewUserControl);
+            _control = new CodeViewUserControl(_window) { DataContext = CodeDocumentViewModel };
+            grid.Children.Add(_control);
 
-            Grid.SetColumn(_codeViewUserControl, Settings.Default.UseLeftSide ? 0 : 2);
+            Grid.SetColumn(_control, Settings.Default.MarginSide.Equals("Left") ? 0 : 2);
             Grid.SetColumn(splitter, 1);
-            Grid.SetColumn(textViewHost.HostControl, Settings.Default.UseLeftSide ? 2 : 0);
+            Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide.Equals("Left") ? 2 : 0);
 
             return grid;
         }
@@ -148,9 +148,9 @@ namespace CodeNav
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!double.IsNaN(_codeViewUserControl.ActualWidth) && _codeViewUserControl.ActualWidth != 0)
+            if (!double.IsNaN(_control.ActualWidth) && _control.ActualWidth != 0)
             {
-                Settings.Default.Width = _codeViewUserControl.ActualWidth;
+                Settings.Default.Width = _control.ActualWidth;
                 Settings.Default.Save();
             }
         }
@@ -185,9 +185,9 @@ namespace CodeNav
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => _codeViewUserControl.UpdateDocument();
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _codeViewUserControl.UpdateDocument();
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _codeViewUserControl.HighlightCurrentItem();
+        private void DocumentEvents_DocumentSaved(Document document) => _control.UpdateDocument();
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _control.UpdateDocument();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
         #endregion
 
@@ -270,7 +270,10 @@ namespace CodeNav
         public void Dispose()
         {
             if (_isDisposed) return;
+
             UnRegisterEvents();
+            _control.Dispose();
+
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }

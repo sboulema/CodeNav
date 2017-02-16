@@ -141,7 +141,7 @@ namespace CodeNav
             }
 
             // If not show a loading item
-            if (DataContext == null)
+            if (DataContext == null || (DataContext as CodeDocumentViewModel).CodeDocument == null)
             {
                 DataContext = new CodeDocumentViewModel { CodeDocument = CreateLoadingItem() };
             }
@@ -252,6 +252,14 @@ namespace CodeNav
         {
             if (existingItems == null || newItems == null) return false;
             return existingItems.SequenceEqual(newItems, new CodeItemComparer());
+        }
+
+        public void Dispose()
+        {
+            if (_backgroundWorker.IsBusy && _backgroundWorker.CancellationPending == false)
+            {
+                _backgroundWorker.CancelAsync();
+            }
         }
     }
 }
