@@ -75,23 +75,25 @@
   <ItemGroup>
     <Compile Include="CodeNav.cs" />
     <Compile Include="CodeNavFactory.cs" />
-    <Compile Include="FilterToolWindow.cs">
+    <Compile Include="FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FilterToolWindow.Designer.cs">
-      <DependentUpon>FilterToolWindow.cs</DependentUpon>
+    <Compile Include="FilterWindow.Designer.cs">
+      <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\HighlightHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
+    <Compile Include="Models\BackgroundWorkerRequest.cs" />
+    <Compile Include="Models\BackgroundWorkerResult.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
-    <Compile Include="OptionsToolWindow.cs">
+    <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionsToolWindow.Designer.cs">
-      <DependentUpon>OptionsToolWindow.cs</DependentUpon>
+    <Compile Include="OptionsWindow.Designer.cs">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Tests\CodeNavTest.cs" />
     <Compile Include="Tests\CodeNavTestEmpty.cs" />
@@ -534,11 +536,11 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FilterToolWindow.resx">
-      <DependentUpon>FilterToolWindow.cs</DependentUpon>
+    <EmbeddedResource Include="FilterWindow.resx">
+      <DependentUpon>FilterWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionsToolWindow.resx">
-      <DependentUpon>OptionsToolWindow.cs</DependentUpon>
+    <EmbeddedResource Include="OptionsWindow.resx">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolWindow\VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>

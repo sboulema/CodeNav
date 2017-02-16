@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
-using CodeNav.Mappers;
 using CodeNav.Models;
 using CodeNav.Properties;
 using EnvDTE;
@@ -31,13 +27,11 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
-        private readonly BackgroundWorker _backgroundWorker; 
         public readonly Window Window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private List<string> _highlightedItems;
-        private List<CodeItem> _cache;
 
         public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
         {
@@ -52,11 +46,6 @@ namespace CodeNav
 
             // If we can not find the window we belong to we can not do anything
             if (Window == null) return;
-
-            // Setup the backgroundworker that will map the document to the codeitems
-            _backgroundWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            _backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 
             // Add the view/content to the margin area
             _codeNavGrid = CreateGrid(textViewHost, dte);
@@ -95,48 +84,6 @@ namespace CodeNav
             }
 
             return null;
-        }
-
-        public void UpdateDocument()
-        {
-            // Do we have code items in the text document
-            var elements = Window.ProjectItem.FileCodeModel?.CodeElements;
-            if (elements == null) return;
-
-            // Do we have a cached version of this document
-            if (_cache != null)
-            {
-                CodeDocumentViewModel.CodeDocument = _cache;
-            }
-
-            // If not show a loading item
-            if (CodeDocumentViewModel.CodeDocument == null)
-            {
-                CodeDocumentViewModel.CodeDocument = new List<CodeItem>
-                {
-                    new CodeClassItem
-                    {
-                        Name = "Loading...",
-                        FullName = "Loading...",
-                        Id = "Loading...",
-                        Foreground = new SolidColorBrush(Colors.Black),
-                        BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                        IconPath = "Icons/Refresh/Refresh_16x.xaml"
-                    }
-                };
-            }
-
-            // Is the backgroundworker already doing something, if so stop it
-            if (_backgroundWorker.IsBusy)
-            {
-                _backgroundWorker.CancelAsync();
-            }
-
-            // Start the backgroundworker to update the list of code items
-            if (!_backgroundWorker.CancellationPending)
-            {
-                _backgroundWorker.RunWorkerAsync(elements);
-            }            
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
@@ -268,36 +215,6 @@ namespace CodeNav
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _codeViewUserControl.UpdateDocument();
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
 
-        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var areEqual = CodeDocumentViewModel.CodeDocument.SequenceEqual((List<CodeItem>)e.Result, new CodeItemComparer());
-            if (areEqual)
-            {
-                stopwatch.Stop();
-                LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
-                return;
-            }
-
-            var codeItems = (List<CodeItem>) e.Result;
-            codeItems.RemoveAll(item => item == null);
-            CodeDocumentViewModel.CodeDocument = codeItems;
-            _cache = (List<CodeItem>)e.Result;
-
-            VisibilityHelper.SetControlVisibility(_codeNavColumn, !CodeDocumentViewModel.CodeDocument.Any());
-            HighlightHelper.SetForeground(CodeDocumentViewModel?.CodeDocument);
-
-            stopwatch.Stop();
-            LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
-        }
-
-        private static void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            e.Result = CodeItemMapper.MapDocument((CodeElements)e.Argument);
-        }
-
         #endregion
 
         #region IWpfTextViewMargin
@@ -379,15 +296,7 @@ namespace CodeNav
         public void Dispose()
         {
             if (_isDisposed) return;
-
             UnRegisterEvents();
-
-            // If the backgroundworker is still doing something, stop it
-            if (_backgroundWorker.IsBusy)
-            {
-                _backgroundWorker.CancelAsync();
-            }
-
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }

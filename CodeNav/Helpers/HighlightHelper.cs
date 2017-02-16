@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
@@ -59,6 +55,8 @@ namespace CodeNav.Helpers
 
         public static void SetForeground(IEnumerable<CodeItem> items)
         {
+            if (items == null) return;
+
             foreach (var item in items)
             {
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);

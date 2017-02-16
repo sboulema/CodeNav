@@ -36,8 +36,8 @@ namespace CodeNav.ToolWindow
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
 
             // Load the content for the toolwindow for the first time
-            _control.SetWindow(_dte.ActiveWindow);
-            _control.UpdateDocument();
+            //_control.SetWindow(_dte.ActiveWindow);
+            //_control.UpdateDocument();
         }
 
         private void DocumentEvents_DocumentSaved(Document document)
