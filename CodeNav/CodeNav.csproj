@@ -73,8 +73,8 @@
     <DeployExtension Condition=" '$(AppVeyor)' != '' ">False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CodeNav.cs" />
-    <Compile Include="CodeNavFactory.cs" />
+    <Compile Include="CodeNavMargin.cs" />
+    <Compile Include="CodeNavMarginFactory.cs" />
     <Compile Include="FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -17,7 +16,7 @@ using Window = EnvDTE.Window;
 
 namespace CodeNav
 {
-    public class CodeNav : DockPanel, IWpfTextViewMargin
+    public class CodeNavMargin : DockPanel, IWpfTextViewMargin
     {
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
@@ -27,25 +26,23 @@ namespace CodeNav
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
         private readonly DocumentEvents _documentEvents;
-        public readonly Window Window;
+        private readonly Window _window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
-        private List<string> _highlightedItems;
 
-        public CodeNav(IWpfTextViewHost textViewHost, DTE dte)
+        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte)
         {
-            _highlightedItems = new List<string>();
             CodeDocumentViewModel = new CodeDocumentViewModel();
 
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
             _documentEvents = dte.Events.DocumentEvents;
-            Window = GetWindow(textViewHost, dte);
+            _window = GetWindow(textViewHost, dte);
 
             // If we can not find the window we belong to we can not do anything
-            if (Window == null) return;
+            if (_window == null) return;
 
             // Add the view/content to the margin area
             _codeNavGrid = CreateGrid(textViewHost, dte);
@@ -54,7 +51,7 @@ namespace CodeNav
 
             RegisterEvents();
 
-            LogHelper.Log($"CodeNav initialized for {Window.Caption}");
+            LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
         /// <summary>
@@ -122,7 +119,7 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _codeViewUserControl = new CodeViewUserControl(Window) { DataContext = CodeDocumentViewModel };
+            _codeViewUserControl = new CodeViewUserControl(_window) { DataContext = CodeDocumentViewModel };
             grid.Children.Add(_codeViewUserControl);
 
             Grid.SetColumn(_codeViewUserControl, Settings.Default.UseLeftSide ? 0 : 2);
@@ -145,28 +142,6 @@ namespace CodeNav
             ((GridSplitter)_codeNavGrid.Children[0]).Background =
                 ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
             HighlightHelper.SetForeground(CodeDocumentViewModel?.CodeDocument);
-        }
-
-        private void UpdateCurrentItem()
-        {
-            if (Window.Document.Selection == null || CodeDocumentViewModel?.CodeDocument == null) return;
-
-            var textSelection = Window.Document.Selection as TextSelection;
-
-            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
-
-            if (currentFunctionElement == null)
-            {
-                HighlightHelper.UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
-                return;
-            }
-
-            HighlightHelper.UnHighlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
-
-            _highlightedItems = new List<string>();
-            HighlightHelper.GetItemsToHighlight(_highlightedItems, currentFunctionElement);
-
-            HighlightHelper.Highlight(CodeDocumentViewModel.CodeDocument, _highlightedItems);
         }
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
@@ -198,8 +173,8 @@ namespace CodeNav
             }
 
             // Subscribe to Code window activated event
-            if (Window == null) return;
-            _windowEvents = _dte.Events.WindowEvents[Window];
+            if (_window == null) return;
+            _windowEvents = _dte.Events.WindowEvents[_window];
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
         }
@@ -213,7 +188,7 @@ namespace CodeNav
 
         private void DocumentEvents_DocumentSaved(Document document) => _codeViewUserControl.UpdateDocument();
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _codeViewUserControl.UpdateDocument();
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => UpdateCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _codeViewUserControl.HighlightCurrentItem();
 
         #endregion
 
@@ -291,7 +266,7 @@ namespace CodeNav
         }
 
         /// <summary>
-        /// Disposes an instance of <see cref="CodeNav"/> class.
+        /// Disposes an instance of <see cref="CodeNavMargin"/> class.
         /// </summary>
         public void Dispose()
         {

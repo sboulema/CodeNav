@@ -11,6 +11,7 @@ namespace CodeNav.ToolWindow
         private readonly CodeViewUserControl _control;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
+        private TextEditorEvents _textEditorEvents;
         private DTE _dte;
 
         /// <summary>
@@ -32,23 +33,16 @@ namespace CodeNav.ToolWindow
             _documentEvents = _dte.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
+            _textEditorEvents = _dte.Events.TextEditorEvents;
+            _textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
+
             _windowEvents = _dte.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
-
-            // Load the content for the toolwindow for the first time
-            //_control.SetWindow(_dte.ActiveWindow);
-            //_control.UpdateDocument();
         }
 
-        private void DocumentEvents_DocumentSaved(Document document)
-        {
-            UpdateDocument(document.ActiveWindow);
-        }
-
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
-        {
-            UpdateDocument(gotFocus);
-        }
+        private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint) => _control.HighlightCurrentItem();
+        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(document.ActiveWindow);
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
 
         private void UpdateDocument(Window window)
         {

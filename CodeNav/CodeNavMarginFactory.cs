@@ -12,12 +12,12 @@ namespace CodeNav
     /// Export a <see cref="IWpfTextViewMarginProvider"/>, which returns an instance of the margin for the editor to use.
     /// </summary>
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name(CodeNav.MarginName + "Left")]
+    [Name(CodeNavMargin.MarginName + "Left")]
     [Order(Before = PredefinedMarginNames.Left)]         // Ensure that the margin occurs left of the editor window
     [MarginContainer(PredefinedMarginNames.Left)]       // Set the container to the left of the editor window
     [ContentType("CSharp")]                             // Show this margin for all code-based types
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]  // This is to prevent the margin from loading in the diff view
-    internal sealed class CodeNavFactory : IWpfTextViewMarginProvider
+    internal sealed class CodeNavMarginFactory : IWpfTextViewMarginProvider
     {
         [Import(typeof(SVsServiceProvider))]
         private IServiceProvider _serviceProvider;
@@ -38,7 +38,7 @@ namespace CodeNav
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             Logger.Initialize(_serviceProvider, "CodeNav");
-            var codeNav = new CodeNav(wpfTextViewHost, dte);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte);
             return codeNav;
         }
 
@@ -49,7 +49,7 @@ namespace CodeNav
     /// Export a <see cref="IWpfTextViewMarginProvider"/>, which returns an instance of the margin for the editor to use.
     /// </summary>
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name(CodeNav.MarginName + "Right")]
+    [Name(CodeNavMargin.MarginName + "Right")]
     [Order(After = PredefinedMarginNames.RightControl)]  // Ensure that the margin occurs after the vertical scrollbar
     [MarginContainer(PredefinedMarginNames.Right)]       // Set the container to the right of the editor window
     [ContentType("CSharp")]                              // Show this margin for all code-based types
@@ -75,7 +75,7 @@ namespace CodeNav
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             Logger.Initialize(_serviceProvider, "CodeNav");
-            var codeNav = new CodeNav(wpfTextViewHost, dte);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte);
             return codeNav;
         }
 

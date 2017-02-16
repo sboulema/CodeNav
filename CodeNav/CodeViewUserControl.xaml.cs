@@ -22,12 +22,14 @@ namespace CodeNav
     {
         private Window _window;
         private List<CodeItem> _cache;
+        private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
 
         public CodeViewUserControl(Window window)
         {
             InitializeComponent();
             _window = window;
+            _highlightedItems = new List<string>();
 
             _backgroundWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
             _backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -82,6 +84,8 @@ namespace CodeNav
             }
         }
 
+        #region Button Events
+
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
             UpdateDocument();
@@ -117,6 +121,8 @@ namespace CodeNav
         {
             new OptionsWindow().ShowDialog();
         }
+
+        #endregion
 
         public void UpdateDocument(bool forceUpdate = false)
         {
@@ -163,6 +169,14 @@ namespace CodeNav
                     IconPath = "Icons/Refresh/Refresh_16x.xaml"
                 }
             };
+        }
+
+        public void HighlightCurrentItem()
+        {
+            DataContext = new CodeDocumentViewModel
+            {
+                CodeDocument = HighlightHelper.HighlightCurrentItem(_window, ((CodeDocumentViewModel)DataContext).CodeDocument, _highlightedItems)
+            };           
         }
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

@@ -11,7 +11,31 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static void UnHighlight(List<CodeItem> document, List<string> itemNames)
+        public static List<CodeItem> HighlightCurrentItem(Window window, List<CodeItem> codeItems, List<string> highlightedItems)
+        {
+            if (window.Selection == null || codeItems == null) return codeItems;
+
+            var textSelection = window.Selection as TextSelection;
+
+            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
+
+            if (currentFunctionElement == null)
+            {
+                UnHighlight(codeItems, highlightedItems);
+                return codeItems;
+            }
+
+            UnHighlight(codeItems, highlightedItems);
+
+            highlightedItems = new List<string>();
+            GetItemsToHighlight(highlightedItems, currentFunctionElement);
+
+            Highlight(codeItems, highlightedItems);
+
+            return codeItems;
+        }
+
+        private static void UnHighlight(List<CodeItem> document, List<string> itemNames)
         {
             foreach (var name in itemNames)
             {
@@ -27,7 +51,7 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static void Highlight(List<CodeItem> document, List<string> itemNames)
+        private static void Highlight(List<CodeItem> document, List<string> itemNames)
         {
             foreach (var name in itemNames)
             {
@@ -43,7 +67,7 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static void GetItemsToHighlight(List<string> list, CodeElement element)
+        private static void GetItemsToHighlight(List<string> list, CodeElement element)
         {
             list.Add(element.FullName);
 
