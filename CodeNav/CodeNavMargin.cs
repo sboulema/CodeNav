@@ -141,7 +141,6 @@ namespace CodeNav
         {
             ((GridSplitter)_codeNavGrid.Children[0]).Background =
                 ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
-            HighlightHelper.SetForeground(CodeDocumentViewModel?.CodeDocument);
         }
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 

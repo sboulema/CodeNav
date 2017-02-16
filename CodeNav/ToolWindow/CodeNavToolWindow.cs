@@ -1,4 +1,8 @@
-﻿using EnvDTE;
+﻿using System;
+using EnvDTE;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace CodeNav.ToolWindow
 {
@@ -11,7 +15,6 @@ namespace CodeNav.ToolWindow
         private readonly CodeViewUserControl _control;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
-        private TextEditorEvents _textEditorEvents;
         private DTE _dte;
 
         /// <summary>
@@ -33,24 +36,60 @@ namespace CodeNav.ToolWindow
             _documentEvents = _dte.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
-            _textEditorEvents = _dte.Events.TextEditorEvents;
-            _textEditorEvents.LineChanged += TextEditorEvents_LineChanged;
-
             _windowEvents = _dte.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+
+            _control.ShowWaitingForDocument();
         }
 
         private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint) => _control.HighlightCurrentItem();
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(document.ActiveWindow);
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => UpdateDocument(gotFocus);
 
-        private void UpdateDocument(Window window)
+        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
+        {
+            // Wire up reference for Caret events
+            var textViewHost = GetCurrentViewHost();
+            if (textViewHost != null)
+            {
+                textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
+            }          
+
+            UpdateDocument(gotFocus, gotFocus != lostFocus);
+        }
+
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
+
+        private void UpdateDocument(Window window, bool forceUpdate = false)
         {
             // If the activated window does not have code we are not interested
             if (window.Document == null) return;
 
             _control.SetWindow(window);
-            _control.UpdateDocument();
+            _control.UpdateDocument(forceUpdate);
+        }
+
+        private IWpfTextViewHost GetCurrentViewHost()
+        {
+            // code to get access to the editor's currently selected text cribbed from
+            // http://msdn.microsoft.com/en-us/library/dd884850.aspx
+            IVsTextManager txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
+            IVsTextView vTextView = null;
+            int mustHaveFocus = 1;
+            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
+            IVsUserData userData = vTextView as IVsUserData;
+            if (userData == null)
+            {
+                return null;
+            }
+            else
+            {
+                IWpfTextViewHost viewHost;
+                object holder;
+                Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
+                userData.GetData(ref guidViewHost, out holder);
+                viewHost = (IWpfTextViewHost)holder;
+                return viewHost;
+            }
         }
     }
 }

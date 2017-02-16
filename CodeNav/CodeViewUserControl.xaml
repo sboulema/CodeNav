@@ -127,7 +127,7 @@
         <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,0,0,0">
             <Button.Template>
                 <ControlTemplate>
-                    <Frame Source="Icons/Refresh/Refresh_16x.xaml" />
+                    <Frame Source="Icons/Special/Refresh_16x.xaml" />
                 </ControlTemplate>
             </Button.Template>
         </Button>

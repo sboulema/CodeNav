@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using CodeNav.Models;
@@ -11,9 +12,16 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static List<CodeItem> HighlightCurrentItem(Window window, List<CodeItem> codeItems, List<string> highlightedItems)
+        public static List<CodeItem> HighlightCurrentItem(Window window, List<CodeItem> codeItems)
         {
-            if (window.Selection == null || codeItems == null) return codeItems;
+            try
+            {
+                if (codeItems == null || window?.Selection == null) return codeItems;
+            }
+            catch (Exception)
+            {
+                return codeItems;
+            }          
 
             var textSelection = window.Selection as TextSelection;
 
@@ -21,13 +29,13 @@ namespace CodeNav.Helpers
 
             if (currentFunctionElement == null)
             {
-                UnHighlight(codeItems, highlightedItems);
+                UnHighlight(codeItems);
                 return codeItems;
             }
 
-            UnHighlight(codeItems, highlightedItems);
+            UnHighlight(codeItems);
 
-            highlightedItems = new List<string>();
+            var highlightedItems = new List<string>();
             GetItemsToHighlight(highlightedItems, currentFunctionElement);
 
             Highlight(codeItems, highlightedItems);
@@ -35,18 +43,21 @@ namespace CodeNav.Helpers
             return codeItems;
         }
 
-        private static void UnHighlight(List<CodeItem> document, List<string> itemNames)
+        private static void UnHighlight(List<CodeItem> document)
         {
-            foreach (var name in itemNames)
+            foreach (var item in document)
             {
-                var item = FindCodeItem(document, name);
-                if (item == null) return;
-
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
                 if (item is CodeClassItem)
                 {
-                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                    var classItem = (CodeClassItem)item;
+                    classItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                    
+                    if (classItem.Members.Any())
+                    {
+                        UnHighlight(classItem.Members);
+                    }
                 }
             }
         }

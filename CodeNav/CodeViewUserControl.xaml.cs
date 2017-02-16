@@ -22,14 +22,12 @@ namespace CodeNav
     {
         private Window _window;
         private List<CodeItem> _cache;
-        private List<string> _highlightedItems;
         private readonly BackgroundWorker _backgroundWorker;
 
         public CodeViewUserControl(Window window)
         {
             InitializeComponent();
             _window = window;
-            _highlightedItems = new List<string>();
 
             _backgroundWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
             _backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -130,6 +128,12 @@ namespace CodeNav
             var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
             if (elements == null) return;
 
+            if (forceUpdate)
+            {
+                _cache = null;
+                DataContext = null;
+            }
+
             // Do we have a cached version of this document
             if (_cache != null)
             {
@@ -166,8 +170,35 @@ namespace CodeNav
                     Id = "Loading...",
                     Foreground = new SolidColorBrush(Colors.Black),
                     BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/Refresh/Refresh_16x.xaml"
+                    IconPath = "Icons/Special/Refresh_16x.xaml"
                 }
+            };
+        }
+
+        private static List<CodeItem> CreateSelectDocumentItem()
+        {
+            return new List<CodeItem>
+            {
+                new CodeClassItem
+                {
+                    Name = "Waiting for active code document...",
+                    FullName = "Waiting for active code document...",
+                    Id = "Waiting for active code document...",
+                    Foreground = new SolidColorBrush(Colors.Black),
+                    BorderBrush = new SolidColorBrush(Colors.DarkGray),
+                    IconPath = "Icons/Special/DocumentOutline_16x.xaml"
+                }
+            };
+        }
+
+        /// <summary>
+        /// Show an item to indicate that the user has to select an active code document to inspect
+        /// </summary>
+        public void ShowWaitingForDocument()
+        {
+            DataContext = new CodeDocumentViewModel
+            {
+                CodeDocument = CreateSelectDocumentItem()
             };
         }
 
@@ -175,7 +206,7 @@ namespace CodeNav
         {
             DataContext = new CodeDocumentViewModel
             {
-                CodeDocument = HighlightHelper.HighlightCurrentItem(_window, ((CodeDocumentViewModel)DataContext).CodeDocument, _highlightedItems)
+                CodeDocument = HighlightHelper.HighlightCurrentItem(_window, ((CodeDocumentViewModel)DataContext).CodeDocument)
             };           
         }
 
