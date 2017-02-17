@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 using CodeNav.Properties;
 
@@ -18,14 +19,21 @@ namespace CodeNav
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.MarginSide = useLeftSideComboBox.Text;
+            Settings.Default.MarginSide = marginSideComboBox.Text;
+            Settings.Default.Font = fontDialog1.Font;
             Settings.Default.Save();
             Close();
         }
 
         private void OptionsToolWindow_Load(object sender, EventArgs e)
         {
-            useLeftSideComboBox.SelectedItem = Settings.Default.MarginSide;
+            marginSideComboBox.SelectedItem = Settings.Default.MarginSide;
+            fontDialog1.Font = Settings.Default.Font;
+        }
+
+        private void fontButton_Click(object sender, EventArgs e)
+        {           
+            fontDialog1.ShowDialog();
         }
     }
 }

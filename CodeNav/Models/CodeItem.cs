@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -18,6 +17,64 @@ namespace CodeNav.Models
         internal string FullName;
         internal CodeItemKindEnum Kind;
         internal CodeItemAccessEnum Access;
+
+        #region Fonts
+        private float _fontSize;
+        public float FontSize
+        {
+            get
+            {
+                return _fontSize;
+            }
+            set
+            {
+                _fontSize = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private float _parameterFontSize;
+        public float ParameterFontSize
+        {
+            get
+            {
+                return _parameterFontSize;
+            }
+            set
+            {
+                _parameterFontSize = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private FontFamily _fontFamily;
+        public FontFamily FontFamily
+        {
+            get
+            {
+                return _fontFamily;
+            }
+            set
+            {
+                _fontFamily = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private FontStyle _fontStyle;
+        public FontStyle FontStyle
+        {
+            get
+            {
+                return _fontStyle;
+            }
+            set
+            {
+                _fontStyle = value;
+                NotifyOfPropertyChange();
+            }
+        }
+        #endregion
 
         #region IsVisible
         private Visibility _visibility;

@@ -85,6 +85,7 @@
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
+    <Compile Include="Mappers\FontStyleMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
     <Compile Include="Models\BackgroundWorkerResult.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Properties;
 using EnvDTE;
 using EnvDTE80;
 // ReSharper disable SuspiciousTypeConversion.Global
@@ -51,6 +52,12 @@ namespace CodeNav.Mappers
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Tooltip = element.FullName;
             element.Access = MapAccessToEnum(source);
+
+            element.FontSize = Settings.Default.Font.SizeInPoints;
+            element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
+            element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
+            element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
+
             return element;
         }
 

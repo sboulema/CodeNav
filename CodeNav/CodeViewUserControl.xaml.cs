@@ -118,6 +118,7 @@ namespace CodeNav
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
             new OptionsWindow().ShowDialog();
+            UpdateDocument(true);
         }
 
         #endregion
