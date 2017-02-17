@@ -16,6 +16,10 @@ namespace CodeNav.Helpers
                 {
                     (item as CodeClassItem).Members = SortByName((item as CodeClassItem).Members);
                 }
+                if (item is CodeNamespaceItem)
+                {
+                    (item as CodeNamespaceItem).Members = SortByName((item as CodeNamespaceItem).Members);
+                }
             }
 
             return document;
@@ -30,6 +34,10 @@ namespace CodeNav.Helpers
                 if (item is CodeClassItem)
                 {
                     (item as CodeClassItem).Members = SortByFile((item as CodeClassItem).Members);
+                }
+                if (item is CodeNamespaceItem)
+                {
+                    (item as CodeNamespaceItem).Members = SortByFile((item as CodeNamespaceItem).Members);
                 }
             }
 

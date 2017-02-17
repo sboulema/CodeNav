@@ -47,6 +47,20 @@ namespace CodeNav.Models
             }
         }
 
+        private float _regionFontSize;
+        public float RegionFontSize
+        {
+            get
+            {
+                return _regionFontSize;
+            }
+            set
+            {
+                _regionFontSize = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
         private FontFamily _fontFamily;
         public FontFamily FontFamily
         {
@@ -122,6 +136,10 @@ namespace CodeNav.Models
             if (x is CodeClassItem && y is CodeClassItem)
             {
                 membersAreEqual = (x as CodeClassItem).Members.SequenceEqual((y as CodeClassItem).Members, new CodeItemComparer());
+            }
+            if (x is CodeNamespaceItem && y is CodeNamespaceItem)
+            {
+                membersAreEqual = (x as CodeNamespaceItem).Members.SequenceEqual((y as CodeNamespaceItem).Members, new CodeItemComparer());
             }
 
             return x != null && y != null && x.Id.Equals(y.Id) && membersAreEqual;

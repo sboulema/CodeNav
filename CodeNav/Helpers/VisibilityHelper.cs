@@ -35,6 +35,21 @@ namespace CodeNav.Helpers
                     {
                         SetCodeItemVisibility(classItem.Members, name);
                     }
+                    item.IsVisible = classItem.Members.Any(m => m.IsVisible == Visibility.Visible)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
+
+                if (item is CodeNamespaceItem)
+                {
+                    var nsItem = (CodeNamespaceItem)item;
+                    if (nsItem.Members.Any())
+                    {
+                        SetCodeItemVisibility(nsItem.Members, name);
+                    }
+                    item.IsVisible = nsItem.Members.Any(m => m.IsVisible == Visibility.Visible)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
                 }
             }
 

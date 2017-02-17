@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:CodeNav.Models"
              xmlns:converters="clr-namespace:CodeNav.Converters"
              xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:controls="clr-namespace:CodeNav.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -20,9 +21,13 @@
                 </ResourceDictionary>
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
-                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth, 
-                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}">
+                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}">
+                            <Expander.Width>
+                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
+                                </MultiBinding>
+                            </Expander.Width>
                             <Expander.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
@@ -37,7 +42,7 @@
                             <Expander.Header>
                                 <TextBlock Text="{Binding Name}" 
                                            FontFamily="{Binding FontFamily}" 
-                                           FontSize="{Binding ParameterFontSize}" 
+                                           FontSize="{Binding RegionFontSize}" 
                                            FontStyle="{Binding FontStyle}"
                                            FontWeight="SemiBold" 
                                            Foreground="DarkGray" />
@@ -55,8 +60,14 @@
 
                     <DataTemplate DataType="{x:Type models:CodeClassItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth, 
-                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" BorderBrush="{Binding BorderBrush}">
+                                  BorderBrush="{Binding BorderBrush}"
+                                  HorizontalAlignment="Left">
+                            <Expander.Width>
+                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
+                                </MultiBinding>
+                            </Expander.Width>
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
@@ -85,9 +96,31 @@
                         </Expander>
                     </DataTemplate>
 
+                    <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
+                        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" 
+                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent">
+                            <ItemsControl.Width>
+                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ListBox}}"/>
+                                </MultiBinding>
+                            </ItemsControl.Width>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                        </ItemsControl>
+                    </DataTemplate>
+
                     <DataTemplate DataType="{x:Type models:CodeItem}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" MaxWidth="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, 
-                            Path=ActualWidth, Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=15}" ToolTip="{Binding Tooltip}">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}"  ToolTip="{Binding Tooltip}">
+                            <StackPanel.MaxWidth>
+                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ListBox}}"/>
+                                </MultiBinding>
+                            </StackPanel.MaxWidth>
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
                             <TextBlock>
                                 <Run Text="{Binding Name}" 
@@ -109,37 +142,6 @@
                         </StackPanel>
                     </DataTemplate>
 
-                    <DataTemplate x:Key="CodeDocumentTemplate">
-                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth, 
-                                  Converter={StaticResource WidthMinusMarginConverter}, ConverterParameter=6}" BorderBrush="{Binding BorderBrush}">
-                            <Expander.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
-                                    <TextBlock>
-                                        <Run Text="{Binding Name}" 
-                                             FontFamily="{Binding FontFamily}" 
-                                             FontSize="{Binding FontSize}" 
-                                             FontStyle="{Binding FontStyle}"
-                                             Foreground="{Binding Foreground}" />
-                                        <Run Text="{Binding Parameters}" 
-                                             FontFamily="{Binding FontFamily}" 
-                                             FontSize="{Binding ParameterFontSize}" 
-                                             FontStyle="{Binding FontStyle}"
-                                             Foreground="DarkGray" />
-                                    </TextBlock>
-                                </StackPanel>
-                            </Expander.Header>
-                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Visibility" Value="{Binding IsVisible}"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </Expander>
-                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -147,101 +149,26 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="19" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition>
-                <RowDefinition.Style>
-                    <Style TargetType="{x:Type RowDefinition}">
-                        <Setter Property="Height" Value="Auto" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowFilterToolbar}" Value="False">
-                                <Setter Property="Height" Value="0" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </RowDefinition.Style>
-            </RowDefinition>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,3,0,0">
-            <Button.Template>
-                <ControlTemplate>
-                    <Frame Source="Icons/Special/Refresh_16x.xaml" />
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
-
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto">
-            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" >
-                <RadioButton.Template>
-                    <ControlTemplate>
-                        <Frame Source="Icons/Sort/SortingGrouping_16x.xaml"/>
-                    </ControlTemplate>
-                </RadioButton.Template>
-            </RadioButton>
-            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
-                <RadioButton.Template>
-                    <ControlTemplate>
-                        <Frame Source="Icons/Sort/SortAscending_16x.xaml"/>
-                    </ControlTemplate>
-                </RadioButton.Template>
-            </RadioButton>
-        </StackPanel>
-
-        <Button Grid.Column="2" Click="ButtonOptions_OnClick" HorizontalAlignment="Right" Margin="0,3,3,0" ToolTip="CodeNav options">
-            <Button.Template>
-                <ControlTemplate>
-                    <Frame Source="Icons/Special/Settings_16x.xaml" />
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
-
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBox x:Name="FilterTextBox" Margin="4,3,3,0" ToolTip="Text to filter the CodeNav contents by" TextChanged="TextBoxBase_OnTextChanged"/>
-            <TextBlock IsHitTestVisible="False" Text="Enter text to filter by..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
-                <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=FilterTextBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
-        </Grid>
-
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Width="Auto" Margin="0,-3,3,-3" Visibility="{Binding ShowFilterToolbarVisibility}">
-            <Button Click="ButtonClear_OnClick" ToolTip="Click to clear text filter contents">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Frame Source="Icons/Special/DeleteFilter_16x.xaml" />
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-
-            <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Frame Source="Icons/Special/Filter_16x.xaml" />
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </StackPanel>
         
-        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
-            <ListBox x:Name="CodeDocumentListBox" ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
-                BorderThickness="0" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
-                Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />
+        <controls:MainToolbar DataContext="{Binding}" />
+
+        <controls:FilterToolbar Grid.Row="1" DataContext="{Binding}" Visibility="{Binding ShowFilterToolbarVisibility}"/>
+
+        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
+            <ListBox ItemsSource="{Binding CodeDocument}"
+                     BorderThickness="0" 
+                     ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
+                     Padding="0,2,0,0" 
+                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" 
+                     Background="Transparent" 
+                     Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
         </ScrollViewer>
-
     </Grid>
-
+    
 </UserControl>

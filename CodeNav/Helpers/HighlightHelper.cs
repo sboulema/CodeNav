@@ -59,6 +59,15 @@ namespace CodeNav.Helpers
                         UnHighlight(classItem.Members);
                     }
                 }
+
+                if (item is CodeNamespaceItem)
+                {
+                    var nsItem = (CodeNamespaceItem)item;
+                    if (nsItem.Members.Any())
+                    {
+                        UnHighlight(nsItem.Members);
+                    }
+                }
             }
         }
 
@@ -104,6 +113,15 @@ namespace CodeNav.Helpers
                         SetForeground(classItem.Members);
                     }
                 }
+
+                if (item is CodeNamespaceItem)
+                {
+                    var nsItem = (CodeNamespaceItem)item;
+                    if (nsItem.Members.Any())
+                    {
+                        SetForeground(nsItem.Members);
+                    }
+                }
             }
         }
 
@@ -128,6 +146,19 @@ namespace CodeNav.Helpers
                     if (classItem.Members.Any())
                     {
                         var found = FindCodeItem(classItem.Members, itemFullName);
+                        if (found != null)
+                        {
+                            return found;
+                        }
+                    }
+                }
+
+                if (item is CodeNamespaceItem)
+                {
+                    var nsItem = (CodeNamespaceItem)item;
+                    if (nsItem.Members.Any())
+                    {
+                        var found = FindCodeItem(nsItem.Members, itemFullName);
                         if (found != null)
                         {
                             return found;

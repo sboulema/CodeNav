@@ -23,13 +23,7 @@ namespace CodeNav.Mappers
 
             foreach (CodeElement2 element in elements)
             {
-                if (element.Kind == vsCMElement.vsCMElementNamespace && element is CodeNamespace)
-                {
-                    foreach (CodeElement2 namespaceMember in (element as CodeNamespace).Members)
-                    {
-                        document.Add(MapMember(namespaceMember));
-                    }
-                }
+                document.Add(MapMember(element));
             }
 
             return document;
@@ -55,6 +49,7 @@ namespace CodeNav.Mappers
 
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
+            element.RegionFontSize = Settings.Default.Font.SizeInPoints - 2;
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
 
@@ -83,43 +78,44 @@ namespace CodeNav.Mappers
 
         private static CodeItem MapMember(CodeElement2 element)
         {
-            if (element.Kind == vsCMElement.vsCMElementFunction)
+            switch (element.Kind)
             {
-                return MapFunction(element);
+                case vsCMElement.vsCMElementFunction:
+                    return MapFunction(element);
+                case vsCMElement.vsCMElementEnum:
+                    return MapEnum(element);
+                case vsCMElement.vsCMElementInterface:
+                    return MapInterface(element);
+                case vsCMElement.vsCMElementVariable:
+                    return MapVariable(element);
+                case vsCMElement.vsCMElementProperty:
+                    return MapProperty(element);
+                case vsCMElement.vsCMElementStruct:
+                    return MapStruct(element);
+                case vsCMElement.vsCMElementClass:
+                    return MapClass(element);
+                case vsCMElement.vsCMElementEvent:
+                    return MapEvent(element);
+                case vsCMElement.vsCMElementDelegate:
+                    return MapDelegate(element);
+                case vsCMElement.vsCMElementNamespace:
+                    return MapNamespace(element);
+                default:
+                    return null;
             }
-            if (element.Kind == vsCMElement.vsCMElementEnum)
+        }
+
+        private static CodeNamespaceItem MapNamespace(CodeElement element)
+        {
+            var namespaceType = element as CodeNamespace;
+            if (namespaceType == null) return null;
+
+            var item = MapBase<CodeNamespaceItem>(element);
+            foreach (CodeElement2 namespaceMember in namespaceType.Members)
             {
-                return MapEnum(element);
+                item.Members.Add(MapMember(namespaceMember));
             }
-            if (element.Kind == vsCMElement.vsCMElementInterface)
-            {
-                return MapInterface(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementVariable)
-            {
-                return MapVariable(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementProperty)
-            {
-                return MapProperty(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementStruct)
-            {
-                return MapStruct(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementClass)
-            {
-                return MapClass(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementEvent)
-            {
-                return MapEvent(element);
-            }
-            if (element.Kind == vsCMElement.vsCMElementDelegate)
-            {
-                return MapDelegate(element);
-            }
-            return null;
+            return item;
         }
 
         private static CodeClassItem MapEnum(CodeElement2 element)
@@ -491,7 +487,8 @@ namespace CodeNav.Mappers
                     access = (element as CodeClass).Access;
                     break;
                 case vsCMElement.vsCMElementFunction:
-                    if ((element as CodeFunction2).OverrideKind == (vsCMOverrideKind.vsCMOverrideKindOverride | vsCMOverrideKind.vsCMOverrideKindSealed))
+                    if ((element as CodeFunction2).OverrideKind ==
+                        (vsCMOverrideKind.vsCMOverrideKindOverride | vsCMOverrideKind.vsCMOverrideKindSealed))
                         return CodeItemAccessEnum.Sealed;
                     access = (element as CodeFunction).Access;
                     break;
@@ -499,7 +496,8 @@ namespace CodeNav.Mappers
                     access = (element as CodeVariable).Access;
                     break;
                 case vsCMElement.vsCMElementProperty:
-                    if ((element as CodeProperty2).OverrideKind == (vsCMOverrideKind.vsCMOverrideKindOverride | vsCMOverrideKind.vsCMOverrideKindSealed))
+                    if ((element as CodeProperty2).OverrideKind ==
+                        (vsCMOverrideKind.vsCMOverrideKindOverride | vsCMOverrideKind.vsCMOverrideKindSealed))
                         return CodeItemAccessEnum.Sealed;
                     access = (element as CodeProperty).Access;
                     break;
@@ -517,6 +515,9 @@ namespace CodeNav.Mappers
                     break;
                 case vsCMElement.vsCMElementDelegate:
                     access = (element as CodeDelegate).Access;
+                    break;
+                case vsCMElement.vsCMElementNamespace:
+                    access = vsCMAccess.vsCMAccessDefault;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

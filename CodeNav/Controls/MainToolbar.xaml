@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="CodeNav.Controls.MainToolbar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,3,0,0">
+            <Button.Template>
+                <ControlTemplate>
+                    <Frame Source="../Icons/UI/Refresh_16x.xaml" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="0,3,0,0">
+            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" >
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <Frame Source="../Icons/Sort/SortingGrouping_16x.xaml"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
+                <RadioButton.Template>
+                    <ControlTemplate>
+                        <Frame Source="../Icons/Sort/SortAscending_16x.xaml"/>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+        </StackPanel>
+
+        <Button Grid.Column="2" Click="ButtonOptions_OnClick" HorizontalAlignment="Right" Margin="0,3,3,0" ToolTip="CodeNav options">
+            <Button.Template>
+                <ControlTemplate>
+                    <Frame Source="../Icons/UI/Settings_16x.xaml" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+    </Grid>
+</UserControl>

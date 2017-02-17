@@ -82,47 +82,6 @@ namespace CodeNav
             }
         }
 
-        #region Button Events
-
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
-        {
-            UpdateDocument();
-        }
-
-        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
-        {
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = SortHelper.SortByFile((DataContext as CodeDocumentViewModel).CodeDocument)
-            };
-        }
-
-        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
-        {
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = SortHelper.SortByName((DataContext as CodeDocumentViewModel).CodeDocument)
-            };
-        }
-
-        private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
-        {
-            new FilterWindow().ShowDialog();
-
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = VisibilityHelper.SetCodeItemVisibility((DataContext as CodeDocumentViewModel).CodeDocument)
-            };
-        }
-
-        private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
-        {
-            new OptionsWindow().ShowDialog();
-            UpdateDocument(true);
-        }
-
-        #endregion
-
         public void UpdateDocument(bool forceUpdate = false)
         {
             // Do we have code items in the text document
@@ -171,7 +130,7 @@ namespace CodeNav
                     Id = "Loading...",
                     Foreground = new SolidColorBrush(Colors.Black),
                     BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/Special/Refresh_16x.xaml"
+                    IconPath = "Icons/UI/Refresh_16x.xaml"
                 }
             };
         }
@@ -187,7 +146,7 @@ namespace CodeNav
                     Id = "Waiting for active code document...",
                     Foreground = new SolidColorBrush(Colors.Black),
                     BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/Special/DocumentOutline_16x.xaml"
+                    IconPath = "Icons/UI/DocumentOutline_16x.xaml"
                 }
             };
         }
@@ -261,19 +220,6 @@ namespace CodeNav
             {
                 _backgroundWorker.CancelAsync();
             }
-        }
-
-        private void TextBoxBase_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = VisibilityHelper.SetCodeItemVisibility((DataContext as CodeDocumentViewModel).CodeDocument, FilterTextBox.Text)
-            };
-        }
-
-        private void ButtonClear_OnClick(object sender, RoutedEventArgs e)
-        {
-            FilterTextBox.Text = string.Empty;
         }
     }
 }

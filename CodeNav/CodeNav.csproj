@@ -75,6 +75,12 @@
   <ItemGroup>
     <Compile Include="CodeNavMargin.cs" />
     <Compile Include="CodeNavMarginFactory.cs" />
+    <Compile Include="Controls\FilterToolbar.xaml.cs">
+      <DependentUpon>FilterToolbar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MainToolbar.xaml.cs">
+      <DependentUpon>MainToolbar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +94,7 @@
     <Compile Include="Mappers\FontStyleMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
     <Compile Include="Models\BackgroundWorkerResult.cs" />
+    <Compile Include="Models\CodeNamespaceItem.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
     <Compile Include="OptionsWindow.cs">
@@ -291,6 +298,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\FilterToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MainToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Icons\Class\ClassFriend_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -407,11 +422,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Special\DeleteFilter_16x.xaml">
+    <Page Include="Icons\UI\DeleteFilter_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Special\Filter_16x.xaml">
+    <Page Include="Icons\UI\Filter_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -459,15 +474,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Special\DocumentOutline_16x.xaml">
+    <Page Include="Icons\UI\DocumentOutline_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Special\Refresh_16x.xaml">
+    <Page Include="Icons\UI\Refresh_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Special\Settings_16x.xaml">
+    <Page Include="Icons\UI\Settings_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
