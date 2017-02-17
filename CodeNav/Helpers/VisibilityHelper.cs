@@ -14,79 +14,26 @@ namespace CodeNav.Helpers
         /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
         /// </summary>
         /// <param name="document">List of codeItems</param>
-        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document)
+        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "")
         {
             if (document == null || !document.Any()) return new List<CodeItem>();
 
             foreach (var item in document)
             {
-                bool shouldBeVisibleBasedOnKind;
-                switch (item.Kind)
-                {
-                    case CodeItemKindEnum.Constant:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstants;
-                        break;
-                    case CodeItemKindEnum.Constructor:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstructors;
-                        break;
-                    case CodeItemKindEnum.Delegate:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowConstructors;
-                        break;
-                    case CodeItemKindEnum.Enum:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEnums;
-                        break;
-                    case CodeItemKindEnum.EnumItem:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEnumItems;
-                        break;
-                    case CodeItemKindEnum.Event:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowEvents;
-                        break;
-                    case CodeItemKindEnum.Method:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowMethods;
-                        break;
-                    case CodeItemKindEnum.Property:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowProperties;
-                        break;
-                    case CodeItemKindEnum.Struct:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowStructs;
-                        break;
-                    case CodeItemKindEnum.Variable:
-                        shouldBeVisibleBasedOnKind = Settings.Default.ShowVariables;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                var shouldBeVisibleBasedOnKind = ShouldBeVisibleBasedOnKind(item.Kind);
+                var shouldBeVisibleBasedOnAccess = ShouldBeVisibleBasedOnAccess(item.Access);
+                var shouldBeVisibleBasedOnName = item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
 
-                bool shouldBeVisibleBasedOnAccess;
-                switch (item.Access)
-                {
-                    case CodeItemAccessEnum.Private:
-                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowPrivate;
-                        break;
-                    case CodeItemAccessEnum.Protected:
-                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowProtected;
-                        break;
-                    case CodeItemAccessEnum.Public:
-                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowPublic;
-                        break;
-                    case CodeItemAccessEnum.Internal:
-                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowInternal;
-                        break;
-                    case CodeItemAccessEnum.Unknown:
-                        shouldBeVisibleBasedOnAccess = Settings.Default.ShowEnumItems;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                item.IsVisible = shouldBeVisibleBasedOnKind && shouldBeVisibleBasedOnAccess ? Visibility.Visible : Visibility.Collapsed;
+                item.IsVisible = shouldBeVisibleBasedOnKind && 
+                                 shouldBeVisibleBasedOnAccess &&
+                                 shouldBeVisibleBasedOnName ? Visibility.Visible : Visibility.Collapsed;
 
                 if (item is CodeClassItem)
                 {
                     var classItem = (CodeClassItem)item;
                     if (classItem.Members.Any())
                     {
-                        SetCodeItemVisibility(classItem.Members);
+                        SetCodeItemVisibility(classItem.Members, name);
                     }
                 }
             }
@@ -103,6 +50,59 @@ namespace CodeNav.Helpers
         {
             if (column == null) return;
             column.Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+        }
+
+        private static bool ShouldBeVisibleBasedOnAccess(CodeItemAccessEnum access)
+        {
+            switch (access)
+            {
+                case CodeItemAccessEnum.Private:
+                    return Settings.Default.ShowPrivate;
+                case CodeItemAccessEnum.Protected:
+                    return Settings.Default.ShowProtected;
+                case CodeItemAccessEnum.Public:
+                    return Settings.Default.ShowPublic;
+                case CodeItemAccessEnum.Internal:
+                    return Settings.Default.ShowInternal;
+                case CodeItemAccessEnum.Unknown:
+                    return Settings.Default.ShowEnumItems;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static bool ShouldBeVisibleBasedOnKind(CodeItemKindEnum kind)
+        {
+            switch (kind)
+            {
+                case CodeItemKindEnum.Constant:
+                    return Settings.Default.ShowConstants;
+                case CodeItemKindEnum.Constructor:
+                    return Settings.Default.ShowConstructors;
+                case CodeItemKindEnum.Delegate:
+                    return Settings.Default.ShowConstructors;
+                case CodeItemKindEnum.Enum:
+                    return Settings.Default.ShowEnums;
+                case CodeItemKindEnum.EnumItem:
+                    return Settings.Default.ShowEnumItems;
+                case CodeItemKindEnum.Event:
+                    return Settings.Default.ShowEvents;
+                case CodeItemKindEnum.Method:
+                    return Settings.Default.ShowMethods;
+                case CodeItemKindEnum.Property:
+                    return Settings.Default.ShowProperties;
+                case CodeItemKindEnum.Struct:
+                    return Settings.Default.ShowStructs;
+                case CodeItemKindEnum.Variable:
+                    return Settings.Default.ShowVariables;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
         }
     }
 }

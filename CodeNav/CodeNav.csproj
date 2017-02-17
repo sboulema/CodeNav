@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Tests\CodeNavTestSealed.cs" />
     <Compile Include="Tests\ICodeNavTestInterface.cs" />
+    <Compile Include="Tests\TestNestedNamespaces.cs" />
     <Compile Include="Tests\TestUsingsInNamespace.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowCommand.cs" />
@@ -406,7 +407,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Filter\Filter_16x.xaml">
+    <Page Include="Icons\Special\DeleteFilter_16x.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Icons\Special\Filter_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -462,7 +467,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Icons\Settings\Settings_16x.xaml">
+    <Page Include="Icons\Special\Settings_16x.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

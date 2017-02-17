@@ -35,12 +35,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.fontButton = new System.Windows.Forms.Button();
+            this.filterToolbarCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(9, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(227, 13);
             this.label1.TabIndex = 0;
@@ -54,7 +55,7 @@
             "Left",
             "Right",
             "None"});
-            this.marginSideComboBox.Location = new System.Drawing.Point(245, 12);
+            this.marginSideComboBox.Location = new System.Drawing.Point(242, 12);
             this.marginSideComboBox.Name = "marginSideComboBox";
             this.marginSideComboBox.Size = new System.Drawing.Size(121, 21);
             this.marginSideComboBox.TabIndex = 1;
@@ -84,7 +85,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 42);
+            this.label2.Location = new System.Drawing.Point(9, 67);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(31, 13);
             this.label2.TabIndex = 4;
@@ -96,7 +97,7 @@
             // 
             // fontButton
             // 
-            this.fontButton.Location = new System.Drawing.Point(49, 37);
+            this.fontButton.Location = new System.Drawing.Point(46, 62);
             this.fontButton.Name = "fontButton";
             this.fontButton.Size = new System.Drawing.Size(75, 23);
             this.fontButton.TabIndex = 5;
@@ -104,11 +105,22 @@
             this.fontButton.UseVisualStyleBackColor = true;
             this.fontButton.Click += new System.EventHandler(this.fontButton_Click);
             // 
+            // filterToolbarCheckBox
+            // 
+            this.filterToolbarCheckBox.AutoSize = true;
+            this.filterToolbarCheckBox.Location = new System.Drawing.Point(12, 39);
+            this.filterToolbarCheckBox.Name = "filterToolbarCheckBox";
+            this.filterToolbarCheckBox.Size = new System.Drawing.Size(128, 17);
+            this.filterToolbarCheckBox.TabIndex = 6;
+            this.filterToolbarCheckBox.Text = "Show the filter toolbar";
+            this.filterToolbarCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(383, 146);
+            this.Controls.Add(this.filterToolbarCheckBox);
             this.Controls.Add(this.fontButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cancelButton);
@@ -133,5 +145,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.FontDialog fontDialog1;
         private System.Windows.Forms.Button fontButton;
+        private System.Windows.Forms.CheckBox filterToolbarCheckBox;
     }
 }

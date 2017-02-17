@@ -226,5 +226,17 @@ namespace CodeNav.Properties {
                 this["Font"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowFilterToolbar {
+            get {
+                return ((bool)(this["ShowFilterToolbar"]));
+            }
+            set {
+                this["ShowFilterToolbar"] = value;
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace CodeNav
         {
             Settings.Default.MarginSide = marginSideComboBox.Text;
             Settings.Default.Font = fontDialog1.Font;
+            Settings.Default.ShowFilterToolbar = filterToolbarCheckBox.Checked;
             Settings.Default.Save();
             Close();
         }
@@ -29,6 +30,7 @@ namespace CodeNav
         {
             marginSideComboBox.SelectedItem = Settings.Default.MarginSide;
             fontDialog1.Font = Settings.Default.Font;
+            filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;
         }
 
         private void fontButton_Click(object sender, EventArgs e)

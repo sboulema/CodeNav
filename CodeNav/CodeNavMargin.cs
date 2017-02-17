@@ -182,7 +182,11 @@ namespace CodeNav
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
             _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+
+            if (_windowEvents != null)
+            {
+                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+            }        
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => _control.UpdateDocument();

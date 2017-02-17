@@ -154,10 +154,22 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition>
+                <RowDefinition.Style>
+                    <Style TargetType="{x:Type RowDefinition}">
+                        <Setter Property="Height" Value="Auto" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowFilterToolbar}" Value="False">
+                                <Setter Property="Height" Value="0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,0,0,0">
+        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,3,0,0">
             <Button.Template>
                 <ControlTemplate>
                     <Frame Source="Icons/Special/Refresh_16x.xaml" />
@@ -165,7 +177,7 @@
             </Button.Template>
         </Button>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="-3">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto">
             <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" >
                 <RadioButton.Template>
                     <ControlTemplate>
@@ -182,25 +194,49 @@
             </RadioButton>
         </StackPanel>
 
-        <StackPanel Grid.Column="2" Orientation="Horizontal" Width="Auto" Margin="-3,-3,3,-3">
-            <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
+        <Button Grid.Column="2" Click="ButtonOptions_OnClick" HorizontalAlignment="Right" Margin="0,3,3,0" ToolTip="CodeNav options">
+            <Button.Template>
+                <ControlTemplate>
+                    <Frame Source="Icons/Special/Settings_16x.xaml" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBox x:Name="FilterTextBox" Margin="4,3,3,0" ToolTip="Text to filter the CodeNav contents by" TextChanged="TextBoxBase_OnTextChanged"/>
+            <TextBlock IsHitTestVisible="False" Text="Enter text to filter by..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Text, ElementName=FilterTextBox}" Value="">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Width="Auto" Margin="0,-3,3,-3" Visibility="{Binding ShowFilterToolbarVisibility}">
+            <Button Click="ButtonClear_OnClick" ToolTip="Click to clear text filter contents">
                 <Button.Template>
                     <ControlTemplate>
-                        <Frame Source="Icons/Filter/Filter_16x.xaml" />
+                        <Frame Source="Icons/Special/DeleteFilter_16x.xaml" />
                     </ControlTemplate>
                 </Button.Template>
             </Button>
 
-            <Button Click="ButtonOptions_OnClick" ToolTip="CodeNav options">
+            <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
                 <Button.Template>
                     <ControlTemplate>
-                        <Frame Source="Icons/Settings/Settings_16x.xaml" />
+                        <Frame Source="Icons/Special/Filter_16x.xaml" />
                     </ControlTemplate>
                 </Button.Template>
             </Button>
         </StackPanel>
         
-        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
+        <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
             <ListBox x:Name="CodeDocumentListBox" ItemsSource="{Binding CodeDocument}" ItemTemplate="{StaticResource CodeDocumentTemplate}" 
                 BorderThickness="0" ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
                 Padding="0,2,0,0" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" />

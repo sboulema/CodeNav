@@ -262,5 +262,18 @@ namespace CodeNav
                 _backgroundWorker.CancelAsync();
             }
         }
+
+        private void TextBoxBase_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            DataContext = new CodeDocumentViewModel
+            {
+                CodeDocument = VisibilityHelper.SetCodeItemVisibility((DataContext as CodeDocumentViewModel).CodeDocument, FilterTextBox.Text)
+            };
+        }
+
+        private void ButtonClear_OnClick(object sender, RoutedEventArgs e)
+        {
+            FilterTextBox.Text = string.Empty;
+        }
     }
 }
