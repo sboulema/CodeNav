@@ -43,7 +43,7 @@
                             <Expander.Header>
                                 <TextBlock Text="{Binding Name}" 
                                            FontFamily="{Binding FontFamily}" 
-                                           FontSize="{Binding RegionFonoctSize}" 
+                                           FontSize="{Binding RegionFontSize}" 
                                            FontStyle="{Binding FontStyle}"
                                            FontWeight="SemiBold" 
                                            Foreground="DarkGray" />

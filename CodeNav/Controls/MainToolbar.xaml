@@ -31,8 +31,12 @@
                             <Frame Source="../Icons/Sort/SortingGrouping_16x.xaml"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True"><Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1"/></Trigger>
-                            <Trigger Property="IsChecked" Value="False"><Setter TargetName="ToggleBorder" Property="BorderThickness" Value="0"/></Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="0"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </RadioButton.Template>

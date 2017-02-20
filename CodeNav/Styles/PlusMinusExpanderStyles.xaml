@@ -1,5 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:codeNav="clr-namespace:CodeNav"
+                    xmlns:models="clr-namespace:CodeNav.Models">
     <Style x:Key="ExpanderHeaderFocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
@@ -21,7 +23,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="17"/>
                             </Grid.ColumnDefinitions>
-                            <Border BorderThickness="0,0,0,1" x:Name="ExpanderHeaderBorder" HorizontalAlignment="Left">
+                            <Border BorderThickness="0" x:Name="ExpanderHeaderBorder" HorizontalAlignment="Left">
                                 <Border.BorderBrush>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="DarkGray" Offset="0.0" />
@@ -30,15 +32,19 @@
                                 </Border.BorderBrush>
                                 <ContentPresenter HorizontalAlignment="Left" Margin="4,0,0,0" RecognizesAccessKey="True" SnapsToDevicePixels="True" VerticalAlignment="Center" />
                             </Border>
-                            <Image Grid.Column="1" x:Name="arrow" Source="../Icons/ExpanderHeader/Expand_16xSM.png" />
+                            <Image Grid.Column="1" x:Name="arrow" Source="../Icons/ExpanderHeader/Expand_16xSM.png" Visibility="{Binding Path=HasMembersVisibility}"/>
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                <Condition Binding="{Binding Path=DataContext.HasMembersVisibility, RelativeSource={RelativeSource Self}}" Value="Visible"/>
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="Source" TargetName="arrow" Value="../Icons/ExpanderHeader/Collapse_16xSM.png" />
                             <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0,0,0,1" />
-                        </Trigger>
+                        </MultiDataTrigger>
                         <Trigger Property="IsChecked" Value="False">
                             <Setter Property="Source" TargetName="arrow" Value="../Icons/ExpanderHeader/Expand_16xSM.png" />
                             <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0" />
@@ -64,9 +70,13 @@
                         </DockPanel>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsExpanded" Value="true">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=IsExpanded, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                <Condition Binding="{Binding Path=DataContext.HasMembersVisibility, RelativeSource={RelativeSource Self}}" Value="Visible"/>
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
-                        </Trigger>
+                        </MultiDataTrigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>

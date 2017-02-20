@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 
 namespace CodeNav.Models
@@ -24,6 +26,14 @@ namespace CodeNav.Models
             {
                 _borderBrush = value;
                 NotifyOfPropertyChange();
+            }
+        }
+
+        public Visibility HasMembersVisibility
+        {
+            get
+            {
+                return Members.Any() ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }
