@@ -177,7 +177,11 @@ namespace CodeNav
             stopwatch.Start();
 
             var result = e.Result as BackgroundWorkerResult;
-            result.CodeItems.RemoveAll(item => item == null);
+
+            if (result == null) return;
+
+            // Filter all null items from the code document
+            CodeItemMapper.FilterNullItems(result.CodeItems);
 
             // Do we need to update the DataContext?
             var areEqual = AreDocumentsEqual(_codeDocumentViewModel.CodeDocument, result.CodeItems);

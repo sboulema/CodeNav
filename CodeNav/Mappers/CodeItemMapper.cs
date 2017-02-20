@@ -105,6 +105,22 @@ namespace CodeNav.Mappers
             }
         }
 
+        public static void FilterNullItems(List<CodeItem> items)
+        {
+            items.RemoveAll(item => item == null);
+            foreach (var item in items)
+            {
+                if (item is CodeClassItem)
+                {
+                    FilterNullItems((item as CodeClassItem).Members);
+                }
+                if (item is CodeNamespaceItem)
+                {
+                    FilterNullItems((item as CodeNamespaceItem).Members);
+                }
+            }
+        }
+
         private static CodeNamespaceItem MapNamespace(CodeElement element)
         {
             var namespaceType = element as CodeNamespace;
