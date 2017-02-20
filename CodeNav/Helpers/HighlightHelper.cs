@@ -47,6 +47,8 @@ namespace CodeNav.Helpers
         {
             foreach (var item in document)
             {
+                if (item == null) continue;
+
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
                 if (item is CodeClassItem)

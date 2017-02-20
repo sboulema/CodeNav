@@ -23,14 +23,14 @@ namespace CodeNav.Controls
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control._codeDocumentViewModel.CodeDocument = 
-                SortHelper.SortByFile(control._codeDocumentViewModel.CodeDocument);
+            control.CodeDocumentViewModel.CodeDocument = 
+                SortHelper.SortByFile(control.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control._codeDocumentViewModel.CodeDocument = SortHelper.SortByName(control._codeDocumentViewModel.CodeDocument);
+            control.CodeDocumentViewModel.CodeDocument = SortHelper.SortByName(control.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)

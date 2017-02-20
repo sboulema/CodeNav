@@ -23,15 +23,15 @@ namespace CodeNav
         private Window _window;
         private List<CodeItem> _cache;
         private readonly BackgroundWorker _backgroundWorker;
-        internal readonly CodeDocumentViewModel _codeDocumentViewModel;
+        internal readonly CodeDocumentViewModel CodeDocumentViewModel;
 
         public CodeViewUserControl(Window window)
         {
             InitializeComponent();
 
             // Setup viewmodel as datacontext
-            _codeDocumentViewModel = new CodeDocumentViewModel();
-            DataContext = _codeDocumentViewModel;
+            CodeDocumentViewModel = new CodeDocumentViewModel();
+            DataContext = CodeDocumentViewModel;
 
             // Setup backgroundworker to update datacontext
             _backgroundWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
@@ -97,19 +97,19 @@ namespace CodeNav
             if (forceUpdate)
             {
                 _cache = null;
-                DataContext = null;
+                CodeDocumentViewModel.CodeDocument.Clear();
             }
 
             // Do we have a cached version of this document
             if (_cache != null)
             {
-                _codeDocumentViewModel.CodeDocument = _cache;
+                CodeDocumentViewModel.CodeDocument = _cache;
             }
 
             // If not show a loading item
-            if (!_codeDocumentViewModel.CodeDocument.Any())
+            if (!CodeDocumentViewModel.CodeDocument.Any())
             {
-                _codeDocumentViewModel.CodeDocument = CreateLoadingItem();
+                CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
             }
 
             // Is the backgroundworker already doing something, if so stop it
@@ -162,13 +162,13 @@ namespace CodeNav
         /// </summary>
         public void ShowWaitingForDocument()
         {
-            _codeDocumentViewModel.CodeDocument = CreateSelectDocumentItem();
+            CodeDocumentViewModel.CodeDocument = CreateSelectDocumentItem();
         }
 
         public void HighlightCurrentItem()
         {
-            _codeDocumentViewModel.CodeDocument =
-                HighlightHelper.HighlightCurrentItem(_window, _codeDocumentViewModel.CodeDocument);       
+            CodeDocumentViewModel.CodeDocument =
+                HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel.CodeDocument);       
         }
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -184,7 +184,7 @@ namespace CodeNav
             CodeItemMapper.FilterNullItems(result.CodeItems);
 
             // Do we need to update the DataContext?
-            var areEqual = AreDocumentsEqual(_codeDocumentViewModel.CodeDocument, result.CodeItems);
+            var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
             if (result.ForceUpdate == false && areEqual)
             {
                 stopwatch.Stop();
@@ -193,14 +193,14 @@ namespace CodeNav
             }
 
             // Set the new list of codeitems as DataContext
-            _codeDocumentViewModel.CodeDocument = result.CodeItems;
+            CodeDocumentViewModel.CodeDocument = result.CodeItems;
             _cache = result.CodeItems;
 
             // Are there any items to show, if not hide the control, if being shown as a margin
-            VisibilityHelper.SetControlVisibility(null, !_codeDocumentViewModel.CodeDocument.Any());
+            VisibilityHelper.SetControlVisibility(null, !CodeDocumentViewModel.CodeDocument.Any());
 
             // Set currently active codeitem
-            HighlightHelper.SetForeground(_codeDocumentViewModel.CodeDocument);
+            HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
 
             stopwatch.Stop();
             LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
