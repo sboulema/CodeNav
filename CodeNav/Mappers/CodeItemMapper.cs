@@ -49,7 +49,7 @@ namespace CodeNav.Mappers
 
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
-            element.RegionFontSize = Settings.Default.Font.SizeInPoints - 2;
+            element.RegionFontSize = Settings.Default.Font.SizeInPoints - 3;
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
 

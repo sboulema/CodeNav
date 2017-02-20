@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Helpers;
-using CodeNav.Models;
 
 namespace CodeNav.Controls
 {
@@ -23,18 +22,15 @@ namespace CodeNav.Controls
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
         {
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = SortHelper.SortByFile((DataContext as CodeDocumentViewModel).CodeDocument)
-            };
+            var control = FindParent<CodeViewUserControl>(this);
+            control._codeDocumentViewModel.CodeDocument = 
+                SortHelper.SortByFile(control._codeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
-            DataContext = new CodeDocumentViewModel
-            {
-                CodeDocument = SortHelper.SortByName((DataContext as CodeDocumentViewModel).CodeDocument)
-            };
+            var control = FindParent<CodeViewUserControl>(this);
+            control._codeDocumentViewModel.CodeDocument = SortHelper.SortByName(control._codeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
@@ -45,10 +41,10 @@ namespace CodeNav.Controls
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
-//get parent item
+            //get parent item
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
             if (parentObject == null) return null;
-//check if the parent matches the type we’re looking for
+            //check if the parent matches the type we’re looking for
             T parent = parentObject as T;
             if (parent != null)
                 return parent;

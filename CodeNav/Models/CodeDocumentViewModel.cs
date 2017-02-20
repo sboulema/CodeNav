@@ -7,6 +7,11 @@ namespace CodeNav.Models
 {
     public class CodeDocumentViewModel : PropertyChangedBase
     {
+        public CodeDocumentViewModel()
+        {
+            _codeDocument = new List<CodeItem>();
+        }
+
         private List<CodeItem> _codeDocument;
         public List<CodeItem> CodeDocument {
             get

@@ -24,17 +24,33 @@
         </Button>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="0,3,0,0">
-            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" >
+            <RadioButton GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" Margin="0,0,3,0">
                 <RadioButton.Template>
-                    <ControlTemplate>
-                        <Frame Source="../Icons/Sort/SortingGrouping_16x.xaml"/>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="ToggleBorder" BorderBrush="SteelBlue" BorderThickness="0">
+                            <Frame Source="../Icons/Sort/SortingGrouping_16x.xaml"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True"><Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1"/></Trigger>
+                            <Trigger Property="IsChecked" Value="False"><Setter TargetName="ToggleBorder" Property="BorderThickness" Value="0"/></Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </RadioButton.Template>
             </RadioButton>
-            <RadioButton Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
+            <RadioButton GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
                 <RadioButton.Template>
-                    <ControlTemplate>
-                        <Frame Source="../Icons/Sort/SortAscending_16x.xaml"/>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="ToggleBorder" BorderBrush="SteelBlue" BorderThickness="0">
+                            <Frame Source="../Icons/Sort/SortAscending_16x.xaml"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </RadioButton.Template>
             </RadioButton>

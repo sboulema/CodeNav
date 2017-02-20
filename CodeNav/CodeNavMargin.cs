@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
-using CodeNav.Models;
 using CodeNav.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
@@ -21,7 +20,6 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        public CodeDocumentViewModel CodeDocumentViewModel;
         private CodeViewUserControl _control;      
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;
@@ -33,8 +31,6 @@ namespace CodeNav
 
         public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte)
         {
-            CodeDocumentViewModel = new CodeDocumentViewModel();
-
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
@@ -119,7 +115,7 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _control = new CodeViewUserControl(_window) { DataContext = CodeDocumentViewModel };
+            _control = new CodeViewUserControl(_window);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, Settings.Default.MarginSide.Equals("Left") ? 0 : 2);
