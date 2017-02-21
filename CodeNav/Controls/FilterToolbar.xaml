@@ -14,7 +14,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid>
-            <TextBox x:Name="FilterTextBox" Margin="4,3,3,0" ToolTip="Text to filter the CodeNav contents by" TextChanged="TextBoxBase_OnTextChanged"/>
+            <TextBox x:Name="FilterTextBox"
+                     Margin="4,3,3,0" 
+                     ToolTip="Text to filter the CodeNav contents by" 
+                     TextChanged="TextBoxBase_OnTextChanged"
+                     Background="Transparent"/>
             <TextBlock IsHitTestVisible="False" Text="Enter text to filter by..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">

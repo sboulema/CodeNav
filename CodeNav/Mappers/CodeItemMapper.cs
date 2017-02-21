@@ -64,15 +64,20 @@ namespace CodeNav.Mappers
             item.Type = MapReturnType(function.Type);
             item.Parameters = MapParameters(function);
             item.IconPath = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor
-                ? "Icons/Method/MethodAdded_16x.xaml"
+                ? "pack://application:,,,/CodeNav;component/Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
             item.Tooltip = $"{item.Access} {function.Type.AsString} {item.Name}{MapParameters(function, true)}";
-            item.Id = item.Name + MapParameters(function, true, false);
+            item.Id = MapFunctionId(function);
             item.Kind = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor 
                 ? CodeItemKindEnum.Constructor 
                 : CodeItemKindEnum.Method;
 
             return item;
+        }
+
+        public static string MapFunctionId(CodeFunction function)
+        {
+            return function.Name + MapParameters(function, true, false);
         }
 
         private static CodeItem MapMember(CodeElement2 element)
@@ -283,7 +288,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(element);
             item.IconPath = itemType.IsConstant
                 ? MapIcon<CodeVariable>(element)
-                : "Icons/Field/Field_16x.xaml";
+                : "pack://application:,,,/CodeNav;component/Icons/Field/Field_16x.xaml";
             item.Kind = itemType.IsConstant 
                 ? CodeItemKindEnum.Constant
                 : CodeItemKindEnum.Variable;
@@ -310,7 +315,7 @@ namespace CodeNav.Mappers
 
             if (item.Access == CodeItemAccessEnum.Private) return null;
 
-            item.IconPath = $"Icons/Event/Event{MapAccessEnumToString(item.Access)}_16x.xaml";
+            item.IconPath = $"pack://application:,,,/CodeNav;component/Icons/Event/Event{MapAccessEnumToString(item.Access)}_16x.xaml";
             item.Kind = CodeItemKindEnum.Event;
 
             return item;
@@ -570,51 +575,47 @@ namespace CodeNav.Mappers
 
         private static string MapIcon<T>(CodeElement2 element, bool isEnumMember = false)
         {
+            const string iconFolder = "pack://application:,,,/CodeNav;component/Icons";
             var accessString = MapAccessEnumToString(MapAccessToEnum(element));
 
             if (typeof(T) == typeof(CodeFunction))
             {
-                return $"Icons/Method/Method{accessString}_16x.xaml";
+                return $"{iconFolder}/Method/Method{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeClass))
             {
-                return $"Icons/Class/Class{accessString}_16x.xaml";
-            }
-
-            if (typeof(T) == typeof(CodeClass))
-            {
-                return $"Icons/Class/Class{accessString}_16x.xaml";
+                return $"{iconFolder}/Class/Class{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeProperty))
             {
-                return $"Icons/Property/Property{accessString}_16x.xaml";
+                return $"{iconFolder}/Property/Property{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeEnum))
             {
-                return $"Icons/Enum/Enum{accessString}_16x.xaml";
+                return $"{iconFolder}/Enum/Enum{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeVariable))
             {
-                return isEnumMember ? $"Icons/Enum/EnumItem{accessString}_16x.xaml" : $"Icons/Constant/Constant{accessString}_16x.xaml";
+                return isEnumMember ? $"{iconFolder}/Enum/EnumItem{accessString}_16x.xaml" : $"{iconFolder}/Constant/Constant{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeInterface))
             {
-                return $"Icons/Interface/Interface{accessString}_16x.xaml";
+                return $"{iconFolder}/Interface/Interface{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeStruct))
             {
-                return $"Icons/Structure/Structure{accessString}_16x.xaml";
+                return $"{iconFolder}/Structure/Structure{accessString}_16x.xaml";
             }
 
             if (typeof(T) == typeof(CodeDelegate))
             {
-                return $"Icons/Delegate/Delegate{accessString}_16x.xaml";
+                return $"{iconFolder}/Delegate/Delegate{accessString}_16x.xaml";
             }
 
             return string.Empty;

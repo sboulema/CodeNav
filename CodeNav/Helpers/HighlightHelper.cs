@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
@@ -69,11 +70,11 @@ namespace CodeNav.Helpers
             }
         }
 
-        private static void Highlight(List<CodeItem> document, List<string> itemNames)
+        private static void Highlight(List<CodeItem> document, List<string> ids)
         {
-            foreach (var name in itemNames)
+            foreach (var id in ids)
             {
-                var item = FindCodeItem(document, name);
+                var item = FindCodeItem(document, id);
                 if (item == null) return;
 
                 item.Foreground = new SolidColorBrush(Colors.SteelBlue);
@@ -87,7 +88,10 @@ namespace CodeNav.Helpers
 
         private static void GetItemsToHighlight(List<string> list, CodeElement element)
         {
-            list.Add(element.FullName);
+            var function = element as CodeFunction;
+            if (function == null) return;
+
+            list.Add(CodeItemMapper.MapFunctionId(function));      
 
             var parent = element.Collection.Parent;
             if (parent == null || parent is CodeElement == false) return;
@@ -120,11 +124,11 @@ namespace CodeNav.Helpers
             return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
-        private static CodeItem FindCodeItem(List<CodeItem> items, string itemFullName)
+        private static CodeItem FindCodeItem(List<CodeItem> items, string id)
         {
             foreach (var item in items)
             {
-                if (item.FullName.Equals(itemFullName))
+                if (item.Id.Equals(id))
                 {
                     return item;
                 }
@@ -134,7 +138,7 @@ namespace CodeNav.Helpers
                     var hasMembersItem = (IMembers)item;
                     if (hasMembersItem.Members.Any())
                     {
-                        var found = FindCodeItem(hasMembersItem.Members, itemFullName);
+                        var found = FindCodeItem(hasMembersItem.Members, id);
                         if (found != null)
                         {
                             return found;

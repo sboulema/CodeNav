@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:CodeNav.Models">
+    
+    <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
+        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent">
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                    <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+    </DataTemplate>
+    
+</ResourceDictionary>

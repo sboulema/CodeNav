@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:CodeNav.Models"
-             xmlns:converters="clr-namespace:CodeNav.Converters"
              xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:controls="clr-namespace:CodeNav.Controls"
              mc:Ignorable="d" 
@@ -17,18 +16,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
                 <ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />
-                <ResourceDictionary>
-                    <converters:WidthMinusMarginConverter x:Key="WidthMinusMarginConverter" />
-                </ResourceDictionary>
+                <ResourceDictionary Source="Controls/NamespaceDataTemplate.xaml" />
+                <ResourceDictionary Source="Controls/ItemDataTemplate.xaml" />
                 <ResourceDictionary>
                     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}">
-                            <Expander.Width>
-                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
-                                </MultiBinding>
-                            </Expander.Width>
                             <Expander.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
@@ -49,10 +41,11 @@
                                            Foreground="DarkGray" />
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent">
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="{x:Type ListBoxItem}">
                                         <Setter Property="Visibility" Value="{Binding IsVisible}"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                             </ListBox>
@@ -62,85 +55,34 @@
                     <DataTemplate DataType="{x:Type models:CodeClassItem}">
                         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                                   BorderBrush="{Binding BorderBrush}"
-                                  HorizontalAlignment="Left">
-                            <Expander.Width>
-                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
-                                </MultiBinding>
-                            </Expander.Width>
+                                  HorizontalAlignment="Stretch">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
-                                    <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
+                                    <Frame Source="{Binding IconPath}" Margin="0,0,3,0" DockPanel.Dock="Left" />
                                     <TextBlock>
-                                            <Run Text="{Binding Name}" 
-                                                 FontFamily="{Binding FontFamily}" 
-                                                 FontSize="{Binding FontSize}" 
-                                                 FontStyle="{Binding FontStyle}"
-                                                 Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" />
-                                            <Run Text="{Binding Parameters}" 
-                                                 FontFamily="{Binding FontFamily}" 
-                                                 FontSize="{Binding ParameterFontSize}" 
-                                                 FontStyle="{Binding FontStyle}"
-                                                 Foreground="DarkGray" />
+                                        <Run Text="{Binding Name}" 
+                                             FontFamily="{Binding FontFamily}" 
+                                             FontSize="{Binding FontSize}" 
+                                             FontStyle="{Binding FontStyle}"
+                                             Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                                        <Run Text="{Binding Parameters}" 
+                                             FontFamily="{Binding FontFamily}" 
+                                             FontSize="{Binding ParameterFontSize}" 
+                                             FontStyle="{Binding FontStyle}"
+                                             Foreground="DarkGray" />
                                     </TextBlock>
                                 </StackPanel>
                             </Expander.Header>
                             <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent">
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="{x:Type ListBoxItem}">
                                         <Setter Property="Visibility" Value="{Binding IsVisible}"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                             </ListBox>
                         </Expander>
-                    </DataTemplate>
-
-                    <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
-                        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent">
-                            <ItemsControl.Width>
-                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
-                                </MultiBinding>
-                            </ItemsControl.Width>
-                            <ItemsControl.ItemContainerStyle>
-                                <Style>
-                                    <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
-                                    <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
-                                </Style>
-                            </ItemsControl.ItemContainerStyle>
-                        </ItemsControl>
-                    </DataTemplate>
-
-                    <DataTemplate DataType="{x:Type models:CodeItem}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}"  ToolTip="{Binding Tooltip}">
-                            <StackPanel.MaxWidth>
-                                <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
-                                </MultiBinding>
-                            </StackPanel.MaxWidth>
-                            <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
-                            <TextBlock>
-                                <Run Text="{Binding Name}" 
-                                     FontFamily="{Binding FontFamily}" 
-                                     FontSize="{Binding FontSize}" 
-                                     FontStyle="{Binding FontStyle}"
-                                     Foreground="{Binding Foreground}" Tag="{Binding Name}" />
-                                <Run Text="{Binding Type}" 
-                                     FontFamily="{Binding FontFamily}" 
-                                     FontSize="{Binding ParameterFontSize}" 
-                                     FontStyle="{Binding FontStyle}"
-                                     Foreground="DarkGray" />
-                                <Run Text="{Binding Parameters}" 
-                                     FontFamily="{Binding FontFamily}" 
-                                     FontStyle="{Binding FontStyle}"
-                                     FontSize="{Binding ParameterFontSize}" 
-                                     Foreground="DarkGray" />
-                            </TextBlock>
-                        </StackPanel>
                     </DataTemplate>
 
                 </ResourceDictionary>
@@ -161,15 +103,7 @@
         <controls:FilterToolbar Grid.Row="1" DataContext="{Binding}" Visibility="{Binding ShowFilterToolbarVisibility}"/>
 
         <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
-            <ItemsControl ItemsSource="{Binding CodeDocument}" Margin="2,3,0,0" />
-            <!--<ListBox ItemsSource="{Binding CodeDocument}"
-                     BorderThickness="0" 
-                     ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
-                     Padding="0,2,0,0" 
-                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" 
-                     Background="Transparent" 
-                     Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}" 
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>-->
+            <ItemsControl ItemsSource="{Binding CodeDocument}" Margin="4,3,4,0" />
         </ScrollViewer>
     </Grid>
     
