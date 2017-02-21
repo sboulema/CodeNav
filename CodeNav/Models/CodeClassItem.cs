@@ -33,7 +33,9 @@ namespace CodeNav.Models
         {
             get
             {
-                return Members.Any() ? Visibility.Visible : Visibility.Collapsed;
+                return Members.Any(m => m.IsVisible == Visibility.Visible) 
+                    ? Visibility.Visible 
+                    : Visibility.Collapsed;
             }
         }
     }

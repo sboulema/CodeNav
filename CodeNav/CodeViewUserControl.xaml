@@ -109,6 +109,7 @@
                             <ItemsControl.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                    <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
                                 </Style>
                             </ItemsControl.ItemContainerStyle>
                         </ItemsControl>
