@@ -1,14 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Caliburn.Micro;
 using EnvDTE;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace CodeNav.Models
 {
     public class CodeItem : PropertyChangedBase
     {
+        public CodeItem()
+        {
+            clickItemCommand = new DelegateCommand(ClickItem);
+        }
+
         public string Name { get; set; }
         public TextPoint StartPoint { get; set; }
         public string IconPath { get; set; }
@@ -17,6 +25,7 @@ namespace CodeNav.Models
         internal string FullName;
         internal CodeItemKindEnum Kind;
         internal CodeItemAccessEnum Access;
+        internal CodeViewUserControl Control;
 
         #region Fonts
         private float _fontSize;
@@ -107,6 +116,18 @@ namespace CodeNav.Models
             }
         }
         #endregion
+
+        private DelegateCommand clickItemCommand;
+
+        public ICommand ClickItemCommand
+        {
+            get { return clickItemCommand; }
+        }
+
+        public void ClickItem(object startPoint)
+        {
+            Control.SelectLine(startPoint as TextPoint);
+        }
     }
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>

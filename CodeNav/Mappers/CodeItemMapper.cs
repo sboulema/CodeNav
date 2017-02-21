@@ -15,8 +15,12 @@ namespace CodeNav.Mappers
 {
     public static class CodeItemMapper
     {
-        public static List<CodeItem> MapDocument(CodeElements elements)
+        private static CodeViewUserControl _control;
+
+        public static List<CodeItem> MapDocument(CodeElements elements, CodeViewUserControl control)
         {
+            _control = control;
+
             var document = new List<CodeItem>();
 
             if (elements == null) return document;
@@ -51,6 +55,8 @@ namespace CodeNav.Mappers
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;          
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
+
+            element.Control = _control;
 
             return element;
         }

@@ -1,0 +1,41 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:CodeNav.Models">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Styles/PlusMinusExpanderStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
+    <DataTemplate DataType="{x:Type models:CodeRegionItem}">
+        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}">
+            <Expander.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeThickness="1"
+                                   Stroke="DarkGray" 
+                                   StrokeDashArray="5 3"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualHeight}" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Expander.BorderBrush>
+            <Expander.Header>
+                <TextBlock Text="{Binding Name}" 
+                           FontFamily="{Binding FontFamily}" 
+                           FontSize="{Binding FontSize}" 
+                           FontStyle="{Binding FontStyle}"
+                           FontWeight="SemiBold" 
+                           Foreground="DarkGray" />
+            </Expander.Header>
+            <ItemsControl ItemsSource="{Binding Members}" Background="Transparent" Margin="6,3,6,0">
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="FrameworkElement.Margin" Value="0,0,0,6"/>
+                        <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+        </Expander>
+    </DataTemplate>
+
+</ResourceDictionary>

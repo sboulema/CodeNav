@@ -2,9 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Mappers;
@@ -46,46 +43,16 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void SelectLine(TextPoint textPoint)
         {
-            var listBox = (ListBox) sender;
-            var selectedItem = (CodeItem) listBox?.SelectedItem;
-
-            if (selectedItem == null)
-            {
-                LogHelper.Log("ListBox or SelectedItem is null");
-                return;
-            }
-
-            if (selectedItem.StartPoint == null)
-            {
-                LogHelper.Log($"{selectedItem.FullName} has no StartPoint");
-                return;
-            }
-
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
                 LogHelper.Log($"TextSelection is null for {_window.Document.FullName}");
                 return;
             }
-                  
-            textSelection.MoveToPoint(selectedItem.StartPoint);
-            listBox.UnselectAll();
-            e.Handled = true;
-        }
 
-        private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (!e.Handled)
-            {
-                e.Handled = true;
-                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-                eventArg.Source = sender;
-                var parent = ((Control)sender).Parent as UIElement;
-                parent.RaiseEvent(eventArg);
-            }
+            textSelection.MoveToPoint(textPoint);
         }
 
         public void UpdateDocument(bool forceUpdate = false)
@@ -146,7 +113,7 @@ namespace CodeNav
                             Id = name,
                             Foreground = new SolidColorBrush(Colors.Black),
                             BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                            IconPath = $"Icons/UI/{icon}_16x.xaml"
+                            IconPath = $"pack://application:,,,/CodeNav;component/Icons/UI/{icon}_16x.xaml"
                         }
                     }
                 }
@@ -206,7 +173,7 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
-                var codeItems = CodeItemMapper.MapDocument(request.Elements);
+                var codeItems = CodeItemMapper.MapDocument(request.Elements, this);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }

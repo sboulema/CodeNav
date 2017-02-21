@@ -3,92 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:models="clr-namespace:CodeNav.Models"
-             xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:controls="clr-namespace:CodeNav.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
-
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/PlusMinusExpanderStyles.xaml" />
-                <ResourceDictionary Source="Styles/ListBoxStylesItem.xaml" />
                 <ResourceDictionary Source="Controls/NamespaceDataTemplate.xaml" />
                 <ResourceDictionary Source="Controls/ItemDataTemplate.xaml" />
-                <ResourceDictionary>
-                    <DataTemplate DataType="{x:Type models:CodeRegionItem}">
-                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}">
-                            <Expander.BorderBrush>
-                                <VisualBrush>
-                                    <VisualBrush.Visual>
-                                        <Rectangle StrokeThickness="1"
-                                            Stroke="DarkGray" 
-                                            StrokeDashArray="5 3"
-                                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
-                                            Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Expander.BorderBrush>
-                            <Expander.Header>
-                                <TextBlock Text="{Binding Name}" 
-                                           FontFamily="{Binding FontFamily}" 
-                                           FontSize="{Binding FontSize}" 
-                                           FontStyle="{Binding FontStyle}"
-                                           FontWeight="SemiBold" 
-                                           Foreground="DarkGray" />
-                            </Expander.Header>
-                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Visibility" Value="{Binding IsVisible}"/>
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </Expander>
-                    </DataTemplate>
-
-                    <DataTemplate DataType="{x:Type models:CodeClassItem}">
-                        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
-                                  BorderBrush="{Binding BorderBrush}"
-                                  HorizontalAlignment="Stretch">
-                            <Expander.Header>
-                                <StackPanel Orientation="Horizontal">
-                                    <Frame Source="{Binding IconPath}" Margin="0,0,3,0" DockPanel.Dock="Left" />
-                                    <TextBlock>
-                                        <Run Text="{Binding Name}" 
-                                             FontFamily="{Binding FontFamily}" 
-                                             FontSize="{Binding FontSize}" 
-                                             FontStyle="{Binding FontStyle}"
-                                             Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" />
-                                        <Run Text="{Binding Parameters}" 
-                                             FontFamily="{Binding FontFamily}" 
-                                             FontSize="{Binding ParameterFontSize}" 
-                                             FontStyle="{Binding FontStyle}"
-                                             Foreground="DarkGray" />
-                                    </TextBlock>
-                                </StackPanel>
-                            </Expander.Header>
-                            <ListBox ItemsSource="{Binding Members}" SelectionChanged="Selector_OnSelectionChanged" BorderThickness="0" 
-                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Visibility" Value="{Binding IsVisible}"/>
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </Expander>
-                    </DataTemplate>
-
-                </ResourceDictionary>
+                <ResourceDictionary Source="Controls/RegionDataTemplate.xaml" />
+                <ResourceDictionary Source="Controls/ClassDataTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-
     </UserControl.Resources>
 
     <Grid>
