@@ -86,12 +86,9 @@ namespace CodeNav.Helpers
             }
         }
 
-        private static void GetItemsToHighlight(List<string> list, CodeElement element)
+        private static void GetItemsToHighlight(ICollection<string> list, CodeElement element)
         {
-            var function = element as CodeFunction;
-            if (function == null) return;
-
-            list.Add(CodeItemMapper.MapFunctionId(function));      
+            list.Add(CodeItemMapper.MapId(element));      
 
             var parent = element.Collection.Parent;
             if (parent == null || parent is CodeElement == false) return;

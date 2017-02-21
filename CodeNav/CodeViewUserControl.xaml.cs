@@ -164,10 +164,7 @@ namespace CodeNav
 
         #endregion
 
-        public void HighlightCurrentItem()
-        {
-            HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel.CodeDocument);
-        }
+        public void HighlightCurrentItem() => HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel.CodeDocument);
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

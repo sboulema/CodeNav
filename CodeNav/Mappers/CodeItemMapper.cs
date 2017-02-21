@@ -67,7 +67,7 @@ namespace CodeNav.Mappers
                 ? "pack://application:,,,/CodeNav;component/Icons/Method/MethodAdded_16x.xaml"
                 : MapIcon<CodeFunction>(element);
             item.Tooltip = $"{item.Access} {function.Type.AsString} {item.Name}{MapParameters(function, true)}";
-            item.Id = MapFunctionId(function);
+            item.Id = MapId(element);
             item.Kind = function.FunctionKind == vsCMFunction.vsCMFunctionConstructor 
                 ? CodeItemKindEnum.Constructor 
                 : CodeItemKindEnum.Method;
@@ -75,9 +75,15 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static string MapFunctionId(CodeFunction function)
+        public static string MapId(CodeElement element)
         {
-            return function.Name + MapParameters(function, true, false);
+            if (element is CodeFunction)
+            {
+                var function = element as CodeFunction;
+                return function.Name + MapParameters(function, true, false);
+            }
+
+            return element.Name;
         }
 
         private static CodeItem MapMember(CodeElement2 element)
