@@ -48,8 +48,7 @@ namespace CodeNav.Mappers
             element.Access = MapAccessToEnum(source);
 
             element.FontSize = Settings.Default.Font.SizeInPoints;
-            element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
-            element.RegionFontSize = Settings.Default.Font.SizeInPoints - 3;
+            element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;          
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
 
@@ -110,13 +109,9 @@ namespace CodeNav.Mappers
             items.RemoveAll(item => item == null);
             foreach (var item in items)
             {
-                if (item is CodeClassItem)
+                if (item is IMembers)
                 {
-                    FilterNullItems((item as CodeClassItem).Members);
-                }
-                if (item is CodeNamespaceItem)
-                {
-                    FilterNullItems((item as CodeNamespaceItem).Members);
+                    FilterNullItems((item as IMembers).Members);
                 }
             }
         }
@@ -258,20 +253,26 @@ namespace CodeNav.Mappers
                 var name = start.GetLines(start.Line, start.Line + 1).Replace("#region", string.Empty).Trim();
                 searchPoint.FindPattern("#endregion", 0, ref endPoint);
                 var end = searchPoint.CreateEditPoint();
-                var region = new CodeRegionItem
-                {
-                    Name = name,
-                    FullName = name,
-                    Id = name,
-                    StartPoint = start,
-                    EndPoint = end,
-                    Foreground = CreateSolidColorBrush(Colors.Black),
-                    BorderBrush = CreateSolidColorBrush(Colors.DarkGray)
-                };
+                var region = MapRegion(name, start, end);
                 regionList.Add(region);
             }
 
             return regionList;
+        }
+
+        private static CodeRegionItem MapRegion(string name, TextPoint start, TextPoint end)
+        {
+            return new CodeRegionItem
+            {
+                Name = name,
+                FullName = name,
+                Id = name,
+                StartPoint = start,
+                EndPoint = end,
+                Foreground = CreateSolidColorBrush(Colors.Black),
+                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                FontSize = Settings.Default.Font.SizeInPoints - 2
+            };
         }
 
         private static CodeItem MapVariable(CodeElement2 element)
@@ -366,12 +367,7 @@ namespace CodeNav.Mappers
 
             foreach (var implementedInterface in list)
             {
-                var item = new CodeRegionItem
-                {
-                    Name = implementedInterface.Name,
-                    Id = implementedInterface.Name,
-                    FullName = implementedInterface.Name
-                };
+                var item = MapRegion(implementedInterface.Name, null, null);
 
                 foreach (CodeElement2 implementedInterfaceMember in implementedInterface.Members)
                 {

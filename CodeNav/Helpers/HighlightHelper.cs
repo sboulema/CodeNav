@@ -51,24 +51,20 @@ namespace CodeNav.Helpers
 
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
+                if (item is IMembers)
+                {
+                    var hasMembersItem = (IMembers)item;                 
+                    
+                    if (hasMembersItem.Members.Any())
+                    {
+                        UnHighlight(hasMembersItem.Members);
+                    }
+                }
+
                 if (item is CodeClassItem)
                 {
                     var classItem = (CodeClassItem)item;
                     classItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
-                    
-                    if (classItem.Members.Any())
-                    {
-                        UnHighlight(classItem.Members);
-                    }
-                }
-
-                if (item is CodeNamespaceItem)
-                {
-                    var nsItem = (CodeNamespaceItem)item;
-                    if (nsItem.Members.Any())
-                    {
-                        UnHighlight(nsItem.Members);
-                    }
                 }
             }
         }
@@ -107,21 +103,12 @@ namespace CodeNav.Helpers
             {
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
-                if (item is CodeClassItem)
+                if (item is IMembers)
                 {
-                    var classItem = (CodeClassItem) item;
-                    if (classItem.Members.Any())
+                    var hasMembersItem = (IMembers) item;
+                    if (hasMembersItem.Members.Any())
                     {
-                        SetForeground(classItem.Members);
-                    }
-                }
-
-                if (item is CodeNamespaceItem)
-                {
-                    var nsItem = (CodeNamespaceItem)item;
-                    if (nsItem.Members.Any())
-                    {
-                        SetForeground(nsItem.Members);
+                        SetForeground(hasMembersItem.Members);
                     }
                 }
             }
@@ -142,25 +129,12 @@ namespace CodeNav.Helpers
                     return item;
                 }
 
-                if (item is CodeClassItem)
+                if (item is IMembers)
                 {
-                    var classItem = (CodeClassItem)item;
-                    if (classItem.Members.Any())
+                    var hasMembersItem = (IMembers)item;
+                    if (hasMembersItem.Members.Any())
                     {
-                        var found = FindCodeItem(classItem.Members, itemFullName);
-                        if (found != null)
-                        {
-                            return found;
-                        }
-                    }
-                }
-
-                if (item is CodeNamespaceItem)
-                {
-                    var nsItem = (CodeNamespaceItem)item;
-                    if (nsItem.Members.Any())
-                    {
-                        var found = FindCodeItem(nsItem.Members, itemFullName);
+                        var found = FindCodeItem(hasMembersItem.Members, itemFullName);
                         if (found != null)
                         {
                             return found;

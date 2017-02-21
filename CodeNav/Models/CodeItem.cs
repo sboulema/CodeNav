@@ -47,20 +47,6 @@ namespace CodeNav.Models
             }
         }
 
-        private float _regionFontSize;
-        public float RegionFontSize
-        {
-            get
-            {
-                return _regionFontSize;
-            }
-            set
-            {
-                _regionFontSize = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
         private FontFamily _fontFamily;
         public FontFamily FontFamily
         {

@@ -14,6 +14,7 @@ namespace CodeNav.Helpers
         /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
         /// </summary>
         /// <param name="document">List of codeItems</param>
+        /// <param name="name">Filters items by name</param>
         public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "")
         {
             if (document == null || !document.Any()) return new List<CodeItem>();
@@ -28,26 +29,14 @@ namespace CodeNav.Helpers
                                  shouldBeVisibleBasedOnAccess &&
                                  shouldBeVisibleBasedOnName ? Visibility.Visible : Visibility.Collapsed;
 
-                if (item is CodeClassItem)
+                if (item is IMembers)
                 {
-                    var classItem = (CodeClassItem)item;
-                    if (classItem.Members.Any())
+                    var hasMembersItem = (IMembers)item;
+                    if (hasMembersItem.Members.Any())
                     {
-                        SetCodeItemVisibility(classItem.Members, name);
+                        SetCodeItemVisibility(hasMembersItem.Members, name);
                     }
-                    item.IsVisible = classItem.Members.Any(m => m.IsVisible == Visibility.Visible)
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-                }
-
-                if (item is CodeNamespaceItem)
-                {
-                    var nsItem = (CodeNamespaceItem)item;
-                    if (nsItem.Members.Any())
-                    {
-                        SetCodeItemVisibility(nsItem.Members, name);
-                    }
-                    item.IsVisible = nsItem.Members.Any(m => m.IsVisible == Visibility.Visible)
+                    item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
                         ? Visibility.Visible
                         : Visibility.Collapsed;
                 }

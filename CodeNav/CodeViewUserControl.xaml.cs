@@ -125,35 +125,32 @@ namespace CodeNav
             }
         }
 
-        private static List<CodeItem> CreateLoadingItem()
-        {
-            return new List<CodeItem>
-            {
-                new CodeClassItem
-                {
-                    Name = "Loading...",
-                    FullName = "Loading...",
-                    Id = "Loading...",
-                    Foreground = new SolidColorBrush(Colors.Black),
-                    BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/UI/Refresh_16x.xaml"
-                }
-            };
-        }
+        #region Custom Items
 
-        private static List<CodeItem> CreateSelectDocumentItem()
+        private static List<CodeItem> CreateLoadingItem() => CreateItem("Loading...", "Refresh");
+        private static List<CodeItem> CreateSelectDocumentItem() => CreateItem("Waiting for active code document...", "DocumentOutline");
+
+        private static List<CodeItem> CreateItem(string name, string icon)
         {
             return new List<CodeItem>
             {
-                new CodeClassItem
+                new CodeNamespaceItem
                 {
-                    Name = "Waiting for active code document...",
-                    FullName = "Waiting for active code document...",
-                    Id = "Waiting for active code document...",
-                    Foreground = new SolidColorBrush(Colors.Black),
-                    BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                    IconPath = "Icons/UI/DocumentOutline_16x.xaml"
+                    Id = name,
+                    Members = new List<CodeItem>
+                    {
+                        new CodeClassItem
+                        {
+                            Name = name,
+                            FullName = name,
+                            Id = name,
+                            Foreground = new SolidColorBrush(Colors.Black),
+                            BorderBrush = new SolidColorBrush(Colors.DarkGray),
+                            IconPath = $"Icons/UI/{icon}_16x.xaml"
+                        }
+                    }
                 }
+
             };
         }
 
@@ -164,6 +161,8 @@ namespace CodeNav
         {
             CodeDocumentViewModel.CodeDocument = CreateSelectDocumentItem();
         }
+
+        #endregion
 
         public void HighlightCurrentItem()
         {

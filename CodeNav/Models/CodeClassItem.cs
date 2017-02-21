@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace CodeNav.Models
 {
-    public class CodeClassItem : CodeItem
+    public class CodeClassItem : CodeItem, IMembers
     {
         public CodeClassItem()
         {

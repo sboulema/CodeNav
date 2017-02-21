@@ -2,7 +2,7 @@
 
 namespace CodeNav.Models
 {
-    public class CodeNamespaceItem : CodeItem
+    public class CodeNamespaceItem : CodeItem, IMembers
     {
         public CodeNamespaceItem()
         {

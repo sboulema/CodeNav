@@ -97,6 +97,7 @@
     <Compile Include="Models\CodeNamespaceItem.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
+    <Compile Include="Models\IMembers.cs" />
     <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +126,7 @@
     <Compile Include="Tests\CodeNavTestSealed.cs" />
     <Compile Include="Tests\ICodeNavTestInterface.cs" />
     <Compile Include="Tests\TestNestedNamespaces.cs" />
+    <Compile Include="Tests\TestNoNamespace.cs" />
     <Compile Include="Tests\TestUsingsInNamespace.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowCommand.cs" />

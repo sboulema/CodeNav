@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:CodeNav.Models"
              xmlns:converters="clr-namespace:CodeNav.Converters"
-             xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:controls="clr-namespace:CodeNav.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
@@ -43,7 +43,7 @@
                             <Expander.Header>
                                 <TextBlock Text="{Binding Name}" 
                                            FontFamily="{Binding FontFamily}" 
-                                           FontSize="{Binding RegionFontSize}" 
+                                           FontSize="{Binding FontSize}" 
                                            FontStyle="{Binding FontStyle}"
                                            FontWeight="SemiBold" 
                                            Foreground="DarkGray" />
@@ -77,7 +77,7 @@
                                                  FontFamily="{Binding FontFamily}" 
                                                  FontSize="{Binding FontSize}" 
                                                  FontStyle="{Binding FontStyle}"
-                                                 Foreground="{DynamicResource {x:Static vs_shell:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                                                 Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" />
                                             <Run Text="{Binding Parameters}" 
                                                  FontFamily="{Binding FontFamily}" 
                                                  FontSize="{Binding ParameterFontSize}" 
@@ -98,12 +98,11 @@
                     </DataTemplate>
 
                     <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
-                        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" 
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Background="Transparent">
+                        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent">
                             <ItemsControl.Width>
                                 <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
                                     <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ListBox}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
                                 </MultiBinding>
                             </ItemsControl.Width>
                             <ItemsControl.ItemContainerStyle>
@@ -120,7 +119,7 @@
                             <StackPanel.MaxWidth>
                                 <MultiBinding Converter="{StaticResource WidthMinusMarginConverter}" ConverterParameter="15">
                                     <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type Expander}}"/>
-                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ListBox}}"/>
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}"/>
                                 </MultiBinding>
                             </StackPanel.MaxWidth>
                             <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
@@ -162,14 +161,15 @@
         <controls:FilterToolbar Grid.Row="1" DataContext="{Binding}" Visibility="{Binding ShowFilterToolbarVisibility}"/>
 
         <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
-            <ListBox ItemsSource="{Binding CodeDocument}"
+            <ItemsControl ItemsSource="{Binding CodeDocument}" Margin="2,3,0,0" />
+            <!--<ListBox ItemsSource="{Binding CodeDocument}"
                      BorderThickness="0" 
                      ItemContainerStyle="{StaticResource NoMouseOverListBoxItem}" 
                      Padding="0,2,0,0" 
                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel" 
                      Background="Transparent" 
                      Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}, Path=ViewportWidth}" 
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>-->
         </ScrollViewer>
     </Grid>
     
