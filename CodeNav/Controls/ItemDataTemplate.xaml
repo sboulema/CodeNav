@@ -6,28 +6,24 @@
         <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartPoint}" 
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Stretch"
                 Margin="-3">
-            <StackPanel Orientation="Horizontal" Tag="{Binding StartPoint}" ToolTip="{Binding Tooltip}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
                 <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
-                <TextBlock>
-                    <Run Text="{Binding Name}" 
-                         FontFamily="{Binding FontFamily}" 
-                         FontSize="{Binding FontSize}" 
-                         FontStyle="{Binding FontStyle}"
-                         Foreground="{Binding Foreground}" Tag="{Binding Name}" />
-                    <Run Text="{Binding Type}" 
-                         FontFamily="{Binding FontFamily}" 
-                         FontSize="{Binding ParameterFontSize}" 
-                         FontStyle="{Binding FontStyle}"
-                         Foreground="DarkGray" />
-                    <Run Text="{Binding Parameters}" 
-                         FontFamily="{Binding FontFamily}" 
-                         FontStyle="{Binding FontStyle}"
-                         FontSize="{Binding ParameterFontSize}" 
-                         Foreground="DarkGray" />
+
+                <TextBlock Grid.Column="1" FontFamily="{Binding FontFamily}" FontStyle="{Binding FontStyle}">
+                    <Run Text="{Binding Name}"       FontSize="{Binding FontSize}"          Foreground="{Binding Foreground}" />
+                    <Run Text="{Binding Type}"       FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
+                    <Run Text="{Binding Parameters}" FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                 </TextBlock>
-            </StackPanel>
+            </Grid>
+
         </Button>
     </DataTemplate>
 
