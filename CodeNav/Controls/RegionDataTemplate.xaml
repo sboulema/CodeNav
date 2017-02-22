@@ -12,10 +12,11 @@
                 <VisualBrush>
                     <VisualBrush.Visual>
                         <Rectangle StrokeThickness="1"
-                                   Stroke="DarkGray" 
+                                   Stroke="{Binding BorderBrush}" 
                                    StrokeDashArray="5 3"
                                    Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualWidth}"
-                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualHeight}" />
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Expander}}, Path=ActualHeight}" 
+                                   x:Name="Rectangle"/>
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Expander.BorderBrush>
@@ -36,6 +37,12 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Expander>
+        
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Rectangle" Property="Stroke" Value="SteelBlue"/>
+            </Trigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
 </ResourceDictionary>

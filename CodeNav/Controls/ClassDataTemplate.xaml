@@ -10,7 +10,7 @@
     <DataTemplate DataType="{x:Type models:CodeClassItem}">
         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                   BorderBrush="{Binding BorderBrush}"
-                  HorizontalAlignment="Stretch">
+                  HorizontalAlignment="Stretch" x:Name="Expander">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" DockPanel.Dock="Left" />
@@ -37,6 +37,12 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Expander>
+
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Expander" Property="BorderBrush" Value="SteelBlue"/>
+            </Trigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
 </ResourceDictionary>

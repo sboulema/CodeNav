@@ -31,7 +31,7 @@
         <controls:FilterToolbar Grid.Row="1" DataContext="{Binding}" Visibility="{Binding ShowFilterToolbarVisibility}"/>
 
         <ScrollViewer x:Name="CodeScrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" Padding="0,-4,0,0">
-            <ItemsControl ItemsSource="{Binding CodeDocument}" Margin="4,3,4,0" />
+            <ItemsControl ItemsSource="{Binding CodeDocument}" Margin="4,4,4,0" />
         </ScrollViewer>
     </Grid>
     
