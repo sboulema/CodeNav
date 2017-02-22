@@ -151,7 +151,7 @@
             this.uncheckAllButton.UseVisualStyleBackColor = true;
             this.uncheckAllButton.Click += new System.EventHandler(this.uncheckAllButton_Click);
             // 
-            // FilterToolWindow
+            // FilterWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -162,7 +162,8 @@
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.okButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "FilterToolWindow";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "FilterWindow";
             this.Text = "Filter By Item Kind";
             this.Load += new System.EventHandler(this.FilterToolWindow_Load);
             this.ResumeLayout(false);

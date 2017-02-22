@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsWindow));
             this.label1 = new System.Windows.Forms.Label();
             this.marginSideComboBox = new System.Windows.Forms.ComboBox();
             this.okButton = new System.Windows.Forms.Button();
@@ -128,6 +129,7 @@
             this.Controls.Add(this.marginSideComboBox);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OptionsWindow";
             this.Text = "CodeNav - Options";
             this.Load += new System.EventHandler(this.OptionsToolWindow_Load);

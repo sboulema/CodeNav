@@ -557,6 +557,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\DocumentOutline_16x.png" />
+    <Content Include="Resources\DocumentOutline_256x.ico" />
     <Content Include="Resources\DocumentOutline_256x.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
