@@ -46,14 +46,40 @@ namespace CodeNav.Helpers
         }
 
         /// <summary>
-        /// Toggle visibility of the CodeNav control
+        /// Toggle visibility of the CodeNav margin
         /// </summary>
         /// <param name="column">the grid column of which the visibility will be toggled</param>
         /// <param name="condition">if condition is True visibility will be set to hidden</param>
-        public static void SetControlVisibility(ColumnDefinition column, bool condition)
+        public static void SetMarginWidth(ColumnDefinition column, bool condition)
         {
             if (column == null) return;
             column.Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+        }
+
+        /// <summary>
+        /// Toggle visibility of the CodeNav margin
+        /// </summary>
+        /// <param name="column">the grid column of which the visibility will be toggled</param>
+        /// <param name="document">the list of codeitems to determine if there is anything to show at all</param>
+        public static void SetMarginWidth(ColumnDefinition column, List<CodeItem> document)
+        {
+            if (column == null) return;
+            column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
+        }
+
+        private static bool IsEmpty(List<CodeItem> document)
+        {
+            if (!document.Any()) return true;
+
+            var isEmpty = true;
+            foreach (var item in document)
+            {
+                if (item is IMembers)
+                {
+                    isEmpty = !(item as IMembers).Members.Any();
+                }
+            }
+            return isEmpty;
         }
 
         private static bool ShouldBeVisibleBasedOnAccess(CodeItemAccessEnum access)

@@ -115,10 +115,12 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            _control = new CodeViewUserControl(_window);
+            var columnIndex = Settings.Default.MarginSide.Equals("Left") ? 0 : 2;
+
+            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex]);
             grid.Children.Add(_control);
 
-            Grid.SetColumn(_control, Settings.Default.MarginSide.Equals("Left") ? 0 : 2);
+            Grid.SetColumn(_control, columnIndex);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide.Equals("Left") ? 2 : 0);
 
@@ -140,7 +142,7 @@ namespace CodeNav
         }
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
-            VisibilityHelper.SetControlVisibility(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
+            VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {

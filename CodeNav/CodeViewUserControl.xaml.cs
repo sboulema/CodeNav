@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Mappers;
@@ -18,11 +19,12 @@ namespace CodeNav
     public partial class CodeViewUserControl
     {
         private Window _window;
+        private ColumnDefinition _column;
         private List<CodeItem> _cache;
         private readonly BackgroundWorker _backgroundWorker;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
 
-        public CodeViewUserControl(Window window)
+        public CodeViewUserControl(Window window, ColumnDefinition column = null)
         {
             InitializeComponent();
 
@@ -36,6 +38,8 @@ namespace CodeNav
             _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
 
             _window = window;
+            _column = column;
+
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
 
@@ -158,11 +162,11 @@ namespace CodeNav
             CodeDocumentViewModel.CodeDocument = result.CodeItems;
             _cache = result.CodeItems;
 
-            // Are there any items to show, if not hide the control, if being shown as a margin
-            VisibilityHelper.SetControlVisibility(null, !CodeDocumentViewModel.CodeDocument.Any());
-
             // Set currently active codeitem
             HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
+
+            // Are there any items to show, if not hide the margin
+            VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
             stopwatch.Stop();
             LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
