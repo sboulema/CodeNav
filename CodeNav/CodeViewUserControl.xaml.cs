@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,7 +18,7 @@ namespace CodeNav
     public partial class CodeViewUserControl
     {
         private Window _window;
-        private ColumnDefinition _column;
+        private readonly ColumnDefinition _column;
         private List<CodeItem> _cache;
         private readonly BackgroundWorker _backgroundWorker;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
@@ -63,6 +62,7 @@ namespace CodeNav
         {
             // Do we have code items in the text document
             var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
+            LogHelper.Log($"No code items found for {_window.Document.FullName}");
             if (elements == null) return;
 
             if (forceUpdate)
@@ -139,9 +139,6 @@ namespace CodeNav
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             var result = e.Result as BackgroundWorkerResult;
 
             if (result == null) return;
@@ -153,8 +150,7 @@ namespace CodeNav
             var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
             if (result.ForceUpdate == false && areEqual)
             {
-                stopwatch.Stop();
-                LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms, document did not change");
+                LogHelper.Log($"CodeNav for '{_window.Document.FullName}' updated, document did not change");
                 return;
             }
 
@@ -168,8 +164,7 @@ namespace CodeNav
             // Are there any items to show, if not hide the margin
             VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
-            stopwatch.Stop();
-            LogHelper.Log($"RunWorkerCompleted in {stopwatch.ElapsedMilliseconds} ms");
+            LogHelper.Log($"CodeNav for '{_window.Document.FullName}' updated");
         }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
