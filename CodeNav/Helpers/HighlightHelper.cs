@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using CodeNav.Mappers;
 using CodeNav.Models;
@@ -8,6 +9,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Color = System.Windows.Media.Color;
+using Window = EnvDTE.Window;
 
 namespace CodeNav.Helpers
 {
@@ -51,6 +53,7 @@ namespace CodeNav.Helpers
                 if (item == null) continue;
 
                 item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+                item.FontWeight = FontWeights.Regular;
 
                 if (item is IMembers)
                 {
@@ -70,22 +73,36 @@ namespace CodeNav.Helpers
             }
         }
 
-        private static void Highlight(List<CodeItem> document, List<string> ids)
+        /// <summary>
+        /// Given a list of unique ids and a code document, find all code items and 'highlight' them.
+        /// Highlighting changes the foreground, fontweight and background of a code item
+        /// </summary>
+        /// <param name="document">Code document</param>
+        /// <param name="ids">List of unique code item ids</param>
+        private static void Highlight(List<CodeItem> document, IEnumerable<string> ids)
         {
             foreach (var id in ids)
             {
                 var item = FindCodeItem(document, id);
                 if (item == null) return;
 
-                item.Foreground = new SolidColorBrush(Colors.SteelBlue);
+                item.Foreground = ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey);
+                item.FontWeight = FontWeights.Bold;
+                item.HighlightBackground = ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);
 
                 if (item is CodeClassItem)
                 {
-                    (item as CodeClassItem).BorderBrush = new SolidColorBrush(Colors.SteelBlue);
+                    (item as CodeClassItem).BorderBrush = ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey);
                 }
             }
         }
 
+        /// <summary>
+        /// Get list of unqiue item ids that should be highlighted
+        /// Given a code element will find parent code elements that should also be highlighted
+        /// </summary>
+        /// <param name="list">Code document</param>
+        /// <param name="element">Code element that should be highlighted</param>
         private static void GetItemsToHighlight(ICollection<string> list, CodeElement element)
         {
             list.Add(CodeItemMapper.MapId(element));      
@@ -115,13 +132,24 @@ namespace CodeNav.Helpers
             }
         }
 
+        /// <summary>
+        /// Convert from VSTheme EnvironmentColor to a XAML SolidColorBrush
+        /// </summary>
+        /// <param name="key">VSTheme EnvironmentColor key</param>
+        /// <returns>XAML SolidColorBrush</returns>
         private static SolidColorBrush ToBrush(ThemeResourceKey key)
         {
             var color = VSColorTheme.GetThemedColor(key);
             return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
-        private static CodeItem FindCodeItem(List<CodeItem> items, string id)
+        /// <summary>
+        /// Find particular code item by its id inside of a code document
+        /// </summary>
+        /// <param name="items">Code document</param>
+        /// <param name="id">unqiue item id</param>
+        /// <returns></returns>
+        private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
         {
             foreach (var item in items)
             {

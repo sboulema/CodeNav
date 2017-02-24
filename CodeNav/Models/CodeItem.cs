@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -83,6 +82,20 @@ namespace CodeNav.Models
                 NotifyOfPropertyChange();
             }
         }
+
+        private FontWeight _fontWeight;
+        public FontWeight FontWeight
+        {
+            get
+            {
+                return _fontWeight;
+            }
+            set
+            {
+                _fontWeight = value;
+                NotifyOfPropertyChange();
+            }
+        }
         #endregion
 
         #region IsVisible
@@ -112,6 +125,22 @@ namespace CodeNav.Models
             set
             {
                 _foreground = value;
+                NotifyOfPropertyChange();
+            }
+        }
+        #endregion
+
+        #region Background
+        private SolidColorBrush _highlightBackground;
+        public SolidColorBrush HighlightBackground
+        {
+            get
+            {
+                return _highlightBackground;
+            }
+            set
+            {
+                _highlightBackground = value;
                 NotifyOfPropertyChange();
             }
         }

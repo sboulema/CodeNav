@@ -51,7 +51,7 @@ namespace CodeNav
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
-                LogHelper.Log($"TextSelection is null for {_window.Document.FullName}");
+                LogHelper.Log($"TextSelection is null for {_window.Document.Name}");
                 return;
             }
 
@@ -62,7 +62,7 @@ namespace CodeNav
         {
             // Do we have code items in the text document
             var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
-            LogHelper.Log($"No code items found for {_window.Document.FullName}");
+            LogHelper.Log($"No code items found for {_window.Document.Name}");
             if (elements == null) return;
 
             if (forceUpdate)
@@ -150,7 +150,7 @@ namespace CodeNav
             var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
             if (result.ForceUpdate == false && areEqual)
             {
-                LogHelper.Log($"CodeNav for '{_window.Document.FullName}' updated, document did not change");
+                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, document did not change");
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace CodeNav
             // Are there any items to show, if not hide the margin
             VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
-            LogHelper.Log($"CodeNav for '{_window.Document.FullName}' updated");
+            LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
         }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)

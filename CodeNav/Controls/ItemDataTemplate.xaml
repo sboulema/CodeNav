@@ -20,13 +20,24 @@
                 <Frame Source="{Binding IconPath}" Margin="0,0,3,0" />
 
                 <TextBlock Grid.Column="1" FontFamily="{Binding FontFamily}" FontStyle="{Binding FontStyle}">
-                    <Run Text="{Binding Name}"       FontSize="{Binding FontSize}"          Foreground="{Binding Foreground}" />
+                    <Run Text="{Binding Name}"       
+                         FontSize="{Binding FontSize}"          
+                         Foreground="{Binding Foreground}" 
+                         FontWeight="{Binding FontWeight}" 
+                         Background="{Binding HighlightBackground}"
+                         x:Name="ItemName"/>
                     <Run Text="{Binding Type}"       FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                     <Run Text="{Binding Parameters}" FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                 </TextBlock>
             </Grid>
 
         </Button>
+
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ItemName" Property="Background" Value="Transparent"/>
+            </Trigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
 </ResourceDictionary>

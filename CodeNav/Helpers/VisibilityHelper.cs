@@ -17,7 +17,11 @@ namespace CodeNav.Helpers
         /// <param name="name">Filters items by name</param>
         public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "")
         {
-            if (document == null || !document.Any()) return new List<CodeItem>();
+            if (document == null || !document.Any())
+            {
+                LogHelper.Log($"No code items have been found to filter on by {name}");
+                return new List<CodeItem>();
+            }
 
             foreach (var item in document)
             {
