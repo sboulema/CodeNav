@@ -26,6 +26,8 @@ Currently only C#
 
 [Open VSIX Gallery](http://vsixgallery.com/extension/CodeNav.Samir%20Boulema.19687465-dc94-413d-ad72-6141e90c94d4/)
 
+[AppVeyor](https://ci.appveyor.com/project/sboulema/codenav) [![Build status](https://ci.appveyor.com/api/projects/status/8g968p48t2rkia16?svg=true)](https://ci.appveyor.com/project/sboulema/codenav)
+
 ## Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
 
@@ -37,3 +39,4 @@ Currently only C#
 
 #### Tool window
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 
+

@@ -4,9 +4,11 @@
 
     <DataTemplate DataType="{x:Type models:CodeItem}">
         <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartPoint}" 
-                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" BorderThickness="0" 
+                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
+                BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
+                ToolTip="{Binding Tooltip}"
                 Margin="-3">
 
             <Grid>
