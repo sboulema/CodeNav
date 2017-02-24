@@ -63,6 +63,12 @@ namespace CodeNav
             // Do we have code items in the text document
             var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
             LogHelper.Log($"No code items found for {_window.Document.Name}");
+
+            if (elements == null)
+            {
+                SyntaxMapper.MapDocument(_window.Document, this);
+            }
+            
             if (elements == null) return;
 
             if (forceUpdate)
