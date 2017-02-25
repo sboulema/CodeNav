@@ -60,17 +60,6 @@ namespace CodeNav
 
         public void UpdateDocument(bool forceUpdate = false)
         {
-            // Do we have code items in the text document
-            var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
-            LogHelper.Log($"No code items found for {_window.Document.Name}");
-
-            if (elements == null)
-            {
-                SyntaxMapper.MapDocument(_window.Document, this);
-            }
-            
-            if (elements == null) return;
-
             if (forceUpdate)
             {
                 _cache = null;
@@ -98,7 +87,7 @@ namespace CodeNav
             // Start the backgroundworker to update the list of code items
             if (!_backgroundWorker.CancellationPending)
             {
-                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Elements = elements, ForceUpdate = forceUpdate });
+                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
             }
         }
 
@@ -178,7 +167,8 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
-                var codeItems = CodeItemMapper.MapDocument(request.Elements, this);
+				//var codeItems = CodeItemMapper.MapDocument(request.Elements, this);
+				var codeItems = SyntaxMapper.MapDocument(request.Document, this);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }
