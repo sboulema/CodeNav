@@ -152,7 +152,7 @@ namespace CodeNav
             if (result == null) return;
 
             // Filter all null items from the code document
-            CodeItemMapper.FilterNullItems(result.CodeItems);
+            SyntaxMapper.FilterNullItems(result.CodeItems);
 
             // Do we need to update the DataContext?
             var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
@@ -180,7 +180,6 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
-				//var codeItems = CodeItemMapper.MapDocument(request.Elements, this);
 				var codeItems = SyntaxMapper.MapDocument(request.Document, this);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }

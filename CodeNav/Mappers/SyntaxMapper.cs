@@ -218,14 +218,14 @@ namespace CodeNav.Mappers
                     {
                         interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
 
-                        // Determing the start/end point of and implemented interface by the start/end point of its members
-                        if (interfaceItem.StartPoint == null || item.StartPoint.LessThan(interfaceItem.StartPoint))
+                        // Determing the start/end line of and implemented interface by the start/end line of its members
+                        if (item.StartLine <= interfaceItem.StartLine)
                         {
-                            interfaceItem.StartPoint = item.StartPoint;
+                            interfaceItem.StartLine = item.StartLine;
                         }
-                        if (interfaceItem.EndPoint == null || item.StartPoint.GreaterThan(interfaceItem.EndPoint))
+                        if (item.StartLine >= interfaceItem.StartLine)
                         {
-                            interfaceItem.EndPoint = item.StartPoint;
+                            interfaceItem.EndLine = item.StartLine;
                         }
 
                         return true;
@@ -302,15 +302,17 @@ namespace CodeNav.Mappers
                 regionList.Add(MapRegion(regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span));
             }
                 
-            var count = regionList.Count;
+            var index = 0;
 
             foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && j.Span.IntersectsWith(span)))
             {
-                regionList[--count].EndLine = _tree.GetLineSpan(endRegionDirective.Span).StartLinePosition.Line;
+                regionList[index++].EndLine = GetLine(endRegionDirective.Span);
             }
 
             return regionList;
         }
+
+        private static int GetLine(TextSpan span) =>_tree.GetLineSpan(span).StartLinePosition.Line + 1;
 
         private static CodeRegionItem MapRegion(string name, TextSpan span)
         {
@@ -319,7 +321,7 @@ namespace CodeNav.Mappers
                 Name = name,
                 FullName = name,
                 Id = name,
-                StartLine = _tree.GetLineSpan(span).StartLinePosition.Line,
+                StartLine = GetLine(span),
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2
@@ -468,6 +470,17 @@ namespace CodeNav.Mappers
             return name + MapParameters(parameters, true, false);
         }
 
+        public static string MapId(CodeElement element)
+        {
+            if (element is CodeFunction)
+            {
+                var function = element as CodeFunction;
+                return function.Name + MapParameters(function, true, false);
+            }
+
+            return element.Name;
+        }
+
         /// <summary>
         /// Parse parameters from a method and return a formatted string back
         /// </summary>
@@ -484,6 +497,12 @@ namespace CodeNav.Mappers
         private static string MapParameters(ImmutableArray<IParameterSymbol> parameters, bool useLongNames = false, bool prettyPrint = true)
         {
             var paramList = (from IParameterSymbol parameter in parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
+            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
+        }
+
+        private static string MapParameters(CodeFunction function, bool useLongNames = false, bool prettyPrint = true)
+        {
+            var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type, useLongNames)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
@@ -587,6 +606,18 @@ namespace CodeNav.Mappers
 			return type.Contains(".") ? type.Split('.').Last() : type;
 		}
 
+        private static string MapReturnType(CodeTypeRef type, bool useLongNames = false)
+        {
+            if (useLongNames) return type.AsString;
+
+            var match = new Regex("(.*)<(.*)>").Match(type.AsString);
+            if (match.Success)
+            {
+                return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
+            }
+            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
+        }
+
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
         {
             var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
@@ -606,5 +637,17 @@ namespace CodeNav.Mappers
             brush.Freeze();
             return brush;
         }
-	}
+
+        public static void FilterNullItems(List<CodeItem> items)
+        {
+            items.RemoveAll(item => item == null);
+            foreach (var item in items)
+            {
+                if (item is IMembers)
+                {
+                    FilterNullItems((item as IMembers).Members);
+                }
+            }
+        }
+    }
 }

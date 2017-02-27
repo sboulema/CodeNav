@@ -98,14 +98,14 @@ namespace CodeNav.Helpers
         }
 
         /// <summary>
-        /// Get list of unqiue item ids that should be highlighted
+        /// Get list of unique item ids that should be highlighted
         /// Given a code element will find parent code elements that should also be highlighted
         /// </summary>
         /// <param name="list">Code document</param>
         /// <param name="element">Code element that should be highlighted</param>
         private static void GetItemsToHighlight(ICollection<string> list, CodeElement element)
         {
-            list.Add(CodeItemMapper.MapId(element));      
+            list.Add(SyntaxMapper.MapId(element));      
 
             var parent = element.Collection.Parent;
             if (parent == null || parent is CodeElement == false) return;

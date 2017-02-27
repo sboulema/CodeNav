@@ -27,7 +27,7 @@ namespace CodeNav.Helpers
 
         public static List<CodeItem> SortByFile(List<CodeItem> document)
         {
-            document = document.OrderBy(c => c.StartPoint?.Line).ToList();
+            document = document.OrderBy(c => c.StartLine).ToList();
 
             foreach (var item in document)
             {

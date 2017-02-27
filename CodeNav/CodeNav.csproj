@@ -111,7 +111,6 @@
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\WidthMinusMarginConverter.cs" />
-    <Compile Include="Mappers\CodeItemMapper.cs" />
     <Compile Include="Models\CodeRegionItem.cs" />
     <Compile Include="Models\CodeClassItem.cs" />
     <Compile Include="Models\CodeDocumentViewModel.cs" />
@@ -539,10 +538,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Icons\Structure\Structure_16x.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ListBoxStylesItem.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

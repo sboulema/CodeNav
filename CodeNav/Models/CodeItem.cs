@@ -17,7 +17,6 @@ namespace CodeNav.Models
         }
 
         public string Name { get; set; }
-        public TextPoint StartPoint { get; set; }
         public int StartLine { get; set; }
         public string IconPath { get; set; }
         public string Id { get; set; }
