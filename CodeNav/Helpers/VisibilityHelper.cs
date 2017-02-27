@@ -129,6 +129,10 @@ namespace CodeNav.Helpers
                     return Settings.Default.ShowStructs;
                 case CodeItemKindEnum.Variable:
                     return Settings.Default.ShowVariables;
+                case CodeItemKindEnum.Class:
+                    return true;
+                case CodeItemKindEnum.Interface:
+                    return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
