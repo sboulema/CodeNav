@@ -40,3 +40,10 @@ Currently only C#
 #### Tool window
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 
 
+## Debugging
+If you experience any problems with CodeNav you can debug what is going on by downloading a debug build of CodeNav.
+
+The debug build will write a lot of useful information to the Visual Studio Output window. Please help me and include this information when creating an issue!
+
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
+

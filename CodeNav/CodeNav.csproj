@@ -582,6 +582,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\OptionsWindow.png" />
+    <Content Include="Resources\OutputWindow.png" />
     <Content Include="Resources\Preview-dark.png" />
     <Content Include="Resources\Preview.png">
       <IncludeInVSIX>true</IncludeInVSIX>
