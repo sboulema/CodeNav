@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.Mappers
 {
@@ -162,7 +163,7 @@ namespace CodeNav.Mappers
 			item.Parameters = MapInheritance(member);
 			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
-			//var classRegions = MapRegions(element.StartPoint, element.EndPoint);
+			var regions = MapRegions(member.Span);
 			//var implementedInterfaces = MapImplementedInterfaces(element);
 
 			foreach (var classMember in member.Members)
@@ -171,41 +172,91 @@ namespace CodeNav.Mappers
 				//if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem)
 				//	&& !AddToRegion(classRegions, memberItem))
 				//{
-					item.Members.Add(memberItem);
-				//}
+			    if (memberItem != null && !AddToRegion(regions, memberItem))
+			    {
+                    item.Members.Add(memberItem);
+                }
 			}
 
-			// Add implemented interfaces to class or region if they have a interface member inside them
-			//if (implementedInterfaces.Any())
-			//{
-			//	foreach (var interfaceItem in implementedInterfaces)
-			//	{
-			//		if (interfaceItem.Members.Any())
-			//		{
-			//			if (!AddToRegion(classRegions, interfaceItem))
-			//			{
-			//				item.Members.Add(interfaceItem);
-			//			}
-			//		}
-			//	}
-			//}
+            // Add implemented interfaces to class or region if they have a interface member inside them
+            //if (implementedInterfaces.Any())
+            //{
+            //	foreach (var interfaceItem in implementedInterfaces)
+            //	{
+            //		if (interfaceItem.Members.Any())
+            //		{
+            //			if (!AddToRegion(classRegions, interfaceItem))
+            //			{
+            //				item.Members.Add(interfaceItem);
+            //			}
+            //		}
+            //	}
+            //}
 
-			// Add regions to class if they have a region member inside them
-			//if (classRegions.Any())
-			//{
-			//	foreach (var region in classRegions)
-			//	{
-			//		if (region.Members.Any())
-			//		{
-			//			item.Members.Add(region);
-			//		}
-			//	}
-			//}
+            // Add regions to class if they have a region member inside them
+            if (regions.Any())
+            {
+                foreach (var region in regions)
+                {
+                    if (region.Members.Any())
+                    {
+                        item.Members.Add(region);
+                    }
+                }
+            }
 
-			return item;
+            return item;
 		}
 
-		private static string MapInheritance(ClassDeclarationSyntax member)
+        private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
+        {
+            if (item?.StartLine == null) return false;
+            foreach (var region in regions)
+            {
+                if (item.StartLine >= region.StartLine && item.StartLine <= region.EndLine)
+                {
+                    region.Members.Add(item);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static List<CodeRegionItem> MapRegions(TextSpan span)
+        {
+            var root = _tree.GetRoot();
+            var regionList = new List<CodeRegionItem>();
+
+            foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia))
+            {
+                regionList.Add(MapRegion(regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span));
+            }
+                
+            var count = regionList.Count;
+
+            foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia))
+            {
+                regionList[--count].EndLine = _tree.GetLineSpan(endRegionDirective.Span).StartLinePosition.Line;
+            }
+
+            return regionList;
+        }
+
+        private static CodeRegionItem MapRegion(string name, TextSpan span)
+        {
+            return new CodeRegionItem
+            {
+                Name = name,
+                FullName = name,
+                Id = name,
+                StartLine = _tree.GetLineSpan(span).StartLinePosition.Line,
+                Foreground = CreateSolidColorBrush(Colors.Black),
+                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                FontSize = Settings.Default.Font.SizeInPoints - 2
+            };
+        }
+
+        private static string MapInheritance(ClassDeclarationSyntax member)
 		{
 			if (member?.BaseList == null) return string.Empty;
 
