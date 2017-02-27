@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -55,8 +56,8 @@ namespace CodeNav.Mappers
                     return MapStruct(member as StructDeclarationSyntax);
                 case SyntaxKind.ClassDeclaration:
                     return MapClass(member as ClassDeclarationSyntax);
-                case SyntaxKind.EventDeclaration:
-                    return MapEvent(member as EventDeclarationSyntax);
+                case SyntaxKind.EventFieldDeclaration:
+                    return MapEventField(member as EventFieldDeclarationSyntax);
                 case SyntaxKind.DelegateDeclaration:
                     return MapDelegate(member as DelegateDeclarationSyntax);
                 case SyntaxKind.NamespaceDeclaration:
@@ -107,9 +108,11 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        private static CodeItem MapEvent(EventDeclarationSyntax member)
+        private static CodeItem MapEventField(EventFieldDeclarationSyntax member)
         {
-            var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
+            if (member == null) return null;
+
+            var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
             if (item.Access == CodeItemAccessEnum.Private) return null;
             item.Kind = CodeItemKindEnum.Event;
             item.IconPath = MapIcon(item.Kind, item.Access);
@@ -211,7 +214,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var interfaceMember in interfaceItem.Members)
                 {
-                    if (interfaceMember.Name.Equals(item.Name))
+                    if (interfaceMember.Id.Equals(item.Id))
                     {
                         interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
 
@@ -249,9 +252,24 @@ namespace CodeNav.Mappers
                 var typeSymbol = model.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
                 if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
 
-                foreach (var memberName in typeSymbol.MemberNames)
+                foreach (var symbolMember in typeSymbol.GetMembers())
                 {
-                    item.Members.Add(new CodeItem { Name = memberName });
+                    if (symbolMember.Kind == SymbolKind.Method)
+                    {
+                        var symbolMethod = symbolMember as IMethodSymbol;
+
+                        if (symbolMethod == null ||  symbolMethod.MethodKind == MethodKind.PropertyGet || 
+                            symbolMethod.MethodKind == MethodKind.PropertySet) continue;
+
+                        item.Members.Add(new CodeItem
+                        {
+                            Id = MapId(symbolMember.Name, symbolMethod.Parameters)
+                        });
+                    }
+                    else
+                    {
+                        item.Members.Add(new CodeItem { Id = symbolMember.Name });
+                    }                  
                 }
 
                 implementedInterfaces.Add(item);
@@ -437,7 +455,17 @@ namespace CodeNav.Mappers
 
         public static string MapId(SyntaxToken identifier, ParameterListSyntax parameters)
         {
-            return identifier.Text + MapParameters(parameters, true, false);
+            return MapId(identifier.Text, parameters);
+        }
+
+        public static string MapId(string name, ParameterListSyntax parameters)
+        {
+            return name + MapParameters(parameters, true, false);
+        }
+
+        public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters)
+        {
+            return name + MapParameters(parameters, true, false);
         }
 
         /// <summary>
@@ -453,7 +481,13 @@ namespace CodeNav.Mappers
 			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
 		}
 
-		private static CodeFunctionItem MapProperty(PropertyDeclarationSyntax member)
+        private static string MapParameters(ImmutableArray<IParameterSymbol> parameters, bool useLongNames = false, bool prettyPrint = true)
+        {
+            var paramList = (from IParameterSymbol parameter in parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
+            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
+        }
+
+        private static CodeFunctionItem MapProperty(PropertyDeclarationSyntax member)
 		{
 			if (member == null) return null;
 
@@ -531,31 +565,26 @@ namespace CodeNav.Mappers
 			}
 		}
 
-		private static string MapReturnType(TypeSyntax type, bool useLongNames = false)
+        private static string MapReturnType(ITypeSymbol type, bool useLongNames = false)
+        {
+            return MapReturnType(type.ToString(), useLongNames);
+        }
+
+        private static string MapReturnType(TypeSyntax type, bool useLongNames = false)
+        {
+            return MapReturnType(type.ToString(), useLongNames);
+        }
+
+        private static string MapReturnType(string type, bool useLongNames = false)
 		{
-			var typeAsString = string.Empty;
+            if (useLongNames) return type;
 
-			if (type is IdentifierNameSyntax)
-            {
-				typeAsString = ((IdentifierNameSyntax) type).Identifier.Text;
-			}
-            else if (type is PredefinedTypeSyntax)
-            {
-				typeAsString = ((PredefinedTypeSyntax) type).Keyword.Text;
-			}
-            else if (type is GenericNameSyntax)
-            {
-                typeAsString = ((GenericNameSyntax)type).Identifier.Text;
-            }
-
-            if (useLongNames) return typeAsString;
-
-			var match = new Regex("(.*)<(.*)>").Match(typeAsString);
+			var match = new Regex("(.*)<(.*)>").Match(type);
 			if (match.Success)
 			{
 				return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
 			}
-			return typeAsString.Contains(".") ? typeAsString.Split('.').Last() : typeAsString;
+			return type.Contains(".") ? type.Split('.').Last() : type;
 		}
 
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)

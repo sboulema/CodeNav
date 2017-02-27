@@ -16,7 +16,9 @@ namespace CodeNav.Controls
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            FindParent<CodeViewUserControl>(this).UpdateDocument(true);
+            var control = FindParent<CodeViewUserControl>(this);
+            LogHelper.Log("Refreshing document");
+            control.UpdateDocument(true);
         }
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
