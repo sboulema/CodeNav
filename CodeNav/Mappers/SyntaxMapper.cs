@@ -36,35 +36,121 @@ namespace CodeNav.Mappers
 
         private static CodeItem MapMember(MemberDeclarationSyntax member)
         {
-			//TODO: Implement missing types
             switch (member.Kind())
             {
                 case SyntaxKind.MethodDeclaration:
                     return MapMethod(member as MethodDeclarationSyntax);
-                //case vsCMElement.vsCMElementEnum:
-                //    return MapEnum(element);
+                case SyntaxKind.EnumDeclaration:
+                    return MapEnum(member as EnumDeclarationSyntax);
+                case SyntaxKind.EnumMemberDeclaration:
+                    return MapEnumMember(member as EnumMemberDeclarationSyntax);
                 case SyntaxKind.InterfaceDeclaration:
                     return MapInterface(member as InterfaceDeclarationSyntax);
-                //case vsCMElement.vsCMElementVariable:
-                //    return MapVariable(element);
+                case SyntaxKind.FieldDeclaration:
+                    return MapField(member as FieldDeclarationSyntax);
                 case SyntaxKind.PropertyDeclaration:
                     return MapProperty(member as PropertyDeclarationSyntax);
-                //case vsCMElement.vsCMElementStruct:
-                //    return MapStruct(element);
+                case SyntaxKind.StructDeclaration:
+                    return MapStruct(member as StructDeclarationSyntax);
                 case SyntaxKind.ClassDeclaration:
                     return MapClass(member as ClassDeclarationSyntax);
-                //case vsCMElement.vsCMElementEvent:
-                //    return MapEvent(element);
-                //case vsCMElement.vsCMElementDelegate:
-                //    return MapDelegate(element);
+                case SyntaxKind.EventDeclaration:
+                    return MapEvent(member as EventDeclarationSyntax);
+                case SyntaxKind.DelegateDeclaration:
+                    return MapDelegate(member as DelegateDeclarationSyntax);
                 case SyntaxKind.NamespaceDeclaration:
                     return MapNamespace(member as NamespaceDeclarationSyntax);
+                case SyntaxKind.ConstructorDeclaration:
+                    return MapConstructor(member as ConstructorDeclarationSyntax);
                 default:
                     return null;
             }
         }
 
-		private static CodeClassItem MapClass(ClassDeclarationSyntax member)
+        private static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeItem>(member, member.Identifier);
+            item.Kind = CodeItemKindEnum.EnumMember;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+
+            return item;
+        }
+
+        private static CodeItem MapField(FieldDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
+            if (item.Access == CodeItemAccessEnum.Private || item.Access == CodeItemAccessEnum.Protected) return null;
+            item.Kind = IsConstant(member.Modifiers)
+                ? CodeItemKindEnum.Constant
+                : CodeItemKindEnum.Variable;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+
+            return item;
+        }
+
+        private static bool IsConstant(SyntaxTokenList modifiers)
+        {
+            return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
+        }
+
+        private static CodeItem MapDelegate(DelegateDeclarationSyntax member)
+        {
+            var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
+            if (item.Access == CodeItemAccessEnum.Private) return null;
+            item.Kind = CodeItemKindEnum.Delegate;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+            return item;
+        }
+
+        private static CodeItem MapEvent(EventDeclarationSyntax member)
+        {
+            var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
+            if (item.Access == CodeItemAccessEnum.Private) return null;
+            item.Kind = CodeItemKindEnum.Event;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+            return item;
+        }
+
+        private static CodeClassItem MapStruct(StructDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+            item.Kind = CodeItemKindEnum.Struct;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            
+            foreach (var structMember in member.Members)
+            {
+                item.Members.Add(MapMember(structMember));
+            }
+
+            return item;
+        }
+
+        private static CodeClassItem MapEnum(EnumDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+            item.Kind = CodeItemKindEnum.Enum;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Parameters = MapMembersToString(member.Members);
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);          
+
+            foreach (var enumMember in member.Members)
+            {
+                item.Members.Add(MapMember(enumMember));
+            }
+
+            return item;
+        }
+
+        private static CodeClassItem MapClass(ClassDeclarationSyntax member)
 		{
 			//TODO: Implement interfaces and regions
 
@@ -121,14 +207,11 @@ namespace CodeNav.Mappers
 
 		private static string MapInheritance(ClassDeclarationSyntax member)
 		{
-			if (member == null) return null;
+			if (member?.BaseList == null) return string.Empty;
 
-			var basesList = (from BaseTypeSyntax bases in member.BaseList.Types select bases.Type).ToList();
-			//TODO: Implement implementedinterfaces
-			//var interfaceList = (from CodeElement interfaces in codeClass.ImplementedInterfaces select interfaces.Name).ToList();
-			//basesList.AddRange(interfaceList);
+		    var inheritanceList = (from BaseTypeSyntax bases in member.BaseList.Types select bases.Type.ToString()).ToList();
 
-			return $" : {string.Join(", ", basesList)}";
+		    return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
 		}
 
 		private static T MapBase<T>(MemberDeclarationSyntax source, SyntaxToken identifier, SyntaxTokenList modifiers) where T : CodeItem
@@ -141,14 +224,19 @@ namespace CodeNav.Mappers
 			return MapBase<T>(source, name.ToString(), new SyntaxTokenList());
 		}
 
-		private static T MapBase<T>(MemberDeclarationSyntax source, string name, SyntaxTokenList modifiers) where T : CodeItem
+        private static T MapBase<T>(MemberDeclarationSyntax source, SyntaxToken identifier) where T : CodeItem
+        {
+            return MapBase<T>(source, identifier.Text, new SyntaxTokenList());
+        }
+
+        private static T MapBase<T>(MemberDeclarationSyntax source, string name, SyntaxTokenList modifiers) where T : CodeItem
         {
             var element = Activator.CreateInstance<T>();
 
-            element.Name = name.ToString();
-            element.FullName = name.ToString();
-            element.Id = name.ToString();
-            element.Tooltip = name.ToString();
+            element.Name = name;
+            element.FullName = name;
+            element.Id = name;
+            element.Tooltip = name;
             element.StartLine = _tree.GetLineSpan(source.Span).StartLinePosition.Line;
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccessToEnum(modifiers);
@@ -163,30 +251,27 @@ namespace CodeNav.Mappers
 
 		private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
 		{
-			if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
+		    if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
 			{
 				return CodeItemAccessEnum.Sealed;
 			}
-			else if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-			{
-				return CodeItemAccessEnum.Public;
-			}
-			else if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
-			{
-				return CodeItemAccessEnum.Private;
-			}
-			else if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
-			{
-				return CodeItemAccessEnum.Protected;
-			}
-			else if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
-			{
-				return CodeItemAccessEnum.Internal;
-			}
-			else
-			{
-				return CodeItemAccessEnum.Unknown;
-			}
+		    if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+		    {
+		        return CodeItemAccessEnum.Public;
+		    }
+		    if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
+		    {
+		        return CodeItemAccessEnum.Private;
+		    }
+		    if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
+		    {
+		        return CodeItemAccessEnum.Protected;
+		    }
+		    if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
+		    {
+		        return CodeItemAccessEnum.Internal;
+		    }
+		    return CodeItemAccessEnum.Unknown;
 		}
 
 		private static CodeNamespaceItem MapNamespace(NamespaceDeclarationSyntax member)
@@ -226,26 +311,43 @@ namespace CodeNav.Mappers
 			item.Type = MapReturnType(member.ReturnType);
 			item.Parameters = MapParameters(member.ParameterList);
 			item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
-			//TODO: implement uniqueIdentifier
-			//item.Id = MapId(element);
-			item.Kind = member.Kind() == SyntaxKind.ConstructorDeclaration
-				? CodeItemKindEnum.Constructor
-				: CodeItemKindEnum.Method;
+            item.Id = MapId(member.Identifier, member.ParameterList);
+            item.Kind = CodeItemKindEnum.Method;
 			item.IconPath = MapIcon(item.Kind, item.Access);
 
 			return item;
         }
 
-		/// <summary>
-		/// Parse parameters from a method and return a formatted string back
-		/// </summary>
-		/// <param name="parameters">List of method parameters</param>
-		/// <param name="useLongNames">us fullNames for parameter types</param>
-		/// <param name="prettyPrint">seperate types with a comma</param>
-		/// <returns>string listing all parameter types (eg. (int, string, bool))</returns>
-		private static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
+        private static CodeItem MapConstructor(ConstructorDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
+            item.Parameters = MapParameters(member.ParameterList);
+            item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
+            item.Id = MapId(member.Identifier, member.ParameterList);
+            item.Kind = CodeItemKindEnum.Constructor;
+            item.IconPath = MapIcon(item.Kind, item.Access);
+
+            return item;
+        }
+
+        public static string MapId(SyntaxToken identifier, ParameterListSyntax parameters)
+        {
+            return identifier.Text + MapParameters(parameters, true, false);
+        }
+
+        /// <summary>
+        /// Parse parameters from a method and return a formatted string back
+        /// </summary>
+        /// <param name="parameters">List of method parameters</param>
+        /// <param name="useLongNames">us fullNames for parameter types</param>
+        /// <param name="prettyPrint">seperate types with a comma</param>
+        /// <returns>string listing all parameter types (eg. (int, string, bool))</returns>
+        private static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
 		{
 			var paramList = (from ParameterSyntax parameter in parameters.Parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
+		    if (!paramList.Any()) return string.Empty;
 			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
 		}
 
@@ -275,7 +377,7 @@ namespace CodeNav.Mappers
 			return item;
 		}
 
-		private static string MapIcon(CodeItemKindEnum kind, CodeItemAccessEnum access, bool isEnumMember = false)
+		private static string MapIcon(CodeItemKindEnum kind, CodeItemAccessEnum access)
 		{
 			const string iconFolder = "pack://application:,,,/CodeNav;component/Icons";
 			var accessString = MapAccessEnumToString(access);
@@ -292,7 +394,7 @@ namespace CodeNav.Mappers
 					return $"{iconFolder}/Delegate/Delegate{accessString}_16x.xaml";
 				case CodeItemKindEnum.Enum:
 					return $"{iconFolder}/Enum/Enum{accessString}_16x.xaml";
-				case CodeItemKindEnum.EnumItem:
+				case CodeItemKindEnum.EnumMember:
 					return $"{iconFolder}/Enum/EnumItem{accessString}_16x.xaml";
 				case CodeItemKindEnum.Event:
 					return $"{iconFolder}/Event/Event{accessString}_16x.xaml";
@@ -305,7 +407,7 @@ namespace CodeNav.Mappers
 				case CodeItemKindEnum.Struct:
 					return $"{iconFolder}/Structure/Structure{accessString}_16x.xaml";
 				case CodeItemKindEnum.Variable:
-					return isEnumMember ? $"{iconFolder}/Enum/EnumItem{accessString}_16x.xaml" : $"{iconFolder}/Constant/Constant{accessString}_16x.xaml";
+					return $"{iconFolder}/Field/Field{accessString}_16x.xaml";
 				default:
 					return $"{iconFolder}/Property/Property{accessString}_16x.xaml";
 			}
@@ -332,9 +434,9 @@ namespace CodeNav.Mappers
 			var typeAsString = string.Empty;
 
 			if (type is IdentifierNameSyntax) {
-				typeAsString = (type as IdentifierNameSyntax).Identifier.Text;
+				typeAsString = ((IdentifierNameSyntax) type).Identifier.Text;
 			} else if (type is PredefinedTypeSyntax) {
-				typeAsString = (type as PredefinedTypeSyntax).Keyword.Text;
+				typeAsString = ((PredefinedTypeSyntax) type).Keyword.Text;
 			}
 
 			if (useLongNames) return typeAsString;
@@ -347,7 +449,13 @@ namespace CodeNav.Mappers
 			return typeAsString.Contains(".") ? typeAsString.Split('.').Last() : typeAsString;
 		}
 
-		private static string GetText(Document document)
+        private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
+        {
+            var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
+            return $"{string.Join(", ", memberList)}";
+        }
+
+        private static string GetText(Document document)
         {
             var doc = (TextDocument)document.Object("TextDocument");
             var p = doc.StartPoint.CreateEditPoint();

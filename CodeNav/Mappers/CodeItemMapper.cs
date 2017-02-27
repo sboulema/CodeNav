@@ -161,7 +161,7 @@ namespace CodeNav.Mappers
             {
                 var memberItem = MapMember(member);
                 memberItem.IconPath = MapIcon<CodeVariable>(member, true);
-                memberItem.Kind = CodeItemKindEnum.EnumItem;
+                memberItem.Kind = CodeItemKindEnum.EnumMember;
                 item.Members.Add(memberItem);
             }
 

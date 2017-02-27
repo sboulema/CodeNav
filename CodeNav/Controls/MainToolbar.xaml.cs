@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Helpers;
 
@@ -8,7 +7,7 @@ namespace CodeNav.Controls
     /// <summary>
     /// Interaction logic for MainToolbar.xaml
     /// </summary>
-    public partial class MainToolbar : UserControl
+    public partial class MainToolbar
     {
         public MainToolbar()
         {
@@ -17,7 +16,7 @@ namespace CodeNav.Controls
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            FindParent<CodeViewUserControl>(this).UpdateDocument();
+            FindParent<CodeViewUserControl>(this).UpdateDocument(true);
         }
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)

@@ -117,7 +117,7 @@ namespace CodeNav.Helpers
                     return Settings.Default.ShowConstructors;
                 case CodeItemKindEnum.Enum:
                     return Settings.Default.ShowEnums;
-                case CodeItemKindEnum.EnumItem:
+                case CodeItemKindEnum.EnumMember:
                     return Settings.Default.ShowEnumItems;
                 case CodeItemKindEnum.Event:
                     return Settings.Default.ShowEvents;

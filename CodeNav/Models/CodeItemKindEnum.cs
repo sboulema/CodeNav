@@ -7,7 +7,7 @@
         Constructor,
         Delegate,
         Enum,
-        EnumItem,
+        EnumMember,
         Event,
 		Interface,
         Method,
