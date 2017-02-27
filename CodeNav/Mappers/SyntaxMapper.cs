@@ -360,7 +360,7 @@ namespace CodeNav.Mappers
             element.FullName = name;
             element.Id = name;
             element.Tooltip = name;
-            element.StartLine = _tree.GetLineSpan(source.Span).StartLinePosition.Line;
+            element.StartLine = GetLine(source.Span);
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccessToEnum(modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;

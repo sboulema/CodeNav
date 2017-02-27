@@ -68,7 +68,8 @@ namespace CodeNav
                 return;
             }
 
-            textSelection.GotoLine(startLineAsInt + 1);
+            LogHelper.Log($"GotoLine {startLineAsInt}");
+            textSelection.GotoLine(startLineAsInt);
         }
 
         public void UpdateDocument(bool forceUpdate = false)
