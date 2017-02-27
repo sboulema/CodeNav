@@ -13,7 +13,7 @@ namespace CodeNav.Models
     {
         public CodeItem()
         {
-            clickItemCommand = new DelegateCommand(ClickItem);
+            _clickItemCommand = new DelegateCommand(ClickItem);
         }
 
         public string Name { get; set; }
@@ -147,16 +147,12 @@ namespace CodeNav.Models
         }
         #endregion
 
-        private DelegateCommand clickItemCommand;
+        private readonly DelegateCommand _clickItemCommand;
+        public ICommand ClickItemCommand => _clickItemCommand;
 
-        public ICommand ClickItemCommand
+        public void ClickItem(object startLine)
         {
-            get { return clickItemCommand; }
-        }
-
-        public void ClickItem(object startPoint)
-        {
-            Control.SelectLine(startPoint as TextPoint);
+            Control.SelectLine(startLine);
         }
     }
 

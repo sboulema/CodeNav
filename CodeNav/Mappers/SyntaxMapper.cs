@@ -153,8 +153,6 @@ namespace CodeNav.Mappers
 
         private static CodeClassItem MapClass(ClassDeclarationSyntax member)
 		{
-			//TODO: Implement interfaces and regions
-
 			if (member == null) return null;
 
 			var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
@@ -164,34 +162,32 @@ namespace CodeNav.Mappers
 			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 
 			var regions = MapRegions(member.Span);
-			//var implementedInterfaces = MapImplementedInterfaces(element);
+			var implementedInterfaces = MapImplementedInterfaces(member);
 
 			foreach (var classMember in member.Members)
 			{
 				var memberItem = MapMember(classMember);
-				//if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem)
-				//	&& !AddToRegion(classRegions, memberItem))
-				//{
-			    if (memberItem != null && !AddToRegion(regions, memberItem))
+			    if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem) 
+                    && !AddToRegion(regions, memberItem))
 			    {
                     item.Members.Add(memberItem);
                 }
 			}
 
             // Add implemented interfaces to class or region if they have a interface member inside them
-            //if (implementedInterfaces.Any())
-            //{
-            //	foreach (var interfaceItem in implementedInterfaces)
-            //	{
-            //		if (interfaceItem.Members.Any())
-            //		{
-            //			if (!AddToRegion(classRegions, interfaceItem))
-            //			{
-            //				item.Members.Add(interfaceItem);
-            //			}
-            //		}
-            //	}
-            //}
+            if (implementedInterfaces.Any())
+            {
+                foreach (var interfaceItem in implementedInterfaces)
+                {
+                    if (interfaceItem.Members.Any())
+                    {
+                        if (!AddToRegion(regions, interfaceItem))
+                        {
+                            item.Members.Add(interfaceItem);
+                        }
+                    }
+                }
+            }
 
             // Add regions to class if they have a region member inside them
             if (regions.Any())
@@ -207,6 +203,62 @@ namespace CodeNav.Mappers
 
             return item;
 		}
+
+        private static bool AddToImplementedInterface(List<CodeRegionItem> implementedInterfaces, CodeItem item)
+        {
+            if (item == null) return false;
+            foreach (var interfaceItem in implementedInterfaces)
+            {
+                foreach (var interfaceMember in interfaceItem.Members)
+                {
+                    if (interfaceMember.Name.Equals(item.Name))
+                    {
+                        interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
+
+                        // Determing the start/end point of and implemented interface by the start/end point of its members
+                        if (interfaceItem.StartPoint == null || item.StartPoint.LessThan(interfaceItem.StartPoint))
+                        {
+                            interfaceItem.StartPoint = item.StartPoint;
+                        }
+                        if (interfaceItem.EndPoint == null || item.StartPoint.GreaterThan(interfaceItem.EndPoint))
+                        {
+                            interfaceItem.EndPoint = item.StartPoint;
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static List<CodeRegionItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
+        {
+            var implementedInterfaces = new List<CodeRegionItem>();
+
+            if (member?.BaseList == null) return implementedInterfaces;
+
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
+            var model = compilation.GetSemanticModel(_tree);
+
+            foreach (var implementedInterface in member.BaseList.Types)
+            {
+                var item = MapRegion(implementedInterface.ToString(), new TextSpan());
+
+                var typeSymbol = model.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
+                if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
+
+                foreach (var memberName in typeSymbol.MemberNames)
+                {
+                    item.Members.Add(new CodeItem { Name = memberName });
+                }
+
+                implementedInterfaces.Add(item);
+            }
+
+            return implementedInterfaces;
+        }
 
         private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
         {
@@ -227,14 +279,14 @@ namespace CodeNav.Mappers
             var root = _tree.GetRoot();
             var regionList = new List<CodeRegionItem>();
 
-            foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia))
+            foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && i.Span.IntersectsWith(span)))
             {
                 regionList.Add(MapRegion(regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span));
             }
                 
             var count = regionList.Count;
 
-            foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia))
+            foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && j.Span.IntersectsWith(span)))
             {
                 regionList[--count].EndLine = _tree.GetLineSpan(endRegionDirective.Span).StartLinePosition.Line;
             }
@@ -398,7 +450,6 @@ namespace CodeNav.Mappers
         private static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
 		{
 			var paramList = (from ParameterSyntax parameter in parameters.Parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
-		    if (!paramList.Any()) return string.Empty;
 			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
 		}
 
@@ -484,13 +535,20 @@ namespace CodeNav.Mappers
 		{
 			var typeAsString = string.Empty;
 
-			if (type is IdentifierNameSyntax) {
+			if (type is IdentifierNameSyntax)
+            {
 				typeAsString = ((IdentifierNameSyntax) type).Identifier.Text;
-			} else if (type is PredefinedTypeSyntax) {
+			}
+            else if (type is PredefinedTypeSyntax)
+            {
 				typeAsString = ((PredefinedTypeSyntax) type).Keyword.Text;
 			}
+            else if (type is GenericNameSyntax)
+            {
+                typeAsString = ((GenericNameSyntax)type).Identifier.Text;
+            }
 
-			if (useLongNames) return typeAsString;
+            if (useLongNames) return typeAsString;
 
 			var match = new Regex("(.*)<(.*)>").Match(typeAsString);
 			if (match.Success)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
@@ -46,8 +47,20 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
-        public void SelectLine(TextPoint textPoint)
+        public void SelectLine(object startLine)
         {
+            int startLineAsInt;
+
+            try
+            {
+                startLineAsInt = Convert.ToInt32(startLine);
+            }
+            catch (Exception)
+            {
+                LogHelper.Log($"StartLine is not a valid int for {_window.Document.Name}");
+                return;
+            }        
+
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
@@ -55,7 +68,7 @@ namespace CodeNav
                 return;
             }
 
-            textSelection.MoveToPoint(textPoint);
+            textSelection.GotoLine(startLineAsInt);
         }
 
         public void UpdateDocument(bool forceUpdate = false)
