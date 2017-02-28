@@ -247,7 +247,7 @@ namespace CodeNav.Mappers
 
             foreach (var implementedInterface in member.BaseList.Types)
             {
-                var item = MapRegion(implementedInterface.ToString(), new TextSpan());
+                var item = MapRegionOrInterface(implementedInterface.ToString(), int.MaxValue, CodeItemKindEnum.Interface);
 
                 var typeSymbol = model.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
                 if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
@@ -263,7 +263,7 @@ namespace CodeNav.Mappers
 
                         item.Members.Add(new CodeItem
                         {
-                            Id = MapId(symbolMember.Name, symbolMethod.Parameters)
+                            Id = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
                         });
                     }
                     else
@@ -299,7 +299,9 @@ namespace CodeNav.Mappers
 
             foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && i.Span.IntersectsWith(span)))
             {
-                regionList.Add(MapRegion(regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span));
+                regionList.Add(
+                    MapRegionOrInterface("#" + regionDirective.ToString().Replace("#region ", string.Empty), 
+                    regionDirective.Span, CodeItemKindEnum.Region));
             }
                 
             var index = 0;
@@ -312,19 +314,24 @@ namespace CodeNav.Mappers
             return regionList;
         }
 
-        private static int GetLine(TextSpan span) =>_tree.GetLineSpan(span).StartLinePosition.Line + 1;
+        private static int GetLine(TextSpan span) => 
+            _tree.GetLineSpan(span).StartLinePosition.Line + 1;
 
-        private static CodeRegionItem MapRegion(string name, TextSpan span)
+        private static CodeRegionItem MapRegionOrInterface(string name, TextSpan span, CodeItemKindEnum kind) => 
+            MapRegionOrInterface(name, GetLine(span), kind);
+
+        private static CodeRegionItem MapRegionOrInterface(string name, int startLine, CodeItemKindEnum kind)
         {
             return new CodeRegionItem
             {
                 Name = name,
                 FullName = name,
                 Id = name,
-                StartLine = GetLine(span),
+                StartLine = startLine,
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
-                FontSize = Settings.Default.Font.SizeInPoints - 2
+                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                Kind = kind
             };
         }
 
@@ -465,9 +472,9 @@ namespace CodeNav.Mappers
             return name + MapParameters(parameters, true, false);
         }
 
-        public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters)
+        public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters, bool useLongNames, bool prettyPrint)
         {
-            return name + MapParameters(parameters, true, false);
+            return name + MapParameters(parameters, useLongNames, prettyPrint);
         }
 
         public static string MapId(CodeElement element)

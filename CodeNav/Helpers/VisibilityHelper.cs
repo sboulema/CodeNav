@@ -98,8 +98,10 @@ namespace CodeNav.Helpers
                     return Settings.Default.ShowPublic;
                 case CodeItemAccessEnum.Internal:
                     return Settings.Default.ShowInternal;
+                case CodeItemAccessEnum.Sealed:
+                    return true;
                 case CodeItemAccessEnum.Unknown:
-                    return Settings.Default.ShowEnumItems;
+                    return true;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -130,8 +132,8 @@ namespace CodeNav.Helpers
                 case CodeItemKindEnum.Variable:
                     return Settings.Default.ShowVariables;
                 case CodeItemKindEnum.Class:
-                    return true;
                 case CodeItemKindEnum.Interface:
+                case CodeItemKindEnum.Region:
                     return true;
                 default:
                     throw new ArgumentOutOfRangeException();

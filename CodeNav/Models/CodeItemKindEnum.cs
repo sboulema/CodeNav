@@ -12,6 +12,7 @@
 		Interface,
         Method,
         Property,
+        Region,
         Struct,
         Variable
     }
