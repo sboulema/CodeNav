@@ -147,6 +147,8 @@ namespace CodeNav.Models
         #endregion
 
         private readonly DelegateCommand _clickItemCommand;
+        internal string ShortId;
+
         public ICommand ClickItemCommand => _clickItemCommand;
 
         public void ClickItem(object startLine)

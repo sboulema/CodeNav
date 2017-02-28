@@ -18,6 +18,7 @@ namespace CodeNav.Mappers
     {
         private static CodeViewUserControl _control;
         private static SyntaxTree _tree;
+        private static SemanticModel _semanticModel;
 
         public static List<CodeItem> MapDocument(Document document, CodeViewUserControl control)
         {
@@ -25,7 +26,8 @@ namespace CodeNav.Mappers
 
             var text = GetText(document);
             _tree = CSharpSyntaxTree.ParseText(text);
-            var root = (CompilationUnitSyntax)_tree.GetRoot();
+            _semanticModel = CreateSemanticModel();
+            var root = (CompilationUnitSyntax)_tree.GetRoot();           
             var result = new List<CodeItem>();
 
             foreach (var member in root.Members)
@@ -214,7 +216,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var interfaceMember in interfaceItem.Members)
                 {
-                    if (interfaceMember.Id.Equals(item.Id))
+                    if (interfaceMember.ShortId.Equals(item.ShortId))
                     {
                         interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
 
@@ -241,15 +243,11 @@ namespace CodeNav.Mappers
 
             if (member?.BaseList == null) return implementedInterfaces;
 
-            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
-            var model = compilation.GetSemanticModel(_tree);
-
             foreach (var implementedInterface in member.BaseList.Types)
             {
                 var item = MapRegionOrInterface(implementedInterface.ToString(), int.MaxValue, CodeItemKindEnum.Interface);
 
-                var typeSymbol = model.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
+                var typeSymbol = _semanticModel.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
                 if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
 
                 foreach (var symbolMember in typeSymbol.GetMembers())
@@ -263,12 +261,12 @@ namespace CodeNav.Mappers
 
                         item.Members.Add(new CodeItem
                         {
-                            Id = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
+                            ShortId = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
                         });
                     }
                     else
                     {
-                        item.Members.Add(new CodeItem { Id = symbolMember.Name });
+                        item.Members.Add(new CodeItem { ShortId = symbolMember.Name });
                     }                  
                 }
 
@@ -367,8 +365,9 @@ namespace CodeNav.Mappers
             var element = Activator.CreateInstance<T>();
 
             element.Name = name;
-            element.FullName = name;
-            element.Id = name;
+            element.FullName = GetFullName(source, name);
+            element.Id = element.FullName;
+            element.ShortId = name;
             element.Tooltip = name;
             element.StartLine = GetStartLine(source.Span);
             element.EndLine = GetEndLine(source.Span);
@@ -381,6 +380,24 @@ namespace CodeNav.Mappers
 			element.Control = _control;
 
             return element;
+        }
+
+        private static string GetFullName(MemberDeclarationSyntax source, string name)
+        {
+            var symbol = _semanticModel.GetDeclaredSymbol(source as SyntaxNode);
+
+            if (symbol != null)
+            {
+                return symbol.ToString();
+            }
+            return name;
+        }
+
+        private static SemanticModel CreateSemanticModel()
+        {
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
+            return compilation.GetSemanticModel(_tree);
         }
 
 		private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
@@ -446,7 +463,11 @@ namespace CodeNav.Mappers
 			item.Type = MapReturnType(member.ReturnType);
 			item.Parameters = MapParameters(member.ParameterList);
 			item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
-            item.Id = MapId(member.Identifier, member.ParameterList);
+            item.Id = MapId(item.FullName, member.ParameterList);
+            item.ShortId = item.FullName.Split('.').Last()
+                .Replace("(", string.Empty)
+                .Replace(")", string.Empty)
+                .Replace(", ", string.Empty);
             item.Kind = CodeItemKindEnum.Method;
 			item.IconPath = MapIcon(item.Kind, item.Access);
 
@@ -486,7 +507,7 @@ namespace CodeNav.Mappers
         /// Parse parameters from a method and return a formatted string back
         /// </summary>
         /// <param name="parameters">List of method parameters</param>
-        /// <param name="useLongNames">us fullNames for parameter types</param>
+        /// <param name="useLongNames">use fullNames for parameter types</param>
         /// <param name="prettyPrint">seperate types with a comma</param>
         /// <returns>string listing all parameter types (eg. (int, string, bool))</returns>
         private static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
@@ -498,12 +519,6 @@ namespace CodeNav.Mappers
         private static string MapParameters(ImmutableArray<IParameterSymbol> parameters, bool useLongNames = false, bool prettyPrint = true)
         {
             var paramList = (from IParameterSymbol parameter in parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
-            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
-        }
-
-        private static string MapParameters(CodeFunction function, bool useLongNames = false, bool prettyPrint = true)
-        {
-            var paramList = (from object parameter in function.Parameters select MapReturnType((parameter as CodeParameter).Type, useLongNames)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
@@ -606,18 +621,6 @@ namespace CodeNav.Mappers
 			}
 			return type.Contains(".") ? type.Split('.').Last() : type;
 		}
-
-        private static string MapReturnType(CodeTypeRef type, bool useLongNames = false)
-        {
-            if (useLongNames) return type.AsString;
-
-            var match = new Regex("(.*)<(.*)>").Match(type.AsString);
-            if (match.Success)
-            {
-                return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
-            }
-            return type.AsString.Contains(".") ? type.AsString.Split('.').Last() : type.AsString;
-        }
 
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
         {
