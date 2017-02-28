@@ -308,17 +308,20 @@ namespace CodeNav.Mappers
 
             foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && j.Span.IntersectsWith(span)))
             {
-                regionList[index++].EndLine = GetLine(endRegionDirective.Span);
+                regionList[index++].EndLine = GetEndLine(endRegionDirective.Span);
             }
 
             return regionList;
         }
 
-        private static int GetLine(TextSpan span) => 
+        private static int GetStartLine(TextSpan span) => 
             _tree.GetLineSpan(span).StartLinePosition.Line + 1;
 
+        private static int GetEndLine(TextSpan span) =>
+            _tree.GetLineSpan(span).EndLinePosition.Line + 1;
+
         private static CodeRegionItem MapRegionOrInterface(string name, TextSpan span, CodeItemKindEnum kind) => 
-            MapRegionOrInterface(name, GetLine(span), kind);
+            MapRegionOrInterface(name, GetStartLine(span), kind);
 
         private static CodeRegionItem MapRegionOrInterface(string name, int startLine, CodeItemKindEnum kind)
         {
@@ -367,7 +370,8 @@ namespace CodeNav.Mappers
             element.FullName = name;
             element.Id = name;
             element.Tooltip = name;
-            element.StartLine = GetLine(source.Span);
+            element.StartLine = GetStartLine(source.Span);
+            element.EndLine = GetEndLine(source.Span);
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccessToEnum(modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;
@@ -409,6 +413,7 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
             var item = MapBase<CodeNamespaceItem>(member, member.Name);
+            item.Kind = CodeItemKindEnum.Namespace;
             foreach (var namespaceMember in member.Members)
             {
                 item.Members.Add(MapMember(namespaceMember));
@@ -475,17 +480,6 @@ namespace CodeNav.Mappers
         public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters, bool useLongNames, bool prettyPrint)
         {
             return name + MapParameters(parameters, useLongNames, prettyPrint);
-        }
-
-        public static string MapId(CodeElement element)
-        {
-            if (element is CodeFunction)
-            {
-                var function = element as CodeFunction;
-                return function.Name + MapParameters(function, true, false);
-            }
-
-            return element.Name;
         }
 
         /// <summary>

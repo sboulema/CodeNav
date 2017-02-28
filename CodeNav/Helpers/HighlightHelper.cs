@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
-using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
@@ -15,35 +15,24 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static List<CodeItem> HighlightCurrentItem(Window window, List<CodeItem> codeItems)
+        public static void HighlightCurrentItem(Window window, List<CodeItem> codeItems)
         {
             try
             {
-                if (codeItems == null || window?.Selection == null) return codeItems;
+                if (codeItems == null || !(window?.Selection is TextSelection)) return;
             }
             catch (Exception)
             {
-                return codeItems;
+                return;
             }          
-
-            var textSelection = window.Selection as TextSelection;
-
-            var currentFunctionElement = textSelection?.ActivePoint.CodeElement[vsCMElement.vsCMElementFunction];
-
-            if (currentFunctionElement == null)
-            {
-                UnHighlight(codeItems);
-                return codeItems;
-            }
 
             UnHighlight(codeItems);
 
-            var highlightedItems = new List<string>();
-            GetItemsToHighlight(highlightedItems, currentFunctionElement);
+            var itemsToHighlight = GetItemsToHighlight(codeItems, ((TextSelection)window.Selection).CurrentLine);
 
-            Highlight(codeItems, highlightedItems);
+            //itemsToHighlight = itemsToHighlight.OrderByDescending(i => i, new CodeItemKindComparer()).ToList();
 
-            return codeItems;
+            Highlight(codeItems, itemsToHighlight.Select(i => i.Id));
         }
 
         private static void UnHighlight(List<CodeItem> document)
@@ -81,6 +70,11 @@ namespace CodeNav.Helpers
         /// <param name="ids">List of unique code item ids</param>
         private static void Highlight(List<CodeItem> document, IEnumerable<string> ids)
         {
+            FrameworkElement element = null;
+
+            // Reverse Ids, so they are in Namespace -> Class -> Method order
+            //ids = ids.Reverse();
+
             foreach (var id in ids)
             {
                 var item = FindCodeItem(document, id);
@@ -90,29 +84,49 @@ namespace CodeNav.Helpers
                 item.FontWeight = FontWeights.Bold;
                 item.HighlightBackground = ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);
 
+                if (element == null)
+                {
+                    element = item.Control.CodeItemsControl;
+                }
+
+                var found = FindItemContainer(element as ItemsControl, item);
+                if (found != null)
+                {
+                    element = found;
+
+                    if (!(item is IMembers))
+                    {
+                        found.BringIntoView();
+                    }
+                }
+
                 if (item is CodeClassItem)
                 {
                     (item as CodeClassItem).BorderBrush = ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey);
                 }
-            }
+            }           
         }
 
-        /// <summary>
-        /// Get list of unique item ids that should be highlighted
-        /// Given a code element will find parent code elements that should also be highlighted
-        /// </summary>
-        /// <param name="list">Code document</param>
-        /// <param name="element">Code element that should be highlighted</param>
-        private static void GetItemsToHighlight(ICollection<string> list, CodeElement element)
+        private static IEnumerable<CodeItem> GetItemsToHighlight(IEnumerable<CodeItem> items, int line)
         {
-            list.Add(SyntaxMapper.MapId(element));      
+            var itemsToHighlight = new List<CodeItem>();
 
-            var parent = element.Collection.Parent;
-            if (parent == null || parent is CodeElement == false) return;
+            foreach (var item in items)
+            {
+                if (item.StartLine <= line && item.EndLine >= line)
+                {
+                    itemsToHighlight.Add(item);
+                }
 
-            GetItemsToHighlight(list, parent);
+                if (item is IMembers)
+                {
+                    itemsToHighlight.AddRange(GetItemsToHighlight(((IMembers)item).Members, line));
+                }
+            }
+
+            return itemsToHighlight;
         }
-
+            
         public static void SetForeground(IEnumerable<CodeItem> items)
         {
             if (items == null) return;
@@ -144,11 +158,31 @@ namespace CodeNav.Helpers
         }
 
         /// <summary>
-        /// Find particular code item by its id inside of a code document
+        /// Find frameworkElement belonging to a code item
         /// </summary>
-        /// <param name="items">Code document</param>
-        /// <param name="id">unqiue item id</param>
+        /// <param name="itemsControl">itemsControl to search in</param>
+        /// <param name="item">item to find</param>
         /// <returns></returns>
+        private static FrameworkElement FindItemContainer(ItemsControl itemsControl, CodeItem item)
+        {
+            if (itemsControl == null) return null;
+
+            var itemContainer = itemsControl.ItemContainerGenerator.ContainerFromItem(item);
+            var itemContainerSubItemsControl = FindVisualChild<ItemsControl>(itemContainer);
+
+            if (itemContainerSubItemsControl != null)
+            {
+                return itemContainerSubItemsControl;
+            }
+
+            if ((itemContainer as ContentPresenter)?.Content == item)
+            {
+                return itemContainer as FrameworkElement;
+            }
+
+            return null;
+        }
+
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
         {
             foreach (var item in items)
@@ -172,6 +206,73 @@ namespace CodeNav.Helpers
                 }
             }
             return null;
+        }
+
+        public static T FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        return (T)child;
+                    }
+
+                    T childItem = FindVisualChild<T>(child);
+                    if (childItem != null) return childItem;
+                }
+            }
+            return null;
+        }
+    }
+
+    public class CodeItemKindComparer : IComparer<CodeItem>
+    {
+        public int Compare(CodeItem itemA, CodeItem itemB)
+        {
+            switch (itemA.Kind)
+            {
+                case CodeItemKindEnum.Class:
+                    switch (itemB.Kind)
+                    {
+                        case CodeItemKindEnum.Class:
+                            return 0;
+                        case CodeItemKindEnum.Interface:
+                            return -1;
+                        default:
+                            return 1;
+                    }
+                case CodeItemKindEnum.Constant:
+                case CodeItemKindEnum.Constructor:
+                case CodeItemKindEnum.Delegate:
+                case CodeItemKindEnum.Enum:
+                case CodeItemKindEnum.EnumMember:
+                case CodeItemKindEnum.Event:
+                case CodeItemKindEnum.Method:
+                case CodeItemKindEnum.Property:
+                case CodeItemKindEnum.Variable:
+                    return -1;
+                case CodeItemKindEnum.Interface:
+                case CodeItemKindEnum.Namespace:
+                    return 1;
+                case CodeItemKindEnum.Region:
+                case CodeItemKindEnum.Struct:
+                    switch (itemB.Kind)
+                    {
+                        case CodeItemKindEnum.Region:
+                        case CodeItemKindEnum.Struct:
+                            return 0;
+                        case CodeItemKindEnum.Interface:
+                        case CodeItemKindEnum.Class:
+                            return -1;
+                        default:
+                            return 1;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

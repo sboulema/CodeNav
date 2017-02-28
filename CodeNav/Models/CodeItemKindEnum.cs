@@ -11,6 +11,7 @@
         Event,
 		Interface,
         Method,
+        Namespace,
         Property,
         Region,
         Struct,
