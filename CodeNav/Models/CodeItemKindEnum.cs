@@ -2,14 +2,18 @@
 {
     public enum CodeItemKindEnum
     {
+		Class,
         Constant,
         Constructor,
         Delegate,
         Enum,
-        EnumItem,
+        EnumMember,
         Event,
+		Interface,
         Method,
+        Namespace,
         Property,
+        Region,
         Struct,
         Variable
     }

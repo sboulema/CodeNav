@@ -3,7 +3,7 @@
                     xmlns:models="clr-namespace:CodeNav.Models">
 
     <DataTemplate DataType="{x:Type models:CodeItem}">
-        <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartPoint}" 
+        <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartLine}" 
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
                 BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"

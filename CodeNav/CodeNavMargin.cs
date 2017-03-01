@@ -274,7 +274,8 @@ namespace CodeNav
             if (_isDisposed) return;
 
             UnRegisterEvents();
-            _control.Dispose();
+
+            _control?.Dispose();
 
             GC.SuppressFinalize(this);
             _isDisposed = true;

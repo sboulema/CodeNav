@@ -4,7 +4,7 @@ namespace CodeNav.Models
 {
     public class BackgroundWorkerRequest
     {
-        public CodeElements Elements;
+        public Document Document;
         public bool ForceUpdate;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
@@ -46,8 +47,20 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
-        public void SelectLine(TextPoint textPoint)
+        public void SelectLine(object startLine)
         {
+            int startLineAsInt;
+
+            try
+            {
+                startLineAsInt = Convert.ToInt32(startLine);
+            }
+            catch (Exception)
+            {
+                LogHelper.Log($"StartLine is not a valid int for {_window.Document.Name}");
+                return;
+            }        
+
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
@@ -55,16 +68,12 @@ namespace CodeNav
                 return;
             }
 
-            textSelection.MoveToPoint(textPoint);
+            LogHelper.Log($"GotoLine {startLineAsInt}");
+            textSelection.GotoLine(startLineAsInt);
         }
 
         public void UpdateDocument(bool forceUpdate = false)
         {
-            // Do we have code items in the text document
-            var elements = _window.ProjectItem?.FileCodeModel?.CodeElements;
-            LogHelper.Log($"No code items found for {_window.Document.Name}");
-            if (elements == null) return;
-
             if (forceUpdate)
             {
                 _cache = null;
@@ -92,7 +101,7 @@ namespace CodeNav
             // Start the backgroundworker to update the list of code items
             if (!_backgroundWorker.CancellationPending)
             {
-                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Elements = elements, ForceUpdate = forceUpdate });
+                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
             }
         }
 
@@ -144,7 +153,7 @@ namespace CodeNav
             if (result == null) return;
 
             // Filter all null items from the code document
-            CodeItemMapper.FilterNullItems(result.CodeItems);
+            SyntaxMapper.FilterNullItems(result.CodeItems);
 
             // Do we need to update the DataContext?
             var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
@@ -172,7 +181,7 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
-                var codeItems = CodeItemMapper.MapDocument(request.Elements, this);
+				var codeItems = SyntaxMapper.MapDocument(request.Document, this);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }

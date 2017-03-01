@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Caliburn.Micro;
-using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace CodeNav.Models
@@ -13,11 +12,12 @@ namespace CodeNav.Models
     {
         public CodeItem()
         {
-            clickItemCommand = new DelegateCommand(ClickItem);
+            _clickItemCommand = new DelegateCommand(ClickItem);
         }
 
         public string Name { get; set; }
-        public TextPoint StartPoint { get; set; }
+        public int StartLine { get; set; }
+        public int EndLine { get; set; }
         public string IconPath { get; set; }
         public string Id { get; set; }
         public string Tooltip { get; set; }
@@ -146,16 +146,14 @@ namespace CodeNav.Models
         }
         #endregion
 
-        private DelegateCommand clickItemCommand;
+        private readonly DelegateCommand _clickItemCommand;
+        internal string ShortId;
 
-        public ICommand ClickItemCommand
-        {
-            get { return clickItemCommand; }
-        }
+        public ICommand ClickItemCommand => _clickItemCommand;
 
-        public void ClickItem(object startPoint)
+        public void ClickItem(object startLine)
         {
-            Control.SelectLine(startPoint as TextPoint);
+            Control.SelectLine(startLine);
         }
     }
 

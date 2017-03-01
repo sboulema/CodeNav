@@ -29,11 +29,15 @@ namespace CodeNav.Models
             }
         }
 
-        public Visibility HasMembersVisibility
+		/// <summary>
+		/// Do we have any members that are not null and should be visible?
+		/// If we don't hide the expander +/- symbol and the header border
+		/// </summary>
+		public Visibility HasMembersVisibility
         {
             get
             {
-                return Members.Any(m => m.IsVisible == Visibility.Visible) 
+                return Members.Any(m => m != null && m.IsVisible == Visibility.Visible) 
                     ? Visibility.Visible 
                     : Visibility.Collapsed;
             }
