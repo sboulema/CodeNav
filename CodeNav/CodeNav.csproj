@@ -107,8 +107,6 @@
     <Compile Include="OptionsWindow.Designer.cs">
       <DependentUpon>OptionsWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tests\CodeNavTest.cs" />
-    <Compile Include="Tests\CodeNavTestEmptyClass.cs" />
     <Compile Include="CodeViewUserControl.xaml.cs">
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>
@@ -124,12 +122,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Tests\CodeNavTestSealed.cs" />
-    <Compile Include="Tests\ICodeNavTestInterface.cs" />
-    <Compile Include="Tests\TestEmpty.cs" />
-    <Compile Include="Tests\TestNestedNamespaces.cs" />
-    <Compile Include="Tests\TestNoNamespace.cs" />
-    <Compile Include="Tests\TestUsingsInNamespace.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowCommand.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowPackage.cs" />

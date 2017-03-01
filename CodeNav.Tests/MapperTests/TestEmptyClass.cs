@@ -6,7 +6,7 @@ using CodeNav.Mappers;
 using CodeNav.Models;
 using NUnit.Framework;
 
-namespace CodeNav.Tests
+namespace CodeNav.Tests.MapperTests
 {
     [TestFixture]
     public class TestEmptyClass

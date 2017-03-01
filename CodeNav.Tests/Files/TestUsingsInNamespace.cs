@@ -1,4 +1,4 @@
-﻿namespace CodeNav.Tests
+﻿namespace CodeNav.Tests.Files
 {
     using System;
     using System.Collections.Generic;

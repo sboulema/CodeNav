@@ -1,17 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using CodeNav.Mappers;
 using CodeNav.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
-namespace CodeNav.Tests
+namespace CodeNav.Tests.MapperTests
 {
-    [TestClass]
+    [TestFixture]
     public class TestProperties
     {
-        [TestMethod]
+        [Test]
         public void ShouldBeOk()
         {
-            var document = SyntaxMapper.MapDocument("..\\..\\Files\\TestProperties.cs");
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"));
 
             Assert.IsTrue(document.Any());
 
