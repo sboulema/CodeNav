@@ -238,5 +238,17 @@ namespace CodeNav.Properties {
                 this["ShowFilterToolbar"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowSealed {
+            get {
+                return ((bool)(this["ShowSealed"]));
+            }
+            set {
+                this["ShowSealed"] = value;
+            }
+        }
     }
 }

@@ -99,7 +99,7 @@ namespace CodeNav.Helpers
                 case CodeItemAccessEnum.Internal:
                     return Settings.Default.ShowInternal;
                 case CodeItemAccessEnum.Sealed:
-                    return true;
+                    return Settings.Default.ShowSealed;
                 case CodeItemAccessEnum.Unknown:
                     return true;
                 default:

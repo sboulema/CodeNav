@@ -43,6 +43,7 @@
             System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Private", 12);
             System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Internal", 11);
             System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Protected", 13);
+            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Sealed", 14);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterWindow));
             this.okButton = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -64,6 +65,9 @@
             // 
             // listView1
             // 
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.CheckBoxes = true;
             listViewItem1.StateImageIndex = 0;
             listViewItem2.StateImageIndex = 0;
@@ -79,6 +83,7 @@
             listViewItem12.StateImageIndex = 0;
             listViewItem13.StateImageIndex = 0;
             listViewItem14.StateImageIndex = 0;
+            listViewItem15.StateImageIndex = 0;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2,
@@ -93,10 +98,11 @@
             listViewItem11,
             listViewItem12,
             listViewItem13,
-            listViewItem14});
+            listViewItem14,
+            listViewItem15});
             this.listView1.Location = new System.Drawing.Point(12, 12);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(239, 140);
+            this.listView1.Size = new System.Drawing.Size(239, 179);
             this.listView1.SmallImageList = this.imageList1;
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
@@ -120,6 +126,7 @@
             this.imageList1.Images.SetKeyName(11, "Mail_16x.png");
             this.imageList1.Images.SetKeyName(12, "Lock_16x.png");
             this.imageList1.Images.SetKeyName(13, "Key_16x.png");
+            this.imageList1.Images.SetKeyName(14, "StatusNo_grey_16x.png");
             // 
             // cancelButton
             // 
@@ -133,7 +140,8 @@
             // 
             // checkAllButton
             // 
-            this.checkAllButton.Location = new System.Drawing.Point(257, 100);
+            this.checkAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkAllButton.Location = new System.Drawing.Point(257, 139);
             this.checkAllButton.Name = "checkAllButton";
             this.checkAllButton.Size = new System.Drawing.Size(75, 23);
             this.checkAllButton.TabIndex = 4;
@@ -143,7 +151,8 @@
             // 
             // uncheckAllButton
             // 
-            this.uncheckAllButton.Location = new System.Drawing.Point(257, 129);
+            this.uncheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.uncheckAllButton.Location = new System.Drawing.Point(257, 168);
             this.uncheckAllButton.Name = "uncheckAllButton";
             this.uncheckAllButton.Size = new System.Drawing.Size(75, 23);
             this.uncheckAllButton.TabIndex = 5;
@@ -155,7 +164,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 167);
+            this.ClientSize = new System.Drawing.Size(344, 203);
             this.Controls.Add(this.uncheckAllButton);
             this.Controls.Add(this.checkAllButton);
             this.Controls.Add(this.cancelButton);

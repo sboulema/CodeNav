@@ -49,6 +49,7 @@ namespace CodeNav
             listView1.Items[11].Checked = Settings.Default.ShowPrivate;
             listView1.Items[12].Checked = Settings.Default.ShowInternal;
             listView1.Items[13].Checked = Settings.Default.ShowProtected;
+            listView1.Items[14].Checked = Settings.Default.ShowSealed;
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -68,6 +69,7 @@ namespace CodeNav
             Settings.Default.ShowPrivate = listView1.Items[11].Checked;
             Settings.Default.ShowInternal = listView1.Items[12].Checked;
             Settings.Default.ShowProtected = listView1.Items[13].Checked;
+            Settings.Default.ShowSealed = listView1.Items[14].Checked;
 
             Close();
         }
