@@ -19,30 +19,41 @@ namespace CodeNav.Helpers
         {
             try
             {
-                if (codeItems == null || !(window?.Selection is TextSelection)) return;
+                if (!(window?.Selection is TextSelection)) return;
             }
             catch (Exception)
             {
                 return;
-            }          
+            }
 
-            UnHighlight(codeItems);
-
-            var itemsToHighlight = GetItemsToHighlight(codeItems, ((TextSelection)window.Selection).CurrentLine);
+            HighlightCurrentItem(codeItems, ((TextSelection)window.Selection).CurrentLine,
+                ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
+                ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey),
+                ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
+                ToBrush(EnvironmentColors.ToolWindowTextColorKey));
 
             //itemsToHighlight = itemsToHighlight.OrderByDescending(i => i, new CodeItemKindComparer()).ToList();
-
-            Highlight(codeItems, itemsToHighlight.Select(i => i.Id));
         }
 
-        private static void UnHighlight(List<CodeItem> document)
+        public static void HighlightCurrentItem(List<CodeItem> codeItems, int currentLine, 
+            SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border, SolidColorBrush regularForeground)
+        {
+            if (codeItems == null) return;
+
+            UnHighlight(codeItems, regularForeground);
+            var itemsToHighlight = GetItemsToHighlight(codeItems, currentLine);
+            Highlight(codeItems, itemsToHighlight.Select(i => i.Id), foreground, background, border);
+        }
+
+        private static void UnHighlight(List<CodeItem> document, SolidColorBrush foreground)
         {
             foreach (var item in document)
             {
                 if (item == null) continue;
 
-                item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+                item.Foreground = foreground;
                 item.FontWeight = FontWeights.Regular;
+                item.HighlightBackground = Brushes.Transparent;
 
                 if (item is IMembers)
                 {
@@ -50,7 +61,7 @@ namespace CodeNav.Helpers
                     
                     if (hasMembersItem.Members.Any())
                     {
-                        UnHighlight(hasMembersItem.Members);
+                        UnHighlight(hasMembersItem.Members, foreground);
                     }
                 }
 
@@ -68,7 +79,8 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
-        private static void Highlight(List<CodeItem> document, IEnumerable<string> ids)
+        private static void Highlight(List<CodeItem> document, IEnumerable<string> ids, 
+            SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border)
         {
             FrameworkElement element = null;
 
@@ -80,11 +92,11 @@ namespace CodeNav.Helpers
                 var item = FindCodeItem(document, id);
                 if (item == null) return;
 
-                item.Foreground = ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey);
+                item.Foreground = foreground;
                 item.FontWeight = FontWeights.Bold;
-                item.HighlightBackground = ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);
+                item.HighlightBackground = background;
 
-                if (element == null)
+                if (element == null && item.Control != null)
                 {
                     element = item.Control.CodeItemsControl;
                 }
@@ -102,7 +114,7 @@ namespace CodeNav.Helpers
 
                 if (item is CodeClassItem)
                 {
-                    (item as CodeClassItem).BorderBrush = ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey);
+                    (item as CodeClassItem).BorderBrush = border;
                 }
             }           
         }
