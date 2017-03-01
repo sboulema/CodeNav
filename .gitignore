@@ -8,3 +8,5 @@
 /*.user
 /CodeNav.Tests/bin
 /CodeNav.Tests/obj
+/CodeNav.Nunit/bin
+/CodeNav.Nunit/obj

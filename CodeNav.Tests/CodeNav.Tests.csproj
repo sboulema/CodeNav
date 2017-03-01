@@ -52,10 +52,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files\TestInterface.cs" />
     <Compile Include="Files\TestProperties.cs" />
     <Compile Include="Files\TestSealed.cs" />
     <Compile Include="Files\TestEmptyClass.cs" />
     <Compile Include="Files\TestNestedNamespaces.cs" />
+    <Compile Include="TestInterface.cs" />
     <Compile Include="TestProperties.cs" />
     <Compile Include="TestSealed.cs" />
     <Compile Include="TestEmptyClass.cs" />

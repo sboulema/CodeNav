@@ -349,6 +349,23 @@ namespace CodeNav.Mappers
             };
         }
 
+        private static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
+            item.Kind = CodeItemKindEnum.Interface;
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.IconPath = MapIcon(item.Kind, item.Access);
+
+            foreach (var interfaceMember in member.Members)
+            {
+                item.Members.Add(MapMember(interfaceMember));
+            }
+
+            return item;
+        }
+
         private static CodeRegionItem MapRegion(string name, TextSpan span)
         {
             return new CodeRegionItem
@@ -467,23 +484,6 @@ namespace CodeNav.Mappers
             return item;
         }
 
-		private static CodeClassItem MapInterface(InterfaceDeclarationSyntax member)
-		{
-			if (member == null) return null;
-
-			var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
-			item.Kind = CodeItemKindEnum.Interface;
-			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
-			item.IconPath = MapIcon(item.Kind, item.Access);
-
-			foreach (var interfaceMember in member.Members)
-			{
-				item.Members.Add(MapMember(interfaceMember));
-			}
-
-			return item;
-		}
-
 		private static CodeItem MapMethod(MethodDeclarationSyntax member)
         {
             if (member == null) return null;
@@ -530,12 +530,18 @@ namespace CodeNav.Mappers
 
         public static string MapShortId(string fullname)
         {
-            var match = new Regex("(.*)\\((.*)\\)").Match(fullname);
-            if (match.Success)
+            var methodMatch = new Regex("(.*)\\((.*)\\)").Match(fullname);
+            if (methodMatch.Success)
             {
-                return match.Groups[1].Value.Split('.').Last() +
-                       string.Join(string.Empty, match.Groups[2].Value.Split(',').Select(s => s.Split('.').Last()));
+                return methodMatch.Groups[1].Value.Split('.').Last() +
+                       string.Join(string.Empty, methodMatch.Groups[2].Value.Split(',').Select(s => s.Split('.').Last()));
             }
+
+            if (fullname.Contains('.'))
+            {
+                return fullname.Split('.').Last();
+            }
+
             return fullname;
         }
 
@@ -558,11 +564,11 @@ namespace CodeNav.Mappers
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
-        private static CodeFunctionItem MapProperty(PropertyDeclarationSyntax member)
+        private static CodePropertyItem MapProperty(PropertyDeclarationSyntax member)
 		{
 			if (member == null) return null;
 
-			var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
+			var item = MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers);
 			item.Type = MapReturnType(member.Type);
 
 			if (item.Access == CodeItemAccessEnum.Private) return null;

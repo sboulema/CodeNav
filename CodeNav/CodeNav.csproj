@@ -95,6 +95,7 @@
     <Compile Include="Mappers\SyntaxMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
     <Compile Include="Models\BackgroundWorkerResult.cs" />
+    <Compile Include="Models\CodePropertyItem.cs" />
     <Compile Include="Models\CodeNamespaceItem.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
