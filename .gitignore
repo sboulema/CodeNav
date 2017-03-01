@@ -6,3 +6,5 @@
 /Backup
 /UpgradeLog.htm
 /*.user
+/CodeNav.Tests/bin
+/CodeNav.Tests/obj

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
@@ -20,14 +21,23 @@ namespace CodeNav.Mappers
         private static SyntaxTree _tree;
         private static SemanticModel _semanticModel;
 
+        public static List<CodeItem> MapDocument(string filePath)
+        {
+            return MapDocument(File.ReadAllText(filePath), null);
+        }
+
         public static List<CodeItem> MapDocument(Document document, CodeViewUserControl control)
+        {
+            return MapDocument(GetText(document), control);
+        }
+
+        private static List<CodeItem> MapDocument(string text, CodeViewUserControl control)
         {
             _control = control;
 
-            var text = GetText(document);
             _tree = CSharpSyntaxTree.ParseText(text);
             _semanticModel = CreateSemanticModel();
-            var root = (CompilationUnitSyntax)_tree.GetRoot();           
+            var root = (CompilationUnitSyntax)_tree.GetRoot();
             var result = new List<CodeItem>();
 
             foreach (var member in root.Members)
@@ -165,6 +175,7 @@ namespace CodeNav.Mappers
 			item.IconPath = MapIcon(item.Kind, item.Access);
 			item.Parameters = MapInheritance(member);
 			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+		    item.Tooltip += item.Parameters;
 
 			var regions = MapRegions(member.Span);
 			var implementedInterfaces = MapImplementedInterfaces(member);
@@ -245,7 +256,7 @@ namespace CodeNav.Mappers
 
             foreach (var implementedInterface in member.BaseList.Types)
             {
-                var item = MapRegionOrInterface(implementedInterface.ToString(), int.MaxValue, CodeItemKindEnum.Interface);
+                var item = MapInterface(implementedInterface.ToString(), int.MaxValue);
 
                 var typeSymbol = _semanticModel.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
                 if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
@@ -261,12 +272,17 @@ namespace CodeNav.Mappers
 
                         item.Members.Add(new CodeItem
                         {
-                            ShortId = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
+                            ShortId = MapShortId(symbolMethod.ToString()),
+                            Id = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
                         });
                     }
                     else
                     {
-                        item.Members.Add(new CodeItem { ShortId = symbolMember.Name });
+                        item.Members.Add(new CodeItem
+                        {
+                            ShortId = symbolMember.Name,
+                            Id = symbolMember.Name
+                        });
                     }                  
                 }
 
@@ -298,8 +314,8 @@ namespace CodeNav.Mappers
             foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && i.Span.IntersectsWith(span)))
             {
                 regionList.Add(
-                    MapRegionOrInterface("#" + regionDirective.ToString().Replace("#region ", string.Empty), 
-                    regionDirective.Span, CodeItemKindEnum.Region));
+                    MapRegion("#" + regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span)
+                );
             }
                 
             var index = 0;
@@ -318,12 +334,9 @@ namespace CodeNav.Mappers
         private static int GetEndLine(TextSpan span) =>
             _tree.GetLineSpan(span).EndLinePosition.Line + 1;
 
-        private static CodeRegionItem MapRegionOrInterface(string name, TextSpan span, CodeItemKindEnum kind) => 
-            MapRegionOrInterface(name, GetStartLine(span), kind);
-
-        private static CodeRegionItem MapRegionOrInterface(string name, int startLine, CodeItemKindEnum kind)
+        private static CodeInterfaceItem MapInterface(string name, int startLine)
         {
-            return new CodeRegionItem
+            return new CodeInterfaceItem
             {
                 Name = name,
                 FullName = name,
@@ -332,7 +345,23 @@ namespace CodeNav.Mappers
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = kind
+                Kind = CodeItemKindEnum.Interface
+            };
+        }
+
+        private static CodeRegionItem MapRegion(string name, TextSpan span)
+        {
+            return new CodeRegionItem
+            {
+                Name = name,
+                FullName = name,
+                Id = name,
+                Tooltip = name,
+                StartLine = GetStartLine(span),
+                Foreground = CreateSolidColorBrush(Colors.Black),
+                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                Kind = CodeItemKindEnum.Region
             };
         }
 
@@ -367,7 +396,7 @@ namespace CodeNav.Mappers
             element.Name = name;
             element.FullName = GetFullName(source, name);
             element.Id = element.FullName;
-            element.ShortId = name;
+            element.ShortId = MapShortId(element.FullName);
             element.Tooltip = name;
             element.StartLine = GetStartLine(source.Span);
             element.EndLine = GetEndLine(source.Span);
@@ -464,10 +493,6 @@ namespace CodeNav.Mappers
 			item.Parameters = MapParameters(member.ParameterList);
 			item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
             item.Id = MapId(item.FullName, member.ParameterList);
-            item.ShortId = item.FullName.Split('.').Last()
-                .Replace("(", string.Empty)
-                .Replace(")", string.Empty)
-                .Replace(", ", string.Empty);
             item.Kind = CodeItemKindEnum.Method;
 			item.IconPath = MapIcon(item.Kind, item.Access);
 
@@ -503,6 +528,17 @@ namespace CodeNav.Mappers
             return name + MapParameters(parameters, useLongNames, prettyPrint);
         }
 
+        public static string MapShortId(string fullname)
+        {
+            var match = new Regex("(.*)\\((.*)\\)").Match(fullname);
+            if (match.Success)
+            {
+                return match.Groups[1].Value.Split('.').Last() +
+                       string.Join(string.Empty, match.Groups[2].Value.Split(',').Select(s => s.Split('.').Last()));
+            }
+            return fullname;
+        }
+
         /// <summary>
         /// Parse parameters from a method and return a formatted string back
         /// </summary>
@@ -531,17 +567,25 @@ namespace CodeNav.Mappers
 
 			if (item.Access == CodeItemAccessEnum.Private) return null;
 
-			if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.GetAccessorDeclaration))
-			{
-				item.Parameters += "get";
-			}
+		    if (member.AccessorList != null)
+		    {
+                if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.GetAccessorDeclaration))
+                {
+                    item.Parameters += "get";
+                }
 
-			if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.SetAccessorDeclaration))
-			{
-				item.Parameters += ",set";
-			}
+                if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.SetAccessorDeclaration))
+                {
+                    item.Parameters += string.IsNullOrEmpty(item.Parameters) ? "set" : ",set";
+                }
 
-			item.Parameters = $"{item.Name} {{{item.Parameters}}}";
+		        if (!string.IsNullOrEmpty(item.Parameters))
+		        {
+		            item.Parameters = $" {{{item.Parameters}}}";
+		        }
+            }
+
+			item.Parameters = item.Name + item.Parameters;
 			item.Tooltip = $"{item.Type} {item.Name}";
 			item.Kind = CodeItemKindEnum.Property;
 			item.IconPath = MapIcon(item.Kind, item.Access);

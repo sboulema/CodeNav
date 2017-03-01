@@ -20,10 +20,11 @@ namespace CodeNav.Models
         public int EndLine { get; set; }
         public string IconPath { get; set; }
         public string Id { get; set; }
+        internal string ShortId;
         public string Tooltip { get; set; }
         internal string FullName;
-        internal CodeItemKindEnum Kind;
-        internal CodeItemAccessEnum Access;
+        public CodeItemKindEnum Kind;
+        public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
 
         #region Fonts
@@ -147,8 +148,6 @@ namespace CodeNav.Models
         #endregion
 
         private readonly DelegateCommand _clickItemCommand;
-        internal string ShortId;
-
         public ICommand ClickItemCommand => _clickItemCommand;
 
         public void ClickItem(object startLine)
@@ -159,7 +158,6 @@ namespace CodeNav.Models
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>
     {
-
         public bool Equals(CodeItem x, CodeItem y)
         {
             //Check whether the objects are the same object. 
@@ -179,16 +177,10 @@ namespace CodeNav.Models
             return x != null && y != null && x.Id.Equals(y.Id) && membersAreEqual;
         }
 
+        // Not used, but must be implemented because of interface
         public int GetHashCode(CodeItem obj)
         {
-            //Get hash code for the Name field if it is not null. 
-            int hashProductName = obj.Name == null ? 0 : obj.Name.GetHashCode();
-
-            //Get hash code for the Code field. 
-            int hashProductCode = obj.Id.GetHashCode();
-
-            //Calculate the hash code for the product. 
-            return hashProductName ^ hashProductCode;
+            return 0;
         }
     }
 }

@@ -98,6 +98,7 @@
     <Compile Include="Models\CodeNamespaceItem.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
+    <Compile Include="Models\CodeInterfaceItem.cs" />
     <Compile Include="Models\IMembers.cs" />
     <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>

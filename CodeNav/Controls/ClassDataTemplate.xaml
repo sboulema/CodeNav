@@ -10,7 +10,9 @@
     <DataTemplate DataType="{x:Type models:CodeClassItem}">
         <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
                   BorderBrush="{Binding BorderBrush}"
-                  HorizontalAlignment="Stretch" x:Name="Expander">
+                  HorizontalAlignment="Stretch" 
+                  ToolTip="{Binding Tooltip}"
+                  x:Name="Expander">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal">
                     <Frame Source="{Binding IconPath}" Margin="0,0,3,0" DockPanel.Dock="Left" />

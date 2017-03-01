@@ -22,19 +22,18 @@ namespace CodeNav
 
         private CodeViewUserControl _control;      
         private readonly DTE _dte;
-        private readonly IWpfTextView _textView;
-        private readonly DocumentEvents _documentEvents;
+        private readonly IWpfTextView _textView;      
         private readonly Window _window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
+        private DocumentEvents _documentEvents;
 
         public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte)
         {
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
-            _documentEvents = dte.Events.DocumentEvents;
             _window = GetWindow(textViewHost, dte);
 
             // If we can not find the window we belong to we can not do anything
@@ -163,11 +162,10 @@ namespace CodeNav
             }
 
             // Subscribe to Document Save event
-            if (_documentEvents != null)
-            {
-                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            }
+            if (_window == null) return;
+            _documentEvents = _dte.Events.DocumentEvents[_window.Document];
+            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
             // Subscribe to Code window activated event
             if (_window == null) return;
