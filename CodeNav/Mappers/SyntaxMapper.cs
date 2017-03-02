@@ -175,7 +175,7 @@ namespace CodeNav.Mappers
 			item.IconPath = MapIcon(item.Kind, item.Access);
 			item.Parameters = MapInheritance(member);
 			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
-		    item.Tooltip += item.Parameters;
+		    item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
 			var regions = MapRegions(member.Span);
 			var implementedInterfaces = MapImplementedInterfaces(member);
@@ -468,6 +468,7 @@ namespace CodeNav.Mappers
 		    {
 		        return CodeItemAccessEnum.Internal;
 		    }
+
 		    return CodeItemAccessEnum.Unknown;
 		}
 
@@ -491,7 +492,7 @@ namespace CodeNav.Mappers
 			var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
 			item.Type = MapReturnType(member.ReturnType);
 			item.Parameters = MapParameters(member.ParameterList);
-			item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
+			item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(item.FullName, member.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
 			item.IconPath = MapIcon(item.Kind, item.Access);
@@ -505,7 +506,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
             item.Parameters = MapParameters(member.ParameterList);
-            item.Tooltip = $"{item.Access} {item.Type} {item.Name}{MapParameters(member.ParameterList, true)}";
+            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(member.Identifier, member.ParameterList);
             item.Kind = CodeItemKindEnum.Constructor;
             item.IconPath = MapIcon(item.Kind, item.Access);
@@ -552,8 +553,9 @@ namespace CodeNav.Mappers
         /// <param name="useLongNames">use fullNames for parameter types</param>
         /// <param name="prettyPrint">seperate types with a comma</param>
         /// <returns>string listing all parameter types (eg. (int, string, bool))</returns>
-        private static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
-		{
+        public static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
+        {
+            if (parameters == null) return string.Empty;
 			var paramList = (from ParameterSyntax parameter in parameters.Parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
 			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
 		}
@@ -592,7 +594,7 @@ namespace CodeNav.Mappers
             }
 
 			item.Parameters = item.Name + item.Parameters;
-			item.Tooltip = $"{item.Type} {item.Name}";
+		    item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
 			item.Kind = CodeItemKindEnum.Property;
 			item.IconPath = MapIcon(item.Kind, item.Access);
 			return item;

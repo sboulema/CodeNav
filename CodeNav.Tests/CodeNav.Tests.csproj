@@ -38,6 +38,7 @@
       <HintPath>..\packages\EnvDTE.8.0.1\lib\net10\EnvDTE.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -70,6 +71,7 @@
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
     <Compile Include="MapperTests\TestUsingsInNamespace.cs" />
+    <Compile Include="MapperTests\TooltipMapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapperTests\TestEmptyClass.cs" />
     <Compile Include="MapperTests\TestInterface.cs" />
