@@ -372,7 +372,7 @@ namespace CodeNav.Mappers
             element.StartLine = GetStartLine(source.Span);
             element.EndLine = GetEndLine(source.Span);
             element.Foreground = CreateSolidColorBrush(Colors.Black);
-            element.Access = MapAccessToEnum(modifiers);
+            element.Access = MapAccess(source, modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
@@ -446,6 +446,7 @@ namespace CodeNav.Mappers
                 case CodeItemAccessEnum.Private:
                     return "Private";
                 case CodeItemAccessEnum.Internal:
+                    return "Friend";
                 case CodeItemAccessEnum.Protected:
                     return "Protect";
                 case CodeItemAccessEnum.Sealed:
@@ -461,7 +462,7 @@ namespace CodeNav.Mappers
             return $"{string.Join(", ", memberList)}";
         }
 
-        private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
+        private static CodeItemAccessEnum MapAccess(MemberDeclarationSyntax member, SyntaxTokenList modifiers)
         {
             if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
             {
@@ -482,6 +483,16 @@ namespace CodeNav.Mappers
             if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
             {
                 return CodeItemAccessEnum.Internal;
+            }
+
+            if (!modifiers.Any())
+            {
+                if (member.Kind() == SyntaxKind.ClassDeclaration || 
+                    member.Kind() == SyntaxKind.StructDeclaration)
+                {
+                    return CodeItemAccessEnum.Internal;
+                }
+                return CodeItemAccessEnum.Private;
             }
 
             return CodeItemAccessEnum.Unknown;
