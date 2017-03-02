@@ -20,7 +20,6 @@ namespace CodeNav.Models
         public int EndLine { get; set; }
         public string IconPath { get; set; }
         public string Id { get; set; }
-        internal string ShortId;
         public string Tooltip { get; set; }
         internal string FullName;
         public CodeItemKindEnum Kind;

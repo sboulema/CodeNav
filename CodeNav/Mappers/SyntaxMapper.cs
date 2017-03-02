@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.Mappers
@@ -50,6 +49,8 @@ namespace CodeNav.Mappers
 
         private static CodeItem MapMember(MemberDeclarationSyntax member)
         {
+            if (member == null) return null;
+
             switch (member.Kind())
             {
                 case SyntaxKind.MethodDeclaration:
@@ -104,11 +105,6 @@ namespace CodeNav.Mappers
             item.IconPath = MapIcon(item.Kind, item.Access);
 
             return item;
-        }
-
-        private static bool IsConstant(SyntaxTokenList modifiers)
-        {
-            return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
         }
 
         private static CodeItem MapDelegate(DelegateDeclarationSyntax member)
@@ -183,7 +179,7 @@ namespace CodeNav.Mappers
 			foreach (var classMember in member.Members)
 			{
 				var memberItem = MapMember(classMember);
-			    if (memberItem != null && !AddToImplementedInterface(implementedInterfaces, memberItem) 
+			    if (memberItem != null && !IsPartOfImplementedInterface(implementedInterfaces, memberItem) 
                     && !AddToRegion(regions, memberItem))
 			    {
                     item.Members.Add(memberItem);
@@ -220,77 +216,72 @@ namespace CodeNav.Mappers
             return item;
 		}
 
-        private static bool AddToImplementedInterface(IEnumerable<CodeImplementedInterfaceItem> implementedInterfaces, CodeItem item)
+        #region Interfaces
+
+        private static bool IsPartOfImplementedInterface(IEnumerable<CodeImplementedInterfaceItem> implementedInterfaces, CodeItem item)
         {
-            if (item == null) return false;
-            foreach (var interfaceItem in implementedInterfaces)
-            {
-                foreach (var interfaceMember in interfaceItem.Members)
-                {
-                    if (interfaceMember.ShortId.Equals(item.ShortId))
-                    {
-                        interfaceItem.Members[interfaceItem.Members.IndexOf(interfaceMember)] = item;
-
-                        // Determing the start/end line of and implemented interface by the start/end line of its members
-                        if (item.StartLine <= interfaceItem.StartLine)
-                        {
-                            interfaceItem.StartLine = item.StartLine;
-                        }
-                        if (item.StartLine >= interfaceItem.StartLine)
-                        {
-                            interfaceItem.EndLine = item.StartLine;
-                        }
-
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return item != null && implementedInterfaces.SelectMany(i => i.Members.Select(m => m.Id)).Contains(item.Id);
         }
 
         private static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
+            var classSymbol = _semanticModel.GetDeclaredSymbol(member);
 
-            if (member?.BaseList == null) return implementedInterfaces;
-
-            foreach (var implementedInterface in member.BaseList.Types)
+            foreach (var implementedInterface in classSymbol.AllInterfaces)
             {
-                var item = MapImplementedInterface(implementedInterface.ToString(), int.MaxValue);
-
-                var typeSymbol = _semanticModel.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
-                if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
-
-                foreach (var symbolMember in typeSymbol.GetMembers())
+                var item = MapImplementedInterface(implementedInterface.Name, 0);
+                foreach (var interfaceMember in implementedInterface.GetMembers())
                 {
-                    if (symbolMember.Kind == SymbolKind.Method)
-                    {
-                        var symbolMethod = symbolMember as IMethodSymbol;
-
-                        if (symbolMethod == null ||  symbolMethod.MethodKind == MethodKind.PropertyGet || 
-                            symbolMethod.MethodKind == MethodKind.PropertySet) continue;
-
-                        item.Members.Add(new CodeItem
-                        {
-                            ShortId = MapShortId(symbolMethod.ToString()),
-                            Id = MapId(symbolMember.Name, symbolMethod.Parameters, false, false)
-                        });
-                    }
-                    else
-                    {
-                        item.Members.Add(new CodeItem
-                        {
-                            ShortId = symbolMember.Name,
-                            Id = symbolMember.Name
-                        });
-                    }                  
+                    var implementation = classSymbol.FindImplementationForInterfaceMember(interfaceMember);
+                    var reference = implementation.DeclaringSyntaxReferences.First();
+                    var declarationSyntax = reference.GetSyntax();
+                    item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
+                    FilterNullItems(item.Members);
                 }
-
+                item.StartLine = item.Members.Min(i => i.StartLine);
+                item.EndLine = item.Members.Max(i => i.EndLine);
                 implementedInterfaces.Add(item);
             }
 
             return implementedInterfaces;
         }
+
+        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
+        {
+            return new CodeImplementedInterfaceItem
+            {
+                Name = name,
+                FullName = name,
+                Id = name,
+                StartLine = startLine,
+                Foreground = CreateSolidColorBrush(Colors.Black),
+                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                Kind = CodeItemKindEnum.ImplementedInterface
+            };
+        }
+
+        private static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member)
+        {
+            if (member == null) return null;
+
+            var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
+            item.Kind = CodeItemKindEnum.Interface;
+            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.IconPath = MapIcon(item.Kind, item.Access);
+
+            foreach (var interfaceMember in member.Members)
+            {
+                item.Members.Add(MapMember(interfaceMember));
+            }
+
+            return item;
+        }
+
+        #endregion
+
+        #region Regions
 
         private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
         {
@@ -328,38 +319,6 @@ namespace CodeNav.Mappers
             return regionList;
         }
 
-        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
-        {
-            return new CodeImplementedInterfaceItem
-            {
-                Name = name,
-                FullName = name,
-                Id = name,
-                StartLine = startLine,
-                Foreground = CreateSolidColorBrush(Colors.Black),
-                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.ImplementedInterface
-            };
-        }
-
-        private static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
-            item.Kind = CodeItemKindEnum.Interface;
-            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
-            item.IconPath = MapIcon(item.Kind, item.Access);
-
-            foreach (var interfaceMember in member.Members)
-            {
-                item.Members.Add(MapMember(interfaceMember));
-            }
-
-            return item;
-        }
-
         private static CodeRegionItem MapRegion(string name, TextSpan span)
         {
             return new CodeRegionItem
@@ -375,6 +334,8 @@ namespace CodeNav.Mappers
                 Kind = CodeItemKindEnum.Region
             };
         }
+
+        #endregion
 
         private static string MapInheritance(ClassDeclarationSyntax member)
 		{
@@ -407,7 +368,6 @@ namespace CodeNav.Mappers
             element.Name = name;
             element.FullName = GetFullName(source, name);
             element.Id = element.FullName;
-            element.ShortId = MapShortId(element.FullName);
             element.Tooltip = name;
             element.StartLine = GetStartLine(source.Span);
             element.EndLine = GetEndLine(source.Span);
@@ -423,6 +383,11 @@ namespace CodeNav.Mappers
         }
 
         #region Helpers
+
+        private static bool IsConstant(SyntaxTokenList modifiers)
+        {
+            return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
+        }
 
         private static SemanticModel CreateSemanticModel()
         {
@@ -474,35 +439,57 @@ namespace CodeNav.Mappers
         private static int GetEndLine(TextSpan span) =>
             _tree.GetLineSpan(span).EndLinePosition.Line + 1;
 
-        #endregion
+        private static string MapAccessEnumToString(CodeItemAccessEnum item)
+        {
+            switch (item)
+            {
+                case CodeItemAccessEnum.Private:
+                    return "Private";
+                case CodeItemAccessEnum.Internal:
+                case CodeItemAccessEnum.Protected:
+                    return "Protect";
+                case CodeItemAccessEnum.Sealed:
+                    return "Sealed";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
+        {
+            var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
+            return $"{string.Join(", ", memberList)}";
+        }
 
         private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
-		{
-		    if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
-			{
-				return CodeItemAccessEnum.Sealed;
-			}
-		    if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-		    {
-		        return CodeItemAccessEnum.Public;
-		    }
-		    if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
-		    {
-		        return CodeItemAccessEnum.Private;
-		    }
-		    if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
-		    {
-		        return CodeItemAccessEnum.Protected;
-		    }
-		    if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
-		    {
-		        return CodeItemAccessEnum.Internal;
-		    }
+        {
+            if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
+            {
+                return CodeItemAccessEnum.Sealed;
+            }
+            if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+            {
+                return CodeItemAccessEnum.Public;
+            }
+            if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
+            {
+                return CodeItemAccessEnum.Private;
+            }
+            if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
+            {
+                return CodeItemAccessEnum.Protected;
+            }
+            if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
+            {
+                return CodeItemAccessEnum.Internal;
+            }
 
-		    return CodeItemAccessEnum.Unknown;
-		}
+            return CodeItemAccessEnum.Unknown;
+        }
 
-		private static CodeNamespaceItem MapNamespace(NamespaceDeclarationSyntax member)
+        #endregion
+
+        private static CodeNamespaceItem MapNamespace(NamespaceDeclarationSyntax member)
         {
             if (member == null) return null;
 
@@ -557,23 +544,6 @@ namespace CodeNav.Mappers
         public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters, bool useLongNames, bool prettyPrint)
         {
             return name + MapParameters(parameters, useLongNames, prettyPrint);
-        }
-
-        public static string MapShortId(string fullname)
-        {
-            var methodMatch = new Regex("(.*)\\((.*)\\)").Match(fullname);
-            if (methodMatch.Success)
-            {
-                return methodMatch.Groups[1].Value.Split('.').Last() +
-                       string.Join(string.Empty, methodMatch.Groups[2].Value.Split(',').Select(s => s.Split('.').Last()));
-            }
-
-            if (fullname.Contains('.'))
-            {
-                return fullname.Split('.').Last();
-            }
-
-            return fullname;
         }
 
         /// <summary>
@@ -665,27 +635,5 @@ namespace CodeNav.Mappers
 					return $"{iconFolder}/Property/Property{accessString}_16x.xaml";
 			}
 		}
-
-		private static string MapAccessEnumToString(CodeItemAccessEnum item)
-		{
-			switch (item)
-			{
-				case CodeItemAccessEnum.Private:
-					return "Private";
-				case CodeItemAccessEnum.Internal:
-				case CodeItemAccessEnum.Protected:
-					return "Protect";
-				case CodeItemAccessEnum.Sealed:
-					return "Sealed";
-				default:
-					return string.Empty;
-			}
-		}
-
-        private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
-        {
-            var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
-            return $"{string.Join(", ", memberList)}";
-        }
     }
 }
