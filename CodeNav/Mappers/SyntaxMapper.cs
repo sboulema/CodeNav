@@ -220,7 +220,7 @@ namespace CodeNav.Mappers
             return item;
 		}
 
-        private static bool AddToImplementedInterface(List<CodeRegionItem> implementedInterfaces, CodeItem item)
+        private static bool AddToImplementedInterface(IEnumerable<CodeImplementedInterfaceItem> implementedInterfaces, CodeItem item)
         {
             if (item == null) return false;
             foreach (var interfaceItem in implementedInterfaces)
@@ -248,15 +248,15 @@ namespace CodeNav.Mappers
             return false;
         }
 
-        private static List<CodeRegionItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
+        private static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
         {
-            var implementedInterfaces = new List<CodeRegionItem>();
+            var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
 
             if (member?.BaseList == null) return implementedInterfaces;
 
             foreach (var implementedInterface in member.BaseList.Types)
             {
-                var item = MapInterface(implementedInterface.ToString(), int.MaxValue);
+                var item = MapImplementedInterface(implementedInterface.ToString(), int.MaxValue);
 
                 var typeSymbol = _semanticModel.GetSymbolInfo(implementedInterface.Type).Symbol as INamedTypeSymbol;
                 if (typeSymbol == null || typeSymbol.TypeKind != TypeKind.Interface) continue;
@@ -334,9 +334,9 @@ namespace CodeNav.Mappers
         private static int GetEndLine(TextSpan span) =>
             _tree.GetLineSpan(span).EndLinePosition.Line + 1;
 
-        private static CodeInterfaceItem MapInterface(string name, int startLine)
+        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
         {
-            return new CodeInterfaceItem
+            return new CodeImplementedInterfaceItem
             {
                 Name = name,
                 FullName = name,
@@ -345,7 +345,7 @@ namespace CodeNav.Mappers
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.Interface
+                Kind = CodeItemKindEnum.ImplementedInterface
             };
         }
 

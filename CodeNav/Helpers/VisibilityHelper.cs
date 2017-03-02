@@ -135,6 +135,7 @@ namespace CodeNav.Helpers
                 case CodeItemKindEnum.Interface:
                 case CodeItemKindEnum.Region:
                 case CodeItemKindEnum.Namespace:
+                case CodeItemKindEnum.ImplementedInterface:
                     return true;
                 default:
                     throw new ArgumentOutOfRangeException();

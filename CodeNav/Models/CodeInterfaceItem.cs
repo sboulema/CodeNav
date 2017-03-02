@@ -1,6 +1,10 @@
 ﻿namespace CodeNav.Models
 {
-    public class CodeInterfaceItem : CodeRegionItem
+    public class CodeInterfaceItem : CodeClassItem
+    {
+    }
+
+    public class CodeImplementedInterfaceItem : CodeRegionItem
     {
     }
 }

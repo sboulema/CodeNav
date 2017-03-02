@@ -9,6 +9,7 @@
         Enum,
         EnumMember,
         Event,
+        ImplementedInterface,
 		Interface,
         Method,
         Namespace,

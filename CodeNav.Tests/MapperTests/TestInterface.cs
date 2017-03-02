@@ -26,6 +26,7 @@ namespace CodeNav.Tests.MapperTests
             // First item should be an interface
             var innerInterface = (document.First() as IMembers).Members.First() as CodeInterfaceItem;
             Assert.AreEqual(3, innerInterface.Members.Count);
+            Assert.IsTrue(innerInterface.IconPath.Contains("Interface"));
 
             // Second item should be the implementing class
             var implementingClass = (document.First() as IMembers).Members.Last() as CodeClassItem;
@@ -35,7 +36,7 @@ namespace CodeNav.Tests.MapperTests
 
             var implementedInterface = implementingClass.Members.Last() as CodeInterfaceItem;
 
-            Assert.AreEqual(CodeItemKindEnum.Interface, implementedInterface.Kind);
+            Assert.AreEqual(CodeItemKindEnum.ImplementedInterface, implementedInterface.Kind);
             Assert.AreEqual(3, implementedInterface.Members.Count);
 
             // Items shoud be properly replaced

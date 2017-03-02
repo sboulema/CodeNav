@@ -20,7 +20,7 @@ Visual Studio extension to show the code structure of your current document
 Currently only C#
 
 ## Installing
-[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav) ![Visual Studio Marketplace](http://vsmarketplacebadge.apphb.com/version-short/SamirBoulema.CodeNav.svg)
 
 [Github Releases](https://github.com/sboulema/CodeNav/releases)
 
