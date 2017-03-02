@@ -34,7 +34,7 @@ namespace CodeNav.Tests.MapperTests
             Assert.AreEqual(CodeItemKindEnum.Class, implementingClass.Kind);
             Assert.AreEqual(3, implementingClass.Members.Count);
 
-            var implementedInterface = implementingClass.Members.Last() as CodeInterfaceItem;
+            var implementedInterface = implementingClass.Members.Last() as CodeImplementedInterfaceItem;
 
             Assert.AreEqual(CodeItemKindEnum.ImplementedInterface, implementedInterface.Kind);
             Assert.AreEqual(3, implementedInterface.Members.Count);
