@@ -328,12 +328,6 @@ namespace CodeNav.Mappers
             return regionList;
         }
 
-        private static int GetStartLine(TextSpan span) => 
-            _tree.GetLineSpan(span).StartLinePosition.Line + 1;
-
-        private static int GetEndLine(TextSpan span) =>
-            _tree.GetLineSpan(span).EndLinePosition.Line + 1;
-
         private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
         {
             return new CodeImplementedInterfaceItem
@@ -428,6 +422,15 @@ namespace CodeNav.Mappers
             return element;
         }
 
+        #region Helpers
+
+        private static SemanticModel CreateSemanticModel()
+        {
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
+            return compilation.GetSemanticModel(_tree);
+        }
+
         private static string GetFullName(MemberDeclarationSyntax source, string name)
         {
             var symbol = _semanticModel.GetDeclaredSymbol(source as SyntaxNode);
@@ -439,14 +442,41 @@ namespace CodeNav.Mappers
             return name;
         }
 
-        private static SemanticModel CreateSemanticModel()
+        private static string GetText(Document document)
         {
-            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
-            return compilation.GetSemanticModel(_tree);
+            var doc = (TextDocument)document.Object("TextDocument");
+            var p = doc.StartPoint.CreateEditPoint();
+            return p.GetText(doc.EndPoint);
         }
 
-		private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
+        private static SolidColorBrush CreateSolidColorBrush(Color color)
+        {
+            var brush = new SolidColorBrush(color);
+            brush.Freeze();
+            return brush;
+        }
+
+        public static void FilterNullItems(List<CodeItem> items)
+        {
+            items.RemoveAll(item => item == null);
+            foreach (var item in items)
+            {
+                if (item is IMembers)
+                {
+                    FilterNullItems((item as IMembers).Members);
+                }
+            }
+        }
+
+        private static int GetStartLine(TextSpan span) =>
+            _tree.GetLineSpan(span).StartLinePosition.Line + 1;
+
+        private static int GetEndLine(TextSpan span) =>
+            _tree.GetLineSpan(span).EndLinePosition.Line + 1;
+
+        #endregion
+
+        private static CodeItemAccessEnum MapAccessToEnum(SyntaxTokenList modifiers)
 		{
 		    if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
 			{
@@ -490,7 +520,7 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
 			var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
-			item.Type = MapReturnType(member.ReturnType);
+			item.Type = TypeMapper.Map(member.ReturnType);
 			item.Parameters = MapParameters(member.ParameterList);
 			item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(item.FullName, member.ParameterList);
@@ -556,13 +586,13 @@ namespace CodeNav.Mappers
         public static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
         {
             if (parameters == null) return string.Empty;
-			var paramList = (from ParameterSyntax parameter in parameters.Parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
+			var paramList = (from ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
 			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
 		}
 
         private static string MapParameters(ImmutableArray<IParameterSymbol> parameters, bool useLongNames = false, bool prettyPrint = true)
         {
-            var paramList = (from IParameterSymbol parameter in parameters select MapReturnType(parameter.Type, useLongNames)).ToList();
+            var paramList = (from IParameterSymbol parameter in parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
@@ -571,7 +601,7 @@ namespace CodeNav.Mappers
 			if (member == null) return null;
 
 			var item = MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers);
-			item.Type = MapReturnType(member.Type);
+			item.Type = TypeMapper.Map(member.Type);
 
 			if (item.Access == CodeItemAccessEnum.Private) return null;
 
@@ -652,58 +682,10 @@ namespace CodeNav.Mappers
 			}
 		}
 
-        private static string MapReturnType(ITypeSymbol type, bool useLongNames = false)
-        {
-            return MapReturnType(type.ToString(), useLongNames);
-        }
-
-        private static string MapReturnType(TypeSyntax type, bool useLongNames = false)
-        {
-            return MapReturnType(type.ToString(), useLongNames);
-        }
-
-        private static string MapReturnType(string type, bool useLongNames = false)
-		{
-            if (useLongNames) return type;
-
-			var match = new Regex("(.*)<(.*)>").Match(type);
-			if (match.Success)
-			{
-				return $"{match.Groups[1].Value.Split('.').Last()}<{match.Groups[2].Value.Split('.').Last()}>";
-			}
-			return type.Contains(".") ? type.Split('.').Last() : type;
-		}
-
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
         {
             var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
             return $"{string.Join(", ", memberList)}";
-        }
-
-        private static string GetText(Document document)
-        {
-            var doc = (TextDocument)document.Object("TextDocument");
-            var p = doc.StartPoint.CreateEditPoint();
-            return p.GetText(doc.EndPoint);
-        }
-
-        private static SolidColorBrush CreateSolidColorBrush(Color color)
-        {
-            var brush = new SolidColorBrush(color);
-            brush.Freeze();
-            return brush;
-        }
-
-        public static void FilterNullItems(List<CodeItem> items)
-        {
-            items.RemoveAll(item => item == null);
-            foreach (var item in items)
-            {
-                if (item is IMembers)
-                {
-                    FilterNullItems((item as IMembers).Members);
-                }
-            }
         }
     }
 }

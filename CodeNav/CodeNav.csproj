@@ -93,6 +93,7 @@
     <Compile Include="Helpers\VisibilityHelper.cs" />
     <Compile Include="Mappers\FontStyleMapper.cs" />
     <Compile Include="Mappers\SyntaxMapper.cs" />
+    <Compile Include="Mappers\TypeMapper.cs" />
     <Compile Include="Mappers\TooltipMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
     <Compile Include="Models\BackgroundWorkerResult.cs" />
