@@ -38,6 +38,7 @@ namespace CodeNav.Tests.MapperTests
 
             Assert.AreEqual(CodeItemKindEnum.ImplementedInterface, implementedInterface.Kind);
             Assert.AreEqual(3, implementedInterface.Members.Count);
+            Assert.IsFalse(implementedInterface.Name.StartsWith("#"));
 
             // Items should have proper start lines
             Assert.AreEqual(12, implementedInterface.Members[0].StartLine);

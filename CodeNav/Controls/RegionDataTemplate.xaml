@@ -7,7 +7,7 @@
     </ResourceDictionary.MergedDictionaries>
     
     <DataTemplate DataType="{x:Type models:CodeRegionItem}">
-        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" ToolTip="{Binding Tooltip}">
+        <Expander IsExpanded="{Binding IsExpanded}" Style="{StaticResource PlusMinusExpander}" ToolTip="{Binding Tooltip}">
             <Expander.BorderBrush>
                 <VisualBrush>
                     <VisualBrush.Visual>
@@ -21,7 +21,7 @@
                 </VisualBrush>
             </Expander.BorderBrush>
             <Expander.Header>
-                <TextBlock Text="{Binding Name}" 
+                <TextBlock Text="{Binding Name}"
                            FontFamily="{Binding FontFamily}" 
                            FontSize="{Binding FontSize}" 
                            FontStyle="{Binding FontStyle}"

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -26,6 +27,22 @@ namespace CodeNav.Models
             {
                 _borderBrush = value;
                 NotifyOfPropertyChange();
+            }
+        }
+
+        public event EventHandler IsExpandedChanged;
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set
+            {
+                if (_isExpanded != value)
+                {
+                    _isExpanded = value;
+                    NotifyOfPropertyChange();
+                    IsExpandedChanged?.Invoke(this, EventArgs.Empty);
+                }
             }
         }
 

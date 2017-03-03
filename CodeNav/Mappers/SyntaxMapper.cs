@@ -248,7 +248,8 @@ namespace CodeNav.Mappers
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.ImplementedInterface
+                Kind = CodeItemKindEnum.ImplementedInterface,
+                IsExpanded = true
             };
 
             foreach (var member in members)
@@ -267,21 +268,6 @@ namespace CodeNav.Mappers
             }
 
             return item;
-        }
-
-        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
-        {
-            return new CodeImplementedInterfaceItem
-            {
-                Name = name,
-                FullName = name,
-                Id = name,
-                StartLine = startLine,
-                Foreground = CreateSolidColorBrush(Colors.Black),
-                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.ImplementedInterface
-            };
         }
 
         private static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member)

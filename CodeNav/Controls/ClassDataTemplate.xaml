@@ -8,7 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type models:CodeClassItem}">
-        <Expander IsExpanded="True" Style="{StaticResource PlusMinusExpander}" 
+        <Expander IsExpanded="{Binding IsExpanded}" Style="{StaticResource PlusMinusExpander}" 
                   BorderBrush="{Binding BorderBrush}"
                   HorizontalAlignment="Stretch" 
                   ToolTip="{Binding Tooltip}"
