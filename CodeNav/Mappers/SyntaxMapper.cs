@@ -226,25 +226,47 @@ namespace CodeNav.Mappers
         private static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
+
             var classSymbol = _semanticModel.GetDeclaredSymbol(member);
 
             foreach (var implementedInterface in classSymbol.AllInterfaces)
             {
-                var item = MapImplementedInterface(implementedInterface.Name, 0);
-                foreach (var interfaceMember in implementedInterface.GetMembers())
-                {
-                    var implementation = classSymbol.FindImplementationForInterfaceMember(interfaceMember);
-                    var reference = implementation.DeclaringSyntaxReferences.First();
-                    var declarationSyntax = reference.GetSyntax();
-                    item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
-                    FilterNullItems(item.Members);
-                }
-                item.StartLine = item.Members.Min(i => i.StartLine);
-                item.EndLine = item.Members.Max(i => i.EndLine);
-                implementedInterfaces.Add(item);
+                implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, implementedInterface.GetMembers(), classSymbol));
             }
 
             return implementedInterfaces;
+        }
+
+        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, 
+            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass)
+        {
+            var item = new CodeImplementedInterfaceItem
+            {
+                Name = name,
+                FullName = name,
+                Id = name,
+                Foreground = CreateSolidColorBrush(Colors.Black),
+                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                Kind = CodeItemKindEnum.ImplementedInterface
+            };
+
+            foreach (var member in members)
+            {
+                var implementation = implementingClass.FindImplementationForInterfaceMember(member);
+                var reference = implementation.DeclaringSyntaxReferences.First();
+                var declarationSyntax = reference.GetSyntax();
+                item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
+                FilterNullItems(item.Members);
+            }
+
+            if (item.Members.Any())
+            {
+                item.StartLine = item.Members.Min(i => i.StartLine);
+                item.EndLine = item.Members.Max(i => i.EndLine);
+            }
+
+            return item;
         }
 
         private static CodeImplementedInterfaceItem MapImplementedInterface(string name, int startLine)
