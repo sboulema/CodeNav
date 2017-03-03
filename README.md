@@ -47,3 +47,5 @@ The debug build will write a lot of useful information to the Visual Studio Outp
 
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
 
+## Thanks to
+- Steve Cadwallader - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension

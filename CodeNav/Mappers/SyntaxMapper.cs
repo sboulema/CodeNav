@@ -493,16 +493,6 @@ namespace CodeNav.Mappers
                 return CodeItemAccessEnum.Internal;
             }
 
-            if (!modifiers.Any())
-            {
-                if (member.Kind() == SyntaxKind.ClassDeclaration || 
-                    member.Kind() == SyntaxKind.StructDeclaration)
-                {
-                    return CodeItemAccessEnum.Internal;
-                }
-                return CodeItemAccessEnum.Private;
-            }
-
             return CodeItemAccessEnum.Unknown;
         }
 
