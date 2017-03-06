@@ -101,6 +101,8 @@ namespace CodeNav.Helpers
         /// <returns>The <see cref="ICollapsible" /> on the same starting line, otherwise null.</returns>
         private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, IOutliningManager manager, IWpfTextView textView)
         {
+            if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount) return null;
+
                 var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
                 var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
 

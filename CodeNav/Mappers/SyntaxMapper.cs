@@ -5,12 +5,12 @@ using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
-using EnvDTE;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.LanguageServices;
 
 namespace CodeNav.Mappers
 {
@@ -19,24 +19,40 @@ namespace CodeNav.Mappers
         private static CodeViewUserControl _control;
         private static SyntaxTree _tree;
         private static SemanticModel _semanticModel;
+        private static VisualStudioWorkspace _workspace;
 
         public static List<CodeItem> MapDocument(string filePath)
         {
-            return MapDocument(File.ReadAllText(filePath), null);
+            var workspace = new AdhocWorkspace();
+            var projName = "Tests";
+            var projectId = ProjectId.CreateNewId();
+            var versionStamp = VersionStamp.Create();
+            var projectInfo = ProjectInfo.Create(projectId, versionStamp, projName, projName, LanguageNames.CSharp);
+            var newProject = workspace.AddProject(projectInfo);
+            var sourceText = SourceText.From(File.ReadAllText(filePath));
+            var document = workspace.AddDocument(newProject.Id, Path.GetFileName(filePath), sourceText);
+
+            return MapDocument(document);
         }
 
-        public static List<CodeItem> MapDocument(Document document, CodeViewUserControl control)
-        {
-            return MapDocument(GetText(document), control);
-        }
-
-        private static List<CodeItem> MapDocument(string text, CodeViewUserControl control)
+        public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
+            VisualStudioWorkspace workspace, string text)
         {
             _control = control;
 
-            _tree = CSharpSyntaxTree.ParseText(text);
-            _semanticModel = CreateSemanticModel();
+            _workspace = workspace;
+            var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+
+            var document = _workspace.CurrentSolution.GetDocument(id);
+            return MapDocument(document);
+        }
+
+        public static List<CodeItem> MapDocument(Document document)
+        {
+            _tree = document.GetSyntaxTreeAsync().Result;
+            _semanticModel = document.GetSemanticModelAsync().Result;
             var root = (CompilationUnitSyntax)_tree.GetRoot();
+
             var result = new List<CodeItem>();
 
             foreach (var member in root.Members)
@@ -255,6 +271,7 @@ namespace CodeNav.Mappers
             foreach (var member in members)
             {
                 var implementation = implementingClass.FindImplementationForInterfaceMember(member);
+                if (!implementation.DeclaringSyntaxReferences.Any()) continue;
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
                 item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
@@ -397,29 +414,22 @@ namespace CodeNav.Mappers
             return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
         }
 
-        private static SemanticModel CreateSemanticModel()
-        {
-            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-            var compilation = CSharpCompilation.Create("MyCompilation", new[] { _tree }, new[] { mscorlib });
-            return compilation.GetSemanticModel(_tree);
-        }
-
         private static string GetFullName(MemberDeclarationSyntax source, string name)
         {
-            var symbol = _semanticModel.GetDeclaredSymbol(source as SyntaxNode);
-
-            if (symbol != null)
+            try
             {
-                return symbol.ToString();
-            }
-            return name;
-        }
+                var symbol = _semanticModel.GetDeclaredSymbol(source as SyntaxNode);
 
-        private static string GetText(Document document)
-        {
-            var doc = (TextDocument)document.Object("TextDocument");
-            var p = doc.StartPoint.CreateEditPoint();
-            return p.GetText(doc.EndPoint);
+                if (symbol != null)
+                {
+                    return symbol.ToString();
+                }
+                return name;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
         }
 
         private static SolidColorBrush CreateSolidColorBrush(Color color)

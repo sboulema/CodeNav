@@ -1,7 +1,9 @@
 ﻿using System;
+using CodeNav.Helpers;
 using EnvDTE;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace CodeNav.ToolWindow
@@ -16,6 +18,7 @@ namespace CodeNav.ToolWindow
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
         private DTE _dte;
+        private IOutliningManager _outliningManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeNavToolWindow"/> class.
@@ -42,12 +45,17 @@ namespace CodeNav.ToolWindow
             _control.ShowWaitingForDocument();
         }
 
+        private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
+            _control.RegionsCollapsed(e);
+
+        private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
+            _control.RegionsExpanded(e);
+
         protected override void Dispose(bool disposing)
         {
             _control.Dispose();
         }
 
-        private void TextEditorEvents_LineChanged(TextPoint startPoint, TextPoint endPoint, int hint) => _control.HighlightCurrentItem();
         private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(document.ActiveWindow);
 
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
@@ -57,7 +65,15 @@ namespace CodeNav.ToolWindow
             if (textViewHost != null)
             {
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
-            }          
+
+                // Subscribe to Outlining events
+                _outliningManager = OutliningHelper.GetManager(Package as CodeNavToolWindowPackage, GetCurrentViewHost().TextView);
+                if (_outliningManager == null) return;
+                _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+            }
 
             UpdateDocument(gotFocus, gotFocus != lostFocus);
         }
