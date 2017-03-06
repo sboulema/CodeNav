@@ -94,6 +94,8 @@ namespace CodeNav
 
         public void UpdateDocument(bool forceUpdate = false)
         {
+            LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
+
             if (forceUpdate)
             {
                 _cache = null;
