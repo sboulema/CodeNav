@@ -52,8 +52,8 @@ namespace CodeNav.Tests.MapperTests
             // Inner item should be a class
             var innerClass = (document.First() as IMembers).Members.First() as CodeClassItem;
             
-            Assert.AreEqual(CodeItemAccessEnum.Internal, innerClass.Access);
-            Assert.IsTrue(innerClass.IconPath.Contains("Friend"));
+            Assert.AreEqual(CodeItemAccessEnum.Unknown, innerClass.Access);
+            Assert.IsFalse(innerClass.IconPath.Contains("Friend"));
         }
     }
 }
