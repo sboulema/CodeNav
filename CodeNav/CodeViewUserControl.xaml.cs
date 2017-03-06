@@ -208,13 +208,10 @@ namespace CodeNav
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            LogHelper.Log("BackgroundWorker will now do its job");
             if (!_backgroundWorker.CancellationPending)
             {
-                LogHelper.Log("BackgroundWorker will now do its job - 2");
                 var request = e.Argument as BackgroundWorkerRequest;
                 if (request == null) return;
-                LogHelper.Log("BackgroundWorker will now do its job - 3");
                 var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
