@@ -170,7 +170,11 @@ namespace CodeNav
         {
             var result = e.Result as BackgroundWorkerResult;
 
-            if (result == null) return;
+            if (result == null)
+            {
+                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, no results");
+                return;
+            }
 
             // Filter all null items from the code document
             SyntaxMapper.FilterNullItems(result.CodeItems);
@@ -204,6 +208,7 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
+                if (request == null) return;
 				var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace, string.Empty);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }

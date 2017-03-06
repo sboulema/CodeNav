@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
-using System.Reflection;
+using CodeNav.Helpers;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.LanguageServices;
 
@@ -21,15 +21,13 @@ namespace CodeNav.Mappers
         private static CodeViewUserControl _control;
         private static SyntaxTree _tree;
         private static SemanticModel _semanticModel;
-        private static VisualStudioWorkspace _workspace;
 
         public static List<CodeItem> MapDocument(string filePath)
         {
             var workspace = new AdhocWorkspace();
-            var projName = "Tests";
             var projectId = ProjectId.CreateNewId();
             var versionStamp = VersionStamp.Create();
-            var projectInfo = ProjectInfo.Create(projectId, versionStamp, projName, projName, LanguageNames.CSharp);
+            var projectInfo = ProjectInfo.Create(projectId, versionStamp, "Tests", "Tests", LanguageNames.CSharp);
             var newProject = workspace.AddProject(projectInfo);
             var sourceText = SourceText.From(File.ReadAllText(filePath));
             var document = workspace.AddDocument(newProject.Id, Path.GetFileName(filePath), sourceText);
@@ -42,27 +40,34 @@ namespace CodeNav.Mappers
         {
             _control = control;
 
-            _workspace = workspace;
             var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+            var document = workspace.CurrentSolution.GetDocument(id);
 
-            var document = _workspace.CurrentSolution.GetDocument(id);
             return MapDocument(document);
         }
 
         public static List<CodeItem> MapDocument(Document document)
         {
+            if (document == null)
+            {
+                LogHelper.Log("Error during mapping: Document is null");
+                return null;
+            }
+
             _tree = document.GetSyntaxTreeAsync().Result;
             _semanticModel = document.GetSemanticModelAsync().Result;
             var root = (CompilationUnitSyntax)_tree.GetRoot();
 
-            var result = new List<CodeItem>();
-
-            foreach (var member in root.Members)
+            try
             {
-                result.Add(MapMember(member));
+                return root.Members.Select(MapMember).ToList();
             }
-
-            return result;
+            catch (Exception e)
+            {
+                LogHelper.Log($"Error during mapping: {e.Message}");
+            }
+            
+            return null;
         }
 
         private static CodeItem MapMember(MemberDeclarationSyntax member)
@@ -273,7 +278,7 @@ namespace CodeNav.Mappers
             foreach (var member in members)
             {
                 var implementation = implementingClass.FindImplementationForInterfaceMember(member);
-                if (!implementation.DeclaringSyntaxReferences.Any()) continue;
+                if (implementation == null || !implementation.DeclaringSyntaxReferences.Any()) continue;
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
                 item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
