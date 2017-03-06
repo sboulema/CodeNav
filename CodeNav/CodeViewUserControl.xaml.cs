@@ -213,7 +213,7 @@ namespace CodeNav
             {
                 var request = e.Argument as BackgroundWorkerRequest;
                 if (request == null) return;
-				var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace, string.Empty);
+				var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }

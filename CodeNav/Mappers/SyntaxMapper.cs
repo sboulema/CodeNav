@@ -36,7 +36,7 @@ namespace CodeNav.Mappers
         }
 
         public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
-            VisualStudioWorkspace workspace, string text)
+            VisualStudioWorkspace workspace)
         {
             _control = control;
 
@@ -46,12 +46,22 @@ namespace CodeNav.Mappers
                 return null;
             }
 
-            var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
-            var document = workspace.CurrentSolution.GetDocument(id);
+            LogHelper.Log("Mapping document: Fetching document from workspace");
 
-            LogHelper.Log($"Mapping document '{document.Name}' ({id})");
+            try
+            {
+                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+                var document = workspace.CurrentSolution.GetDocument(id);
 
-            return MapDocument(document);
+                LogHelper.Log($"Mapping document '{document.Name}' ({id})");
+
+                return MapDocument(document);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log($"Error during mapping: {e}");
+                return null;
+            }        
         }
 
         public static List<CodeItem> MapDocument(Document document)
