@@ -19,7 +19,6 @@ namespace CodeNav.Controls
         {
             LogHelper.Log("Refreshing document");
             var control = FindParent<CodeViewUserControl>(this);
-            LogHelper.Log($"MainToolbar: control name '{(control == null ? string.Empty : control.Name)}'");
             control.UpdateDocument(true);
         }
 

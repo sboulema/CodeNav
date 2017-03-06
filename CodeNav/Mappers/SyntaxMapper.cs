@@ -40,6 +40,12 @@ namespace CodeNav.Mappers
         {
             _control = control;
 
+            if (workspace == null)
+            {
+                LogHelper.Log("Error during mapping: Workspace is null");
+                return null;
+            }
+
             var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
             var document = workspace.CurrentSolution.GetDocument(id);
 

@@ -28,7 +28,7 @@ namespace CodeNav
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
         private readonly IWpfTextView _textView;
         private readonly IOutliningManager _outliningManager;
-        private readonly VisualStudioWorkspace _workspace;
+        private VisualStudioWorkspace _workspace;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
             IWpfTextView textView = null, IOutliningManager outliningManager = null, 
@@ -55,7 +55,8 @@ namespace CodeNav
         }
 
         public void SetWindow(Window window) => _window = window;
-        
+        public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
+
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
         public void SelectLine(object startLine)
