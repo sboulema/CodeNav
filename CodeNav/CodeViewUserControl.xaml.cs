@@ -9,6 +9,8 @@ using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 
 namespace CodeNav
@@ -23,8 +25,11 @@ namespace CodeNav
         private List<CodeItem> _cache;
         private readonly BackgroundWorker _backgroundWorker;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
+        private readonly IWpfTextView _textView;
+        private readonly IOutliningManager _outliningManager;
 
-        public CodeViewUserControl(Window window, ColumnDefinition column = null)
+        public CodeViewUserControl(Window window, ColumnDefinition column = null, 
+            IWpfTextView textView = null, IOutliningManager outliningManager = null)
         {
             InitializeComponent();
 
@@ -39,12 +44,14 @@ namespace CodeNav
 
             _window = window;
             _column = column;
+            _textView = textView;
+            _outliningManager = outliningManager;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
 
         public void SetWindow(Window window) => _window = window;
-
+        
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
         public void SelectLine(object startLine)
@@ -71,6 +78,12 @@ namespace CodeNav
             LogHelper.Log($"GotoLine {startLineAsInt}");
             textSelection.GotoLine(startLineAsInt);
         }
+
+        public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
+            OutliningHelper.RegionsCollapsed(e, CodeDocumentViewModel.CodeDocument);
+
+        public void RegionsExpanded(RegionsExpandedEventArgs e) =>
+            OutliningHelper.RegionsExpanded(e, CodeDocumentViewModel.CodeDocument);
 
         public void UpdateDocument(bool forceUpdate = false)
         {
@@ -172,6 +185,9 @@ namespace CodeNav
 
             // Are there any items to show, if not hide the margin
             VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+
+            // Sync all regions
+            OutliningHelper.SyncAllRegions(_outliningManager, _textView, CodeDocumentViewModel.CodeDocument);
 
             LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
         }

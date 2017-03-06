@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Window = EnvDTE.Window;
 
@@ -28,19 +29,21 @@ namespace CodeNav
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
+        private IOutliningManager _outliningManager;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte)
+        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager)
         {
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
             _window = GetWindow(textViewHost, dte);
+            _outliningManager = outliningManager;
 
             // If we can not find the window we belong to we can not do anything
             if (_window == null) return;
 
             // Add the view/content to the margin area
-            _codeNavGrid = CreateGrid(textViewHost, dte);
+            _codeNavGrid = CreateGrid(textViewHost);
             _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide.Equals("Left") ? 0 : 2];
             Children.Add(_codeNavGrid);        
 
@@ -78,7 +81,7 @@ namespace CodeNav
             return null;
         }
 
-        private Grid CreateGrid(IWpfTextViewHost textViewHost, DTE dte)
+        private Grid CreateGrid(IWpfTextViewHost textViewHost)
         {
             var leftColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
             if (!Settings.Default.MarginSide.Equals("Left"))
@@ -116,7 +119,8 @@ namespace CodeNav
 
             var columnIndex = Settings.Default.MarginSide.Equals("Left") ? 0 : 2;
 
-            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex]);
+            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
+                textViewHost.TextView, _outliningManager);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, columnIndex);
@@ -172,7 +176,20 @@ namespace CodeNav
             _windowEvents = _dte.Events.WindowEvents[_window];
             _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+
+            // Subscribe to Outlining events
+            if (_outliningManager == null) return;
+            _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+            _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+            _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+            _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
         }
+
+        private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
+            _control.RegionsCollapsed(e);
+
+        private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
+            _control.RegionsExpanded(e);
 
         public void UnRegisterEvents()
         {
@@ -186,7 +203,9 @@ namespace CodeNav
         }
 
         private void DocumentEvents_DocumentSaved(Document document) => _control.UpdateDocument();
+
         private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _control.UpdateDocument();
+
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
         #endregion

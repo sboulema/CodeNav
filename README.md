@@ -15,6 +15,7 @@ Visual Studio extension to show the code structure of your current document
 - Filter items by kind (method, property), access (public, private) and name
 - Cursor position will be reflected by highlighting the current method in the list
 - Customizable fonts
+- Synced collapsing/expanding regions
 
 ## Language support
 Currently only C#
@@ -47,3 +48,5 @@ The debug build will write a lot of useful information to the Visual Studio Outp
 
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
 
+## Thanks to
+- Steve Cadwallader - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension
