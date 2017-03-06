@@ -5,9 +5,7 @@ using CodeNav.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio.ComponentModelHost;
 
 namespace CodeNav
 {
