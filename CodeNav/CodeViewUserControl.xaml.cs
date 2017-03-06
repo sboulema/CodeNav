@@ -211,9 +211,11 @@ namespace CodeNav
             LogHelper.Log("BackgroundWorker will now do its job");
             if (!_backgroundWorker.CancellationPending)
             {
+                LogHelper.Log("BackgroundWorker will now do its job - 2");
                 var request = e.Argument as BackgroundWorkerRequest;
                 if (request == null) return;
-				var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
+                LogHelper.Log("BackgroundWorker will now do its job - 3");
+                var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }

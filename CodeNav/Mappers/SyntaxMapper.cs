@@ -76,16 +76,7 @@ namespace CodeNav.Mappers
             _semanticModel = document.GetSemanticModelAsync().Result;
             var root = (CompilationUnitSyntax)_tree.GetRoot();
 
-            try
-            {
-                return root.Members.Select(MapMember).ToList();
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log($"Error during mapping: {e.Message}");
-            }
-            
-            return null;
+            return root.Members.Select(MapMember).ToList();
         }
 
         private static CodeItem MapMember(MemberDeclarationSyntax member)
