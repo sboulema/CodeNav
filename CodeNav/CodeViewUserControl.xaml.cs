@@ -208,6 +208,7 @@ namespace CodeNav
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            LogHelper.Log("BackgroundWorker will now do its job");
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;

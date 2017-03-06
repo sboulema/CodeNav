@@ -49,6 +49,8 @@ namespace CodeNav.Mappers
             var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
             var document = workspace.CurrentSolution.GetDocument(id);
 
+            LogHelper.Log($"Mapping document '{document.Name}' ({id})");
+
             return MapDocument(document);
         }
 
