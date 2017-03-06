@@ -8,6 +8,7 @@ using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
+using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -27,9 +28,11 @@ namespace CodeNav
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
         private readonly IWpfTextView _textView;
         private readonly IOutliningManager _outliningManager;
+        private readonly VisualStudioWorkspace _workspace;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
-            IWpfTextView textView = null, IOutliningManager outliningManager = null)
+            IWpfTextView textView = null, IOutliningManager outliningManager = null, 
+            VisualStudioWorkspace workspace = null)
         {
             InitializeComponent();
 
@@ -46,6 +49,7 @@ namespace CodeNav
             _column = column;
             _textView = textView;
             _outliningManager = outliningManager;
+            _workspace = workspace;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
@@ -197,7 +201,7 @@ namespace CodeNav
             if (!_backgroundWorker.CancellationPending)
             {
                 var request = e.Argument as BackgroundWorkerRequest;
-				var codeItems = SyntaxMapper.MapDocument(request.Document, this);
+				var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace, string.Empty);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }

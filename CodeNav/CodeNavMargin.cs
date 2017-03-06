@@ -6,6 +6,7 @@ using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Properties;
 using EnvDTE;
+using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -29,15 +30,17 @@ namespace CodeNav
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
-        private IOutliningManager _outliningManager;
+        private readonly IOutliningManager _outliningManager;
+        private readonly VisualStudioWorkspace _workspace;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager)
+        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager, VisualStudioWorkspace workspace)
         {
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
             _window = GetWindow(textViewHost, dte);
             _outliningManager = outliningManager;
+            _workspace = workspace;
 
             // If we can not find the window we belong to we can not do anything
             if (_window == null) return;
@@ -120,7 +123,7 @@ namespace CodeNav
             var columnIndex = Settings.Default.MarginSide.Equals("Left") ? 0 : 2;
 
             _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
-                textViewHost.TextView, _outliningManager);
+                textViewHost.TextView, _outliningManager, _workspace);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, columnIndex);
