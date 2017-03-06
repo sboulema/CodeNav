@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
 
@@ -16,9 +17,8 @@ namespace CodeNav.Controls
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            var control = FindParent<CodeViewUserControl>(this);
             LogHelper.Log("Refreshing document");
-            control.UpdateDocument(true);
+            FindParent<CodeViewUserControl>(this).UpdateDocument(true);
         }
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
@@ -31,7 +31,8 @@ namespace CodeNav.Controls
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control.CodeDocumentViewModel.CodeDocument = SortHelper.SortByName(control.CodeDocumentViewModel.CodeDocument);
+            control.CodeDocumentViewModel.CodeDocument = 
+                SortHelper.SortByName(control.CodeDocumentViewModel.CodeDocument);
         }
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
@@ -51,6 +52,11 @@ namespace CodeNav.Controls
                 return parent;
             else
                 return FindParent<T>(parentObject);
+        }
+
+        private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)
+        {
+            FindParent<CodeViewUserControl>(this).ToggleAllRegions(!(sender as ToggleButton).IsChecked.Value);
         }
     }
 }

@@ -16,6 +16,7 @@ Visual Studio extension to show the code structure of your current document
 - Cursor position will be reflected by highlighting the current method in the list
 - Customizable fonts
 - Synced collapsing/expanding regions
+- Collapse/Expand all regions
 
 ## Language support
 Currently only C#
@@ -49,4 +50,17 @@ The debug build will write a lot of useful information to the Visual Studio Outp
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
 
 ## Thanks to
-- Steve Cadwallader - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension
+- <!--- 6 ---> 
+  [HubKing](https://github.com/HubKing), 
+  <!--- 4 --->
+  [HTD](https://github.com/HTD),
+  <!--- 2 --->
+  [xperiandri](https://github.com/xperiandri),
+  <!--- 1 --->
+  [emina-saric](https://github.com/emina-saric),
+  [storm31](https://github.com/storm31),
+  [bradtwurst](https://github.com/bradtwurst),
+  [TrickUK](https://github.com/TrickUK),
+  [yyjdelete](https://github.com/yyjdelete) - For testing and reporting issues
+- [Steve Cadwallader](https://github.com/codecadwallader) - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension
+

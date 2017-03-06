@@ -88,6 +88,7 @@
     <Compile Include="FilterWindow.Designer.cs">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\FindHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\OutliningHelper.cs" />
@@ -643,6 +644,8 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\UI\CollapseGroup_16x.png" />
+    <Resource Include="Icons\UI\ExpandAll_16x.png" />
     <Content Include="Resources\DocumentOutline_16x.png" />
     <Content Include="Resources\DocumentOutline_256x.ico" />
     <Content Include="Resources\DocumentOutline_256x.png">

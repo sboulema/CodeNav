@@ -36,6 +36,22 @@ namespace CodeNav.Helpers
             }
         }
 
+        /// <summary>
+        /// Set all #region collapsibles in a document
+        /// </summary>
+        /// <param name="document">document that holds the regions</param>
+        /// <param name="isExpanded">should region be expanded</param>
+        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded)
+        {
+            var regions = new List<CodeItem>();
+            FindHelper.Find(regions, document, CodeItemKindEnum.Region);
+            foreach (var region in regions.Distinct())
+            {
+                var collapsible = FindCollapsibleFromCodeItem(region, _manager, _textView);
+                SetRegionIsExpanded(document, collapsible, isExpanded);
+            }
+        }
+
         public static void SyncAllRegions(IOutliningManager manager, IWpfTextView textView, IEnumerable<CodeItem> document)
         {
             if (manager == null) return;
@@ -69,7 +85,7 @@ namespace CodeNav.Helpers
             var startLine = GetStartLineForCollapsible(region);
 
             var found = new List<CodeItem>();
-            FindCodeItem(found, document, startLine);
+            FindHelper.Find(found, document, startLine);
             if (!found.Any()) return;
 
             var item = found.Last();
@@ -98,18 +114,21 @@ namespace CodeNav.Helpers
         /// cref="IMembers" />.
         /// </summary>
         /// <param name="item">The IMembers CodeItem.</param>
+        /// <param name="manager">The outlining manager to get all regions</param>
+        /// <param name="textView">The textview to find collapsibles in</param>
         /// <returns>The <see cref="ICollapsible" /> on the same starting line, otherwise null.</returns>
         private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, IOutliningManager manager, IWpfTextView textView)
         {
+            if (item.Kind == CodeItemKindEnum.ImplementedInterface) return null;
             if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount) return null;
 
-                var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
-                var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
+            var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
+            var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
 
-                return (from collapsible in collapsibles
-                        let startLine = GetStartLineForCollapsible(collapsible)
-                        where startLine == item.StartLine
-                        select collapsible).FirstOrDefault();
+            return (from collapsible in collapsibles
+                    let startLine = GetStartLineForCollapsible(collapsible)
+                    where startLine == item.StartLine
+                    select collapsible).FirstOrDefault();
         }
 
         /// <summary>
@@ -135,24 +154,6 @@ namespace CodeNav.Helpers
                     }
                 }
             }
-        }
-
-        private static IEnumerable<CodeItem> FindCodeItem(List<CodeItem> found, IEnumerable<CodeItem> items, int line)
-        {
-            foreach (var item in items)
-            {
-                if (item.StartLine <= line && item.EndLine >= line)
-                {
-                    found.Add(item);
-                }
-
-                if (item is IMembers)
-                {
-                    found.AddRange(FindCodeItem(found, ((IMembers)item).Members, line));
-                }
-            }
-
-            return found;
         }
     }
 }

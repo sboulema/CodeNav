@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
@@ -9,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
+using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.LanguageServices;
 
@@ -330,7 +332,7 @@ namespace CodeNav.Mappers
             foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && i.Span.IntersectsWith(span)))
             {
                 regionList.Add(
-                    MapRegion("#" + regionDirective.ToString().Replace("#region ", string.Empty), regionDirective.Span)
+                    MapRegion("#" + regionDirective.ToString().Replace("#region ", string.Empty), regionDirective)
                 );
             }
                 
@@ -338,13 +340,13 @@ namespace CodeNav.Mappers
 
             foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && j.Span.IntersectsWith(span)))
             {
-                regionList[index++].EndLine = GetEndLine(endRegionDirective.Span);
+                regionList[index++].EndLine = GetEndLine(endRegionDirective);
             }
 
             return regionList;
         }
 
-        private static CodeRegionItem MapRegion(string name, TextSpan span)
+        private static CodeRegionItem MapRegion(string name, SyntaxTrivia source)
         {
             return new CodeRegionItem
             {
@@ -352,7 +354,7 @@ namespace CodeNav.Mappers
                 FullName = name,
                 Id = name,
                 Tooltip = name,
-                StartLine = GetStartLine(span),
+                StartLine = GetStartLine(source),
                 Foreground = CreateSolidColorBrush(Colors.Black),
                 BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
@@ -394,8 +396,8 @@ namespace CodeNav.Mappers
             element.FullName = GetFullName(source, name);
             element.Id = element.FullName;
             element.Tooltip = name;
-            element.StartLine = GetStartLine(source.Span);
-            element.EndLine = GetEndLine(source.Span);
+            element.StartLine = GetStartLine(source);
+            element.EndLine = GetEndLine(source);
             element.Foreground = CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccess(source, modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;
@@ -408,6 +410,13 @@ namespace CodeNav.Mappers
         }
 
         #region Helpers
+
+        private static string GetEnumDescription(this Enum value)
+        {
+            var field = value.GetType().GetField(value.ToString());
+            var attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
+            return attribute == null ? value.ToString() : attribute.Description;
+        }
 
         private static bool IsConstant(SyntaxTokenList modifiers)
         {
@@ -451,28 +460,17 @@ namespace CodeNav.Mappers
             }
         }
 
-        private static int GetStartLine(TextSpan span) =>
-            _tree.GetLineSpan(span).StartLinePosition.Line + 1;
+        private static int GetStartLine(SyntaxNode source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
 
-        private static int GetEndLine(TextSpan span) =>
-            _tree.GetLineSpan(span).EndLinePosition.Line + 1;
+        private static int GetEndLine(SyntaxNode source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
 
-        private static string MapAccessEnumToString(CodeItemAccessEnum item)
-        {
-            switch (item)
-            {
-                case CodeItemAccessEnum.Private:
-                    return "Private";
-                case CodeItemAccessEnum.Internal:
-                    return "Friend";
-                case CodeItemAccessEnum.Protected:
-                    return "Protect";
-                case CodeItemAccessEnum.Sealed:
-                    return "Sealed";
-                default:
-                    return string.Empty;
-            }
-        }
+        private static int GetStartLine(SyntaxTrivia source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
+
+        private static int GetEndLine(SyntaxTrivia source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
 
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
         {
@@ -619,12 +617,12 @@ namespace CodeNav.Mappers
 			return item;
 		}
 
-		private static string MapIcon(CodeItemKindEnum kind, CodeItemAccessEnum access)
+        private static string MapIcon(CodeItemKindEnum kind, CodeItemAccessEnum access)
 		{
 			const string iconFolder = "pack://application:,,,/CodeNav;component/Icons";
-			var accessString = MapAccessEnumToString(access);
+			var accessString = GetEnumDescription(access);
 
-			switch (kind)
+            switch (kind)
 			{
 				case CodeItemKindEnum.Class:
 					return $"{iconFolder}/Class/Class{accessString}_16x.xaml";

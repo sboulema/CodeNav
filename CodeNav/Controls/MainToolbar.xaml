@@ -60,12 +60,31 @@
             </RadioButton>
         </StackPanel>
 
-        <Button Grid.Column="2" Click="ButtonOptions_OnClick" HorizontalAlignment="Right" Margin="0,3,3,0" ToolTip="CodeNav options">
-            <Button.Template>
-                <ControlTemplate>
-                    <Frame Source="../Icons/UI/Settings_16x.xaml" />
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="Auto" Margin="0,3,3,0">
+            <ToggleButton Click="ButtonRegion_OnClick" IsChecked="False">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Image x:Name="ButtonRegionFrame" Source="../Icons/UI/CollapseGroup_16x.png" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="ButtonRegionFrame" Property="Source" Value="../Icons/UI/CollapseGroup_16x.png"/>
+                                <Setter Property="ToolTip" Value="Collapse all regions" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ButtonRegionFrame" Property="Source" Value="../Icons/UI/ExpandAll_16x.png"/>
+                                <Setter Property="ToolTip" Value="Expand all regions" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+            <Button Click="ButtonOptions_OnClick" ToolTip="CodeNav options">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Frame Source="../Icons/UI/Settings_16x.xaml" />
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>
