@@ -6,13 +6,13 @@ using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
+using System.Linq;
+using CodeNav.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using CodeNav.Helpers;
+using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.LanguageServices;
 
 namespace CodeNav.Mappers
 {
@@ -35,33 +35,16 @@ namespace CodeNav.Mappers
             return MapDocument(document);
         }
 
-        public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
-            VisualStudioWorkspace workspace)
+        public static List<CodeItem> MapDocument(EnvDTE.Document document, CodeViewUserControl control, string solutionFilePath)
         {
             _control = control;
 
-            if (workspace == null)
-            {
-                LogHelper.Log("Error during mapping: Workspace is null");
-                return null;
-            }
+            var workspace = MSBuildWorkspace.Create();
+            var solution = workspace.OpenSolutionAsync(solutionFilePath).Result;
+            var id = solution.GetDocumentIdsWithFilePath(document.FullName).FirstOrDefault();
+            var solutionDocument = solution.GetDocument(id);
 
-            LogHelper.Log("Mapping document: Fetching document from workspace");
-
-            try
-            {
-                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
-                var document = workspace.CurrentSolution.GetDocument(id);
-
-                LogHelper.Log($"Mapping document '{document.Name}' ({id})");
-
-                return MapDocument(document);
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log($"Error during mapping: {e}");
-                return null;
-            }        
+            return MapDocument(solutionDocument);      
         }
 
         public static List<CodeItem> MapDocument(Document document)

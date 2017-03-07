@@ -1,8 +1,6 @@
 ﻿using System;
 using CodeNav.Helpers;
 using EnvDTE;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -21,7 +19,6 @@ namespace CodeNav.ToolWindow
         private DocumentEvents _documentEvents;
         private DTE _dte;
         private IOutliningManager _outliningManager;
-        private VisualStudioWorkspace _workspace;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeNavToolWindow"/> class.
@@ -37,9 +34,6 @@ namespace CodeNav.ToolWindow
         {
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
             _dte = (DTE)codeNavToolWindowPackage.GetServiceHelper(typeof(DTE));
-
-            var componentModel = (IComponentModel)codeNavToolWindowPackage.GetServiceHelper(typeof(SComponentModel));
-            _workspace = componentModel.GetService<VisualStudioWorkspace>();
 
             // Wire up references for the event handlers
             _documentEvents = _dte.Events.DocumentEvents;
@@ -92,7 +86,7 @@ namespace CodeNav.ToolWindow
             if (window.Document == null) return;
 
             _control.SetWindow(window);
-            _control.SetWorkspace(_workspace);
+            _control.SetSolutionFilePath(_dte.Solution.FullName);
             _control.UpdateDocument(forceUpdate);
         }
 
