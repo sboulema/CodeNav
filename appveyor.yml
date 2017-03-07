@@ -14,6 +14,6 @@ build:
   verbosity: minimal
 after_build:
 - ps: >-
-    Get-ChildItem ./*.vsix | Rename-Item -NewName {$_.basename + '_' + $env:APPVEYOR_BUILD_VERSION + '_' + $env:CONFIGURATION + $_.extension }
-    
+    Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + '_' + $env:APPVEYOR_BUILD_VERSION + '_' + $env:CONFIGURATION + $_.extension }
+
     Vsix-PushArtifacts | Vsix-PublishToGallery
