@@ -6,13 +6,13 @@ using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
-using System.Linq;
-using CodeNav.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
+using System.Linq;
+using CodeNav.Helpers;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.LanguageServices;
 
 namespace CodeNav.Mappers
 {
@@ -35,16 +35,29 @@ namespace CodeNav.Mappers
             return MapDocument(document);
         }
 
-        public static List<CodeItem> MapDocument(EnvDTE.Document document, CodeViewUserControl control, string solutionFilePath)
+        public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
+            VisualStudioWorkspace workspace)
         {
             _control = control;
 
-            var workspace = MSBuildWorkspace.Create();
-            var solution = workspace.OpenSolutionAsync(solutionFilePath).Result;
-            var id = solution.GetDocumentIdsWithFilePath(document.FullName).FirstOrDefault();
-            var solutionDocument = solution.GetDocument(id);
+            if (workspace == null)
+            {
+                LogHelper.Log("Error during mapping: Workspace is null");
+                return null;
+            }
 
-            return MapDocument(solutionDocument);      
+            try
+            {
+                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+                var document = workspace.CurrentSolution.GetDocument(id);
+
+                return MapDocument(document);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log($"Error during mapping: {e}");
+                return null;
+            }        
         }
 
         public static List<CodeItem> MapDocument(Document document)

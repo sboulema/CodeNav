@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using CodeNav.Helpers;
 using CodeNav.Properties;
 using EnvDTE;
+using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -23,6 +25,9 @@ namespace CodeNav
         [Import(typeof(SVsServiceProvider))]
         private IServiceProvider ServiceProvider { get; set; }
 
+        [Import(typeof(VisualStudioWorkspace))]
+        private VisualStudioWorkspace Workspace { get; set; }
+
         #region IWpfTextViewMarginProvider
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace CodeNav
             var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
             Logger.Initialize(ServiceProvider, "CodeNav");
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace);
             return codeNav;
         }
 
@@ -62,6 +67,9 @@ namespace CodeNav
         [Import(typeof(SVsServiceProvider))]
         private IServiceProvider _serviceProvider;
 
+        [Import(typeof(VisualStudioWorkspace))]
+        private VisualStudioWorkspace Workspace { get; set; }
+
         #region IWpfTextViewMarginProvider
 
         /// <summary>
@@ -80,7 +88,7 @@ namespace CodeNav
             var outliningManager = OutliningHelper.GetManager(_serviceProvider, wpfTextViewHost.TextView);
 
             Logger.Initialize(_serviceProvider, "CodeNav");
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace);
             return codeNav;
         }
 

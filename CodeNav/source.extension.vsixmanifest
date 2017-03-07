@@ -9,7 +9,7 @@
     <GettingStartedGuide>https://github.com/sboulema/CodeNav/blob/master/README.md</GettingStartedGuide>
     <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
     <Icon>Resources\DocumentOutline_256x.png</Icon>
-    <PreviewImage>Resources\Preview.png</PreviewImage>
+    <PreviewImage>Resources\Preview-small.png</PreviewImage>
     <Tags>code, structure, navigation, map, overview, codemap</Tags>
   </Metadata>
   <Installation>

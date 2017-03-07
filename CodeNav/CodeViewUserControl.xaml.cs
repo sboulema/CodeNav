@@ -8,6 +8,7 @@ using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
+using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -27,11 +28,11 @@ namespace CodeNav
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
         private readonly IWpfTextView _textView;
         private readonly IOutliningManager _outliningManager;
-        private string _solutionFilePath;
+        private VisualStudioWorkspace _workspace;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
-            IWpfTextView textView = null, IOutliningManager outliningManager = null,
-            string solutionFilePath = null)
+            IWpfTextView textView = null, IOutliningManager outliningManager = null, 
+            VisualStudioWorkspace workspace = null)
         {
             InitializeComponent();
 
@@ -48,13 +49,13 @@ namespace CodeNav
             _column = column;
             _textView = textView;
             _outliningManager = outliningManager;
-            _solutionFilePath = solutionFilePath;
+            _workspace = workspace;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
 
         public void SetWindow(Window window) => _window = window;
-        public void SetSolutionFilePath(string path) => _solutionFilePath = path;
+        public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
@@ -123,12 +124,7 @@ namespace CodeNav
             // Start the backgroundworker to update the list of code items
             if (!_backgroundWorker.CancellationPending)
             {
-                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest
-                {
-                    Document = _window.Document,
-                    ForceUpdate = forceUpdate,
-                    SolutionFilePath = _solutionFilePath
-                });
+                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
             }
         }
 
@@ -216,7 +212,7 @@ namespace CodeNav
             {
                 var request = e.Argument as BackgroundWorkerRequest;
                 if (request == null) return;
-                var codeItems = SyntaxMapper.MapDocument(request.Document, this, request.SolutionFilePath);
+                var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
                 e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
             }
         }
