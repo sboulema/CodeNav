@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace CodeNav.Tests.HelperTests
 {
-    [TestFixture, Ignore("System.Threading.Tasks.TaskCanceledException")]
+    [TestFixture]
     public class HighlightHelperTests
     {
         [Test]

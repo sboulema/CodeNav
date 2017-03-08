@@ -63,4 +63,6 @@ The debug build will write a lot of useful information to the Visual Studio Outp
   [TrickUK](https://github.com/TrickUK),
   [yyjdelete](https://github.com/yyjdelete) - For testing and reporting issues
 - [Steve Cadwallader](https://github.com/codecadwallader) - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension
+---
+![](http://i.imgur.com/wlgwRF1.png)
 

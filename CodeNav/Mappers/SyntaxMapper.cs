@@ -22,19 +22,31 @@ namespace CodeNav.Mappers
         private static SyntaxTree _tree;
         private static SemanticModel _semanticModel;
 
+        /// <summary>
+        /// Map a document from filepath, used for unit testing
+        /// </summary>
+        /// <param name="filePath">filepath of the input document</param>
+        /// <returns>List of found code items</returns>
         public static List<CodeItem> MapDocument(string filePath)
         {
-            var workspace = new AdhocWorkspace();
-            var projectId = ProjectId.CreateNewId();
-            var versionStamp = VersionStamp.Create();
-            var projectInfo = ProjectInfo.Create(projectId, versionStamp, "Tests", "Tests", LanguageNames.CSharp);
-            var newProject = workspace.AddProject(projectInfo);
-            var sourceText = SourceText.From(File.ReadAllText(filePath));
-            var document = workspace.AddDocument(newProject.Id, Path.GetFileName(filePath), sourceText);
+            _tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath));
 
-            return MapDocument(document);
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
+            _semanticModel = compilation.GetSemanticModel(_tree);
+
+            var root = (CompilationUnitSyntax)_tree.GetRoot();
+
+            return root.Members.Select(MapMember).ToList();
         }
 
+        /// <summary>
+        /// Map the active document in the workspace
+        /// </summary>
+        /// <param name="activeDocument">active EnvDTE.document</param>
+        /// <param name="control">CodeNav control that will show the result</param>
+        /// <param name="workspace">Current Visual Studio workspace</param>
+        /// <returns>List of found code items</returns>
         public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
             VisualStudioWorkspace workspace)
         {
@@ -49,6 +61,14 @@ namespace CodeNav.Mappers
             try
             {
                 var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+
+                // We can not find the requested document in the current solution,
+                // Try and map it in a different way
+                if (id == null)
+                {
+                    return MapDocument(activeDocument);
+                }
+
                 var document = workspace.CurrentSolution.GetDocument(id);
 
                 return MapDocument(document);
@@ -60,6 +80,11 @@ namespace CodeNav.Mappers
             }        
         }
 
+        /// <summary>
+        /// Map a CodeAnalysis document, used for files in the current solution and workspace
+        /// </summary>
+        /// <param name="document">a CodeAnalysis document</param>
+        /// <returns>List of found code items</returns>
         public static List<CodeItem> MapDocument(Document document)
         {
             if (document == null)
@@ -70,6 +95,28 @@ namespace CodeNav.Mappers
 
             _tree = document.GetSyntaxTreeAsync().Result;
             _semanticModel = document.GetSemanticModelAsync().Result;
+            var root = (CompilationUnitSyntax)_tree.GetRoot();
+
+            return root.Members.Select(MapMember).ToList();
+        }
+
+        /// <summary>
+        /// Map an EnvDTE.Document, used for files outside of the current solution eg. [from metadata]
+        /// </summary>
+        /// <param name="document">An EnvDTE.Document</param>
+        /// <returns>List of found code items</returns>
+        public static List<CodeItem> MapDocument(EnvDTE.Document document)
+        {
+            var doc = (EnvDTE.TextDocument)document.Object("TextDocument");
+            var p = doc.StartPoint.CreateEditPoint();
+            var text = p.GetText(doc.EndPoint);
+
+            _tree = CSharpSyntaxTree.ParseText(text);
+
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
+            _semanticModel = compilation.GetSemanticModel(_tree);
+
             var root = (CompilationUnitSyntax)_tree.GetRoot();
 
             return root.Members.Select(MapMember).ToList();

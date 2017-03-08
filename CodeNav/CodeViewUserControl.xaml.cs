@@ -173,7 +173,7 @@ namespace CodeNav
         {
             var result = e.Result as BackgroundWorkerResult;
 
-            if (result == null)
+            if (result?.CodeItems == null)
             {
                 LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, no results");
                 return;

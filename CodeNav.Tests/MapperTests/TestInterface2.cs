@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace CodeNav.Tests.MapperTests
 {
-    [TestFixture, Ignore("System.Threading.Tasks.TaskCanceledException")]
+    [TestFixture]
     public class TestInterface2
     {
         [Test]
