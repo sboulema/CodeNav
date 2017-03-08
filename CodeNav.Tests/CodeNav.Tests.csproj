@@ -34,6 +34,7 @@
     <Compile Include="Files\CodeNavTest.cs" />
     <Compile Include="Files\TestEmptyInterface.cs" />
     <Compile Include="Files\TestEmptyClass.cs" />
+    <Compile Include="Files\TestInterface3.cs" />
     <Compile Include="Files\TestInterface2.cs" />
     <Compile Include="Files\TestInterface.cs" />
     <Compile Include="Files\TestNestedNamespaces.cs" />
@@ -43,6 +44,7 @@
     <Compile Include="Files\TestUsingsInNamespace.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
+    <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
     <Compile Include="MapperTests\TestUsingsInNamespace.cs" />
     <Compile Include="MapperTests\TypeMapperTests.cs" />

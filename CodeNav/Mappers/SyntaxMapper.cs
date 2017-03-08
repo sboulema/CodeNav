@@ -304,12 +304,30 @@ namespace CodeNav.Mappers
 
             var classSymbol = _semanticModel.GetDeclaredSymbol(member);
 
-            foreach (var implementedInterface in classSymbol.AllInterfaces)
+            var interfacesList = new List<INamedTypeSymbol>();
+            GetInterfaces(interfacesList, classSymbol.Interfaces);
+
+            foreach (var implementedInterface in interfacesList.Distinct())
             {
                 implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, implementedInterface.GetMembers(), classSymbol));
             }
 
             return implementedInterfaces;
+        }
+
+        /// <summary>
+        /// Recursively get the interfaces implemented by the class.
+        /// This ignores interfaces implemented by any base class, contrary to the .Allinterfaces behaviour
+        /// </summary>
+        /// <param name="interfacesFound">List of all interfaces found</param>
+        /// <param name="source">Implemented interfaces</param>
+        private static void GetInterfaces(List<INamedTypeSymbol> interfacesFound, ImmutableArray<INamedTypeSymbol> source)
+        {
+            interfacesFound.AddRange(source);
+            foreach (var interfaceItem in source)
+            {
+                GetInterfaces(interfacesFound, interfaceItem.Interfaces);
+            }
         }
 
         private static CodeImplementedInterfaceItem MapImplementedInterface(string name, 

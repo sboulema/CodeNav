@@ -36,7 +36,7 @@ namespace CodeNav.Tests.MapperTests
             Assert.AreEqual(1, implementedInterface1.Members.Count);
 
             Assert.AreEqual(CodeItemKindEnum.ImplementedInterface, implementedInterface2.Kind);
-            Assert.AreEqual(1, implementedInterface1.Members.Count);
+            Assert.AreEqual(1, implementedInterface2.Members.Count);
         }
     }
 }
