@@ -26,7 +26,6 @@ namespace CodeNav.Tests.MapperTests
             // First item should be an interface
             var innerInterface = (document.First() as IMembers).Members.First() as CodeInterfaceItem;
             Assert.AreEqual(3, innerInterface.Members.Count);
-            Assert.IsTrue(innerInterface.IconPath.Contains("Interface"));
 
             // Second item should be the implementing class
             var implementingClass = (document.First() as IMembers).Members[1] as CodeClassItem;
