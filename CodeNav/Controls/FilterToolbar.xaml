@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+             xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -40,7 +42,7 @@
             <Button Click="ButtonClear_OnClick" ToolTip="Click to clear text filter contents">
                 <Button.Template>
                     <ControlTemplate>
-                        <Frame Source="../Icons/UI/DeleteFilter_16x.xaml" />
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.DeleteFilter}" />
                     </ControlTemplate>
                 </Button.Template>
             </Button>
@@ -48,7 +50,7 @@
             <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
                 <Button.Template>
                     <ControlTemplate>
-                        <Frame Source="../Icons/UI/Filter_16x.xaml" />
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Filter}" />
                     </ControlTemplate>
                 </Button.Template>
             </Button>

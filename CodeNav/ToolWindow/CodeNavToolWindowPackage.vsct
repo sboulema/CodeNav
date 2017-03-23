@@ -3,21 +3,19 @@
 
   <Extern href="stdidcmd.h"/>
   <Extern href="vsshlids.h"/>
+  <Include href="KnownImageIds.vsct"/>
 
   <Commands package="guidCodeNavToolWindowPackage">
     <Buttons>
       <Button guid="guidCodeNavToolWindowPackageCmdSet" id="CodeNavToolWindowCommandId" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic1" />
+        <Icon guid="ImageCatalogGuid" id="DocumentOutline" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>CodeNav</ButtonText>
         </Strings>
       </Button>
     </Buttons>
-
-    <Bitmaps>
-      <Bitmap guid="guidImages" href="..\Resources\DocumentOutline_16x.png" usedList="bmpPic1"/>
-    </Bitmaps>
   </Commands>
 
   <Symbols>
@@ -25,10 +23,6 @@
     
     <GuidSymbol name="guidCodeNavToolWindowPackageCmdSet" value="{dea24339-8fac-483b-96cb-d6f4d9bc88de}">
       <IDSymbol name="CodeNavToolWindowCommandId" value="0x0100" />
-    </GuidSymbol>
-
-    <GuidSymbol name="guidImages" value="{0d31fbe4-8fa6-4a82-81eb-27d71cd7b3df}" >
-      <IDSymbol name="bmpPic1" value="1" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>

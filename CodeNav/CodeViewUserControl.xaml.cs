@@ -8,6 +8,8 @@ using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using EnvDTE;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
@@ -130,10 +132,10 @@ namespace CodeNav
 
         #region Custom Items
 
-        private static List<CodeItem> CreateLoadingItem() => CreateItem("Loading...", "Refresh");
-        private static List<CodeItem> CreateSelectDocumentItem() => CreateItem("Waiting for active code document...", "DocumentOutline");
+        private static List<CodeItem> CreateLoadingItem() => CreateItem("Loading...", KnownMonikers.Refresh);
+        private static List<CodeItem> CreateSelectDocumentItem() => CreateItem("Waiting for active code document...", KnownMonikers.DocumentOutline);
 
-        private static List<CodeItem> CreateItem(string name, string icon)
+        private static List<CodeItem> CreateItem(string name, ImageMoniker moniker)
         {
             return new List<CodeItem>
             {
@@ -149,11 +151,10 @@ namespace CodeNav
                             Id = name,
                             Foreground = new SolidColorBrush(Colors.Black),
                             BorderBrush = new SolidColorBrush(Colors.DarkGray),
-                            IconPath = $"pack://application:,,,/CodeNav;component/Icons/UI/{icon}_16x.xaml"
+                            Moniker = moniker
                         }
                     }
                 }
-
             };
         }
 

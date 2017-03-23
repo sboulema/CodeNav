@@ -12,6 +12,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using CodeNav.Helpers;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 
 namespace CodeNav.Mappers
@@ -163,7 +165,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeItem>(member, member.Identifier);
             item.Kind = CodeItemKindEnum.EnumMember;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
 
             return item;
         }
@@ -177,7 +179,7 @@ namespace CodeNav.Mappers
             item.Kind = IsConstant(member.Modifiers)
                 ? CodeItemKindEnum.Constant
                 : CodeItemKindEnum.Variable;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
 
             return item;
         }
@@ -187,7 +189,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
             if (item.Access == CodeItemAccessEnum.Private) return null;
             item.Kind = CodeItemKindEnum.Delegate;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
         }
 
@@ -198,7 +200,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
             if (item.Access == CodeItemAccessEnum.Private) return null;
             item.Kind = CodeItemKindEnum.Event;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
         }
 
@@ -208,7 +210,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
             item.Kind = CodeItemKindEnum.Struct;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
             item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
             
             foreach (var structMember in member.Members)
@@ -225,7 +227,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
             item.Kind = CodeItemKindEnum.Enum;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
             item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);          
 
@@ -243,8 +245,8 @@ namespace CodeNav.Mappers
 
 			var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
 			item.Kind = CodeItemKindEnum.Class;
-			item.IconPath = MapIcon(item.Kind, item.Access);
-			item.Parameters = MapInheritance(member);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Parameters = MapInheritance(member);
 			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
 		    item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
@@ -371,7 +373,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
 
             foreach (var interfaceMember in member.Members)
             {
@@ -576,7 +578,7 @@ namespace CodeNav.Mappers
                 return CodeItemAccessEnum.Internal;
             }
 
-            return CodeItemAccessEnum.Unknown;
+            return CodeItemAccessEnum.Public;
         }
 
         #endregion
@@ -604,7 +606,7 @@ namespace CodeNav.Mappers
 			item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(item.FullName, member.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
-			item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
 
 			return item;
         }
@@ -618,7 +620,8 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(member.Identifier, member.ParameterList);
             item.Kind = CodeItemKindEnum.Constructor;
-            item.IconPath = MapIcon(item.Kind, item.Access);
+            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.OverlayMoniker = KnownMonikers.Add;
 
             return item;
         }
@@ -688,44 +691,58 @@ namespace CodeNav.Mappers
 			item.Parameters = item.Name + item.Parameters;
 		    item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
 			item.Kind = CodeItemKindEnum.Property;
-			item.IconPath = MapIcon(item.Kind, item.Access);
-			return item;
+            item.Moniker = MapMoniker(item.Kind, item.Access);
+            return item;
 		}
 
-        private static string MapIcon(CodeItemKindEnum kind, CodeItemAccessEnum access)
-		{
-			const string iconFolder = "pack://application:,,,/CodeNav;component/Icons";
-			var accessString = GetEnumDescription(access);
+        private static ImageMoniker MapMoniker(CodeItemKindEnum kind, CodeItemAccessEnum access)
+        {
+            var monikerString = string.Empty;
+            var accessString = GetEnumDescription(access);
 
             switch (kind)
-			{
-				case CodeItemKindEnum.Class:
-					return $"{iconFolder}/Class/Class{accessString}_16x.xaml";
-				case CodeItemKindEnum.Constant:
-					return $"{iconFolder}/Constant/Constant{accessString}_16x.xaml";
-				case CodeItemKindEnum.Constructor:
-					return $"{iconFolder}/Method/MethodAdded_16x.xaml";
-				case CodeItemKindEnum.Delegate:
-					return $"{iconFolder}/Delegate/Delegate{accessString}_16x.xaml";
-				case CodeItemKindEnum.Enum:
-					return $"{iconFolder}/Enum/Enum{accessString}_16x.xaml";
-				case CodeItemKindEnum.EnumMember:
-					return $"{iconFolder}/Enum/EnumItem{accessString}_16x.xaml";
-				case CodeItemKindEnum.Event:
-					return $"{iconFolder}/Event/Event{accessString}_16x.xaml";
-				case CodeItemKindEnum.Interface:
-					return $"{iconFolder}/Interface/Interface{accessString}_16x.xaml";
-				case CodeItemKindEnum.Method:
-					return $"{iconFolder}/Method/Method{accessString}_16x.xaml";
-				case CodeItemKindEnum.Property:
-					return $"{iconFolder}/Property/Property{accessString}_16x.xaml";
-				case CodeItemKindEnum.Struct:
-					return $"{iconFolder}/Structure/Structure{accessString}_16x.xaml";
-				case CodeItemKindEnum.Variable:
-					return $"{iconFolder}/Field/Field{accessString}_16x.xaml";
-				default:
-					return $"{iconFolder}/Property/Property{accessString}_16x.xaml";
-			}
-		}
+            {
+                case CodeItemKindEnum.Class:
+                    monikerString = $"Class{accessString}";
+                    break;
+                case CodeItemKindEnum.Constant:
+                    monikerString = $"Constant{accessString}";
+                    break;
+                case CodeItemKindEnum.Delegate:
+                    monikerString = $"Delegate{accessString}";
+                    break;
+                case CodeItemKindEnum.Enum:
+                    monikerString = $"Enumeration{accessString}";
+                    break;
+                case CodeItemKindEnum.EnumMember:
+                    monikerString = $"EnumerationItem{accessString}";
+                    break;
+                case CodeItemKindEnum.Event:
+                    monikerString = $"Event{accessString}";
+                    break;
+                case CodeItemKindEnum.Interface:
+                    monikerString = $"Interface{accessString}";
+                    break;
+                case CodeItemKindEnum.Constructor:
+                case CodeItemKindEnum.Method:
+                    monikerString = $"Method{accessString}";
+                    break;
+                case CodeItemKindEnum.Property:
+                    monikerString = $"Property{accessString}";
+                    break;
+                case CodeItemKindEnum.Struct:
+                    monikerString = $"Structure{accessString}";
+                    break;
+                case CodeItemKindEnum.Variable:
+                    monikerString = $"Field{accessString}";
+                    break;
+                default:
+                    monikerString = $"Property{accessString}";
+                    break;
+            }
+
+            var monikers = typeof(KnownMonikers).GetProperties();
+            return (ImageMoniker)monikers.FirstOrDefault(m => m.Name.Equals(monikerString)).GetValue(null, null);
+        }
     }
 }
