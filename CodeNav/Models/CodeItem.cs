@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Caliburn.Micro;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace CodeNav.Models
@@ -18,7 +19,8 @@ namespace CodeNav.Models
         public string Name { get; set; }
         public int StartLine { get; set; }
         public int EndLine { get; set; }
-        public string IconPath { get; set; }
+        public ImageMoniker Moniker { get; set; }
+        public ImageMoniker OverlayMoniker { get; set; }
         public string Id { get; set; }
         public string Tooltip { get; set; }
         internal string FullName;

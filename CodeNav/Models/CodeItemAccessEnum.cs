@@ -6,13 +6,13 @@ namespace CodeNav.Models
     {
         [Description("")]
         Unknown,
-        [Description("")]
+        [Description("Public")]
         Public,
         [Description("Private")]
         Private,
-        [Description("Protect")]
+        [Description("Protected")]
         Protected,
-        [Description("Friend")]
+        [Description("Internal")]
         Internal,
         [Description("Sealed")]
         Sealed
