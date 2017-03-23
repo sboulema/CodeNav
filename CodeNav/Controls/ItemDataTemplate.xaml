@@ -20,7 +20,7 @@
 
                 <Grid Margin="0,0,3,0" Width="16" Height="16">
                     <imaging:CrispImage Moniker="{Binding Moniker}"  />
-                    <imaging:CrispImage Width="6" Height="6" Moniker="{Binding OverlayMoniker}" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                    <imaging:CrispImage Width="8" Height="8" Moniker="{Binding OverlayMoniker}" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                 </Grid>
 
                 <TextBlock Grid.Column="1" FontFamily="{Binding FontFamily}" FontStyle="{Binding FontStyle}">

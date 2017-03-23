@@ -353,8 +353,12 @@ namespace CodeNav.Mappers
                 if (implementation == null || !implementation.DeclaringSyntaxReferences.Any()) continue;
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
-                item.Members.Add(MapMember(declarationSyntax as MemberDeclarationSyntax));
-                FilterNullItems(item.Members);
+
+                var interfaceMember = MapMember(declarationSyntax as MemberDeclarationSyntax);
+                if (interfaceMember == null) continue;
+
+                interfaceMember.OverlayMoniker = KnownMonikers.InterfacePublic;
+                item.Members.Add(interfaceMember);
             }
 
             if (item.Members.Any())
