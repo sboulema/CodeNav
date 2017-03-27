@@ -1,7 +1,9 @@
-![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/DocumentOutline_256x.png)
+![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/DocumentOutline_256x.png) 
 
-# CodeNav
+# CodeNav 
 Visual Studio extension to show the code structure of your current document
+
+[![Beerpay](https://beerpay.io/sboulema/CodeNav/badge.svg?style=flat)](https://beerpay.io/sboulema/CodeNav)
 
 ## Features
 - Quickly see all the important methods and properties in your document.
