@@ -16,6 +16,8 @@
         Property,
         Region,
         Struct,
+        Switch,
+        SwitchSection,
         Variable
     }
 }

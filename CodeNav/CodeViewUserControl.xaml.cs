@@ -201,6 +201,9 @@ namespace CodeNav
             // Are there any items to show, if not hide the margin
             VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
+            // Apply current visibility settings to the document
+            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument);
+
             // Sync all regions
             OutliningHelper.SyncAllRegions(_outliningManager, _textView, CodeDocumentViewModel.CodeDocument);
 

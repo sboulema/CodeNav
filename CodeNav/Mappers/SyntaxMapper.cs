@@ -454,22 +454,27 @@ namespace CodeNav.Mappers
 		    return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
 		}
 
-		private static T MapBase<T>(MemberDeclarationSyntax source, SyntaxToken identifier, SyntaxTokenList modifiers) where T : CodeItem
+		private static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, SyntaxTokenList modifiers) where T : CodeItem
 		{
 			return MapBase<T>(source, identifier.Text, modifiers);
 		}
 
-		private static T MapBase<T>(MemberDeclarationSyntax source, NameSyntax name) where T : CodeItem
+		public static T MapBase<T>(SyntaxNode source, NameSyntax name) where T : CodeItem
 		{
 			return MapBase<T>(source, name.ToString(), new SyntaxTokenList());
 		}
 
-        private static T MapBase<T>(MemberDeclarationSyntax source, SyntaxToken identifier) where T : CodeItem
+        public static T MapBase<T>(SyntaxNode source, string name) where T : CodeItem
+        {
+            return MapBase<T>(source, name, new SyntaxTokenList());
+        }
+
+        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier) where T : CodeItem
         {
             return MapBase<T>(source, identifier.Text, new SyntaxTokenList());
         }
 
-        private static T MapBase<T>(MemberDeclarationSyntax source, string name, SyntaxTokenList modifiers) where T : CodeItem
+        private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers) where T : CodeItem
         {
             var element = Activator.CreateInstance<T>();
 
@@ -480,7 +485,7 @@ namespace CodeNav.Mappers
             element.StartLine = GetStartLine(source);
             element.EndLine = GetEndLine(source);
             element.Foreground = CreateSolidColorBrush(Colors.Black);
-            element.Access = MapAccess(source, modifiers);
+            element.Access = MapAccess(modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
@@ -504,17 +509,12 @@ namespace CodeNav.Mappers
             return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
         }
 
-        private static string GetFullName(MemberDeclarationSyntax source, string name)
+        private static string GetFullName(SyntaxNode source, string name)
         {
             try
             {
-                var symbol = _semanticModel.GetDeclaredSymbol(source as SyntaxNode);
-
-                if (symbol != null)
-                {
-                    return symbol.ToString();
-                }
-                return name;
+                var symbol = _semanticModel.GetDeclaredSymbol(source);
+                return symbol?.ToString() ?? name;
             }
             catch (Exception)
             {
@@ -522,7 +522,7 @@ namespace CodeNav.Mappers
             }
         }
 
-        private static SolidColorBrush CreateSolidColorBrush(Color color)
+        public static SolidColorBrush CreateSolidColorBrush(Color color)
         {
             var brush = new SolidColorBrush(color);
             brush.Freeze();
@@ -531,6 +531,7 @@ namespace CodeNav.Mappers
 
         public static void FilterNullItems(List<CodeItem> items)
         {
+            if (items == null) return;
             items.RemoveAll(item => item == null);
             foreach (var item in items)
             {
@@ -559,7 +560,7 @@ namespace CodeNav.Mappers
             return $"{string.Join(", ", memberList)}";
         }
 
-        private static CodeItemAccessEnum MapAccess(MemberDeclarationSyntax member, SyntaxTokenList modifiers)
+        private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers)
         {
             if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
             {
@@ -604,15 +605,30 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-			var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
-			item.Type = TypeMapper.Map(member.ReturnType);
-			item.Parameters = MapParameters(member.ParameterList);
-			item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
+            CodeItem item; 
+
+            var statements = member.Body?.Statements.Select(StatementMapper.MapStatement).ToList();
+            FilterNullItems(statements);
+
+            if (Settings.Default.ShowSwitch && statements != null && statements.Any())
+            {
+                item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+                ((CodeClassItem)item).Members.AddRange(statements);
+                ((CodeClassItem)item).BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            }
+            else
+            {
+                item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
+                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.ReturnType);
+                ((CodeFunctionItem)item).Parameters = MapParameters(member.ParameterList);
+                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem) item).Type, item.Name, member.ParameterList);
+            }
+
             item.Id = MapId(item.FullName, member.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = MapMoniker(item.Kind, item.Access);
 
-			return item;
+            return item;
         }
 
         private static CodeItem MapConstructor(ConstructorDeclarationSyntax member)
@@ -699,9 +715,9 @@ namespace CodeNav.Mappers
             return item;
 		}
 
-        private static ImageMoniker MapMoniker(CodeItemKindEnum kind, CodeItemAccessEnum access)
+        public static ImageMoniker MapMoniker(CodeItemKindEnum kind, CodeItemAccessEnum access)
         {
-            var monikerString = string.Empty;
+            string monikerString;
             var accessString = GetEnumDescription(access);
 
             switch (kind)
@@ -740,13 +756,26 @@ namespace CodeNav.Mappers
                 case CodeItemKindEnum.Variable:
                     monikerString = $"Field{accessString}";
                     break;
+                case CodeItemKindEnum.Switch:
+                    monikerString = "FlowSwitch";
+                    break;
+                case CodeItemKindEnum.SwitchSection:
+                    monikerString = "FlowDecision";
+                    break;
                 default:
                     monikerString = $"Property{accessString}";
                     break;
             }
 
             var monikers = typeof(KnownMonikers).GetProperties();
-            return (ImageMoniker)monikers.FirstOrDefault(m => m.Name.Equals(monikerString)).GetValue(null, null);
+
+            var imageMoniker = monikers.FirstOrDefault(m => monikerString.Equals(m.Name))?.GetValue(null, null);
+            if (imageMoniker != null)
+            {
+                return (ImageMoniker)imageMoniker;
+            }
+
+            return KnownMonikers.QuestionMark;
         }
     }
 }

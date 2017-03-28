@@ -44,6 +44,8 @@
             System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Internal", 11);
             System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Protected", 13);
             System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Sealed", 14);
+            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Switch", 15);
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Switch Items", 16);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterWindow));
             this.okButton = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -84,6 +86,8 @@
             listViewItem13.StateImageIndex = 0;
             listViewItem14.StateImageIndex = 0;
             listViewItem15.StateImageIndex = 0;
+            listViewItem16.StateImageIndex = 0;
+            listViewItem17.StateImageIndex = 0;
             this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1,
             listViewItem2,
@@ -99,7 +103,9 @@
             listViewItem12,
             listViewItem13,
             listViewItem14,
-            listViewItem15});
+            listViewItem15,
+            listViewItem16,
+            listViewItem17});
             this.listView1.Location = new System.Drawing.Point(12, 12);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(239, 179);
@@ -127,6 +133,8 @@
             this.imageList1.Images.SetKeyName(12, "Lock_16x.png");
             this.imageList1.Images.SetKeyName(13, "Key_16x.png");
             this.imageList1.Images.SetKeyName(14, "StatusNo_grey_16x.png");
+            this.imageList1.Images.SetKeyName(15, "Flow_16x.png");
+            this.imageList1.Images.SetKeyName(16, "FlowDecision_16x.png");
             // 
             // cancelButton
             // 

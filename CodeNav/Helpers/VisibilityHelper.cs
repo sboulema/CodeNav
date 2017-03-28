@@ -131,6 +131,10 @@ namespace CodeNav.Helpers
                     return Settings.Default.ShowStructs;
                 case CodeItemKindEnum.Variable:
                     return Settings.Default.ShowVariables;
+                case CodeItemKindEnum.Switch:
+                    return Settings.Default.ShowSwitch;
+                case CodeItemKindEnum.SwitchSection:
+                    return Settings.Default.ShowSwitchItems;
                 case CodeItemKindEnum.Class:
                 case CodeItemKindEnum.Interface:
                 case CodeItemKindEnum.Region:

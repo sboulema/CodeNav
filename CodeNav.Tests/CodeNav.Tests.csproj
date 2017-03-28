@@ -41,6 +41,7 @@
     <Compile Include="Files\TestNoNamespace.cs" />
     <Compile Include="Files\TestProperties.cs" />
     <Compile Include="Files\TestSealed.cs" />
+    <Compile Include="Files\TestSwitch.cs" />
     <Compile Include="Files\TestUsingsInNamespace.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />

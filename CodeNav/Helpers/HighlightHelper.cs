@@ -31,8 +31,6 @@ namespace CodeNav.Helpers
                 ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey),
                 ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
                 ToBrush(EnvironmentColors.ToolWindowTextColorKey));
-
-            //itemsToHighlight = itemsToHighlight.OrderByDescending(i => i, new CodeItemKindComparer()).ToList();
         }
 
         public static void HighlightCurrentItem(List<CodeItem> codeItems, int currentLine, 

@@ -250,5 +250,29 @@ namespace CodeNav.Properties {
                 this["ShowSealed"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowSwitch {
+            get {
+                return ((bool)(this["ShowSwitch"]));
+            }
+            set {
+                this["ShowSwitch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowSwitchItems {
+            get {
+                return ((bool)(this["ShowSwitchItems"]));
+            }
+            set {
+                this["ShowSwitchItems"] = value;
+            }
+        }
     }
 }

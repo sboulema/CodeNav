@@ -50,6 +50,9 @@ namespace CodeNav
             listView1.Items[12].Checked = Settings.Default.ShowInternal;
             listView1.Items[13].Checked = Settings.Default.ShowProtected;
             listView1.Items[14].Checked = Settings.Default.ShowSealed;
+
+            listView1.Items[15].Checked = Settings.Default.ShowSwitch;
+            listView1.Items[16].Checked = Settings.Default.ShowSwitchItems;
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -70,6 +73,9 @@ namespace CodeNav
             Settings.Default.ShowInternal = listView1.Items[12].Checked;
             Settings.Default.ShowProtected = listView1.Items[13].Checked;
             Settings.Default.ShowSealed = listView1.Items[14].Checked;
+
+            Settings.Default.ShowSwitch = listView1.Items[15].Checked;
+            Settings.Default.ShowSwitchItems = listView1.Items[16].Checked;
 
             Close();
         }
