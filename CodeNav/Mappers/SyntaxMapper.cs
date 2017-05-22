@@ -11,14 +11,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using CodeNav.Helpers;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
 
 namespace CodeNav.Mappers
 {
-	public static class SyntaxMapper
+    public static class SyntaxMapper
     {
         private static CodeViewUserControl _control;
         private static SyntaxTree _tree;
@@ -211,7 +210,7 @@ namespace CodeNav.Mappers
             var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
             item.Kind = CodeItemKindEnum.Struct;
             item.Moniker = MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             
             foreach (var structMember in member.Members)
             {
@@ -229,7 +228,7 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Enum;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
-            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);          
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);          
 
             foreach (var enumMember in member.Members)
             {
@@ -247,17 +246,17 @@ namespace CodeNav.Mappers
 			item.Kind = CodeItemKindEnum.Class;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
-			item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+			item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
 		    item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
-			var regions = MapRegions(member.Span);
+			var regions = RegionMapper.MapRegions(_tree, member.Span);
 			var implementedInterfaces = MapImplementedInterfaces(member);
 
 			foreach (var classMember in member.Members)
 			{
 				var memberItem = MapMember(classMember);
 			    if (memberItem != null && !IsPartOfImplementedInterface(implementedInterfaces, memberItem) 
-                    && !AddToRegion(regions, memberItem))
+                    && !RegionMapper.AddToRegion(regions, memberItem))
 			    {
                     item.Members.Add(memberItem);
                 }
@@ -270,7 +269,7 @@ namespace CodeNav.Mappers
                 {
                     if (interfaceItem.Members.Any())
                     {
-                        if (!AddToRegion(regions, interfaceItem))
+                        if (!RegionMapper.AddToRegion(regions, interfaceItem))
                         {
                             item.Members.Add(interfaceItem);
                         }
@@ -340,8 +339,8 @@ namespace CodeNav.Mappers
                 Name = name,
                 FullName = name,
                 Id = name,
-                Foreground = CreateSolidColorBrush(Colors.Black),
-                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
+                Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black),
+                BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.ImplementedInterface,
                 IsExpanded = true
@@ -376,7 +375,7 @@ namespace CodeNav.Mappers
 
             var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
             item.Kind = CodeItemKindEnum.Interface;
-            item.BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             item.Moniker = MapMoniker(item.Kind, item.Access);
 
             foreach (var interfaceMember in member.Members)
@@ -385,62 +384,6 @@ namespace CodeNav.Mappers
             }
 
             return item;
-        }
-
-        #endregion
-
-        #region Regions
-
-        private static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
-        {
-            if (item?.StartLine == null) return false;
-            foreach (var region in regions)
-            {
-                if (item.StartLine >= region.StartLine && item.StartLine <= region.EndLine)
-                {
-                    region.Members.Add(item);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private static List<CodeRegionItem> MapRegions(TextSpan span)
-        {
-            var root = _tree.GetRoot();
-            var regionList = new List<CodeRegionItem>();
-
-            foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && i.Span.IntersectsWith(span)))
-            {
-                regionList.Add(
-                    MapRegion("#" + regionDirective.ToString().Replace("#region ", string.Empty), regionDirective)
-                );
-            }
-                
-            var index = 0;
-
-            foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && j.Span.IntersectsWith(span)))
-            {
-                regionList[index++].EndLine = GetEndLine(endRegionDirective);
-            }
-
-            return regionList;
-        }
-
-        private static CodeRegionItem MapRegion(string name, SyntaxTrivia source)
-        {
-            return new CodeRegionItem
-            {
-                Name = name,
-                FullName = name,
-                Id = name,
-                Tooltip = name,
-                StartLine = GetStartLine(source),
-                Foreground = CreateSolidColorBrush(Colors.Black),
-                BorderBrush = CreateSolidColorBrush(Colors.DarkGray),
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.Region
-            };
         }
 
         #endregion
@@ -484,7 +427,7 @@ namespace CodeNav.Mappers
             element.Tooltip = name;
             element.StartLine = GetStartLine(source);
             element.EndLine = GetEndLine(source);
-            element.Foreground = CreateSolidColorBrush(Colors.Black);
+            element.Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccess(modifiers);
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
@@ -522,13 +465,6 @@ namespace CodeNav.Mappers
             }
         }
 
-        public static SolidColorBrush CreateSolidColorBrush(Color color)
-        {
-            var brush = new SolidColorBrush(color);
-            brush.Freeze();
-            return brush;
-        }
-
         public static void FilterNullItems(List<CodeItem> items)
         {
             if (items == null) return;
@@ -546,12 +482,6 @@ namespace CodeNav.Mappers
             source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
 
         private static int GetEndLine(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
-
-        private static int GetStartLine(SyntaxTrivia source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
-
-        private static int GetEndLine(SyntaxTrivia source) =>
             source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
 
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
@@ -614,7 +544,7 @@ namespace CodeNav.Mappers
             {
                 item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
                 ((CodeClassItem)item).Members.AddRange(statements);
-                ((CodeClassItem)item).BorderBrush = CreateSolidColorBrush(Colors.DarkGray);
+                ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             }
             else
             {

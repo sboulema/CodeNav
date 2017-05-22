@@ -88,6 +88,7 @@
     <Compile Include="FilterWindow.Designer.cs">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\FindHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
     <Compile Include="Mappers\FontStyleMapper.cs" />
+    <Compile Include="Mappers\RegionMapper.cs" />
     <Compile Include="Mappers\StatementMapper.cs" />
     <Compile Include="Mappers\SyntaxMapper.cs" />
     <Compile Include="Mappers\TypeMapper.cs" />
@@ -116,7 +118,6 @@
     <Compile Include="CodeViewUserControl.xaml.cs">
       <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Converters\WidthMinusMarginConverter.cs" />
     <Compile Include="Models\CodeRegionItem.cs" />
     <Compile Include="Models\CodeClassItem.cs" />
     <Compile Include="Models\CodeDocumentViewModel.cs" />

@@ -2,6 +2,7 @@
 using CodeNav.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using CodeNav.Helpers;
 
 namespace CodeNav.Mappers
 {
@@ -28,7 +29,7 @@ namespace CodeNav.Mappers
             item.Name = $"Switch {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
             item.Moniker = SyntaxMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = SyntaxMapper.CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
             // Map switch cases

@@ -40,10 +40,12 @@
     <Compile Include="Files\TestNestedNamespaces.cs" />
     <Compile Include="Files\TestNoNamespace.cs" />
     <Compile Include="Files\TestProperties.cs" />
+    <Compile Include="Files\TestRegions.cs" />
     <Compile Include="Files\TestSealed.cs" />
     <Compile Include="Files\TestSwitch.cs" />
     <Compile Include="Files\TestUsingsInNamespace.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
+    <Compile Include="MapperTests\RegionMapperTests.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
