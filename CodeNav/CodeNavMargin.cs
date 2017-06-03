@@ -86,7 +86,9 @@ namespace CodeNav
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost)
         {
-            var leftColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
+            var marginWidth = Settings.Default.ShowMargin ? Settings.Default.Width : 0;
+
+            var leftColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
             if (!Settings.Default.MarginSide.Equals("Left"))
             {
                 leftColumnWidth = new GridLength(0, GridUnitType.Star);
@@ -95,7 +97,7 @@ namespace CodeNav
             var rightColumnWidth = new GridLength(0, GridUnitType.Star);
             if (!Settings.Default.MarginSide.Equals("Left"))
             {
-                rightColumnWidth = new GridLength(Settings.Default.Width, GridUnitType.Pixel);
+                rightColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
             }
 
             var grid = new Grid();
@@ -123,7 +125,7 @@ namespace CodeNav
             var columnIndex = Settings.Default.MarginSide.Equals("Left") ? 0 : 2;
 
             _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
-                textViewHost.TextView, _outliningManager, _workspace);
+                textViewHost.TextView, _outliningManager, _workspace, this);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, columnIndex);
@@ -139,6 +141,14 @@ namespace CodeNav
             return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
+        /// <summary>
+        /// Remove the margin
+        /// </summary>
+        public void Remove()
+        {
+            Children.Remove(_codeNavGrid);
+        }
+
         #region Events
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
@@ -147,8 +157,12 @@ namespace CodeNav
                 ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
         }
 
-        private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e) => 
+        private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
             VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
+            Settings.Default.ShowMargin = !Settings.Default.ShowMargin;
+            Settings.Default.Save();
+        }   
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {

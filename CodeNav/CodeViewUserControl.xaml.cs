@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
+using CodeNav.Properties;
 
 namespace CodeNav
 {
@@ -31,10 +32,11 @@ namespace CodeNav
         private readonly IWpfTextView _textView;
         private readonly IOutliningManager _outliningManager;
         private VisualStudioWorkspace _workspace;
+        private readonly CodeNavMargin _margin;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
             IWpfTextView textView = null, IOutliningManager outliningManager = null, 
-            VisualStudioWorkspace workspace = null)
+            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null)
         {
             InitializeComponent();
 
@@ -52,6 +54,7 @@ namespace CodeNav
             _textView = textView;
             _outliningManager = outliningManager;
             _workspace = workspace;
+            _margin = margin;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
@@ -97,7 +100,14 @@ namespace CodeNav
 
         public void UpdateDocument(bool forceUpdate = false)
         {
+            if (_window == null) return;
+
             LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
+
+            if (_margin != null && Settings.Default.MarginSide.Equals("None"))
+            {
+                _margin.Remove();
+            }
 
             if (forceUpdate)
             {
@@ -188,6 +198,10 @@ namespace CodeNav
             if (result.ForceUpdate == false && areEqual)
             {
                 LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, document did not change");
+
+                // Should the margin be shown and are there any items to show, if not hide the margin
+                VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+
                 return;
             }
 
@@ -198,7 +212,7 @@ namespace CodeNav
             // Set currently active codeitem
             HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
 
-            // Are there any items to show, if not hide the margin
+            // Should the margin be shown and are there any items to show, if not hide the margin
             VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
             // Apply current visibility settings to the document

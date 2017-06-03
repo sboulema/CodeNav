@@ -1,4 +1,4 @@
-version: 2.5.{build}
+version: 2.6.{build}
 skip_tags: true
 configuration: 
 - Release

@@ -68,10 +68,17 @@ namespace CodeNav.Helpers
         public static void SetMarginWidth(ColumnDefinition column, List<CodeItem> document)
         {
             if (column == null) return;
-            column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            if (!Settings.Default.ShowMargin)
+            {
+                column.Width = new GridLength(0);
+            }
+            else
+            {
+                column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            }       
         }
 
-        private static bool IsEmpty(List<CodeItem> document)
+        public static bool IsEmpty(List<CodeItem> document)
         {
             if (!document.Any()) return true;
 
