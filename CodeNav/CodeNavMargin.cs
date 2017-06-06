@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Window = EnvDTE.Window;
+using CodeNav.Models;
 
 namespace CodeNav
 {
@@ -32,8 +33,10 @@ namespace CodeNav
         private DocumentEvents _documentEvents;
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
+        public readonly MarginSideEnum MarginSide;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager, VisualStudioWorkspace workspace)
+        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager, 
+            VisualStudioWorkspace workspace, MarginSideEnum side)
         {
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
@@ -41,13 +44,14 @@ namespace CodeNav
             _window = GetWindow(textViewHost, dte);
             _outliningManager = outliningManager;
             _workspace = workspace;
+            MarginSide = side;
 
             // If we can not find the window we belong to we can not do anything
             if (_window == null) return;
 
             // Add the view/content to the margin area
             _codeNavGrid = CreateGrid(textViewHost);
-            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide.Equals("Left") ? 0 : 2];
+            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
             Children.Add(_codeNavGrid);        
 
             RegisterEvents();
@@ -89,13 +93,13 @@ namespace CodeNav
             var marginWidth = Settings.Default.ShowMargin ? Settings.Default.Width : 0;
 
             var leftColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
-            if (!Settings.Default.MarginSide.Equals("Left"))
+            if (Settings.Default.MarginSide != MarginSideEnum.Left)
             {
                 leftColumnWidth = new GridLength(0, GridUnitType.Star);
             }
 
             var rightColumnWidth = new GridLength(0, GridUnitType.Star);
-            if (!Settings.Default.MarginSide.Equals("Left"))
+            if (Settings.Default.MarginSide != MarginSideEnum.Left)
             {
                 rightColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
             }
@@ -122,15 +126,15 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            var columnIndex = Settings.Default.MarginSide.Equals("Left") ? 0 : 2;
+            var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
             _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
-                textViewHost.TextView, _outliningManager, _workspace, this);
+                textViewHost.TextView, _outliningManager, _workspace, this, _dte);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, columnIndex);
             Grid.SetColumn(splitter, 1);
-            Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide.Equals("Left") ? 2 : 0);
+            Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide == MarginSideEnum.Left ? 2 : 0);
 
             return grid;
         }

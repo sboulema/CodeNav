@@ -158,9 +158,9 @@ namespace CodeNav.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Left")]
-        public string MarginSide {
+        public global::CodeNav.Models.MarginSideEnum MarginSide {
             get {
-                return ((string)(this["MarginSide"]));
+                return ((global::CodeNav.Models.MarginSideEnum)(this["MarginSide"]));
             }
             set {
                 this["MarginSide"] = value;

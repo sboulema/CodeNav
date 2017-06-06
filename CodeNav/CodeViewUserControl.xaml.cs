@@ -32,11 +32,12 @@ namespace CodeNav
         private readonly IWpfTextView _textView;
         private readonly IOutliningManager _outliningManager;
         private VisualStudioWorkspace _workspace;
-        private readonly CodeNavMargin _margin;
+        private CodeNavMargin _margin;
+        public DTE Dte;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
             IWpfTextView textView = null, IOutliningManager outliningManager = null, 
-            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null)
+            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null, DTE dte = null)
         {
             InitializeComponent();
 
@@ -55,6 +56,7 @@ namespace CodeNav
             _outliningManager = outliningManager;
             _workspace = workspace;
             _margin = margin;
+            Dte = dte;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
@@ -100,13 +102,23 @@ namespace CodeNav
 
         public void UpdateDocument(bool forceUpdate = false)
         {
-            if (_window == null) return;
-
+            try
+            {
+                if (_window?.Document == null) return;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
             LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
 
-            if (_margin != null && Settings.Default.MarginSide.Equals("None"))
+            // Do we need to change the side where the margin is displayed
+            if (_margin?.MarginSide != Settings.Default.MarginSide && Dte != null)
             {
-                _margin.Remove();
+                var filename = _window.Document.FullName;
+                Dte.ExecuteCommand("File.Close");
+                Dte.ExecuteCommand("File.OpenFile", filename);           
             }
 
             if (forceUpdate)
@@ -136,7 +148,14 @@ namespace CodeNav
             // Start the backgroundworker to update the list of code items
             if (!_backgroundWorker.CancellationPending)
             {
-                _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
+                try
+                {
+                    _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
+                }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }         
             }
         }
 

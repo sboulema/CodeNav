@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using CodeNav.Properties;
+using CodeNav.Models;
 
 namespace CodeNav
 {
@@ -18,7 +19,7 @@ namespace CodeNav
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.MarginSide = marginSideComboBox.Text;
+            Settings.Default.MarginSide = (MarginSideEnum)Enum.Parse(typeof(MarginSideEnum), marginSideComboBox.Text);
             Settings.Default.Font = fontDialog1.Font;
             Settings.Default.ShowFilterToolbar = filterToolbarCheckBox.Checked;
             Settings.Default.Save();
@@ -27,7 +28,7 @@ namespace CodeNav
 
         private void OptionsToolWindow_Load(object sender, EventArgs e)
         {
-            marginSideComboBox.SelectedItem = Settings.Default.MarginSide;
+            marginSideComboBox.SelectedItem = Settings.Default.MarginSide.ToString();
             fontDialog1.Font = Settings.Default.Font;
             filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;
         }

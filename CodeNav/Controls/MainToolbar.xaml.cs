@@ -38,8 +38,9 @@ namespace CodeNav.Controls
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
+            var control = FindParent<CodeViewUserControl>(this);
             new OptionsWindow().ShowDialog();
-            FindParent<CodeViewUserControl>(this).UpdateDocument(true);
+            control.UpdateDocument(true);
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject

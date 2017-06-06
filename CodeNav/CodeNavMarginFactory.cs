@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Linq;
 using CodeNav.Helpers;
 using CodeNav.Properties;
 using EnvDTE;
@@ -8,6 +7,7 @@ using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using CodeNav.Models;
 
 namespace CodeNav
 {
@@ -40,13 +40,14 @@ namespace CodeNav
         /// </returns>
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            if (!Settings.Default.MarginSide.Equals("Left")) return null;
+            if (Settings.Default.MarginSide != MarginSideEnum.Left) return null;
 
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
             var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
             Logger.Initialize(ServiceProvider, "CodeNav");
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Left);
+
             return codeNav;
         }
 
@@ -82,13 +83,14 @@ namespace CodeNav
         /// </returns>
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            if (!Settings.Default.MarginSide.Equals("Right")) return null;
+            if (Settings.Default.MarginSide != MarginSideEnum.Right) return null;
 
             var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
             var outliningManager = OutliningHelper.GetManager(_serviceProvider, wpfTextViewHost.TextView);
 
             Logger.Initialize(_serviceProvider, "CodeNav");
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Right);
+
             return codeNav;
         }
 

@@ -35,7 +35,7 @@
     <Setting Name="ShowDelegates" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="MarginSide" Type="System.String" Scope="User">
+    <Setting Name="MarginSide" Type="CodeNav.Models.MarginSideEnum" Scope="User">
       <Value Profile="(Default)">Left</Value>
     </Setting>
     <Setting Name="ShowPublic" Type="System.Boolean" Scope="User">
