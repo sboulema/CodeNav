@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="CodeNav.Samir Boulema.19687465-dc94-413d-ad72-6141e90c94d4" Version="2.6" Language="en-US" Publisher="Samir Boulema" />
+    <Identity Id="CodeNav.Samir Boulema.19687465-dc94-413d-ad72-6141e90c94d4" Version="2.7" Language="en-US" Publisher="Samir Boulema" />
     <DisplayName>CodeNav</DisplayName>
     <Description xml:space="preserve">Show the code structure of your current document</Description>
     <MoreInfo>https://github.com/sboulema/CodeNav</MoreInfo>

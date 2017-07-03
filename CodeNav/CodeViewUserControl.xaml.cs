@@ -150,7 +150,13 @@ namespace CodeNav
             {
                 try
                 {
-                    _backgroundWorker.RunWorkerAsync(new BackgroundWorkerRequest { Document = _window.Document, ForceUpdate = forceUpdate });
+                    Dispatcher.Invoke(new Action(() => _backgroundWorker.RunWorkerAsync(
+                        new BackgroundWorkerRequest
+                        {
+                            Document = _window.Document,
+                            ForceUpdate = forceUpdate
+                        }
+                    )));
                 }
                 catch (ObjectDisposedException)
                 {
@@ -201,46 +207,53 @@ namespace CodeNav
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var result = e.Result as BackgroundWorkerResult;
-
-            if (result?.CodeItems == null)
+            try
             {
-                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, no results");
-                return;
-            }
+                var result = e.Result as BackgroundWorkerResult;
 
-            // Filter all null items from the code document
-            SyntaxMapper.FilterNullItems(result.CodeItems);
+                if (result?.CodeItems == null)
+                {
+                    LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, no results");
+                    return;
+                }
 
-            // Do we need to update the DataContext?
-            var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
-            if (result.ForceUpdate == false && areEqual)
-            {
-                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, document did not change");
+                // Filter all null items from the code document
+                SyntaxMapper.FilterNullItems(result.CodeItems);
+
+                // Do we need to update the DataContext?
+                var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
+                if (result.ForceUpdate == false && areEqual)
+                {
+                    LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, document did not change");
+
+                    // Should the margin be shown and are there any items to show, if not hide the margin
+                    VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+
+                    return;
+                }
+
+                // Set the new list of codeitems as DataContext
+                CodeDocumentViewModel.CodeDocument = result.CodeItems;
+                _cache = result.CodeItems;
+
+                // Set currently active codeitem
+                HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
 
                 // Should the margin be shown and are there any items to show, if not hide the margin
                 VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
 
-                return;
+                // Apply current visibility settings to the document
+                VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument);
+
+                // Sync all regions
+                OutliningHelper.SyncAllRegions(_outliningManager, _textView, CodeDocumentViewModel.CodeDocument);
+
+                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
             }
-
-            // Set the new list of codeitems as DataContext
-            CodeDocumentViewModel.CodeDocument = result.CodeItems;
-            _cache = result.CodeItems;
-
-            // Set currently active codeitem
-            HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
-
-            // Should the margin be shown and are there any items to show, if not hide the margin
-            VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
-
-            // Apply current visibility settings to the document
-            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument);
-
-            // Sync all regions
-            OutliningHelper.SyncAllRegions(_outliningManager, _textView, CodeDocumentViewModel.CodeDocument);
-
-            LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
+            catch (ObjectDisposedException ex)
+            {
+                LogHelper.Log($"CodeNav: RunWorkerCompleted exception: {ex.Message}");
+            }
         }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
