@@ -87,8 +87,16 @@ namespace CodeNav
                 return;
             }
 
-            LogHelper.Log($"GotoLine {startLineAsInt}");
-            textSelection.GotoLine(startLineAsInt);
+            try
+            {
+                LogHelper.Log($"GotoLine {startLineAsInt}");
+                textSelection.GotoLine(startLineAsInt);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log($"GotoLine failed: {e.Message}");
+                return;
+            }         
         }
 
         public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
