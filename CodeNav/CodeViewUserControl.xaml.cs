@@ -29,8 +29,8 @@ namespace CodeNav
         private List<CodeItem> _cache;
         private readonly BackgroundWorker _backgroundWorker;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
-        private readonly IWpfTextView _textView;
-        private readonly IOutliningManager _outliningManager;
+        internal IWpfTextView TextView;
+        internal IOutliningManager OutliningManager;
         private VisualStudioWorkspace _workspace;
         private CodeNavMargin _margin;
         public DTE Dte;
@@ -52,8 +52,8 @@ namespace CodeNav
 
             _window = window;
             _column = column;
-            _textView = textView;
-            _outliningManager = outliningManager;
+            TextView = textView;
+            OutliningManager = outliningManager;
             _workspace = workspace;
             _margin = margin;
             Dte = dte;
@@ -254,7 +254,7 @@ namespace CodeNav
                 VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument);
 
                 // Sync all regions
-                OutliningHelper.SyncAllRegions(_outliningManager, _textView, CodeDocumentViewModel.CodeDocument);
+                OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
 
                 LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
             }

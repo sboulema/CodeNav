@@ -20,7 +20,6 @@ namespace CodeNav.ToolWindow
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
         private DTE _dte;
-        private IOutliningManager _outliningManager;
         private VisualStudioWorkspace _workspace;
 
         /// <summary>
@@ -70,15 +69,17 @@ namespace CodeNav.ToolWindow
             var textViewHost = GetCurrentViewHost();
             if (textViewHost != null)
             {
+                _control.TextView = textViewHost.TextView;
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
                 // Subscribe to Outlining events
-                _outliningManager = OutliningHelper.GetManager(Package as CodeNavToolWindowPackage, GetCurrentViewHost().TextView);
-                if (_outliningManager == null) return;
-                _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-                _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-                _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-                _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+                var outliningManager = OutliningHelper.GetManager(Package as CodeNavToolWindowPackage, GetCurrentViewHost().TextView);
+                if (outliningManager == null) return;
+                _control.OutliningManager = outliningManager;
+                outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
             }
 
             UpdateDocument(gotFocus, gotFocus != lostFocus);
