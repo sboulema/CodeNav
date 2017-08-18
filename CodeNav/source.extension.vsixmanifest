@@ -1,29 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="CodeNav.Samir Boulema.19687465-dc94-413d-ad72-6141e90c94d4" Version="2.9" Language="en-US" Publisher="Samir Boulema" />
-    <DisplayName>CodeNav</DisplayName>
-    <Description xml:space="preserve">Show the code structure of your current document</Description>
-    <MoreInfo>https://github.com/sboulema/CodeNav</MoreInfo>
-    <License>Resources\License.txt</License>
-    <GettingStartedGuide>https://github.com/sboulema/CodeNav/blob/master/README.md</GettingStartedGuide>
-    <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
-    <Icon>Resources\DocumentOutline_256x.png</Icon>
-    <PreviewImage>Resources\Preview-small.png</PreviewImage>
-    <Tags>code, structure, navigation, map, overview, codemap</Tags>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,16.0)" />
-  </Installation>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-    <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
-  </Dependencies>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-  </Assets>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0.26109.1,16.0)" DisplayName="C# and Visual Basic" />
-  </Prerequisites>
+    <Metadata>
+        <Identity Id="CodeNav.Samir Boulema.19687465-dc94-413d-ad72-6141e90c94d4" Version="3.0" Language="en-US" Publisher="Samir Boulema" />
+        <DisplayName>CodeNav</DisplayName>
+        <Description xml:space="preserve">Show the code structure of your current document</Description>
+        <MoreInfo>https://github.com/sboulema/CodeNav</MoreInfo>
+        <License>Resources\License.txt</License>
+        <GettingStartedGuide>https://github.com/sboulema/CodeNav/blob/master/README.md</GettingStartedGuide>
+        <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
+        <Icon>Resources\DocumentOutline_256x.png</Icon>
+        <PreviewImage>Resources\Preview-small.png</PreviewImage>
+        <Tags>code, structure, navigation, map, overview, codemap</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,16.0)" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0.26109.1,16.0)" DisplayName="C# and Visual Basic" />
+    </Prerequisites>
 </PackageManifest>

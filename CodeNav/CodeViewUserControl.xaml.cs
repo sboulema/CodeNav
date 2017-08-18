@@ -261,6 +261,7 @@ namespace CodeNav
             catch (ObjectDisposedException ex)
             {
                 LogHelper.Log($"CodeNav: RunWorkerCompleted exception: {ex.Message}");
+                LogHelper.Log("RunWorkerCompleted exception", ex);
             }
         }
 

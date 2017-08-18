@@ -77,6 +77,7 @@ namespace CodeNav.Mappers
             catch (Exception e)
             {
                 LogHelper.Log($"Error during mapping: {e}");
+                LogHelper.Log("Error during mapping", e);
                 return null;
             }        
         }

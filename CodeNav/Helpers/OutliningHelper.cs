@@ -122,13 +122,21 @@ namespace CodeNav.Helpers
             if (item.Kind == CodeItemKindEnum.ImplementedInterface) return null;
             if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount) return null;
 
-            var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
-            var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
+            try
+            {
+                var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
+                var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
 
-            return (from collapsible in collapsibles
-                    let startLine = GetStartLineForCollapsible(collapsible)
-                    where startLine == item.StartLine
-                    select collapsible).FirstOrDefault();
+                return (from collapsible in collapsibles
+                        let startLine = GetStartLineForCollapsible(collapsible)
+                        where startLine == item.StartLine
+                        select collapsible).FirstOrDefault();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                LogHelper.Log($"FindCollapsibleFromCodeItem failed for item {item.Name}, exception: {e.Message}");
+                return null;
+            }
         }
 
         /// <summary>
