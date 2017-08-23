@@ -1,6 +1,8 @@
 ﻿using Loggly;
 using Loggly.Config;
 using System;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace CodeNav.Helpers
 {
@@ -30,6 +32,8 @@ namespace CodeNav.Helpers
             var ct = new ApplicationNameTag();
             ct.Formatter = "application-{0}";
             config.TagConfig.Tags.Add(ct);
+
+            config.TagConfig.Tags.Add($"version-{GetExecutingAssemblyVersion()}");
 
             return new LogglyClient();
         }
@@ -82,6 +86,14 @@ namespace CodeNav.Helpers
             var logEvent = new LogglyEvent();
             logEvent.Data.Add("message", log);
             _client.Log(logEvent);
+        }
+
+        private static Version GetExecutingAssemblyVersion()
+        {
+            var ver = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+
+            // read what's defined in [assembly: AssemblyFileVersion("1.2.3.4")]
+            return new Version(ver.ProductMajorPart, ver.ProductMinorPart, ver.ProductBuildPart, ver.ProductPrivatePart);
         }
     }
 }

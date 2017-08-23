@@ -21,9 +21,12 @@ namespace CodeNav.Mappers
             {
                 regionList.Add(MapRegion(regionDirective));
             }
-               
+
+            if (!regionList.Any()) return regionList;
+
             foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && span.Contains(j.Span)))
             {
+                
                 var reg = regionList.Last(x => x.StartLine < GetStartLine(endRegionDirective) && x.EndLine == 0);
                 reg.EndLine = GetEndLine(endRegionDirective);
             }

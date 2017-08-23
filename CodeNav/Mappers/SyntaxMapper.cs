@@ -110,7 +110,14 @@ namespace CodeNav.Mappers
         public static List<CodeItem> MapDocument(EnvDTE.Document document)
         {
             var doc = (EnvDTE.TextDocument)document.Object("TextDocument");
-            var p = doc.StartPoint.CreateEditPoint();
+            var p = doc?.StartPoint?.CreateEditPoint();
+
+            if (p == null)
+            {
+                LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
+                return null;
+            };
+
             var text = p.GetText(doc.EndPoint);
 
             _tree = CSharpSyntaxTree.ParseText(text);
@@ -304,7 +311,16 @@ namespace CodeNav.Mappers
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
 
-            var classSymbol = _semanticModel.GetDeclaredSymbol(member);
+            INamedTypeSymbol classSymbol = null;
+            try
+            {
+                classSymbol = _semanticModel.GetDeclaredSymbol(member);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log($"Error during mapping: MapImplementedInterface: {e.Message}");
+                return implementedInterfaces;
+            }
 
             var interfacesList = new List<INamedTypeSymbol>();
             GetInterfaces(interfacesList, classSymbol.Interfaces);

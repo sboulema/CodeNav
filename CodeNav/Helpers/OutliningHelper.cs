@@ -137,6 +137,11 @@ namespace CodeNav.Helpers
                 LogHelper.Log($"FindCollapsibleFromCodeItem failed for item {item.Name}, exception: {e.Message}");
                 return null;
             }
+            catch (ObjectDisposedException e)
+            {
+                LogHelper.Log($"FindCollapsibleFromCodeItem failed because of disposed {e.ObjectName}");
+                return null;
+            }
         }
 
         /// <summary>
