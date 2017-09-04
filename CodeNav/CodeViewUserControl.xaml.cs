@@ -221,7 +221,7 @@ namespace CodeNav
 
                 if (result?.CodeItems == null)
                 {
-                    LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, no results");
+                    LogHelper.Log($"CodeNav for '{LogHelper.GetDocumentName(_window)}' updated, no results");
                     return;
                 }
 
@@ -232,7 +232,7 @@ namespace CodeNav
                 var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
                 if (result.ForceUpdate == false && areEqual)
                 {
-                    LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated, document did not change");
+                    LogHelper.Log($"CodeNav for '{LogHelper.GetDocumentName(_window)}' updated, document did not change");
 
                     // Should the margin be shown and are there any items to show, if not hide the margin
                     VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
@@ -256,7 +256,7 @@ namespace CodeNav
                 // Sync all regions
                 OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
 
-                LogHelper.Log($"CodeNav for '{_window.Document.Name}' updated");
+                LogHelper.Log($"CodeNav for '{LogHelper.GetDocumentName(_window)}' updated");
             }
             catch (ObjectDisposedException ex)
             {

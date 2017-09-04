@@ -25,10 +25,12 @@ namespace CodeNav.Mappers
             if (!regionList.Any()) return regionList;
 
             foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && span.Contains(j.Span)))
-            {
-                
-                var reg = regionList.Last(x => x.StartLine < GetStartLine(endRegionDirective) && x.EndLine == 0);
-                reg.EndLine = GetEndLine(endRegionDirective);
+            {              
+                var reg = regionList.LastOrDefault(x => x.StartLine < GetStartLine(endRegionDirective) && x.EndLine == 0);
+                if (reg != null)
+                {
+                    reg.EndLine = GetEndLine(endRegionDirective);
+                }             
             }
 
             var list = ToHierarchy(regionList, int.MinValue, int.MaxValue);
