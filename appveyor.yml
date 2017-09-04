@@ -1,5 +1,4 @@
 version: 3.2.{build}
-image: Visual Studio 2017
 skip_tags: true
 
 configuration: 
@@ -9,18 +8,18 @@ configuration:
 install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 
+before_build:
+- ps: >-
+    Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
+
+    nuget restore -Verbosity quiet
+
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
-
-before_build:
-- ps: >-
-    Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
-
-    nuget restore -Verbosity quiet
 
 build:
   verbosity: minimal
