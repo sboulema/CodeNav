@@ -14,9 +14,12 @@ namespace CodeNav.Mappers
     {
         public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span)
         {
-            var root = tree.GetRoot();
             var regionList = new List<CodeRegionItem>();
 
+            if (tree == null) return regionList;
+
+            var root = tree.GetRoot();
+            
             foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && span.Contains(i.Span)))
             {
                 regionList.Add(MapRegion(regionDirective));

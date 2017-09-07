@@ -96,10 +96,25 @@ namespace CodeNav.Mappers
             }
 
             _tree = document.GetSyntaxTreeAsync().Result;
-            _semanticModel = document.GetSemanticModelAsync().Result;
-            var root = (CompilationUnitSyntax)_tree.GetRoot();
 
-            return root.Members.Select(MapMember).ToList();
+            if (_tree == null)
+            {
+                LogHelper.Log("Error during mapping: Tree is null");
+                return null;
+            }
+
+            _semanticModel = document.GetSemanticModelAsync().Result;
+            var root = _tree.GetRoot();
+
+            if (root is CompilationUnitSyntax)
+            {
+                return (root as CompilationUnitSyntax).Members.Select(MapMember).ToList();
+            }
+            else
+            {
+                LogHelper.Log("Error during mapping: root is not CSharp");
+                return null;
+            }        
         }
 
         /// <summary>
@@ -110,15 +125,24 @@ namespace CodeNav.Mappers
         public static List<CodeItem> MapDocument(EnvDTE.Document document)
         {
             var doc = (EnvDTE.TextDocument)document.Object("TextDocument");
-            var p = doc?.StartPoint?.CreateEditPoint();
+            EnvDTE.EditPoint startPoint = null;
 
-            if (p == null)
+            try
+            {
+                startPoint = doc?.StartPoint?.CreateEditPoint();
+            }
+            catch (Exception)
+            {
+                LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
+            }
+
+            if (startPoint == null)
             {
                 LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
                 return null;
             };
 
-            var text = p.GetText(doc.EndPoint);
+            var text = startPoint.GetText(doc.EndPoint);
 
             _tree = CSharpSyntaxTree.ParseText(text);
 
