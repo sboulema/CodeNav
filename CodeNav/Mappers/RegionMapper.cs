@@ -125,6 +125,8 @@ namespace CodeNav.Mappers
         {
             foreach (var member in members)
             {
+                if (member == null) continue;
+
                 if (member is IMembers && AddToRegion((member as IMembers).Members, item))
                 {
                     return true;
