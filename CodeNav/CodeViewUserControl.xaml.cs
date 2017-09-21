@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 using CodeNav.Properties;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav
 {
@@ -66,13 +67,16 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
-        public void SelectLine(object startLine)
+        public void SelectLine(object startLinePosition)
         {
-            int startLineAsInt;
+            int line;
+            int offset;
 
             try
             {
-                startLineAsInt = Convert.ToInt32(startLine);
+                var linePosition = (LinePosition)startLinePosition;
+                line = linePosition.Line + 1;
+                offset = linePosition.Character + 1;
             }
             catch (Exception)
             {
@@ -89,14 +93,17 @@ namespace CodeNav
 
             try
             {
-                LogHelper.Log($"GotoLine {startLineAsInt}");
-                textSelection.GotoLine(startLineAsInt);
+                LogHelper.Log($"GotoLine {line}");
+                textSelection.MoveToLineAndOffset(line, offset);
+
+                var tp = (TextPoint)textSelection.TopPoint;
+                tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
             }
             catch (Exception e)
             {
                 LogHelper.Log($"GotoLine failed: {e.Message}");
                 return;
-            }         
+            }   
         }
 
         public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 

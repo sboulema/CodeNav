@@ -14,6 +14,7 @@ using CodeNav.Helpers;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.Mappers
 {
@@ -467,6 +468,7 @@ namespace CodeNav.Mappers
             element.Id = element.FullName;
             element.Tooltip = name;
             element.StartLine = GetStartLine(source);
+            element.StartLinePosition = GetStartLinePosition(source);
             element.EndLine = GetEndLine(source);
             element.Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccess(modifiers);
@@ -518,6 +520,9 @@ namespace CodeNav.Mappers
                 }
             }
         }
+
+        private static LinePosition GetStartLinePosition(SyntaxNode source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition;
 
         private static int GetStartLine(SyntaxNode source) =>
             source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;

@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Caliburn.Micro;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.Models
 {
@@ -17,6 +18,7 @@ namespace CodeNav.Models
         }
 
         public string Name { get; set; }
+        public LinePosition StartLinePosition { get; set; }
         public int StartLine { get; set; }
         public int EndLine { get; set; }
         public ImageMoniker Moniker { get; set; }
@@ -151,9 +153,9 @@ namespace CodeNav.Models
         private readonly DelegateCommand _clickItemCommand;
         public ICommand ClickItemCommand => _clickItemCommand;
 
-        public void ClickItem(object startLine)
+        public void ClickItem(object startLinePosition)
         {
-            Control.SelectLine(startLine);
+            Control.SelectLine(startLinePosition);
         }
     }
 

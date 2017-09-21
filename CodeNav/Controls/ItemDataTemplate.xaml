@@ -4,7 +4,7 @@
                     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging">
 
     <DataTemplate DataType="{x:Type models:CodeItem}">
-        <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartLine}" 
+        <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartLinePosition}" 
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
                 BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"
