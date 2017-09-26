@@ -20,37 +20,22 @@ namespace CodeNav.Helpers
             return outliningManagerService.GetOutliningManager(textView);
         }
 
-        public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document)
-        {
-            foreach (var region in e.CollapsedRegions)
-            {
-                SetRegionIsExpanded(document, region, false);
-            }          
-        }
+        public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document) => 
+            e.CollapsedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, false));
 
-        public static void RegionsExpanded(RegionsExpandedEventArgs e, IEnumerable<CodeItem> document)
-        {
-            foreach (var region in e.ExpandedRegions)
-            {
-                SetRegionIsExpanded(document, region, true);
-            }
-        }
+        public static void RegionsExpanded(RegionsExpandedEventArgs e, IEnumerable<CodeItem> document) => 
+            e.ExpandedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, true));
 
         /// <summary>
         /// Set all #region collapsibles in a document
         /// </summary>
         /// <param name="document">document that holds the regions</param>
         /// <param name="isExpanded">should region be expanded</param>
-        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded)
-        {
-            var regions = new List<CodeItem>();
-            FindHelper.Find(regions, document, CodeItemKindEnum.Region);
-            foreach (var region in regions.Distinct())
-            {
-                var collapsible = FindCollapsibleFromCodeItem(region, _manager, _textView);
-                SetRegionIsExpanded(document, collapsible, isExpanded);
-            }
-        }
+        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded) => 
+            document.ToList().ForEach(
+                root => root.Descendants().Where(i => i.Kind == CodeItemKindEnum.Region).ToList()
+                    .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
+            );
 
         public static void SyncAllRegions(IOutliningManager manager, IWpfTextView textView, IEnumerable<CodeItem> document)
         {
@@ -82,15 +67,14 @@ namespace CodeNav.Helpers
 
         private static void SetRegionIsExpanded(IEnumerable<CodeItem> document, ICollapsible region, bool isExpanded)
         {
+            if (!document.Any()) return;
+
             var startLine = GetStartLineForCollapsible(region);
 
-            var found = new List<CodeItem>();
-            FindHelper.Find(found, document, startLine);
-            if (!found.Any()) return;
-
-            var item = found.Last();
-            if (!(item is IMembers)) return;
-            (item as IMembers).IsExpanded = isExpanded;
+            document.ToList().ForEach(
+                root => root.Descendants().Where(i => i.StartLine == startLine && i.Kind == CodeItemKindEnum.Region).ToList()
+                    .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
+            );
         }
 
         /// <summary>
@@ -165,6 +149,21 @@ namespace CodeNav.Helpers
                     {
                         _manager.TryCollapse(iCollapsible);
                     }
+                }
+            }
+        }
+
+        private static IEnumerable<CodeItem> Descendants(this CodeItem root)
+        {
+            var items = new Stack<CodeItem>(new[] { root });
+            while (items.Any())
+            {
+                var item = items.Pop();
+                yield return item;
+
+                if (item is IMembers)
+                {
+                    foreach (var i in (item as IMembers).Members) items.Push(i);
                 }
             }
         }

@@ -89,7 +89,6 @@
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ColorHelper.cs" />
-    <Compile Include="Helpers\FindHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\OutliningHelper.cs" />
