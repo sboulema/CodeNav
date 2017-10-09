@@ -41,7 +41,7 @@ namespace CodeNav.Tests.MapperTests
             Assert.AreEqual(CodeItemKindEnum.Property, sealedProperty.Kind);
             Assert.AreEqual("BaseProperty", sealedProperty.Name);
             Assert.AreEqual(CodeItemAccessEnum.Sealed, sealedProperty.Access);
-            Assert.AreEqual("BaseProperty {get,set}", sealedProperty.Parameters);
+            Assert.AreEqual(" {get,set}", sealedProperty.Parameters);
         }
     }
 }
