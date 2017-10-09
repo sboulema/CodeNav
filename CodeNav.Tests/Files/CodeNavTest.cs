@@ -19,6 +19,10 @@ namespace CodeNav.Tests
         
         private int _secret = 2;
 
+        int NoModifierProperty { get; set; }
+
+        private int PrivateProperty { get; set; }
+
         public int PublicMethod(int a, int b)
         {
             return a + b;

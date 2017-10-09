@@ -219,7 +219,6 @@ namespace CodeNav.Mappers
         private static CodeItem MapDelegate(DelegateDeclarationSyntax member)
         {
             var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
-            if (item.Access == CodeItemAccessEnum.Private) return null;
             item.Kind = CodeItemKindEnum.Delegate;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
@@ -230,7 +229,6 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
             var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
-            if (item.Access == CodeItemAccessEnum.Private) return null;
             item.Kind = CodeItemKindEnum.Event;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
@@ -471,7 +469,7 @@ namespace CodeNav.Mappers
             element.StartLinePosition = GetStartLinePosition(source);
             element.EndLine = GetEndLine(source);
             element.Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black);
-            element.Access = MapAccess(modifiers);
+            element.Access = MapAccess(modifiers, source);
             element.FontSize = Settings.Default.Font.SizeInPoints;
             element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
             element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
@@ -536,7 +534,7 @@ namespace CodeNav.Mappers
             return $"{string.Join(", ", memberList)}";
         }
 
-        private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers)
+        private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
         {
             if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
             {
@@ -559,7 +557,40 @@ namespace CodeNav.Mappers
                 return CodeItemAccessEnum.Internal;
             }
 
-            return CodeItemAccessEnum.Public;
+            return MapDefaultAccess(source);
+        }
+
+        /// <summary>
+        /// When no access modifier is given map to the default access modifier
+        /// https://stackoverflow.com/questions/2521459/what-are-the-default-access-modifiers-in-c
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static CodeItemAccessEnum MapDefaultAccess(SyntaxNode source)
+        {
+            if (source.Parent.Kind() == SyntaxKind.CompilationUnit)
+            {
+                switch (source.Kind())
+                {
+                    case SyntaxKind.EnumDeclaration:
+                    case SyntaxKind.NamespaceDeclaration:
+                        return CodeItemAccessEnum.Public;
+                    default:
+                        return CodeItemAccessEnum.Internal;
+                }
+            }
+            else
+            {
+                switch (source.Kind())
+                {
+                    case SyntaxKind.NamespaceDeclaration:
+                    case SyntaxKind.EnumDeclaration:
+                    case SyntaxKind.InterfaceDeclaration:
+                        return CodeItemAccessEnum.Public;
+                    default:
+                        return CodeItemAccessEnum.Private;
+                }
+            }
         }
 
         #endregion
@@ -664,8 +695,6 @@ namespace CodeNav.Mappers
 			var item = MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers);
 			item.Type = TypeMapper.Map(member.Type);
 
-			if (item.Access == CodeItemAccessEnum.Private) return null;
-
 		    if (member.AccessorList != null)
 		    {
                 if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.GetAccessorDeclaration))
@@ -684,7 +713,6 @@ namespace CodeNav.Mappers
 		        }
             }
 
-			item.Parameters = item.Name + item.Parameters;
 		    item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
 			item.Kind = CodeItemKindEnum.Property;
             item.Moniker = MapMoniker(item.Kind, item.Access);
