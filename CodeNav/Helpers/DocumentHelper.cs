@@ -1,0 +1,90 @@
+﻿using EnvDTE;
+using System;
+using System.Runtime.InteropServices;
+
+namespace CodeNav.Helpers
+{
+    public static class DocumentHelper
+    {
+        /// <summary>
+        /// Get the Name of the document presented in the given window
+        /// </summary>
+        /// <param name="window">The window containing a document</param>
+        /// <returns></returns>
+        public static string GetName(Window window)
+        {
+            var name = string.Empty;
+            try
+            {
+                name = window.Document.Name;
+            }
+            catch (ObjectDisposedException e)
+            {
+                // Ignore exception we only got it trying to log
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error getting FullName for document", e);
+            }
+            return name;
+        }
+
+        /// <summary>
+        /// Get the FullName/FilePath for the given document
+        /// </summary>
+        /// <param name="document">the document</param>
+        /// <returns></returns>
+        public static string GetFullName(Document document)
+        {
+            var name = string.Empty;
+            try
+            {
+                name = document.FullName;
+            }
+            catch (COMException e)
+            {
+                // Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))
+                // We have other ways to try and map this document
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error getting FullName for document", e);
+            }
+            return name;
+        }
+
+        /// <summary>
+        /// Get the Text for the given document
+        /// </summary>
+        /// <param name="document">the document</param>
+        /// <returns></returns>
+        public static string GetText(Document document)
+        {
+            var text = string.Empty;
+            try
+            {
+                var textDocument = (TextDocument)document.Object("TextDocument");
+                var startPoint = textDocument?.StartPoint?.CreateEditPoint();
+
+                if (startPoint == null)
+                {
+                    LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
+                    return null;
+                };
+
+                text = startPoint.GetText(textDocument.EndPoint);
+            }
+            catch (COMException e)
+            {
+                // Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))
+                // We were unable to get a start- or endpoint for the document. 
+                // This was our last resort to map this document, nothing we can do further.
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error getting Text for document", e);
+            }
+            return text;
+        }
+    }
+}

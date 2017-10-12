@@ -62,7 +62,14 @@ namespace CodeNav.Mappers
 
             try
             {
-                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(activeDocument.FullName).FirstOrDefault();
+                var filePath = DocumentHelper.GetFullName(activeDocument);
+
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    return MapDocument(activeDocument);
+                }
+
+                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(filePath).FirstOrDefault();
 
                 // We can not find the requested document in the current solution,
                 // Try and map it in a different way
@@ -78,7 +85,7 @@ namespace CodeNav.Mappers
             catch (Exception e)
             {
                 LogHelper.Log($"Error during mapping: {e}");
-                LogHelper.Log("Error during mapping", e);
+                LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument));
                 return null;
             }        
         }
@@ -125,25 +132,9 @@ namespace CodeNav.Mappers
         /// <returns>List of found code items</returns>
         public static List<CodeItem> MapDocument(EnvDTE.Document document)
         {
-            var doc = (EnvDTE.TextDocument)document.Object("TextDocument");
-            EnvDTE.EditPoint startPoint = null;
+            var text = DocumentHelper.GetText(document);
 
-            try
-            {
-                startPoint = doc?.StartPoint?.CreateEditPoint();
-            }
-            catch (Exception)
-            {
-                LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
-            }
-
-            if (startPoint == null)
-            {
-                LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
-                return null;
-            };
-
-            var text = startPoint.GetText(doc.EndPoint);
+            if (string.IsNullOrEmpty(text)) return new List<CodeItem>();
 
             _tree = CSharpSyntaxTree.ParseText(text);
 

@@ -36,34 +36,7 @@ namespace CodeNav.Helpers
             return new LogglyClient();
         }
 
-        public static void Log(Exception e)
-        {
-            if (_client == null)
-            {
-                _client = GetClient();
-            }
-
-            var logEvent = new LogglyEvent();
-            logEvent.Data.Add("version", GetExecutingAssemblyVersion());
-            logEvent.Data.Add("exception", e);
-            _client.Log(logEvent);
-        }
-
-        public static void Log(Exception e, object context)
-        {
-            if (_client == null)
-            {
-                _client = GetClient();
-            }
-
-            var logEvent = new LogglyEvent();
-            logEvent.Data.Add("version", GetExecutingAssemblyVersion());
-            logEvent.Data.Add("exception", e);
-            logEvent.Data.Add("context", context);
-            _client.Log(logEvent);
-        }
-
-        public static void Log(string message, Exception e)
+        public static void Log(string message, Exception exception = null, object additional = null)
         {
             if (_client == null)
             {
@@ -73,20 +46,17 @@ namespace CodeNav.Helpers
             var logEvent = new LogglyEvent();
             logEvent.Data.Add("version", GetExecutingAssemblyVersion());
             logEvent.Data.Add("message", message);
-            logEvent.Data.Add("exception", e);
-            _client.Log(logEvent);
-        }
 
-        public static void Log(object log)
-        {
-            if (_client == null)
+            if (exception != null)
             {
-                _client = GetClient();
+                logEvent.Data.Add("exception", exception);
             }
 
-            var logEvent = new LogglyEvent();
-            logEvent.Data.Add("version", GetExecutingAssemblyVersion());
-            logEvent.Data.Add("message", log);
+            if (additional != null)
+            {
+                logEvent.Data.Add("additional", additional);
+            }
+
             _client.Log(logEvent);
         }
 
@@ -96,20 +66,6 @@ namespace CodeNav.Helpers
 
             // read what's defined in [assembly: AssemblyFileVersion("1.2.3.4")]
             return new Version(ver.ProductMajorPart, ver.ProductMinorPart, ver.ProductBuildPart, ver.ProductPrivatePart);
-        }
-
-        public static string GetDocumentName(EnvDTE.Window window)
-        {
-            var name = "";
-            try
-            {
-                name = window.Document.Name;
-            }
-            catch (ObjectDisposedException e)
-            {
-                // Ignore exception we only got it trying to log
-            }
-            return name;
         }
     }
 }
