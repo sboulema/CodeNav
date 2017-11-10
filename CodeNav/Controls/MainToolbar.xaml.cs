@@ -2,6 +2,7 @@
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
+using CodeNav.Models;
 
 namespace CodeNav.Controls
 {
@@ -25,15 +26,15 @@ namespace CodeNav.Controls
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control.CodeDocumentViewModel.CodeDocument = 
-                SortHelper.SortByFile(control.CodeDocumentViewModel.CodeDocument);
+            control.CodeDocumentViewModel.SortOrder = SortOrderEnum.SortByFile;
+            control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
         }
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control.CodeDocumentViewModel.CodeDocument = 
-                SortHelper.SortByName(control.CodeDocumentViewModel.CodeDocument);
+            control.CodeDocumentViewModel.SortOrder = SortOrderEnum.SortByName;
+            control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
         }
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)

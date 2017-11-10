@@ -30,5 +30,7 @@ namespace CodeNav.Models
         public Visibility ShowFilterToolbarVisibility => Settings.Default.ShowFilterToolbar
             ? Visibility.Visible
             : Visibility.Collapsed;
+
+        public SortOrderEnum SortOrder;
     }
 }

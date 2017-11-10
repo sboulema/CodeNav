@@ -110,6 +110,7 @@
     <Compile Include="Models\CodeInterfaceItem.cs" />
     <Compile Include="Models\IMembers.cs" />
     <Compile Include="Models\MarginSideEnum.cs" />
+    <Compile Include="Models\SortOrderEnum.cs" />
     <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>

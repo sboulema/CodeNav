@@ -6,7 +6,20 @@ namespace CodeNav.Helpers
 {
     public static class SortHelper
     {
-        public static List<CodeItem> SortByName(List<CodeItem> document)
+        public static List<CodeItem> Sort(CodeDocumentViewModel viewModel)
+        {
+            switch (viewModel.SortOrder)
+            {
+                case SortOrderEnum.SortByFile:
+                    return SortByFile(viewModel.CodeDocument);
+                case SortOrderEnum.SortByName:
+                    return SortByName(viewModel.CodeDocument);
+                default:
+                    return viewModel.CodeDocument;
+            }
+        }
+
+        private static List<CodeItem> SortByName(List<CodeItem> document)
         {
             document = document.OrderBy(c => c.Name).ToList();
 
@@ -25,7 +38,7 @@ namespace CodeNav.Helpers
             return document;
         }
 
-        public static List<CodeItem> SortByFile(List<CodeItem> document)
+        private static List<CodeItem> SortByFile(List<CodeItem> document)
         {
             document = document.OrderBy(c => c.StartLine).ToList();
 

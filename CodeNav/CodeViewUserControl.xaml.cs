@@ -263,6 +263,9 @@ namespace CodeNav
                 // Sync all regions
                 OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
 
+                // Sort items
+                SortHelper.Sort(CodeDocumentViewModel);
+
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
             }
             catch (ObjectDisposedException ex)
