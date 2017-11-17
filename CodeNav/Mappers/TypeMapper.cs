@@ -14,6 +14,8 @@ namespace CodeNav.Mappers
 
         public static string Map(TypeSyntax type, bool useLongNames = false)
         {
+            if (type == null) return string.Empty;
+
             return Map(type.ToString(), useLongNames);
         }
 
