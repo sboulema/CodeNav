@@ -336,6 +336,8 @@ namespace CodeNav.Mappers
                 return implementedInterfaces;
             }
 
+            if (classSymbol == null) return implementedInterfaces;
+
             var interfacesList = new List<INamedTypeSymbol>();
             GetInterfaces(interfacesList, classSymbol.Interfaces);
 
