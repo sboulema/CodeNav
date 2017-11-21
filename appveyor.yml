@@ -1,4 +1,4 @@
-version: 3.9.{build}
+version: 4.0.{build}
 skip_tags: true
 
 configuration: 

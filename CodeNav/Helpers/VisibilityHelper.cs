@@ -25,13 +25,7 @@ namespace CodeNav.Helpers
 
             foreach (var item in document)
             {
-                var shouldBeVisibleBasedOnKind = ShouldBeVisibleBasedOnKind(item.Kind);
-                var shouldBeVisibleBasedOnAccess = ShouldBeVisibleBasedOnAccess(item.Access);
-                var shouldBeVisibleBasedOnName = item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
-
-                item.IsVisible = shouldBeVisibleBasedOnKind && 
-                                 shouldBeVisibleBasedOnAccess &&
-                                 shouldBeVisibleBasedOnName ? Visibility.Visible : Visibility.Collapsed;
+                item.IsVisible = ShouldBeVisible(item, name) ? Visibility.Visible : Visibility.Collapsed;
 
                 if (item is IMembers)
                 {
@@ -93,64 +87,17 @@ namespace CodeNav.Helpers
             return isEmpty;
         }
 
-        private static bool ShouldBeVisibleBasedOnAccess(CodeItemAccessEnum access)
+        private static bool ShouldBeVisible(CodeItem item, string name = "")
         {
-            switch (access)
+            var visible = true;
+            var filterRule = Settings.Default.FilterRules.LastOrDefault(f => 
+                (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) && 
+                (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+            if (filterRule != null)
             {
-                case CodeItemAccessEnum.Private:
-                    return Settings.Default.ShowPrivate;
-                case CodeItemAccessEnum.Protected:
-                    return Settings.Default.ShowProtected;
-                case CodeItemAccessEnum.Public:
-                    return Settings.Default.ShowPublic;
-                case CodeItemAccessEnum.Internal:
-                    return Settings.Default.ShowInternal;
-                case CodeItemAccessEnum.Sealed:
-                    return Settings.Default.ShowSealed;
-                case CodeItemAccessEnum.Unknown:
-                    return true;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                visible = filterRule.Visible;
             }
-        }
-
-        private static bool ShouldBeVisibleBasedOnKind(CodeItemKindEnum kind)
-        {
-            switch (kind)
-            {
-                case CodeItemKindEnum.Constant:
-                    return Settings.Default.ShowConstants;
-                case CodeItemKindEnum.Constructor:
-                    return Settings.Default.ShowConstructors;
-                case CodeItemKindEnum.Delegate:
-                    return Settings.Default.ShowConstructors;
-                case CodeItemKindEnum.Enum:
-                    return Settings.Default.ShowEnums;
-                case CodeItemKindEnum.EnumMember:
-                    return Settings.Default.ShowEnumItems;
-                case CodeItemKindEnum.Event:
-                    return Settings.Default.ShowEvents;
-                case CodeItemKindEnum.Method:
-                    return Settings.Default.ShowMethods;
-                case CodeItemKindEnum.Property:
-                    return Settings.Default.ShowProperties;
-                case CodeItemKindEnum.Struct:
-                    return Settings.Default.ShowStructs;
-                case CodeItemKindEnum.Variable:
-                    return Settings.Default.ShowVariables;
-                case CodeItemKindEnum.Switch:
-                    return Settings.Default.ShowSwitch;
-                case CodeItemKindEnum.SwitchSection:
-                    return Settings.Default.ShowSwitchItems;
-                case CodeItemKindEnum.Class:
-                case CodeItemKindEnum.Interface:
-                case CodeItemKindEnum.Region:
-                case CodeItemKindEnum.Namespace:
-                case CodeItemKindEnum.ImplementedInterface:
-                    return true;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            return visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool Contains(this string source, string toCheck, StringComparison comp)

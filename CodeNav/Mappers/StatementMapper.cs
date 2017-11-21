@@ -3,29 +3,30 @@ using CodeNav.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using CodeNav.Helpers;
+using Microsoft.CodeAnalysis;
 
 namespace CodeNav.Mappers
 {
     public static class StatementMapper
     {
-        public static CodeItem MapStatement(StatementSyntax statement)
+        public static CodeItem MapStatement(StatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return null;
 
             switch (statement.Kind())
             {
                 case SyntaxKind.SwitchStatement:
-                    return MapSwitch(statement as SwitchStatementSyntax);
+                    return MapSwitch(statement as SwitchStatementSyntax, control, semanticModel);
                 default:
                     return null;
             }
         }
 
-        private static CodeItem MapSwitch(SwitchStatementSyntax statement)
+        private static CodeItem MapSwitch(SwitchStatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return null;
 
-            var item = SyntaxMapper.MapBase<CodeClassItem>(statement, statement.Expression.ToString());
+            var item = BaseMapper.MapBase<CodeClassItem>(statement, statement.Expression.ToString(), control, semanticModel);
             item.Name = $"Switch {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
             item.Moniker = SyntaxMapper.MapMoniker(item.Kind, item.Access);
@@ -35,17 +36,17 @@ namespace CodeNav.Mappers
             // Map switch cases
             foreach (var section in statement.Sections)
             {
-                item.Members.Add(MapSwitchSection(section));
+                item.Members.Add(MapSwitchSection(section, control, semanticModel));
             }
 
             return item;
         }
 
-        private static CodeItem MapSwitchSection(SwitchSectionSyntax section)
+        private static CodeItem MapSwitchSection(SwitchSectionSyntax section, CodeViewUserControl control, SemanticModel semanticModel)
         {
             if (section == null) return null;
 
-            var item = SyntaxMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString());
+            var item = BaseMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString(), control, semanticModel);
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, string.Empty);
             item.Id = SyntaxMapper.MapId(item.FullName, null);
             item.Kind = CodeItemKindEnum.SwitchSection;

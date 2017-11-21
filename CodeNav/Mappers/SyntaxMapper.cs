@@ -186,7 +186,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeItem>(member, member.Identifier);
+            var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.EnumMember;
             item.Moniker = MapMoniker(item.Kind, item.Access);
 
@@ -197,8 +197,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
-            if (item.Access == CodeItemAccessEnum.Private || item.Access == CodeItemAccessEnum.Protected) return null;
+            var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = IsConstant(member.Modifiers)
                 ? CodeItemKindEnum.Constant
                 : CodeItemKindEnum.Variable;
@@ -209,7 +208,7 @@ namespace CodeNav.Mappers
 
         private static CodeItem MapDelegate(DelegateDeclarationSyntax member)
         {
-            var item = MapBase<CodeItem>(member, member.Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Delegate;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
@@ -219,7 +218,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Event;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             return item;
@@ -229,7 +228,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Struct;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
@@ -246,7 +245,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Enum;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
@@ -264,7 +263,7 @@ namespace CodeNav.Mappers
 		{
 			if (member == null) return null;
 
-			var item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+			var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
 			item.Kind = CodeItemKindEnum.Class;
             item.Moniker = MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
@@ -406,7 +405,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             item.Moniker = MapMoniker(item.Kind, item.Access);
@@ -430,48 +429,6 @@ namespace CodeNav.Mappers
 		    return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
 		}
 
-		private static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, SyntaxTokenList modifiers) where T : CodeItem
-		{
-			return MapBase<T>(source, identifier.Text, modifiers);
-		}
-
-		public static T MapBase<T>(SyntaxNode source, NameSyntax name) where T : CodeItem
-		{
-			return MapBase<T>(source, name.ToString(), new SyntaxTokenList());
-		}
-
-        public static T MapBase<T>(SyntaxNode source, string name) where T : CodeItem
-        {
-            return MapBase<T>(source, name, new SyntaxTokenList());
-        }
-
-        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier) where T : CodeItem
-        {
-            return MapBase<T>(source, identifier.Text, new SyntaxTokenList());
-        }
-
-        private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers) where T : CodeItem
-        {
-            var element = Activator.CreateInstance<T>();
-
-            element.Name = name;
-            element.FullName = GetFullName(source, name);
-            element.Id = element.FullName;
-            element.Tooltip = name;
-            element.StartLine = GetStartLine(source);
-            element.StartLinePosition = GetStartLinePosition(source);
-            element.EndLine = GetEndLine(source);
-            element.Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black);
-            element.Access = MapAccess(modifiers, source);
-            element.FontSize = Settings.Default.Font.SizeInPoints;
-            element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
-            element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
-            element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
-			element.Control = _control;
-
-            return element;
-        }
-
         #region Helpers
 
         private static string GetEnumDescription(this Enum value)
@@ -484,19 +441,6 @@ namespace CodeNav.Mappers
         private static bool IsConstant(SyntaxTokenList modifiers)
         {
             return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
-        }
-
-        private static string GetFullName(SyntaxNode source, string name)
-        {
-            try
-            {
-                var symbol = _semanticModel.GetDeclaredSymbol(source);
-                return symbol?.ToString() ?? name;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
         }
 
         public static void FilterNullItems(List<CodeItem> items)
@@ -512,78 +456,10 @@ namespace CodeNav.Mappers
             }
         }
 
-        private static LinePosition GetStartLinePosition(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition;
-
-        private static int GetStartLine(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
-
-        private static int GetEndLine(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
-
         private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
         {
             var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
             return $"{string.Join(", ", memberList)}";
-        }
-
-        private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
-        {
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
-            {
-                return CodeItemAccessEnum.Sealed;
-            }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
-            {
-                return CodeItemAccessEnum.Public;
-            }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
-            {
-                return CodeItemAccessEnum.Private;
-            }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
-            {
-                return CodeItemAccessEnum.Protected;
-            }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
-            {
-                return CodeItemAccessEnum.Internal;
-            }
-
-            return MapDefaultAccess(source);
-        }
-
-        /// <summary>
-        /// When no access modifier is given map to the default access modifier
-        /// https://stackoverflow.com/questions/2521459/what-are-the-default-access-modifiers-in-c
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        private static CodeItemAccessEnum MapDefaultAccess(SyntaxNode source)
-        {
-            if (source.Parent.Kind() == SyntaxKind.CompilationUnit)
-            {
-                switch (source.Kind())
-                {
-                    case SyntaxKind.EnumDeclaration:
-                    case SyntaxKind.NamespaceDeclaration:
-                        return CodeItemAccessEnum.Public;
-                    default:
-                        return CodeItemAccessEnum.Internal;
-                }
-            }
-            else
-            {
-                switch (source.Kind())
-                {
-                    case SyntaxKind.NamespaceDeclaration:
-                    case SyntaxKind.EnumDeclaration:
-                    case SyntaxKind.InterfaceDeclaration:
-                        return CodeItemAccessEnum.Public;
-                    default:
-                        return CodeItemAccessEnum.Private;
-                }
-            }
         }
 
         #endregion
@@ -592,7 +468,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeNamespaceItem>(member, member.Name);
+            var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Namespace;
             foreach (var namespaceMember in member.Members)
             {
@@ -605,20 +481,24 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            CodeItem item; 
+            CodeItem item;
 
-            var statements = member.Body?.Statements.Select(StatementMapper.MapStatement).ToList();
+            var statements = new List<CodeItem>();
+            foreach (var statement in member.Body?.Statements)
+            {
+                statements.Add(StatementMapper.MapStatement(statement, _control, _semanticModel));
+            }
             FilterNullItems(statements);
 
-            if (Settings.Default.ShowSwitch && statements != null && statements.Any())
+            if (statements != null && statements.Any())
             {
-                item = MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers);
+                item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statements);
                 ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             }
             else
             {
-                item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
+                item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
                 ((CodeFunctionItem)item).Type = TypeMapper.Map(member.ReturnType);
                 ((CodeFunctionItem)item).Parameters = MapParameters(member.ParameterList);
                 item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem) item).Type, item.Name, member.ParameterList);
@@ -635,7 +515,7 @@ namespace CodeNav.Mappers
         {
             if (member == null) return null;
 
-            var item = MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers);
+            var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Parameters = MapParameters(member.ParameterList);
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(member.Identifier, member.ParameterList);
@@ -685,7 +565,7 @@ namespace CodeNav.Mappers
 		{
 			if (member == null) return null;
 
-			var item = MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers);
+			var item = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
 			item.Type = TypeMapper.Map(member.Type);
 
 		    if (member.AccessorList != null)

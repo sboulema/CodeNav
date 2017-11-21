@@ -17,6 +17,11 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
+using System.IO.Packaging;
+using System.Reflection;
+using System.Windows.Markup;
+using System.Windows.Navigation;
+using System.Windows;
 
 namespace CodeNav
 {

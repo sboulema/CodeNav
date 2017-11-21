@@ -29,90 +29,29 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Constants", 0);
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Constructors", 1);
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Delegate", 7);
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("Enums", 8);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("Enum Items", 2);
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("Events", 3);
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("Methods", 4);
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("Properties", 5);
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("Structs", 9);
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("Variables", 6);
-            System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("Public", 10);
-            System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("Private", 12);
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("Internal", 11);
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("Protected", 13);
-            System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("Sealed", 14);
-            System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("Switch", 15);
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("Switch Items", 16);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilterWindow));
             this.okButton = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.cancelButton = new System.Windows.Forms.Button();
-            this.checkAllButton = new System.Windows.Forms.Button();
-            this.uncheckAllButton = new System.Windows.Forms.Button();
+            this.filterRulesDataGridView = new System.Windows.Forms.DataGridView();
+            this.filterRuleBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.accessDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.kindDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.Visible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.filterRulesDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.filterRuleBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
             // 
-            this.okButton.Location = new System.Drawing.Point(257, 12);
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Location = new System.Drawing.Point(175, 201);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 1;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
-            // 
-            // listView1
-            // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listView1.CheckBoxes = true;
-            listViewItem1.StateImageIndex = 0;
-            listViewItem2.StateImageIndex = 0;
-            listViewItem3.StateImageIndex = 0;
-            listViewItem4.StateImageIndex = 0;
-            listViewItem5.StateImageIndex = 0;
-            listViewItem6.StateImageIndex = 0;
-            listViewItem7.StateImageIndex = 0;
-            listViewItem8.StateImageIndex = 0;
-            listViewItem9.StateImageIndex = 0;
-            listViewItem10.StateImageIndex = 0;
-            listViewItem11.StateImageIndex = 0;
-            listViewItem12.StateImageIndex = 0;
-            listViewItem13.StateImageIndex = 0;
-            listViewItem14.StateImageIndex = 0;
-            listViewItem15.StateImageIndex = 0;
-            listViewItem16.StateImageIndex = 0;
-            listViewItem17.StateImageIndex = 0;
-            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9,
-            listViewItem10,
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16,
-            listViewItem17});
-            this.listView1.Location = new System.Drawing.Point(12, 12);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(239, 179);
-            this.listView1.SmallImageList = this.imageList1;
-            this.listView1.TabIndex = 2;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.List;
             // 
             // imageList1
             // 
@@ -138,7 +77,8 @@
             // 
             // cancelButton
             // 
-            this.cancelButton.Location = new System.Drawing.Point(257, 41);
+            this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.Location = new System.Drawing.Point(256, 201);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -146,43 +86,69 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
-            // checkAllButton
+            // filterRulesDataGridView
             // 
-            this.checkAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkAllButton.Location = new System.Drawing.Point(257, 139);
-            this.checkAllButton.Name = "checkAllButton";
-            this.checkAllButton.Size = new System.Drawing.Size(75, 23);
-            this.checkAllButton.TabIndex = 4;
-            this.checkAllButton.Text = "Check All";
-            this.checkAllButton.UseVisualStyleBackColor = true;
-            this.checkAllButton.Click += new System.EventHandler(this.checkAllButton_Click);
+            this.filterRulesDataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.filterRulesDataGridView.AutoGenerateColumns = false;
+            this.filterRulesDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.filterRulesDataGridView.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.filterRulesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.filterRulesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.accessDataGridViewTextBoxColumn,
+            this.kindDataGridViewTextBoxColumn,
+            this.Visible});
+            this.filterRulesDataGridView.DataSource = this.filterRuleBindingSource;
+            this.filterRulesDataGridView.Location = new System.Drawing.Point(11, 12);
+            this.filterRulesDataGridView.Name = "filterRulesDataGridView";
+            this.filterRulesDataGridView.Size = new System.Drawing.Size(320, 179);
+            this.filterRulesDataGridView.TabIndex = 6;
             // 
-            // uncheckAllButton
+            // filterRuleBindingSource
             // 
-            this.uncheckAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.uncheckAllButton.Location = new System.Drawing.Point(257, 168);
-            this.uncheckAllButton.Name = "uncheckAllButton";
-            this.uncheckAllButton.Size = new System.Drawing.Size(75, 23);
-            this.uncheckAllButton.TabIndex = 5;
-            this.uncheckAllButton.Text = "Uncheck All";
-            this.uncheckAllButton.UseVisualStyleBackColor = true;
-            this.uncheckAllButton.Click += new System.EventHandler(this.uncheckAllButton_Click);
+            this.filterRuleBindingSource.DataSource = typeof(CodeNav.Models.FilterRule);
+            // 
+            // accessDataGridViewTextBoxColumn
+            // 
+            this.accessDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.accessDataGridViewTextBoxColumn.DataPropertyName = "Access";
+            this.accessDataGridViewTextBoxColumn.HeaderText = "Access";
+            this.accessDataGridViewTextBoxColumn.Name = "accessDataGridViewTextBoxColumn";
+            this.accessDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.accessDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // kindDataGridViewTextBoxColumn
+            // 
+            this.kindDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.kindDataGridViewTextBoxColumn.DataPropertyName = "Kind";
+            this.kindDataGridViewTextBoxColumn.HeaderText = "Kind";
+            this.kindDataGridViewTextBoxColumn.Name = "kindDataGridViewTextBoxColumn";
+            this.kindDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.kindDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // Visible
+            // 
+            this.Visible.DataPropertyName = "Visible";
+            this.Visible.HeaderText = "Visible";
+            this.Visible.Name = "Visible";
+            this.Visible.Width = 43;
             // 
             // FilterWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 203);
-            this.Controls.Add(this.uncheckAllButton);
-            this.Controls.Add(this.checkAllButton);
+            this.ClientSize = new System.Drawing.Size(343, 236);
+            this.Controls.Add(this.filterRulesDataGridView);
             this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.listView1);
             this.Controls.Add(this.okButton);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FilterWindow";
-            this.Text = "Filter By Item Kind";
+            this.Text = "Filter items";
             this.Load += new System.EventHandler(this.FilterToolWindow_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.filterRulesDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.filterRuleBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -190,10 +156,12 @@
         #endregion
 
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Button checkAllButton;
-        private System.Windows.Forms.Button uncheckAllButton;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.DataGridView filterRulesDataGridView;
+        private System.Windows.Forms.BindingSource filterRuleBindingSource;
+        private System.Windows.Forms.DataGridViewComboBoxColumn accessDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewComboBoxColumn kindDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Visible;
     }
 }

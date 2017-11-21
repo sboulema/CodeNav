@@ -2,6 +2,8 @@
 {
     public enum CodeItemKindEnum
     {
+        Unknown,
+        All,
 		Class,
         Constant,
         Constructor,

@@ -12,7 +12,7 @@ namespace CodeNav.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -37,126 +37,6 @@ namespace CodeNav.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowConstants {
-            get {
-                return ((bool)(this["ShowConstants"]));
-            }
-            set {
-                this["ShowConstants"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowConstructors {
-            get {
-                return ((bool)(this["ShowConstructors"]));
-            }
-            set {
-                this["ShowConstructors"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowEnumItems {
-            get {
-                return ((bool)(this["ShowEnumItems"]));
-            }
-            set {
-                this["ShowEnumItems"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowEvents {
-            get {
-                return ((bool)(this["ShowEvents"]));
-            }
-            set {
-                this["ShowEvents"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowMethods {
-            get {
-                return ((bool)(this["ShowMethods"]));
-            }
-            set {
-                this["ShowMethods"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowProperties {
-            get {
-                return ((bool)(this["ShowProperties"]));
-            }
-            set {
-                this["ShowProperties"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowVariables {
-            get {
-                return ((bool)(this["ShowVariables"]));
-            }
-            set {
-                this["ShowVariables"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowEnums {
-            get {
-                return ((bool)(this["ShowEnums"]));
-            }
-            set {
-                this["ShowEnums"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowStructs {
-            get {
-                return ((bool)(this["ShowStructs"]));
-            }
-            set {
-                this["ShowStructs"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowDelegates {
-            get {
-                return ((bool)(this["ShowDelegates"]));
-            }
-            set {
-                this["ShowDelegates"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Left")]
         public global::CodeNav.Models.MarginSideEnum MarginSide {
             get {
@@ -164,54 +44,6 @@ namespace CodeNav.Properties {
             }
             set {
                 this["MarginSide"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowPublic {
-            get {
-                return ((bool)(this["ShowPublic"]));
-            }
-            set {
-                this["ShowPublic"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowPrivate {
-            get {
-                return ((bool)(this["ShowPrivate"]));
-            }
-            set {
-                this["ShowPrivate"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowInternal {
-            get {
-                return ((bool)(this["ShowInternal"]));
-            }
-            set {
-                this["ShowInternal"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowProtected {
-            get {
-                return ((bool)(this["ShowProtected"]));
-            }
-            set {
-                this["ShowProtected"] = value;
             }
         }
         
@@ -242,48 +74,23 @@ namespace CodeNav.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowSealed {
-            get {
-                return ((bool)(this["ShowSealed"]));
-            }
-            set {
-                this["ShowSealed"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowSwitch {
-            get {
-                return ((bool)(this["ShowSwitch"]));
-            }
-            set {
-                this["ShowSwitch"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowSwitchItems {
-            get {
-                return ((bool)(this["ShowSwitchItems"]));
-            }
-            set {
-                this["ShowSwitchItems"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowMargin {
             get {
                 return ((bool)(this["ShowMargin"]));
             }
             set {
                 this["ShowMargin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<CodeNav.Models.FilterRule> FilterRules {
+            get {
+                return ((global::System.Collections.Generic.List<CodeNav.Models.FilterRule>)(this["FilterRules"]));
+            }
+            set {
+                this["FilterRules"] = value;
             }
         }
     }

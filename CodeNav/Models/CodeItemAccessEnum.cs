@@ -6,6 +6,8 @@ namespace CodeNav.Models
     {
         [Description("")]
         Unknown,
+        [Description("All")]
+        All,
         [Description("Public")]
         Public,
         [Description("Private")]

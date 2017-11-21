@@ -95,6 +95,7 @@
     <Compile Include="Helpers\OutliningHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
+    <Compile Include="Mappers\BaseMapper.cs" />
     <Compile Include="Mappers\FontStyleMapper.cs" />
     <Compile Include="Mappers\RegionMapper.cs" />
     <Compile Include="Mappers\StatementMapper.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Models\CodeItemAccessEnum.cs" />
     <Compile Include="Models\CodeItemKindEnum.cs" />
     <Compile Include="Models\CodeInterfaceItem.cs" />
+    <Compile Include="Models\FilterRule.cs" />
     <Compile Include="Models\IMembers.cs" />
     <Compile Include="Models\MarginSideEnum.cs" />
     <Compile Include="Models\SortOrderEnum.cs" />
@@ -141,6 +143,7 @@
     </None>
     <None Include="Key.snk" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\CodeNav.Models.FilterRule.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
