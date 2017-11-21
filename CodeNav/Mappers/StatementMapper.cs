@@ -29,7 +29,7 @@ namespace CodeNav.Mappers
             var item = BaseMapper.MapBase<CodeClassItem>(statement, statement.Expression.ToString(), control, semanticModel);
             item.Name = $"Switch {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
-            item.Moniker = SyntaxMapper.MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
@@ -50,7 +50,7 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, string.Empty);
             item.Id = SyntaxMapper.MapId(item.FullName, null);
             item.Kind = CodeItemKindEnum.SwitchSection;
-            item.Moniker = SyntaxMapper.MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             return item;
         }

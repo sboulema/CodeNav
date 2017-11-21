@@ -14,7 +14,6 @@ using CodeNav.Helpers;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
-using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.Mappers
 {
@@ -188,7 +187,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.EnumMember;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             return item;
         }
@@ -201,7 +200,7 @@ namespace CodeNav.Mappers
             item.Kind = IsConstant(member.Modifiers)
                 ? CodeItemKindEnum.Constant
                 : CodeItemKindEnum.Variable;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             return item;
         }
@@ -210,7 +209,7 @@ namespace CodeNav.Mappers
         {
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Delegate;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             return item;
         }
 
@@ -220,7 +219,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Event;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             return item;
         }
 
@@ -230,7 +229,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Struct;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             
             foreach (var structMember in member.Members)
@@ -247,7 +246,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Enum;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);          
 
@@ -265,7 +264,7 @@ namespace CodeNav.Mappers
 
 			var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
 			item.Kind = CodeItemKindEnum.Class;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
 			item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
 		    item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
@@ -408,7 +407,7 @@ namespace CodeNav.Mappers
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             foreach (var interfaceMember in member.Members)
             {
@@ -430,13 +429,6 @@ namespace CodeNav.Mappers
 		}
 
         #region Helpers
-
-        private static string GetEnumDescription(this Enum value)
-        {
-            var field = value.GetType().GetField(value.ToString());
-            var attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
-            return attribute == null ? value.ToString() : attribute.Description;
-        }
 
         private static bool IsConstant(SyntaxTokenList modifiers)
         {
@@ -484,11 +476,14 @@ namespace CodeNav.Mappers
             CodeItem item;
 
             var statements = new List<CodeItem>();
-            foreach (var statement in member.Body?.Statements)
+            if (member.Body?.Statements != null)
             {
-                statements.Add(StatementMapper.MapStatement(statement, _control, _semanticModel));
+                foreach (var statement in member.Body?.Statements)
+                {
+                    statements.Add(StatementMapper.MapStatement(statement, _control, _semanticModel));
+                }
+                FilterNullItems(statements);
             }
-            FilterNullItems(statements);
 
             if (statements != null && statements.Any())
             {
@@ -506,7 +501,7 @@ namespace CodeNav.Mappers
 
             item.Id = MapId(item.FullName, member.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             return item;
         }
@@ -520,7 +515,7 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
             item.Id = MapId(member.Identifier, member.ParameterList);
             item.Kind = CodeItemKindEnum.Constructor;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.OverlayMoniker = KnownMonikers.Add;
 
             return item;
@@ -588,71 +583,8 @@ namespace CodeNav.Mappers
 
 		    item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
 			item.Kind = CodeItemKindEnum.Property;
-            item.Moniker = MapMoniker(item.Kind, item.Access);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             return item;
 		}
-
-        public static ImageMoniker MapMoniker(CodeItemKindEnum kind, CodeItemAccessEnum access)
-        {
-            string monikerString;
-            var accessString = GetEnumDescription(access);
-
-            switch (kind)
-            {
-                case CodeItemKindEnum.Class:
-                    monikerString = $"Class{accessString}";
-                    break;
-                case CodeItemKindEnum.Constant:
-                    monikerString = $"Constant{accessString}";
-                    break;
-                case CodeItemKindEnum.Delegate:
-                    monikerString = $"Delegate{accessString}";
-                    break;
-                case CodeItemKindEnum.Enum:
-                    monikerString = $"Enumeration{accessString}";
-                    break;
-                case CodeItemKindEnum.EnumMember:
-                    monikerString = $"EnumerationItem{accessString}";
-                    break;
-                case CodeItemKindEnum.Event:
-                    monikerString = $"Event{accessString}";
-                    break;
-                case CodeItemKindEnum.Interface:
-                    monikerString = $"Interface{accessString}";
-                    break;
-                case CodeItemKindEnum.Constructor:
-                case CodeItemKindEnum.Method:
-                    monikerString = $"Method{accessString}";
-                    break;
-                case CodeItemKindEnum.Property:
-                    monikerString = $"Property{accessString}";
-                    break;
-                case CodeItemKindEnum.Struct:
-                    monikerString = $"Structure{accessString}";
-                    break;
-                case CodeItemKindEnum.Variable:
-                    monikerString = $"Field{accessString}";
-                    break;
-                case CodeItemKindEnum.Switch:
-                    monikerString = "FlowSwitch";
-                    break;
-                case CodeItemKindEnum.SwitchSection:
-                    monikerString = "FlowDecision";
-                    break;
-                default:
-                    monikerString = $"Property{accessString}";
-                    break;
-            }
-
-            var monikers = typeof(KnownMonikers).GetProperties();
-
-            var imageMoniker = monikers.FirstOrDefault(m => monikerString.Equals(m.Name))?.GetValue(null, null);
-            if (imageMoniker != null)
-            {
-                return (ImageMoniker)imageMoniker;
-            }
-
-            return KnownMonikers.QuestionMark;
-        }
     }
 }
