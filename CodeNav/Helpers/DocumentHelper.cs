@@ -18,13 +18,13 @@ namespace CodeNav.Helpers
             {
                 name = window.Document.Name;
             }
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
                 // Ignore exception we only got it trying to log
             }
             catch (Exception e)
             {
-                LogHelper.Log("Error getting FullName for document", e);
+                LogHelper.Log("Error getting Name for document", e);
             }
             return name;
         }
@@ -37,11 +37,14 @@ namespace CodeNav.Helpers
         public static string GetFullName(Document document)
         {
             var name = string.Empty;
+
+            if (document == null) return name;
+
             try
             {
                 name = document.FullName;
             }
-            catch (COMException e)
+            catch (COMException)
             {
                 // Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))
                 // We have other ways to try and map this document
