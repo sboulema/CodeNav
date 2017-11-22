@@ -90,13 +90,19 @@ namespace CodeNav.Helpers
         private static bool ShouldBeVisible(CodeItem item, string name = "")
         {
             var visible = true;
-            var filterRule = Settings.Default.FilterRules.LastOrDefault(f => 
-                (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) && 
-                (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
-            if (filterRule != null)
+
+            if (Settings.Default.FilterRules != null)
             {
-                visible = filterRule.Visible;
+                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
+                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+
+                if (filterRule != null)
+                {
+                    visible = filterRule.Visible;
+                }
             }
+            
             return visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
         }
 
