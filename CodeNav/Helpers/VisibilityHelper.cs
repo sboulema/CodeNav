@@ -17,27 +17,34 @@ namespace CodeNav.Helpers
         /// <param name="name">Filters items by name</param>
         public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "")
         {
-            if (document == null || !document.Any())
+            try
             {
-                LogHelper.Log($"No code items have been found to filter on by {name}");
-                return new List<CodeItem>();
-            }
-
-            foreach (var item in document)
-            {
-                item.IsVisible = ShouldBeVisible(item, name) ? Visibility.Visible : Visibility.Collapsed;
-
-                if (item is IMembers)
+                if (document == null || !document.Any())
                 {
-                    var hasMembersItem = (IMembers)item;
-                    if (hasMembersItem.Members.Any())
-                    {
-                        SetCodeItemVisibility(hasMembersItem.Members, name);
-                    }
-                    item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
+                    LogHelper.Log($"No code items have been found to filter on by {name}");
+                    return new List<CodeItem>();
                 }
+
+                foreach (var item in document)
+                {
+                    item.IsVisible = ShouldBeVisible(item, name) ? Visibility.Visible : Visibility.Collapsed;
+
+                    if (item is IMembers)
+                    {
+                        var hasMembersItem = (IMembers)item;
+                        if (hasMembersItem.Members.Any())
+                        {
+                            SetCodeItemVisibility(hasMembersItem.Members, name);
+                        }
+                        item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
+                            ? Visibility.Visible
+                            : Visibility.Collapsed;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error during setting visibility", e);
             }
 
             return document;
