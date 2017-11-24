@@ -485,7 +485,7 @@ namespace CodeNav.Mappers
                 FilterNullItems(statements);
             }
 
-            if (statements != null && statements.Any())
+            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statements != null && statements.Any())
             {
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statements);

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
+using System.Windows.Media;
 
 namespace CodeNav.Controls
 {
@@ -45,22 +46,21 @@ namespace CodeNav.Controls
         {
             new FilterWindow().ShowDialog();
 
-            var dataContext = DataContext as CodeDocumentViewModel;
+            var control = FindParent<CodeViewUserControl>(this);
+            control.UpdateDocument(true);         
+        }
 
-            if (dataContext == null)
-            {
-                LogHelper.Log("Datacontext error while filtering items by kind");
-                return;
-            }
-
-            try
-            {
-                VisibilityHelper.SetCodeItemVisibility(dataContext.CodeDocument);
-            }
-            catch (Exception exception)
-            {
-                LogHelper.Log($"Error filtering items: {exception}");
-            }            
+        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
+            if (parentObject == null) return null;
+            //check if the parent matches the type we’re looking for
+            T parent = parentObject as T;
+            if (parent != null)
+                return parent;
+            else
+                return FindParent<T>(parentObject);
         }
     }
 }

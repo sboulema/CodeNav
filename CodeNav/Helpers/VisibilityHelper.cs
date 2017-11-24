@@ -113,6 +113,24 @@ namespace CodeNav.Helpers
             return visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool ShouldBeVisible(CodeItemKindEnum kind)
+        {
+            var visible = true;
+
+            if (Settings.Default.FilterRules != null)
+            {
+                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                    (f.Kind == kind || f.Kind == CodeItemKindEnum.All));
+
+                if (filterRule != null)
+                {
+                    visible = filterRule.Visible;
+                }
+            }
+
+            return visible;
+        } 
+
         private static bool Contains(this string source, string toCheck, StringComparison comp)
         {
             return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
