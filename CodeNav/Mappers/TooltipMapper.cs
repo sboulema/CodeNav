@@ -8,7 +8,7 @@ namespace CodeNav.Mappers
     {
         public static string Map(CodeItemAccessEnum access, string type, string name, ParameterListSyntax parameters)
         {
-            return Map(access, type, name, SyntaxMapper.MapParameters(parameters, true));
+            return Map(access, type, name, ParameterMapper.MapParameters(parameters, true));
         }
 
         public static string Map(CodeItemAccessEnum access, string type, string name, string extra)

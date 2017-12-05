@@ -475,31 +475,25 @@ namespace CodeNav.Mappers
 
             CodeItem item;
 
-            var statements = new List<CodeItem>();
-            if (member.Body?.Statements != null)
-            {
-                foreach (var statement in member.Body?.Statements)
-                {
-                    statements.Add(StatementMapper.MapStatement(statement, _control, _semanticModel));
-                }
-                FilterNullItems(statements);
-            }
+            var statementsCodeItems = StatementMapper.MapStatement(member.Body, _control, _semanticModel);
 
-            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statements != null && statements.Any())
+            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statementsCodeItems.Any())
             {
+                // Map method as item containing statements
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-                ((CodeClassItem)item).Members.AddRange(statements);
+                ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
                 ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             }
             else
             {
+                // Map method as single item
                 item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
                 ((CodeFunctionItem)item).Type = TypeMapper.Map(member.ReturnType);
-                ((CodeFunctionItem)item).Parameters = MapParameters(member.ParameterList);
+                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.ParameterList);
                 item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem) item).Type, item.Name, member.ParameterList);
             }
 
-            item.Id = MapId(item.FullName, member.ParameterList);
+            item.Id = IdMapper.MapId(item.FullName, member.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
@@ -511,49 +505,14 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Parameters = MapParameters(member.ParameterList);
+            item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
-            item.Id = MapId(member.Identifier, member.ParameterList);
+            item.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
             item.Kind = CodeItemKindEnum.Constructor;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.OverlayMoniker = KnownMonikers.Add;
 
             return item;
-        }
-
-        public static string MapId(SyntaxToken identifier, ParameterListSyntax parameters)
-        {
-            return MapId(identifier.Text, parameters);
-        }
-
-        public static string MapId(string name, ParameterListSyntax parameters)
-        {
-            return name + MapParameters(parameters, true, false);
-        }
-
-        public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters, bool useLongNames, bool prettyPrint)
-        {
-            return name + MapParameters(parameters, useLongNames, prettyPrint);
-        }
-
-        /// <summary>
-        /// Parse parameters from a method and return a formatted string back
-        /// </summary>
-        /// <param name="parameters">List of method parameters</param>
-        /// <param name="useLongNames">use fullNames for parameter types</param>
-        /// <param name="prettyPrint">seperate types with a comma</param>
-        /// <returns>string listing all parameter types (eg. (int, string, bool))</returns>
-        public static string MapParameters(ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
-        {
-            if (parameters == null) return string.Empty;
-			var paramList = (from ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
-			return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
-		}
-
-        private static string MapParameters(ImmutableArray<IParameterSymbol> parameters, bool useLongNames = false, bool prettyPrint = true)
-        {
-            var paramList = (from IParameterSymbol parameter in parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
-            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
         private static CodePropertyItem MapProperty(PropertyDeclarationSyntax member)
