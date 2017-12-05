@@ -24,7 +24,7 @@ Visual Studio extension to show the code structure of your current document
 Currently only C#
 
 ## Installing
-[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav) ![Visual Studio Marketplace](http://vsmarketplacebadge.apphb.com/version-short/SamirBoulema.CodeNav.svg)
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav) [![Visual Studio Marketplace](http://vsmarketplacebadge.apphb.com/version-short/SamirBoulema.CodeNav.svg)](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
 
 [Github Releases](https://github.com/sboulema/CodeNav/releases)
 
@@ -36,7 +36,7 @@ Currently only C#
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
 
 #### Filter window
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/FilterWindow.png) 
+![Preview](https://i.imgur.com/wuVzxsJ.png) 
 
 #### Options window
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
@@ -50,10 +50,6 @@ If you experience any problems with CodeNav you can debug what is going on by do
 The debug build will write a lot of useful information to the Visual Studio Output window. Please help me and include this information when creating an issue!
 
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
-
-## Thanks to
-- [HubKing](https://github.com/HubKing), [HTD](https://github.com/HTD), [xperiandri](https://github.com/xperiandri), [emina-saric](https://github.com/emina-saric), [storm31](https://github.com/storm31), [bradtwurst](https://github.com/bradtwurst), [TrickUK](https://github.com/TrickUK), [yyjdelete](https://github.com/yyjdelete) - For testing and reporting issues
-- [Steve Cadwallader](https://github.com/codecadwallader) - For his amazing [CodeMaid](https://github.com/codecadwallader/codemaid) extension
 
 ---
 
