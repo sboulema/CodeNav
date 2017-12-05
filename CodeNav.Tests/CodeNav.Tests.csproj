@@ -49,6 +49,7 @@
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
+    <Compile Include="MapperTests\TestSwitch.cs" />
     <Compile Include="MapperTests\TestUsingsInNamespace.cs" />
     <Compile Include="MapperTests\TypeMapperTests.cs" />
     <Compile Include="MapperTests\TooltipMapperTests.cs" />

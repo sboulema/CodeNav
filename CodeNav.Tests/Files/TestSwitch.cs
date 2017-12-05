@@ -22,5 +22,43 @@ namespace CodeNav.Tests.Files
                     return;
             }
         }
+
+        void TestSwitchInBlockFunction()
+        {
+            var i = 0;
+
+            {
+                switch (i)
+                {
+                    case 0:
+                        return;
+                    case 1:
+                        return;
+                    default:
+                        return;
+                }
+            }         
+        }
+
+        void TestSwitchInTryCatchFunction()
+        {
+            var i = 0;
+
+            try {
+                switch (i)
+                {
+                    case 0:
+                        return;
+                    case 1:
+                        return;
+                    default:
+                        return;
+                }
+            }
+            catch(Exception)
+            {
+
+            }
+        }
     }
 }
