@@ -56,6 +56,8 @@ namespace CodeNav
 
             RegisterEvents();
 
+            UpdateSettings();
+
             LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
@@ -151,6 +153,19 @@ namespace CodeNav
         public void Remove()
         {
             Children.Remove(_codeNavGrid);
+        }
+
+        /// <summary>
+        /// Copy user settings from previous application version if necessary
+        /// </summary>
+        private void UpdateSettings()
+        {
+            if (Settings.Default.NewVersionInstalled)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.NewVersionInstalled = false;
+                Settings.Default.Save();
+            }
         }
 
         #region Events

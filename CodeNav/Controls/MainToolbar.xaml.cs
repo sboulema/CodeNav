@@ -3,6 +3,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Properties;
 
 namespace CodeNav.Controls
 {
@@ -14,6 +15,9 @@ namespace CodeNav.Controls
         public MainToolbar()
         {
             InitializeComponent();
+
+            ButtonSortByName.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByName;
+            ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
@@ -23,19 +27,9 @@ namespace CodeNav.Controls
             control.UpdateDocument(true);
         }
 
-        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
-        {
-            var control = FindParent<CodeViewUserControl>(this);
-            control.CodeDocumentViewModel.SortOrder = SortOrderEnum.SortByFile;
-            control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
-        }
+        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
 
-        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
-        {
-            var control = FindParent<CodeViewUserControl>(this);
-            control.CodeDocumentViewModel.SortOrder = SortOrderEnum.SortByName;
-            control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
-        }
+        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName);
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
@@ -60,6 +54,15 @@ namespace CodeNav.Controls
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)
         {
             FindParent<CodeViewUserControl>(this).ToggleAllRegions(!(sender as ToggleButton).IsChecked.Value);
+        }
+
+        private void Sort(SortOrderEnum sortOrder)
+        {
+            var control = FindParent<CodeViewUserControl>(this);
+            control.CodeDocumentViewModel.SortOrder = sortOrder;
+            control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
+            Settings.Default.SortOrder = sortOrder;
+            Settings.Default.Save();
         }
     }
 }

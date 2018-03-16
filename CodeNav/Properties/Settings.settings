@@ -20,5 +20,11 @@
     <Setting Name="FilterRules" Type="System.Collections.Generic.List&lt;CodeNav.Models.FilterRule&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SortOrder" Type="CodeNav.Models.SortOrderEnum" Scope="User">
+      <Value Profile="(Default)">Unknown</Value>
+    </Setting>
+    <Setting Name="NewVersionInstalled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

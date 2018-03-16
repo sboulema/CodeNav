@@ -26,7 +26,8 @@
         </Button>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="0,3,0,0">
-            <RadioButton GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" Margin="0,0,3,0">
+            <RadioButton x:Name="ButtonSortByFile" GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}"
+                         ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" Margin="0,0,3,0">
                 <RadioButton.Template>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="ToggleBorder" BorderBrush="SteelBlue" BorderThickness="0">
@@ -43,7 +44,8 @@
                     </ControlTemplate>
                 </RadioButton.Template>
             </RadioButton>
-            <RadioButton GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}" ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
+            <RadioButton x:Name="ButtonSortByName" GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}"
+                         ToolTip="Sort by name" Click="ButtonSortByName_OnClick">
                 <RadioButton.Template>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="ToggleBorder" BorderBrush="SteelBlue" BorderThickness="0">

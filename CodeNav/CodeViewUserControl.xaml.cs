@@ -269,6 +269,7 @@ namespace CodeNav
                 OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
 
                 // Sort items
+                CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
                 SortHelper.Sort(CodeDocumentViewModel);
 
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
