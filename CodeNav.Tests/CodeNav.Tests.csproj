@@ -42,8 +42,10 @@
     <Compile Include="Files\TestProperties.cs" />
     <Compile Include="Files\TestRegions.cs" />
     <Compile Include="Files\TestSealed.cs" />
+    <Compile Include="Files\TestSorting.cs" />
     <Compile Include="Files\TestSwitch.cs" />
     <Compile Include="Files\TestUsingsInNamespace.cs" />
+    <Compile Include="HelperTests\SortHelperTests.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\RegionMapperTests.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
