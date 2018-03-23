@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Linq;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -15,7 +16,17 @@ namespace CodeNav.Mappers
             return MapId(identifier.Text, parameters);
         }
 
+        public static string MapId(SyntaxToken identifier, VisualBasicSyntax.ParameterListSyntax parameters)
+        {
+            return MapId(identifier.Text, parameters);
+        }
+
         public static string MapId(string name, ParameterListSyntax parameters)
+        {
+            return name + ParameterMapper.MapParameters(parameters, true, false);
+        }
+
+        public static string MapId(string name, VisualBasicSyntax.ParameterListSyntax parameters)
         {
             return name + ParameterMapper.MapParameters(parameters, true, false);
         }

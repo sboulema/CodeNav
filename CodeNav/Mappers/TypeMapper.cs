@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -9,10 +10,19 @@ namespace CodeNav.Mappers
     {
         public static string Map(ITypeSymbol type, bool useLongNames = false)
         {
+            if (type == null) return string.Empty;
+
             return Map(type.ToString(), useLongNames);
         }
 
         public static string Map(TypeSyntax type, bool useLongNames = false)
+        {
+            if (type == null) return string.Empty;
+
+            return Map(type.ToString(), useLongNames);
+        }
+
+        public static string Map(VisualBasicSyntax.TypeSyntax type, bool useLongNames = false)
         {
             if (type == null) return string.Empty;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
 using CodeNav.Models;
@@ -12,8 +11,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using CodeNav.Helpers;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.LanguageServices;
+using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -37,6 +37,24 @@ namespace CodeNav.Mappers
             _semanticModel = compilation.GetSemanticModel(_tree);
 
             var root = (CompilationUnitSyntax)_tree.GetRoot();
+
+            return root.Members.Select(MapMember).ToList();
+        }
+
+        /// <summary>
+        /// Map a document from filepath, used for unit testing
+        /// </summary>
+        /// <param name="filePath">filepath of the input document</param>
+        /// <returns>List of found code items</returns>
+        public static List<CodeItem> MapDocumentVB(string filePath)
+        {
+            _tree = VisualBasic.VisualBasicSyntaxTree.ParseText(File.ReadAllText(filePath));
+
+            var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+            var compilation = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
+            _semanticModel = compilation.GetSemanticModel(_tree);
+
+            var root = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
 
             return root.Members.Select(MapMember).ToList();
         }
@@ -113,13 +131,17 @@ namespace CodeNav.Mappers
             _semanticModel = document.GetSemanticModelAsync().Result;
             var root = _tree.GetRoot();
 
-            if (root is CompilationUnitSyntax)
+            if (root.Language.Equals("Visual Basic"))
+            {
+                return (root as VisualBasicSyntax.CompilationUnitSyntax).Members.Select(MapMember).ToList();
+            }
+            else if (root.Language.Equals("C Sharp"))
             {
                 return (root as CompilationUnitSyntax).Members.Select(MapMember).ToList();
             }
             else
             {
-                LogHelper.Log("Error during mapping: root is not CSharp");
+                LogHelper.Log("Error during mapping: root is not CSharp or VisualBasic");
                 return null;
             }        
         }
@@ -146,28 +168,28 @@ namespace CodeNav.Mappers
             return root.Members.Select(MapMember).ToList();
         }
 
-        private static CodeItem MapMember(MemberDeclarationSyntax member)
+        public static CodeItem MapMember(MemberDeclarationSyntax member)
         {
             if (member == null) return null;
 
             switch (member.Kind())
             {
                 case SyntaxKind.MethodDeclaration:
-                    return MapMethod(member as MethodDeclarationSyntax);
+                    return MethodMapper.MapMethod(member as MethodDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.EnumDeclaration:
                     return MapEnum(member as EnumDeclarationSyntax);
                 case SyntaxKind.EnumMemberDeclaration:
                     return MapEnumMember(member as EnumMemberDeclarationSyntax);
                 case SyntaxKind.InterfaceDeclaration:
-                    return MapInterface(member as InterfaceDeclarationSyntax);
+                    return InterfaceMapper.MapInterface(member as InterfaceDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.FieldDeclaration:
-                    return MapField(member as FieldDeclarationSyntax);
+                    return FieldMapper.MapField(member as FieldDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.PropertyDeclaration:
-                    return MapProperty(member as PropertyDeclarationSyntax);
+                    return PropertyMapper.MapProperty(member as PropertyDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.StructDeclaration:
                     return MapStruct(member as StructDeclarationSyntax);
                 case SyntaxKind.ClassDeclaration:
-                    return MapClass(member as ClassDeclarationSyntax);
+                    return ClassMapper.MapClass(member as ClassDeclarationSyntax, _control, _semanticModel, _tree);
                 case SyntaxKind.EventFieldDeclaration:
                     return MapEventField(member as EventFieldDeclarationSyntax);
                 case SyntaxKind.DelegateDeclaration:
@@ -181,25 +203,47 @@ namespace CodeNav.Mappers
             }
         }
 
+        public static CodeItem MapMember(VisualBasicSyntax.StatementSyntax member)
+        {
+            if (member == null) return null;
+
+            switch (member.Kind())
+            {
+                case VisualBasic.SyntaxKind.FunctionBlock:
+                    return MethodMapper.MapMethod(member as VisualBasicSyntax.MethodBlockSyntax, _control, _semanticModel);
+                //case VisualBasic.SyntaxKind.EnumStatement:
+                //    return MapEnum(member as VisualBasicSyntax.EnumBlockSyntax);
+                //case VisualBasic.SyntaxKind.EnumMemberDeclaration:
+                //    return MapEnumMember(member as VisualBasicSyntax.EnumMemberDeclarationSyntax);
+                //case VisualBasic.SyntaxKind.InterfaceBlock:
+                //    return MapInterface(member as InterfaceDeclarationSyntax);
+                case VisualBasic.SyntaxKind.FieldDeclaration:
+                    return FieldMapper.MapField(member as VisualBasicSyntax.FieldDeclarationSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.PropertyBlock:
+                    return PropertyMapper.MapProperty(member as VisualBasicSyntax.PropertyBlockSyntax, _control, _semanticModel);
+                //case VisualBasic.SyntaxKind.StructureBlock:
+                //    return MapStruct(member as StructDeclarationSyntax);
+                case VisualBasic.SyntaxKind.ClassBlock:
+                    return ClassMapper.MapClass(member as VisualBasicSyntax.ClassBlockSyntax, _control, _semanticModel, _tree);
+                //case VisualBasic.SyntaxKind.EventBlock:
+                //    return MapEventField(member as EventFieldDeclarationSyntax);
+                //case VisualBasic.SyntaxKind.DelegateFunctionStatement:
+                //    return MapDelegate(member as DelegateDeclarationSyntax);
+                //case VisualBasic.SyntaxKind.NamespaceBlock:
+                //    return MapNamespace(member as NamespaceDeclarationSyntax);
+                //case VisualBasic.SyntaxKind.ConstructorBlock:
+                //    return MapConstructor(member as ConstructorDeclarationSyntax);
+                default:
+                    return null;
+            }
+        }
+
         private static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member)
         {
             if (member == null) return null;
 
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, _control, _semanticModel);
             item.Kind = CodeItemKindEnum.EnumMember;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-
-            return item;
-        }
-
-        private static CodeItem MapField(FieldDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = IsConstant(member.Modifiers)
-                ? CodeItemKindEnum.Constant
-                : CodeItemKindEnum.Variable;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             return item;
@@ -258,182 +302,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        private static CodeClassItem MapClass(ClassDeclarationSyntax member)
-		{
-			if (member == null) return null;
-
-			var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-			item.Kind = CodeItemKindEnum.Class;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.Parameters = MapInheritance(member);
-			item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
-		    item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
-
-			var regions = RegionMapper.MapRegions(_tree, member.Span);
-			var implementedInterfaces = MapImplementedInterfaces(member);
-
-			foreach (var classMember in member.Members)
-			{
-				var memberItem = MapMember(classMember);
-			    if (memberItem != null && !IsPartOfImplementedInterface(implementedInterfaces, memberItem) 
-                    && !RegionMapper.AddToRegion(regions, memberItem))
-			    {
-                    item.Members.Add(memberItem);
-                }
-			}
-
-            // Add implemented interfaces to class or region if they have a interface member inside them
-            if (implementedInterfaces.Any())
-            {
-                foreach (var interfaceItem in implementedInterfaces)
-                {
-                    if (interfaceItem.Members.Any())
-                    {
-                        if (!RegionMapper.AddToRegion(regions, interfaceItem))
-                        {
-                            item.Members.Add(interfaceItem);
-                        }
-                    }
-                }
-            }
-
-            // Add regions to class if they have a region member inside them
-            if (regions.Any())
-            {
-                foreach (var region in regions)
-                {
-                    if (region.Members.Any())
-                    {
-                        item.Members.Add(region);
-                    }
-                }
-            }
-
-            return item;
-		}
-
-        #region Interfaces
-
-        private static bool IsPartOfImplementedInterface(IEnumerable<CodeImplementedInterfaceItem> implementedInterfaces, CodeItem item)
-        {
-            return item != null && implementedInterfaces.SelectMany(i => i.Members.Select(m => m.Id)).Contains(item.Id);
-        }
-
-        private static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(ClassDeclarationSyntax member)
-        {
-            var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
-
-            INamedTypeSymbol classSymbol = null;
-            try
-            {
-                classSymbol = _semanticModel.GetDeclaredSymbol(member);
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log($"Error during mapping: MapImplementedInterface: {e.Message}");
-                return implementedInterfaces;
-            }
-
-            if (classSymbol == null) return implementedInterfaces;
-
-            var interfacesList = new List<INamedTypeSymbol>();
-            GetInterfaces(interfacesList, classSymbol.Interfaces);
-
-            foreach (var implementedInterface in interfacesList.Distinct())
-            {
-                implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, implementedInterface.GetMembers(), classSymbol));
-            }
-
-            return implementedInterfaces;
-        }
-
-        /// <summary>
-        /// Recursively get the interfaces implemented by the class.
-        /// This ignores interfaces implemented by any base class, contrary to the .Allinterfaces behaviour
-        /// </summary>
-        /// <param name="interfacesFound">List of all interfaces found</param>
-        /// <param name="source">Implemented interfaces</param>
-        private static void GetInterfaces(List<INamedTypeSymbol> interfacesFound, ImmutableArray<INamedTypeSymbol> source)
-        {
-            interfacesFound.AddRange(source);
-            foreach (var interfaceItem in source)
-            {
-                GetInterfaces(interfacesFound, interfaceItem.Interfaces);
-            }
-        }
-
-        private static CodeImplementedInterfaceItem MapImplementedInterface(string name, 
-            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass)
-        {
-            var item = new CodeImplementedInterfaceItem
-            {
-                Name = name,
-                FullName = name,
-                Id = name,
-                Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black),
-                BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray),
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.ImplementedInterface,
-                IsExpanded = true
-            };
-
-            foreach (var member in members)
-            {
-                var implementation = implementingClass.FindImplementationForInterfaceMember(member);
-                if (implementation == null || !implementation.DeclaringSyntaxReferences.Any()) continue;
-                var reference = implementation.DeclaringSyntaxReferences.First();
-                var declarationSyntax = reference.GetSyntax();
-
-                var interfaceMember = MapMember(declarationSyntax as MemberDeclarationSyntax);
-                if (interfaceMember == null) continue;
-
-                interfaceMember.OverlayMoniker = KnownMonikers.InterfacePublic;
-                item.Members.Add(interfaceMember);
-            }
-
-            if (item.Members.Any())
-            {
-                item.StartLine = item.Members.Min(i => i.StartLine);
-                item.EndLine = item.Members.Max(i => i.EndLine);
-            }
-
-            return item;
-        }
-
-        private static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Interface;
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-
-            foreach (var interfaceMember in member.Members)
-            {
-                item.Members.Add(MapMember(interfaceMember));
-            }
-
-            return item;
-        }
-
-        #endregion
-
-        private static string MapInheritance(ClassDeclarationSyntax member)
-		{
-			if (member?.BaseList == null) return string.Empty;
-
-		    var inheritanceList = (from BaseTypeSyntax bases in member.BaseList.Types select bases.Type.ToString()).ToList();
-
-		    return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
-		}
-
         #region Helpers
-
-        private static bool IsConstant(SyntaxTokenList modifiers)
-        {
-            return modifiers.Any(m => m.Kind() == SyntaxKind.ConstKeyword);
-        }
 
         public static void FilterNullItems(List<CodeItem> items)
         {
@@ -469,37 +338,6 @@ namespace CodeNav.Mappers
             return item;
         }
 
-		private static CodeItem MapMethod(MethodDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            CodeItem item;
-
-            var statementsCodeItems = StatementMapper.MapStatement(member.Body, _control, _semanticModel);
-
-            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statementsCodeItems.Any())
-            {
-                // Map method as item containing statements
-                item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-                ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
-                ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
-            }
-            else
-            {
-                // Map method as single item
-                item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.ReturnType);
-                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.ParameterList);
-                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem) item).Type, item.Name, member.ParameterList);
-            }
-
-            item.Id = IdMapper.MapId(item.FullName, member.ParameterList);
-            item.Kind = CodeItemKindEnum.Method;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-
-            return item;
-        }
-
         private static CodeItem MapConstructor(ConstructorDeclarationSyntax member)
         {
             if (member == null) return null;
@@ -514,36 +352,5 @@ namespace CodeNav.Mappers
 
             return item;
         }
-
-        private static CodePropertyItem MapProperty(PropertyDeclarationSyntax member)
-		{
-			if (member == null) return null;
-
-			var item = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-			item.Type = TypeMapper.Map(member.Type);
-
-		    if (member.AccessorList != null)
-		    {
-                if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.GetAccessorDeclaration))
-                {
-                    item.Parameters += "get";
-                }
-
-                if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.SetAccessorDeclaration))
-                {
-                    item.Parameters += string.IsNullOrEmpty(item.Parameters) ? "set" : ",set";
-                }
-
-		        if (!string.IsNullOrEmpty(item.Parameters))
-		        {
-		            item.Parameters = $" {{{item.Parameters}}}";
-		        }
-            }
-
-		    item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
-			item.Kind = CodeItemKindEnum.Property;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            return item;
-		}
     }
 }

@@ -5,6 +5,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using CodeNav.Helpers;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 
 namespace CodeNav.Mappers
 {
@@ -30,10 +32,43 @@ namespace CodeNav.Mappers
             }
         }
 
+        public static List<CodeItem> MapStatement(VisualBasicSyntax.StatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            //if (statement == null) return new List<CodeItem>();
+
+            //switch (statement.Kind())
+            //{
+            //    case VisualBasic.SyntaxKind.swith:
+            //        return new List<CodeItem> { MapSwitch(statement as SwitchStatementSyntax, control, semanticModel) };
+            //    case SyntaxKind.Block:
+            //        return MapStatements((statement as BlockSyntax).Statements, control, semanticModel);
+            //    case VisualBasic.SyntaxKind.TryStatement:
+            //        return MapStatement((statement as VisualBasicSyntax.TryBlockSyntax).FinallyBlock, control, semanticModel);
+            //    default:
+            //        return new List<CodeItem>();
+            //}
+
+            return new List<CodeItem>();
+        }
+
         public static List<CodeItem> MapStatement(BlockSyntax statement, CodeViewUserControl control, SemanticModel semanticModel) 
             => MapStatement(statement as StatementSyntax, control, semanticModel);
 
         public static List<CodeItem> MapStatements(SyntaxList<StatementSyntax> statements, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            var list = new List<CodeItem>();
+
+            if (!statements.Any()) return list;
+
+            foreach (var statement in statements)
+            {
+                list.AddRange(MapStatement(statement, control, semanticModel));
+            }
+
+            return list;
+        }
+
+        public static List<CodeItem> MapStatement(SyntaxList<VisualBasicSyntax.StatementSyntax> statements, CodeViewUserControl control, SemanticModel semanticModel)
         {
             var list = new List<CodeItem>();
 
@@ -87,7 +122,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString(), control, semanticModel);
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, string.Empty);
-            item.Id = IdMapper.MapId(item.FullName, null);
+            item.Id = item.FullName;
             item.Kind = CodeItemKindEnum.SwitchSection;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
