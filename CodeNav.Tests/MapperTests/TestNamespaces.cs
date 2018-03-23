@@ -8,10 +8,10 @@ using NUnit.Framework;
 namespace CodeNav.Tests.MapperTests
 {
     [TestFixture]
-    public class TestNestedNamespaces
+    public class TestNamespaces
     {
         [Test]
-        public void ShouldHaveCorrectStructure()
+        public void NestedNamespacesShouldHaveCorrectStructure()
         {
             var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestNestedNamespaces.cs"));
 
@@ -34,6 +34,20 @@ namespace CodeNav.Tests.MapperTests
             var innerClass = (innerNamespace as IMembers).Members.First() as CodeClassItem;
             Assert.AreEqual(CodeItemKindEnum.Class, innerClass.Kind);
             Assert.AreEqual("ClassInNestedNamespace", innerClass.Name);
+        }
+
+        [Test]
+        public void NamespacesShouldBeOKVB()
+        {
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestNamespaces.vb"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Namespace, document.First().Kind);
+
+            // Namespace item should have members
+            Assert.IsTrue((document.First() as IMembers).Members.Any());
         }
     }
 }

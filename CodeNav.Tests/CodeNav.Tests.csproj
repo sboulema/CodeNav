@@ -48,7 +48,10 @@
     <Compile Include="HelperTests\SortHelperTests.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\RegionMapperTests.cs" />
+    <Compile Include="MapperTests\TestEnums.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
+    <Compile Include="MapperTests\TestClasses.cs" />
+    <Compile Include="MapperTests\TestMethods.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
     <Compile Include="MapperTests\TestFields.cs" />
@@ -60,7 +63,7 @@
     <Compile Include="MapperTests\TestEmptyClass.cs" />
     <Compile Include="MapperTests\TestInterface.cs" />
     <Compile Include="MapperTests\TestNoNamespace.cs" />
-    <Compile Include="MapperTests\TestNestedNamespaces.cs" />
+    <Compile Include="MapperTests\TestNamespaces.cs" />
     <Compile Include="MapperTests\TestProperties.cs" />
     <Compile Include="MapperTests\TestSealed.cs" />
   </ItemGroup>
@@ -122,7 +125,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Files\VisualBasic\TestModules.vb" />
+    <Content Include="Files\VisualBasic\TestNamespaces.vb" />
+    <Content Include="Files\VisualBasic\TestMethods.vb" />
     <Content Include="Files\VisualBasic\TestFields.vb" />
+    <Content Include="Files\VisualBasic\TestInterfaces.vb" />
     <Content Include="Files\VisualBasic\TestProperties.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

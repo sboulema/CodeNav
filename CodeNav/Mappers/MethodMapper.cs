@@ -2,6 +2,7 @@
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualStudio.Imaging;
 using System.Linq;
 using System.Windows.Media;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -62,7 +63,7 @@ namespace CodeNav.Mappers
                 // Map method as single item
                 item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubOrFunctionStatement.Identifier,
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
-                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.SubOrFunctionStatement.AsClause.Type);
+                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.SubOrFunctionStatement.AsClause?.Type);
                 ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.SubOrFunctionStatement.ParameterList);
                 item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, member.SubOrFunctionStatement.ParameterList);
             }
@@ -70,6 +71,36 @@ namespace CodeNav.Mappers
             item.Id = IdMapper.MapId(item.FullName, member.SubOrFunctionStatement.ParameterList);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            return item;
+        }
+
+        public static CodeItem MapConstructor(VisualBasicSyntax.ConstructorBlockSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (member == null) return null;
+
+            var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubNewStatement.NewKeyword, member.SubNewStatement.Modifiers, control, semanticModel);
+            item.Parameters = ParameterMapper.MapParameters(member.SubNewStatement.ParameterList);
+            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.SubNewStatement.ParameterList);
+            item.Id = IdMapper.MapId(member.SubNewStatement.NewKeyword, member.SubNewStatement.ParameterList);
+            item.Kind = CodeItemKindEnum.Constructor;
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+            item.OverlayMoniker = KnownMonikers.Add;
+
+            return item;
+        }
+
+        public static CodeItem MapConstructor(ConstructorDeclarationSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (member == null) return null;
+
+            var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
+            item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
+            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
+            item.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
+            item.Kind = CodeItemKindEnum.Constructor;
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+            item.OverlayMoniker = KnownMonikers.Add;
 
             return item;
         }

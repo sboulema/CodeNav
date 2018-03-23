@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Windows.Media;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -20,6 +21,11 @@ namespace CodeNav.Mappers
         }
 
         public static T MapBase<T>(SyntaxNode source, NameSyntax name, CodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+        {
+            return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
+        }
+
+        public static T MapBase<T>(SyntaxNode source, VisualBasicSyntax.NameSyntax name, CodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
         {
             return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
         }

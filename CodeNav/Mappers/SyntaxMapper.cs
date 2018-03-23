@@ -177,9 +177,9 @@ namespace CodeNav.Mappers
                 case SyntaxKind.MethodDeclaration:
                     return MethodMapper.MapMethod(member as MethodDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.EnumDeclaration:
-                    return MapEnum(member as EnumDeclarationSyntax);
+                    return EnumMapper.MapEnum(member as EnumDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.EnumMemberDeclaration:
-                    return MapEnumMember(member as EnumMemberDeclarationSyntax);
+                    return EnumMapper.MapEnumMember(member as EnumMemberDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.InterfaceDeclaration:
                     return InterfaceMapper.MapInterface(member as InterfaceDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.FieldDeclaration:
@@ -187,17 +187,17 @@ namespace CodeNav.Mappers
                 case SyntaxKind.PropertyDeclaration:
                     return PropertyMapper.MapProperty(member as PropertyDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.StructDeclaration:
-                    return MapStruct(member as StructDeclarationSyntax);
+                    return StructMapper.MapStruct(member as StructDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.ClassDeclaration:
                     return ClassMapper.MapClass(member as ClassDeclarationSyntax, _control, _semanticModel, _tree);
                 case SyntaxKind.EventFieldDeclaration:
-                    return MapEventField(member as EventFieldDeclarationSyntax);
+                    return DelegateEventMapper.MapEvent(member as EventFieldDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.DelegateDeclaration:
-                    return MapDelegate(member as DelegateDeclarationSyntax);
+                    return DelegateEventMapper.MapDelegate(member as DelegateDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.NamespaceDeclaration:
-                    return MapNamespace(member as NamespaceDeclarationSyntax);
+                    return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.ConstructorDeclaration:
-                    return MapConstructor(member as ConstructorDeclarationSyntax);
+                    return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, _control, _semanticModel);
                 default:
                     return null;
             }
@@ -210,99 +210,35 @@ namespace CodeNav.Mappers
             switch (member.Kind())
             {
                 case VisualBasic.SyntaxKind.FunctionBlock:
+                case VisualBasic.SyntaxKind.SubBlock:
                     return MethodMapper.MapMethod(member as VisualBasicSyntax.MethodBlockSyntax, _control, _semanticModel);
-                //case VisualBasic.SyntaxKind.EnumStatement:
-                //    return MapEnum(member as VisualBasicSyntax.EnumBlockSyntax);
-                //case VisualBasic.SyntaxKind.EnumMemberDeclaration:
-                //    return MapEnumMember(member as VisualBasicSyntax.EnumMemberDeclarationSyntax);
-                //case VisualBasic.SyntaxKind.InterfaceBlock:
-                //    return MapInterface(member as InterfaceDeclarationSyntax);
+                case VisualBasic.SyntaxKind.EnumBlock:
+                    return EnumMapper.MapEnum(member as VisualBasicSyntax.EnumBlockSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.EnumMemberDeclaration:
+                    return EnumMapper.MapEnumMember(member as VisualBasicSyntax.EnumMemberDeclarationSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.InterfaceBlock:
+                    return InterfaceMapper.MapInterface(member as VisualBasicSyntax.InterfaceBlockSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.FieldDeclaration:
                     return FieldMapper.MapField(member as VisualBasicSyntax.FieldDeclarationSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.PropertyBlock:
                     return PropertyMapper.MapProperty(member as VisualBasicSyntax.PropertyBlockSyntax, _control, _semanticModel);
-                //case VisualBasic.SyntaxKind.StructureBlock:
-                //    return MapStruct(member as StructDeclarationSyntax);
+                case VisualBasic.SyntaxKind.StructureBlock:
+                    return StructMapper.MapStruct(member as VisualBasicSyntax.StructureBlockSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.ClassBlock:
-                    return ClassMapper.MapClass(member as VisualBasicSyntax.ClassBlockSyntax, _control, _semanticModel, _tree);
-                //case VisualBasic.SyntaxKind.EventBlock:
-                //    return MapEventField(member as EventFieldDeclarationSyntax);
-                //case VisualBasic.SyntaxKind.DelegateFunctionStatement:
-                //    return MapDelegate(member as DelegateDeclarationSyntax);
-                //case VisualBasic.SyntaxKind.NamespaceBlock:
-                //    return MapNamespace(member as NamespaceDeclarationSyntax);
-                //case VisualBasic.SyntaxKind.ConstructorBlock:
-                //    return MapConstructor(member as ConstructorDeclarationSyntax);
+                case VisualBasic.SyntaxKind.ModuleBlock:
+                    return ClassMapper.MapClass(member as VisualBasicSyntax.TypeBlockSyntax, _control, _semanticModel, _tree);
+                case VisualBasic.SyntaxKind.EventBlock:
+                    return DelegateEventMapper.MapEvent(member as VisualBasicSyntax.EventBlockSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.DelegateFunctionStatement:
+                    return DelegateEventMapper.MapDelegate(member as VisualBasicSyntax.DelegateStatementSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.NamespaceBlock:
+                    return NamespaceMapper.MapNamespace(member as VisualBasicSyntax.NamespaceBlockSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.ConstructorBlock:
+                    return MethodMapper.MapConstructor(member as VisualBasicSyntax.ConstructorBlockSyntax, _control, _semanticModel);
                 default:
                     return null;
             }
         }
-
-        private static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.EnumMember;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-
-            return item;
-        }
-
-        private static CodeItem MapDelegate(DelegateDeclarationSyntax member)
-        {
-            var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Delegate;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            return item;
-        }
-
-        private static CodeItem MapEventField(EventFieldDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Event;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            return item;
-        }
-
-        private static CodeClassItem MapStruct(StructDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Struct;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
-            
-            foreach (var structMember in member.Members)
-            {
-                item.Members.Add(MapMember(structMember));
-            }
-
-            return item;
-        }
-
-        private static CodeClassItem MapEnum(EnumDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Enum;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.Parameters = MapMembersToString(member.Members);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);          
-
-            foreach (var enumMember in member.Members)
-            {
-                item.Members.Add(MapMember(enumMember));
-            }
-
-            return item;
-        }
-
-        #region Helpers
 
         public static void FilterNullItems(List<CodeItem> items)
         {
@@ -315,42 +251,6 @@ namespace CodeNav.Mappers
                     FilterNullItems((item as IMembers).Members);
                 }
             }
-        }
-
-        private static string MapMembersToString(SeparatedSyntaxList<EnumMemberDeclarationSyntax> members)
-        {
-            var memberList = (from EnumMemberDeclarationSyntax member in members select member.Identifier.Text).ToList();
-            return $"{string.Join(", ", memberList)}";
-        }
-
-        #endregion
-
-        private static CodeNamespaceItem MapNamespace(NamespaceDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, _control, _semanticModel);
-            item.Kind = CodeItemKindEnum.Namespace;
-            foreach (var namespaceMember in member.Members)
-            {
-                item.Members.Add(MapMember(namespaceMember));
-            }
-            return item;
-        }
-
-        private static CodeItem MapConstructor(ConstructorDeclarationSyntax member)
-        {
-            if (member == null) return null;
-
-            var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, _control, _semanticModel);
-            item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
-            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.ParameterList);
-            item.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
-            item.Kind = CodeItemKindEnum.Constructor;
-            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.OverlayMoniker = KnownMonikers.Add;
-
-            return item;
         }
     }
 }

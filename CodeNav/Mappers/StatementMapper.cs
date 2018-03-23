@@ -34,21 +34,17 @@ namespace CodeNav.Mappers
 
         public static List<CodeItem> MapStatement(VisualBasicSyntax.StatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
         {
-            //if (statement == null) return new List<CodeItem>();
+            if (statement == null) return new List<CodeItem>();
 
-            //switch (statement.Kind())
-            //{
-            //    case VisualBasic.SyntaxKind.swith:
-            //        return new List<CodeItem> { MapSwitch(statement as SwitchStatementSyntax, control, semanticModel) };
-            //    case SyntaxKind.Block:
-            //        return MapStatements((statement as BlockSyntax).Statements, control, semanticModel);
-            //    case VisualBasic.SyntaxKind.TryStatement:
-            //        return MapStatement((statement as VisualBasicSyntax.TryBlockSyntax).FinallyBlock, control, semanticModel);
-            //    default:
-            //        return new List<CodeItem>();
-            //}
-
-            return new List<CodeItem>();
+            switch (statement.Kind())
+            {
+                case VisualBasic.SyntaxKind.SelectBlock:
+                    return new List<CodeItem> { MapSwitch(statement as VisualBasicSyntax.SelectBlockSyntax, control, semanticModel) };
+                case VisualBasic.SyntaxKind.TryStatement:
+                    return MapStatement((statement as VisualBasicSyntax.TryBlockSyntax), control, semanticModel);
+                default:
+                    return new List<CodeItem>();
+            }
         }
 
         public static List<CodeItem> MapStatement(BlockSyntax statement, CodeViewUserControl control, SemanticModel semanticModel) 
@@ -109,6 +105,26 @@ namespace CodeNav.Mappers
             return item;
         }
 
+        private static CodeItem MapSwitch(VisualBasicSyntax.SelectBlockSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (statement == null) return null;
+
+            var item = BaseMapper.MapBase<CodeClassItem>(statement, statement.SelectStatement.Expression.ToString(), control, semanticModel);
+            item.Name = $"Switch {item.Name}";
+            item.Kind = CodeItemKindEnum.Switch;
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
+
+            // Map switch cases
+            foreach (var section in statement.CaseBlocks)
+            {
+                item.Members.Add(MapSwitchSection(section, control, semanticModel));
+            }
+
+            return item;
+        }
+
         /// <summary>
         /// Map the individual cases within a switch statement
         /// </summary>
@@ -121,6 +137,19 @@ namespace CodeNav.Mappers
             if (section == null) return null;
 
             var item = BaseMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString(), control, semanticModel);
+            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, string.Empty);
+            item.Id = item.FullName;
+            item.Kind = CodeItemKindEnum.SwitchSection;
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            return item;
+        }
+
+        private static CodeItem MapSwitchSection(VisualBasicSyntax.CaseBlockSyntax section, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (section == null) return null;
+
+            var item = BaseMapper.MapBase<CodePropertyItem>(section, section.CaseStatement.Cases.First().ToString(), control, semanticModel);
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, string.Empty);
             item.Id = item.FullName;
             item.Kind = CodeItemKindEnum.SwitchSection;

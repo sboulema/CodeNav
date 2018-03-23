@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Windows.Media;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -107,6 +108,25 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
+            item.Kind = CodeItemKindEnum.Interface;
+            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            foreach (var interfaceMember in member.Members)
+            {
+                item.Members.Add(SyntaxMapper.MapMember(interfaceMember));
+            }
+
+            return item;
+        }
+
+        public static CodeInterfaceItem MapInterface(VisualBasicSyntax.InterfaceBlockSyntax member,
+            CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (member == null) return null;
+
+            var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.InterfaceStatement.Identifier, 
+                member.InterfaceStatement.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);

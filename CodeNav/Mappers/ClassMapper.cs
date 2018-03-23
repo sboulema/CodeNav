@@ -66,13 +66,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeClassItem MapClass(VisualBasicSyntax.ClassBlockSyntax member,
+        public static CodeClassItem MapClass(VisualBasicSyntax.TypeBlockSyntax member,
             CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
-            var item = BaseMapper.MapBase<CodeClassItem>(member, member.ClassStatement.Identifier, 
-                member.ClassStatement.Modifiers, control, semanticModel);
+            var item = BaseMapper.MapBase<CodeClassItem>(member, member.BlockStatement.Identifier, 
+                member.BlockStatement.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Class;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
@@ -131,7 +131,7 @@ namespace CodeNav.Mappers
             return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
         }
 
-        private static string MapInheritance(VisualBasicSyntax.ClassBlockSyntax member)
+        private static string MapInheritance(VisualBasicSyntax.TypeBlockSyntax member)
         {
             if (member?.Inherits == null) return string.Empty;
 
