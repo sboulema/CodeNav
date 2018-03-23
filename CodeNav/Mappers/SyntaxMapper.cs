@@ -135,7 +135,7 @@ namespace CodeNav.Mappers
             {
                 return (root as VisualBasicSyntax.CompilationUnitSyntax).Members.Select(MapMember).ToList();
             }
-            else if (root.Language.Equals("C Sharp"))
+            else if (root.Language.Equals("C#"))
             {
                 return (root as CompilationUnitSyntax).Members.Select(MapMember).ToList();
             }
