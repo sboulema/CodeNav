@@ -25,5 +25,23 @@ namespace CodeNav.Tests.MapperTests
 
             Assert.True(innerClass.Members.Any());
         }
+
+        [Test]
+        public void ClassInheritanceShouldBeOkVB()
+        {
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestClasses.vb"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a base class
+            Assert.AreEqual(CodeItemKindEnum.Class, document.First().Kind);
+            var innerClass = document.First() as CodeClassItem;
+
+            // Second item should be an inheriting class
+            Assert.AreEqual(CodeItemKindEnum.Class, document.Last().Kind);
+            var inheritingClass = document.Last() as CodeClassItem;
+
+            Assert.AreEqual(" : Class1", inheritingClass.Parameters);
+        }
     }
 }

@@ -125,6 +125,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Files\VisualBasic\TestClasses.vb" />
     <Content Include="Files\VisualBasic\TestModules.vb" />
     <Content Include="Files\VisualBasic\TestNamespaces.vb" />
     <Content Include="Files\VisualBasic\TestMethods.vb" />
