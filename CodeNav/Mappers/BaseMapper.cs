@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Linq;
 using System.Windows.Media;
+using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -19,6 +21,11 @@ namespace CodeNav.Mappers
         }
 
         public static T MapBase<T>(SyntaxNode source, NameSyntax name, CodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+        {
+            return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
+        }
+
+        public static T MapBase<T>(SyntaxNode source, VisualBasicSyntax.NameSyntax name, CodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
         {
             return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
         }
@@ -79,23 +86,28 @@ namespace CodeNav.Mappers
 
         private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
         {
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.SealedKeyword))
+            if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.SealedKeyword ||
+                                   m.RawKind == (int)VisualBasic.SyntaxKind.NotOverridableKeyword))
             {
                 return CodeItemAccessEnum.Sealed;
             }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword))
+            if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.PublicKeyword ||
+                                   m.RawKind == (int)VisualBasic.SyntaxKind.PublicKeyword))
             {
                 return CodeItemAccessEnum.Public;
             }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword))
+            if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.PrivateKeyword ||
+                                   m.RawKind == (int)VisualBasic.SyntaxKind.PrivateKeyword))
             {
                 return CodeItemAccessEnum.Private;
             }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.ProtectedKeyword))
+            if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.ProtectedKeyword ||
+                                   m.RawKind == (int)VisualBasic.SyntaxKind.ProtectedKeyword))
             {
                 return CodeItemAccessEnum.Protected;
             }
-            if (modifiers.Any(m => m.Kind() == SyntaxKind.InternalKeyword))
+            if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.InternalKeyword ||
+                                   m.RawKind == (int)VisualBasic.SyntaxKind.FriendKeyword))
             {
                 return CodeItemAccessEnum.Internal;
             }

@@ -70,7 +70,20 @@ namespace CodeNav.Tests.MapperTests
 
             Assert.AreEqual(CodeItemKindEnum.ImplementedInterface, implementedInterface.Kind);
             Assert.AreEqual(3, implementedInterface.Members.Count);
+        }
 
+        [Test]
+        public void TestInterfaceShouldBeOkVB()
+        {
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestInterfaces.vb"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Interface, document.First().Kind);
+
+            // Namespace item should have 1 member
+            Assert.AreEqual(1, (document.First() as IMembers).Members.Count);
         }
     }
 }

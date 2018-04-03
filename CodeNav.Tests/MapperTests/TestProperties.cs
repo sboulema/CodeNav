@@ -39,5 +39,32 @@ namespace CodeNav.Tests.MapperTests
             var property = innerClass.Members.Last() as CodeFunctionItem;
             Assert.IsNull(property.Parameters);
         }
+
+        [Test]
+        public void ShouldBeOkVB()
+        {
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestProperties.vb"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Class, document.First().Kind);
+
+            // Inner item should be a class
+            var innerClass = document.First() as CodeClassItem;
+
+            // Class should have properties
+            var propertyGetSet = innerClass.Members.First() as CodeFunctionItem;
+            Assert.AreEqual(" {get,set}", propertyGetSet.Parameters);
+
+            var propertyGet = innerClass.Members[1] as CodeFunctionItem;
+            Assert.AreEqual(" {get}", propertyGet.Parameters);
+
+            var propertySet = innerClass.Members[2] as CodeFunctionItem;
+            Assert.AreEqual(" {set}", propertySet.Parameters);
+
+            var property = innerClass.Members.Last() as CodeFunctionItem;
+            Assert.IsNull(property.Parameters);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
@@ -16,6 +17,13 @@ namespace CodeNav.Mappers
         {
             if (parameters == null) return string.Empty;
             var paramList = (from ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
+            return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
+        }
+
+        public static string MapParameters(VisualBasicSyntax.ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
+        {
+            if (parameters == null) return string.Empty;
+            var paramList = (from VisualBasicSyntax.ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.AsClause.Type, useLongNames)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
     }

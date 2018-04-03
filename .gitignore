@@ -10,3 +10,4 @@
 /CodeNav.Tests/obj
 /CodeNav.Nunit/bin
 /CodeNav.Nunit/obj
+/CodeNav.Tests/*.user
