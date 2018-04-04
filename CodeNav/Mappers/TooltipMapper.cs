@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CodeNav.Models;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
@@ -12,9 +13,10 @@ namespace CodeNav.Mappers
             return Map(access, type, name, ParameterMapper.MapParameters(parameters, true));
         }
 
-        public static string Map(CodeItemAccessEnum access, string type, string name, VisualBasicSyntax.ParameterListSyntax parameters)
+        public static string Map(CodeItemAccessEnum access, string type, string name, 
+            VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel)
         {
-            return Map(access, type, name, ParameterMapper.MapParameters(parameters, true));
+            return Map(access, type, name, ParameterMapper.MapParameters(parameters, semanticModel, true));
         }
 
         public static string Map(CodeItemAccessEnum access, string type, string name, string extra)

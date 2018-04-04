@@ -63,12 +63,15 @@ namespace CodeNav.Mappers
                 // Map method as single item
                 item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubOrFunctionStatement.Identifier,
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
-                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.SubOrFunctionStatement.AsClause?.Type);
-                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.SubOrFunctionStatement.ParameterList);
-                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, member.SubOrFunctionStatement.ParameterList);
+
+                var symbol = semanticModel.GetDeclaredSymbol(member) as IMethodSymbol;
+                ((CodeFunctionItem)item).Type = TypeMapper.Map(symbol.ReturnType);
+                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.SubOrFunctionStatement.ParameterList, semanticModel);
+                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, 
+                    member.SubOrFunctionStatement.ParameterList, semanticModel);
             }
 
-            item.Id = IdMapper.MapId(item.FullName, member.SubOrFunctionStatement.ParameterList);
+            item.Id = IdMapper.MapId(item.FullName, member.SubOrFunctionStatement.ParameterList, semanticModel);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
@@ -80,9 +83,9 @@ namespace CodeNav.Mappers
             if (member == null) return null;
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubNewStatement.NewKeyword, member.SubNewStatement.Modifiers, control, semanticModel);
-            item.Parameters = ParameterMapper.MapParameters(member.SubNewStatement.ParameterList);
-            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.SubNewStatement.ParameterList);
-            item.Id = IdMapper.MapId(member.SubNewStatement.NewKeyword, member.SubNewStatement.ParameterList);
+            item.Parameters = ParameterMapper.MapParameters(member.SubNewStatement.ParameterList, semanticModel);
+            item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, member.SubNewStatement.ParameterList, semanticModel);
+            item.Id = IdMapper.MapId(member.SubNewStatement.NewKeyword, member.SubNewStatement.ParameterList, semanticModel);
             item.Kind = CodeItemKindEnum.Constructor;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.OverlayMoniker = KnownMonikers.Add;

@@ -49,7 +49,9 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodePropertyItem>(member, member.PropertyStatement.Identifier, 
                 member.PropertyStatement.Modifiers, control, semanticModel);
-            item.Type = TypeMapper.Map((member.PropertyStatement.AsClause as VisualBasicSyntax.SimpleAsClauseSyntax).Type);
+
+            var symbol = semanticModel.GetDeclaredSymbol(member) as IPropertySymbol;
+            item.Type = TypeMapper.Map(symbol.Type);
 
             if (member.Accessors != null)
             {

@@ -10,8 +10,10 @@ namespace CodeNav.Tests.MapperTests
     [TestFixture]
     public class TestMethods
     {
-        [Test]
-        public void ConstructorShouldBeOkVB()
+        CodeClassItem _innerClass; 
+
+        [OneTimeSetUp]
+        public void Setup()
         {
             var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethods.vb"));
 
@@ -21,10 +23,14 @@ namespace CodeNav.Tests.MapperTests
             Assert.AreEqual(CodeItemKindEnum.Class, document.First().Kind);
 
             // Inner item should be a class
-            var innerClass = document.First() as CodeClassItem;
+            _innerClass = document.First() as CodeClassItem;
+        }
 
+        [Test]
+        public void ConstructorShouldBeOkVB()
+        {
             // Class should have a constructor
-            var constructor = innerClass.Members.First() as CodeFunctionItem;
+            var constructor = _innerClass.Members.First() as CodeFunctionItem;
             Assert.AreEqual(CodeItemAccessEnum.Public, constructor.Access);
             Assert.AreEqual(CodeItemKindEnum.Constructor, constructor.Kind);
             Assert.AreEqual("New", constructor.Name);
@@ -33,43 +39,36 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void FunctionShouldBeOkVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethods.vb"));
-
-            Assert.IsTrue(document.Any());
-
-            // First item should be a class
-            Assert.AreEqual(CodeItemKindEnum.Class, document.First().Kind);
-
-            // Inner item should be a class
-            var innerClass = document.First() as CodeClassItem;
-
             // Class should have a function
-            var method = innerClass.Members[1] as CodeFunctionItem;
+            var method = _innerClass.Members[1] as CodeFunctionItem;
             Assert.AreEqual(CodeItemAccessEnum.Private, method.Access);
             Assert.AreEqual(CodeItemKindEnum.Method, method.Kind);
             Assert.AreEqual("Area", method.Name);
             Assert.AreEqual("Double", method.Type);
+            Assert.AreEqual("(Double)", method.Parameters);
         }
 
         [Test]
         public void SubShouldBeOkVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethods.vb"));
-
-            Assert.IsTrue(document.Any());
-
-            // First item should be a class
-            Assert.AreEqual(CodeItemKindEnum.Class, document.First().Kind);
-
-            // Inner item should be a class
-            var innerClass = document.First() as CodeClassItem;
-
             // Class should have a sub
-            var method = innerClass.Members.Last() as CodeFunctionItem;
+            var method = _innerClass.Members[2] as CodeFunctionItem;
             Assert.AreEqual(CodeItemAccessEnum.Internal, method.Access);
             Assert.AreEqual(CodeItemKindEnum.Method, method.Kind);
             Assert.AreEqual("SubInsteadOfFunction", method.Name);
-            Assert.AreEqual("", method.Type);
+            Assert.AreEqual("Void", method.Type);
+        }
+
+        [Test]
+        public void FunctionShorthandShouldBeOkVB()
+        {
+            // Class should have a sub
+            var method = _innerClass.Members[3] as CodeFunctionItem;
+            Assert.AreEqual(CodeItemAccessEnum.Private, method.Access);
+            Assert.AreEqual(CodeItemKindEnum.Method, method.Kind);
+            Assert.AreEqual("ShorthandFunction$", method.Name);
+            Assert.AreEqual("String", method.Type);
+            Assert.AreEqual("(String)", method.Parameters);
         }
     }
 }

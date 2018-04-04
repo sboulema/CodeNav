@@ -12,4 +12,8 @@ Public Class Class1
 
     End Sub
 
+    Function ShorthandFunction$(ByVal input$)
+
+    End Function
+
 End Class

@@ -16,9 +16,9 @@ namespace CodeNav.Mappers
             return MapId(identifier.Text, parameters);
         }
 
-        public static string MapId(SyntaxToken identifier, VisualBasicSyntax.ParameterListSyntax parameters)
+        public static string MapId(SyntaxToken identifier, VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel)
         {
-            return MapId(identifier.Text, parameters);
+            return MapId(identifier.Text, parameters, semanticModel);
         }
 
         public static string MapId(string name, ParameterListSyntax parameters)
@@ -26,9 +26,9 @@ namespace CodeNav.Mappers
             return name + ParameterMapper.MapParameters(parameters, true, false);
         }
 
-        public static string MapId(string name, VisualBasicSyntax.ParameterListSyntax parameters)
+        public static string MapId(string name, VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel)
         {
-            return name + ParameterMapper.MapParameters(parameters, true, false);
+            return name + ParameterMapper.MapParameters(parameters, semanticModel, true, false);
         }
 
         public static string MapId(string name, ImmutableArray<IParameterSymbol> parameters, bool useLongNames, bool prettyPrint)

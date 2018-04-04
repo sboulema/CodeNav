@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
@@ -20,11 +21,18 @@ namespace CodeNav.Mappers
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
-        public static string MapParameters(VisualBasicSyntax.ParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
+        public static string MapParameters(VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel, 
+            bool useLongNames = false, bool prettyPrint = true)
         {
             if (parameters == null) return string.Empty;
-            var paramList = (from VisualBasicSyntax.ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.AsClause.Type, useLongNames)).ToList();
+            var paramList = (from VisualBasicSyntax.ParameterSyntax parameter in parameters.Parameters select MapParameter(parameter, useLongNames, semanticModel)).ToList();
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
+        }
+
+        private static string MapParameter(VisualBasicSyntax.ParameterSyntax parameter, bool useLongNames, SemanticModel semanticModel)
+        {
+            var symbol = semanticModel.GetDeclaredSymbol(parameter) as IParameterSymbol;
+            return TypeMapper.Map(symbol.Type, useLongNames);
         }
     }
 }

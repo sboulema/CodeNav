@@ -15,6 +15,6 @@ namespace CodeNav.Tests.Files
         }
 
         private int _property;
-        public int Property => _property;
+        public int Property => _property; 
     }
 }

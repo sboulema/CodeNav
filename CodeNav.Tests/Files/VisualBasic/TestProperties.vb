@@ -19,4 +19,7 @@ Public Class Class1
 
     Property fullName() As String
     End Property
+
+    Public Property fullName$
+    End Property
 End Class
