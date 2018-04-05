@@ -127,19 +127,16 @@ namespace CodeNav.Mappers
             _semanticModel = document.GetSemanticModelAsync().Result;
             var root = _tree.GetRoot();
 
-            if (root.Language.Equals("Visual Basic") || root.Language.Equals("Basic"))
+            switch (LanguageHelper.GetLanguage(root.Language))
             {
-                return (root as VisualBasicSyntax.CompilationUnitSyntax).Members.Select(MapMember).ToList();
-            }
-            else if (root.Language.Equals("C#"))
-            {
-                return (root as CompilationUnitSyntax).Members.Select(MapMember).ToList();
-            }
-            else
-            {
-                LogHelper.Log("Error during mapping: root is not CSharp or VisualBasic");
-                return null;
-            }        
+                case LanguageEnum.CSharp:
+                    return (root as CompilationUnitSyntax).Members.Select(MapMember).ToList();
+                case LanguageEnum.VisualBasic:
+                    return (root as VisualBasicSyntax.CompilationUnitSyntax).Members.Select(MapMember).ToList();
+                default:
+                    LogHelper.Log("Error during mapping: root is not CSharp or VisualBasic");
+                    return null;
+            }     
         }
 
         /// <summary>

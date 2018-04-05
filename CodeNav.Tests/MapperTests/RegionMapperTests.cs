@@ -29,7 +29,7 @@ namespace CodeNav.Tests.MapperTests
 
             // The class should have a region in it
             var regionR1 = regionClass.Members.FirstOrDefault(m => m.Name.Equals("#R1")) as CodeRegionItem;
-            Assert.NotNull(regionR1);
+            Assert.NotNull(regionR1, "Region #R1 not found");
 
             // Region R1 should have a nested region R15 with a constant in it
             var regionR15 = regionR1.Members.FirstOrDefault(m => m.Name.Equals("#R15")) as CodeRegionItem;
@@ -39,6 +39,47 @@ namespace CodeNav.Tests.MapperTests
             // Region R1 should have a function Test1 and Test2 in it
             Assert.NotNull(regionR1.Members.FirstOrDefault(m => m.Name.Equals("Test1")));
             Assert.NotNull(regionR1.Members.FirstOrDefault(m => m.Name.Equals("Test2")));
+        }
+
+        [Test]
+        public void TestRegionsVB()
+        {
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestRegions.vb"));
+
+            Assert.IsTrue(document.Any());
+
+            // There should be a single class
+            var regionClass = document.First() as CodeClassItem;
+            Assert.NotNull(regionClass);
+
+            // The class should have a property in it
+            Assert.NotNull(regionClass.Members.FirstOrDefault(m => m.Name.Equals("outsideRegion$")));
+
+            // The class should have a region in it
+            var regionR1 = regionClass.Members.FirstOrDefault(m => m.Name.Equals("#FirstRegion")) as CodeRegionItem;
+            Assert.NotNull(regionR1, "Region #FirstRegion not found");
+
+            // Region R1 should have a property in it
+            Assert.NotNull(regionR1.Members.FirstOrDefault(m => m.Name.Equals("insideRegion$")), "No property inside region found");
+        }
+
+        [Test]
+        public void TestRegionsNoName()
+        {
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegionsNoName.cs"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Namespace, document.First().Kind);
+
+            // There should be a single class
+            var regionClass = (document.First() as IMembers).Members.First() as CodeClassItem;
+            Assert.NotNull(regionClass);
+
+            // The class should have a region in it
+            var regionR1 = regionClass.Members.FirstOrDefault(m => m.Name.Equals("#Region")) as CodeRegionItem;
+            Assert.NotNull(regionR1, "Region #Region not found");
         }
     }
 }

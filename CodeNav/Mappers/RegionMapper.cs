@@ -3,15 +3,24 @@ using CodeNav.Models;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
 {
     public static class RegionMapper
     {
+        /// <summary>
+        /// Find all regions in a file and get there start and end line
+        /// </summary>
+        /// <param name="tree">SyntaxTree for the given file</param>
+        /// <param name="span">Start and end line in which we search for regions</param>
+        /// <returns>Flat list of regions</returns>
         public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span)
         {
             var regionList = new List<CodeRegionItem>();
@@ -20,14 +29,22 @@ namespace CodeNav.Mappers
 
             var root = tree.GetRoot();
             
-            foreach (var regionDirective in root.DescendantTrivia().Where(i => i.Kind() == SyntaxKind.RegionDirectiveTrivia && span.Contains(i.Span)))
+            // Find all start points of regions
+            foreach (var regionDirective in root.DescendantTrivia()
+                .Where(i => (i.RawKind == (int)SyntaxKind.RegionDirectiveTrivia ||
+                             i.RawKind == (int)VisualBasic.SyntaxKind.RegionDirectiveTrivia) && 
+                             span.Contains(i.Span)))
             {
                 regionList.Add(MapRegion(regionDirective));
             }
 
             if (!regionList.Any()) return regionList;
 
-            foreach (var endRegionDirective in root.DescendantTrivia().Where(j => j.Kind() == SyntaxKind.EndRegionDirectiveTrivia && span.Contains(j.Span)))
+            // Find all matching end points of regions
+            foreach (var endRegionDirective in root.DescendantTrivia()
+                .Where(j => (j.RawKind == (int)SyntaxKind.EndRegionDirectiveTrivia ||
+                             j.RawKind == (int)VisualBasic.SyntaxKind.EndRegionDirectiveTrivia) && 
+                             span.Contains(j.Span)))
             {              
                 var reg = regionList.LastOrDefault(x => x.StartLine < GetStartLine(endRegionDirective) && x.EndLine == 0);
                 if (reg != null)
@@ -71,7 +88,8 @@ namespace CodeNav.Mappers
 
         private static CodeRegionItem MapRegion(SyntaxTrivia source)
         {
-            var name = "#" + source.ToString().Replace("#region ", string.Empty);
+            var name = MapRegionName(source);
+
             return new CodeRegionItem
             {
                 Name = name,
@@ -84,6 +102,36 @@ namespace CodeNav.Mappers
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region
             };
+        }
+
+        private static string MapRegionName(SyntaxTrivia source)
+        {
+            const string defaultRegionName = "Region";
+            var syntaxNode = source.GetStructure();
+            var name = "#";
+
+            switch (LanguageHelper.GetLanguage(syntaxNode.Language))
+            {
+                case LanguageEnum.CSharp:
+                    var endDirectiveToken = (syntaxNode as RegionDirectiveTriviaSyntax).EndOfDirectiveToken;
+                    if (endDirectiveToken.HasLeadingTrivia)
+                    {
+                        name += endDirectiveToken.LeadingTrivia.First().ToString();
+                    }
+                    else
+                    {
+                        name += defaultRegionName;
+                    }                   
+                    break;
+                case LanguageEnum.VisualBasic:
+                    name += (syntaxNode as VisualBasicSyntax.RegionDirectiveTriviaSyntax).Name.ValueText;
+                    break;
+                default:
+                    name += defaultRegionName;
+                    break;
+            }
+
+            return name;
         }
 
         /// <summary>
@@ -116,7 +164,7 @@ namespace CodeNav.Mappers
         }
 
         /// <summary>
-        /// Help add a CodeItem to a inner Region structure
+        /// Help add a CodeItem to an inner Region structure
         /// </summary>
         /// <param name="members"></param>
         /// <param name="item"></param>

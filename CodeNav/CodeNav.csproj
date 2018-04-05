@@ -91,6 +91,7 @@
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\DocumentHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
+    <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\OutliningHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Models\CodeInterfaceItem.cs" />
     <Compile Include="Models\FilterRule.cs" />
     <Compile Include="Models\IMembers.cs" />
+    <Compile Include="Models\LanguageEnum.cs" />
     <Compile Include="Models\MarginSideEnum.cs" />
     <Compile Include="Models\SortOrderEnum.cs" />
     <Compile Include="OptionsWindow.cs">

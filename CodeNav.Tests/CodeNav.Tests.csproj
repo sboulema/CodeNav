@@ -40,11 +40,13 @@
     <Compile Include="Files\TestNestedNamespaces.cs" />
     <Compile Include="Files\TestNoNamespace.cs" />
     <Compile Include="Files\TestProperties.cs" />
+    <Compile Include="Files\TestRegionsNoName.cs" />
     <Compile Include="Files\TestRegions.cs" />
     <Compile Include="Files\TestSealed.cs" />
     <Compile Include="Files\TestSorting.cs" />
     <Compile Include="Files\TestSwitch.cs" />
     <Compile Include="Files\TestUsingsInNamespace.cs" />
+    <Compile Include="HelperTests\LanguageHelperTests.cs" />
     <Compile Include="HelperTests\SortHelperTests.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
     <Compile Include="MapperTests\RegionMapperTests.cs" />
@@ -131,6 +133,7 @@
     <Content Include="Files\VisualBasic\TestMethods.vb" />
     <Content Include="Files\VisualBasic\TestFields.vb" />
     <Content Include="Files\VisualBasic\TestInterfaces.vb" />
+    <Content Include="Files\VisualBasic\TestRegions.vb" />
     <Content Include="Files\VisualBasic\TestProperties.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
