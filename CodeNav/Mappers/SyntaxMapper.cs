@@ -95,12 +95,20 @@ namespace CodeNav.Mappers
 
                 return MapDocument(document);
             }
+            catch (ArgumentException e)
+            {
+                if (!e.Message.Contains("DeclarationSyntax"))
+                {
+                    LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument), activeDocument.Language);                 
+                }
+                return null;
+            }
             catch (Exception e)
             {
                 LogHelper.Log($"Error during mapping: {e}");
-                LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument));
+                LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument), activeDocument.Language);
                 return null;
-            }        
+            }
         }
 
         /// <summary>
@@ -150,32 +158,31 @@ namespace CodeNav.Mappers
 
             if (string.IsNullOrEmpty(text)) return new List<CodeItem>();
 
-            if (document.Language.Equals("Visual Basic") || document.Language.Equals("Basic"))
+            switch (LanguageHelper.GetLanguage(document.Language))
             {
-                _tree = VisualBasic.VisualBasicSyntaxTree.ParseText(text);
+                case LanguageEnum.CSharp:
+                    _tree = CSharpSyntaxTree.ParseText(text);
 
-                var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                var compilation = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
-                _semanticModel = compilation.GetSemanticModel(_tree);
+                    var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+                    var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
+                    _semanticModel = compilation.GetSemanticModel(_tree);
 
-                var root = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
+                    var root = (CompilationUnitSyntax)_tree.GetRoot();
 
-                return root.Members.Select(MapMember).ToList();
-            }
-            else if (document.Language.Equals("C#"))
-            {
-                _tree = CSharpSyntaxTree.ParseText(text);
+                    return root.Members.Select(MapMember).ToList();
+                case LanguageEnum.VisualBasic:
+                    _tree = VisualBasic.VisualBasicSyntaxTree.ParseText(text);
 
-                var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
-                _semanticModel = compilation.GetSemanticModel(_tree);
+                    var mscorlibVB = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+                    var compilationVB = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlibVB });
+                    _semanticModel = compilationVB.GetSemanticModel(_tree);
 
-                var root = (CompilationUnitSyntax)_tree.GetRoot();
+                    var rootVB = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
 
-                return root.Members.Select(MapMember).ToList();
-            }
-
-            return new List<CodeItem>();
+                    return rootVB.Members.Select(MapMember).ToList();
+                default:
+                    return new List<CodeItem>();
+            }           
         }
 
         public static CodeItem MapMember(MemberDeclarationSyntax member)

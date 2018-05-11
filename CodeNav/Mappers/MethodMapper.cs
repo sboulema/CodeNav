@@ -65,7 +65,7 @@ namespace CodeNav.Mappers
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
 
                 var symbol = semanticModel.GetDeclaredSymbol(member) as IMethodSymbol;
-                ((CodeFunctionItem)item).Type = TypeMapper.Map(symbol.ReturnType);
+                ((CodeFunctionItem)item).Type = TypeMapper.Map(symbol?.ReturnType);
                 ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.SubOrFunctionStatement.ParameterList, semanticModel);
                 item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, 
                     member.SubOrFunctionStatement.ParameterList, semanticModel);

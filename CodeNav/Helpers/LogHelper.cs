@@ -36,7 +36,8 @@ namespace CodeNav.Helpers
             return new LogglyClient();
         }
 
-        public static void Log(string message, Exception exception = null, object additional = null)
+        public static void Log(string message, Exception exception = null, 
+            object additional = null, string language = null)
         {
             if (_client == null)
             {
