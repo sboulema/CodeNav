@@ -35,9 +35,9 @@ namespace CodeNav.ToolWindow
         public override void OnToolWindowCreated()
         {
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
-            _dte = (DTE)codeNavToolWindowPackage.GetServiceHelper(typeof(DTE));
+            _dte = (DTE)codeNavToolWindowPackage.GetServiceHelperAsync(typeof(DTE)).Result;
 
-            var componentModel = (IComponentModel)codeNavToolWindowPackage.GetServiceHelper(typeof(SComponentModel));
+            var componentModel = (IComponentModel)codeNavToolWindowPackage.GetServiceHelperAsync(typeof(SComponentModel)).Result;
             _workspace = componentModel.GetService<VisualStudioWorkspace>();
 
             // Wire up references for the event handlers
@@ -73,7 +73,7 @@ namespace CodeNav.ToolWindow
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
                 // Subscribe to Outlining events
-                var outliningManager = OutliningHelper.GetManager(Package as CodeNavToolWindowPackage, GetCurrentViewHost().TextView);
+                var outliningManager = OutliningHelper.GetManager(Package as IServiceProvider, GetCurrentViewHost().TextView);
                 if (outliningManager == null) return;
                 _control.OutliningManager = outliningManager;
                 outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
