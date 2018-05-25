@@ -17,11 +17,6 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
-using System.IO.Packaging;
-using System.Reflection;
-using System.Windows.Markup;
-using System.Windows.Navigation;
-using System.Windows;
 
 namespace CodeNav
 {
@@ -170,13 +165,13 @@ namespace CodeNav
             {
                 try
                 {
-                    Dispatcher.Invoke(new Action(() => _backgroundWorker.RunWorkerAsync(
+                    _backgroundWorker.RunWorkerAsync(
                         new BackgroundWorkerRequest
                         {
                             Document = _window.Document,
                             ForceUpdate = forceUpdate
                         }
-                    )));
+                    );
                 }
                 catch (ObjectDisposedException)
                 {

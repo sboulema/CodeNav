@@ -1,7 +1,6 @@
 ﻿using System;
 using CodeNav.Helpers;
 using EnvDTE;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -19,7 +18,6 @@ namespace CodeNav.ToolWindow
         private readonly CodeViewUserControl _control;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
-        private DTE _dte;
         private VisualStudioWorkspace _workspace;
 
         /// <summary>
@@ -35,16 +33,13 @@ namespace CodeNav.ToolWindow
         public override void OnToolWindowCreated()
         {
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
-            _dte = (DTE)codeNavToolWindowPackage.GetServiceHelperAsync(typeof(DTE)).Result;
-
-            var componentModel = (IComponentModel)codeNavToolWindowPackage.GetServiceHelperAsync(typeof(SComponentModel)).Result;
-            _workspace = componentModel.GetService<VisualStudioWorkspace>();
+            _workspace = codeNavToolWindowPackage.Workspace;
 
             // Wire up references for the event handlers
-            _documentEvents = _dte.Events.DocumentEvents;
+            _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
-            _windowEvents = _dte.Events.WindowEvents;
+            _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
 
             _control.ShowWaitingForDocument();
