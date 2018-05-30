@@ -110,7 +110,7 @@ namespace CodeNav.Mappers
             if (statement == null) return null;
 
             var item = BaseMapper.MapBase<CodeClassItem>(statement, statement.SelectStatement.Expression.ToString(), control, semanticModel);
-            item.Name = $"Switch {item.Name}";
+            item.Name = $"Select {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
