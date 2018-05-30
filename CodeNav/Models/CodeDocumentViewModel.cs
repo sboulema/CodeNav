@@ -10,6 +10,7 @@ namespace CodeNav.Models
         public CodeDocumentViewModel()
         {
             _codeDocument = new List<CodeItem>();
+            Bookmarks = new Dictionary<string, BookmarkStyle>();
         }
 
         private List<CodeItem> _codeDocument;
@@ -32,5 +33,7 @@ namespace CodeNav.Models
             : Visibility.Collapsed;
 
         public SortOrderEnum SortOrder;
+
+        public Dictionary<string, BookmarkStyle> Bookmarks;
     }
 }

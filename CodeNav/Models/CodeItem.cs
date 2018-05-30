@@ -7,6 +7,7 @@ using Caliburn.Micro;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.CodeAnalysis.Text;
+using CodeNav.Helpers;
 
 namespace CodeNav.Models
 {
@@ -15,10 +16,21 @@ namespace CodeNav.Models
         public CodeItem()
         {
             _clickItemCommand = new DelegateCommand(ClickItem);
+            _goToDefinitionCommand = new DelegateCommand(GoToDefinition);
+            _goToEndCommand = new DelegateCommand(GoToEnd);
+            _selectInCodeCommand = new DelegateCommand(SelectInCode);
+            _copyNameCommand = new DelegateCommand(CopyName);
+            _refreshCommand = new DelegateCommand(Refresh);
+            _expandAllRegionsCommand = new DelegateCommand(ExpandAllRegions);
+            _collapseAllRegionsCommand = new DelegateCommand(CollapseAllRegions);
+            _bookmarkCommand = new DelegateCommand(Bookmark);
+            _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark);
+            _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
         }
 
         public string Name { get; set; }
         public LinePosition StartLinePosition { get; set; }
+        public LinePosition EndLinePosition { get; set; }
         public int StartLine { get; set; }
         public int EndLine { get; set; }
         public ImageMoniker Moniker { get; set; }
@@ -29,6 +41,12 @@ namespace CodeNav.Models
         public CodeItemKindEnum Kind;
         public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
+
+        public List<BookmarkStyle> BookmarkStyles { get
+            {
+                return BookmarkHelper.GetBookmarkStyles();
+            }
+        }
 
         #region Fonts
         private float _fontSize;
@@ -135,28 +153,82 @@ namespace CodeNav.Models
         #endregion
 
         #region Background
-        private SolidColorBrush _highlightBackground;
-        public SolidColorBrush HighlightBackground
+        private SolidColorBrush _background;
+        public SolidColorBrush Background
         {
             get
             {
-                return _highlightBackground;
+                return _background;
             }
             set
             {
-                _highlightBackground = value;
+                _background = value;
                 NotifyOfPropertyChange();
             }
         }
         #endregion
 
+        #region Commands
         private readonly DelegateCommand _clickItemCommand;
         public ICommand ClickItemCommand => _clickItemCommand;
+        public void ClickItem(object startLinePosition) => Control.SelectLine(startLinePosition);
 
-        public void ClickItem(object startLinePosition)
+        private readonly DelegateCommand _goToDefinitionCommand;
+        public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
+        public void GoToDefinition(object args) => Control.SelectLine(StartLinePosition);
+
+        private readonly DelegateCommand _goToEndCommand;
+        public ICommand GoToEndCommand => _goToEndCommand;
+        public void GoToEnd(object args) => Control.SelectLine(EndLinePosition);
+
+        private readonly DelegateCommand _selectInCodeCommand;
+        public ICommand SelectInCodeCommand => _selectInCodeCommand;
+        public void SelectInCode(object args) => Control.Select(StartLinePosition, EndLinePosition);
+
+        private readonly DelegateCommand _copyNameCommand;
+        public ICommand CopyNameCommand => _copyNameCommand;
+        public void CopyName(object args) => Clipboard.SetText(Name);
+
+        private readonly DelegateCommand _refreshCommand;
+        public ICommand RefreshCommand => _refreshCommand;
+        public void Refresh(object args) => Control.UpdateDocument(true);
+
+        private readonly DelegateCommand _expandAllRegionsCommand;
+        public ICommand ExpandAllRegionsCommand => _expandAllRegionsCommand;
+        public void ExpandAllRegions(object args) => Control.ToggleAllRegions(true);
+
+        private readonly DelegateCommand _collapseAllRegionsCommand;
+        public ICommand CollapseAllRegionsCommand => _collapseAllRegionsCommand;
+        public void CollapseAllRegions(object args) => Control.ToggleAllRegions(false);
+
+        private readonly DelegateCommand _bookmarkCommand;
+        public ICommand BookmarkCommand => _bookmarkCommand;
+        public void Bookmark(object args)
         {
-            Control.SelectLine(startLinePosition);
+            var bookmarkStyle = args as BookmarkStyle;
+
+            BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
+
+            if (Control.CodeDocumentViewModel.Bookmarks.ContainsKey(Id))
+            {
+                Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+            }
+            Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
         }
+
+        private readonly DelegateCommand _deleteBookmarkCommand;
+        public ICommand DeleteBookmarkCommand => _deleteBookmarkCommand;
+        public void DeleteBookmark(object args)
+        {
+            BookmarkHelper.ClearBookmark(this);
+
+            Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+        }
+
+        private readonly DelegateCommand _clearBookmarksCommand;
+        public ICommand ClearBookmarksCommand => _clearBookmarksCommand;
+        public void ClearBookmarks(object args) => Control.ClearBookmarks();
+        #endregion
     }
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>

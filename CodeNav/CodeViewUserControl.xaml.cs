@@ -67,7 +67,7 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
 
-        public void SelectLine(object startLinePosition)
+        public void SelectLine(object startLinePosition, bool extend = false)
         {
             int line;
             int offset;
@@ -94,7 +94,7 @@ namespace CodeNav
             try
             {
                 LogHelper.Log($"GotoLine {line}");
-                textSelection.MoveToLineAndOffset(line, offset);
+                textSelection.MoveToLineAndOffset(line, offset, extend);
 
                 var tp = (TextPoint)textSelection.TopPoint;
                 tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
@@ -105,6 +105,14 @@ namespace CodeNav
                 return;
             }   
         }
+
+        public void Select(object startLinePosition, object endLinePosition)
+        {
+            SelectLine(startLinePosition);
+            SelectLine(endLinePosition, true);
+        }
+
+        public void ClearBookmarks() => BookmarkHelper.ClearBookmarks(CodeDocumentViewModel);
 
         public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
             OutliningHelper.RegionsCollapsed(e, CodeDocumentViewModel.CodeDocument);
@@ -218,7 +226,7 @@ namespace CodeNav
 
         #endregion
 
-        public void HighlightCurrentItem() => HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel.CodeDocument);
+        public void HighlightCurrentItem() => HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
 
         private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -266,6 +274,9 @@ namespace CodeNav
                 // Sort items
                 CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
                 SortHelper.Sort(CodeDocumentViewModel);
+
+                // Apply bookmarks
+                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel);
 
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
             }

@@ -51,6 +51,7 @@ namespace CodeNav.Mappers
             element.StartLine = GetStartLine(source);
             element.StartLinePosition = GetStartLinePosition(source);
             element.EndLine = GetEndLine(source);
+            element.EndLinePosition = GetEndLinePosition(source);
             element.Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black);
             element.Access = MapAccess(modifiers, source);
             element.FontSize = Settings.Default.Font.SizeInPoints;
@@ -77,6 +78,9 @@ namespace CodeNav.Mappers
 
         private static LinePosition GetStartLinePosition(SyntaxNode source) =>
             source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition;
+
+        private static LinePosition GetEndLinePosition(SyntaxNode source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition;
 
         private static int GetStartLine(SyntaxNode source) =>
             source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;

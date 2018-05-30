@@ -17,16 +17,19 @@ namespace CodeNav.Tests.HelperTests
         [Test]
         public void CurrentItemShouldBeHighlighted()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"));
+            var document = new CodeDocumentViewModel
+            {
+                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
+            };
 
             HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red, Brushes.Blue, Brushes.Green, Brushes.White);
 
-            var highlightedClass = (document.First() as IMembers).Members.First() as CodeClassItem;
+            var highlightedClass = (document.CodeDocument.First() as IMembers).Members.First() as CodeClassItem;
             var highlightedItem = highlightedClass.Members[2];
 
             Assert.AreEqual(FontWeights.Bold, highlightedItem.FontWeight);
             Assert.AreEqual(Brushes.Red, highlightedItem.Foreground);
-            Assert.AreEqual(Brushes.Blue, highlightedItem.HighlightBackground);
+            Assert.AreEqual(Brushes.Blue, highlightedItem.Background);
 
             Assert.AreEqual(Brushes.Green, highlightedClass.BorderBrush);
         }
@@ -34,7 +37,10 @@ namespace CodeNav.Tests.HelperTests
         [Test]
         public void OnlyOneItemShouldBeHighlighted()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"));
+            var document = new CodeDocumentViewModel
+            {
+                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
+            };
 
             HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red, Brushes.Blue, Brushes.Green, Brushes.White);
 
@@ -42,7 +48,7 @@ namespace CodeNav.Tests.HelperTests
 
 
             var highlightedItems = new List<CodeItem>();
-            FindHighlightedItems(highlightedItems, document);
+            FindHighlightedItems(highlightedItems, document.CodeDocument);
 
             Assert.AreEqual(1, highlightedItems.Count);
         }
@@ -53,7 +59,7 @@ namespace CodeNav.Tests.HelperTests
             {
                 if (item.Kind == CodeItemKindEnum.Property && (
                     item.FontWeight == FontWeights.Bold ||
-                    item.HighlightBackground == Brushes.Blue ||
+                    item.Background == Brushes.Blue ||
                     item.Foreground == Brushes.Red))
                 {
                     found.Add(item);
