@@ -1,0 +1,104 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+                    xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Styles/BookmarkButtonStyle.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <ContextMenu x:Key="ItemContextMenu">
+        
+        <MenuItem Header="Go to Definition" Command="{Binding Path=GoToDefinitionCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.GoToDefinition}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Header="Go to End" Command="{Binding Path=GoToEndCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.HTMLEndTag}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+
+        <MenuItem Header="Select In Code" Command="{Binding Path=SelectInCodeCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.BlockSelection}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+
+        <MenuItem Header="Copy Name" Command="{Binding Path=CopyNameCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Copy}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+
+        <MenuItem>
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Bookmark}" />
+            </MenuItem.Icon>
+            <MenuItem.Header>
+                <StackPanel Orientation="Horizontal">
+                    
+                    <TextBlock Text="Bookmark:" />
+                    <Button Background="Transparent" Margin="6,0,0,0" Command="{Binding Path=DeleteBookmarkCommand}">
+                        <imaging:CrispImage Width="13" Height="13" Moniker="{x:Static catalog:KnownMonikers.Close}" />
+                    </Button>
+
+                    <ItemsControl ItemsSource="{Binding Path=BookmarkStyles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Background="{Binding Background}" 
+                                        Style="{StaticResource BookmarkButtonStyle}" 
+                                        Command="{Binding Path=DataContext.BookmarkCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+            </MenuItem.Header>
+        </MenuItem>
+
+        <MenuItem Header="Clear Bookmarks In Document" Command="{Binding Path=ClearBookmarksCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ClearBookmark}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+        
+        <MenuItem Header="Refresh" Command="{Binding Path=RefreshCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.Refresh}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+        
+        <MenuItem Header="Expand All Regions" Command="{Binding Path=ExpandAllRegionsCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ExpandAll}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Header="Collapse All Regions" Command="{Binding Path=CollapseAllRegionsCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.CollapseAll}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+    </ContextMenu>
+        
+</ResourceDictionary>

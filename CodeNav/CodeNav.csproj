@@ -88,6 +88,9 @@
     <Compile Include="FilterWindow.Designer.cs">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BookmarkHelper.cs" />
+    <Compile Include="Helpers\BrushHelper.cs" />
+    <Compile Include="Helpers\CodeItemExtensions.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\DocumentHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
@@ -117,6 +120,7 @@
     <Compile Include="Mappers\TooltipMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
     <Compile Include="Models\BackgroundWorkerResult.cs" />
+    <Compile Include="Models\BookmarkStyle.cs" />
     <Compile Include="Models\CodePropertyItem.cs" />
     <Compile Include="Models\CodeNamespaceItem.cs" />
     <Compile Include="Models\CodeItemAccessEnum.cs" />
@@ -411,6 +415,14 @@
     <Page Include="Controls\MainToolbar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Menus\ItemContextMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\BookmarkButtonStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\PlusMinusExpanderStyles.xaml">
       <Generator>MSBuild:Compile</Generator>

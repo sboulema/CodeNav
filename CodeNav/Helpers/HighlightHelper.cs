@@ -7,15 +7,13 @@ using System.Windows.Media;
 using CodeNav.Models;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
-using Color = System.Windows.Media.Color;
 using Window = EnvDTE.Window;
 
 namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static void HighlightCurrentItem(Window window, List<CodeItem> codeItems)
+        public static void HighlightCurrentItem(Window window, CodeDocumentViewModel codeDocumentViewModel)
         {
             try
             {
@@ -26,40 +24,51 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            HighlightCurrentItem(codeItems, ((TextSelection)window.Selection).CurrentLine,
-                ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey),
-                ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                ToBrush(EnvironmentColors.ToolWindowTextColorKey));
+            HighlightCurrentItem(codeDocumentViewModel, ((TextSelection)window.Selection).CurrentLine,
+                BrushHelper.ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
+                BrushHelper.ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey),
+                BrushHelper.ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
+                BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey));
         }
 
-        public static void HighlightCurrentItem(List<CodeItem> codeItems, int currentLine, 
+        public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
             SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border, SolidColorBrush regularForeground)
         {
-            if (codeItems == null) return;
+            if (codeDocumentViewModel == null) return;
 
-            UnHighlight(codeItems, regularForeground);
-            var itemsToHighlight = GetItemsToHighlight(codeItems, currentLine);
-            Highlight(codeItems, itemsToHighlight.Select(i => i.Id), foreground, background, border);
+            UnHighlight(codeDocumentViewModel, regularForeground);
+            var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, currentLine);
+            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foreground, background, border);
         }
 
-        private static void UnHighlight(List<CodeItem> document, SolidColorBrush foreground)
+        private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, SolidColorBrush foreground) =>
+            UnHighlight(codeDocumentViewModel.CodeDocument, foreground, codeDocumentViewModel.Bookmarks);
+
+        private static void UnHighlight(List<CodeItem> codeItems, SolidColorBrush foreground, 
+            Dictionary<string, BookmarkStyle> bookmarks)
         {
-            foreach (var item in document)
+            foreach (var item in codeItems)
             {
                 if (item == null) continue;
-
-                item.Foreground = foreground;
+               
                 item.FontWeight = FontWeights.Regular;
-                item.HighlightBackground = Brushes.Transparent;
+
+                if (!BookmarkHelper.IsBookmark(bookmarks, item))
+                {
+                    item.Background = Brushes.Transparent;
+                    item.Foreground = foreground;
+                } else
+                {
+                    item.Foreground = bookmarks[item.Id].Foreground;
+                }
 
                 if (item is IMembers)
                 {
-                    var hasMembersItem = (IMembers)item;                 
-                    
+                    var hasMembersItem = (IMembers)item;
+
                     if (hasMembersItem.Members.Any())
                     {
-                        UnHighlight(hasMembersItem.Members, foreground);
+                        UnHighlight(hasMembersItem.Members, foreground, bookmarks);
                     }
                 }
 
@@ -77,7 +86,7 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
-        private static void Highlight(List<CodeItem> document, IEnumerable<string> ids, 
+        private static void Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
             SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border)
         {
             FrameworkElement element = null;
@@ -87,12 +96,16 @@ namespace CodeNav.Helpers
 
             foreach (var id in ids)
             {
-                var item = FindCodeItem(document, id);
+                var item = FindCodeItem(codeDocumentViewModel.CodeDocument, id);
                 if (item == null) return;
 
                 item.Foreground = foreground;
                 item.FontWeight = FontWeights.Bold;
-                item.HighlightBackground = background;
+
+                if (!BookmarkHelper.IsBookmark(codeDocumentViewModel, item))
+                {
+                    item.Background = background;
+                }
 
                 if (element == null && item.Control != null)
                 {
@@ -143,7 +156,7 @@ namespace CodeNav.Helpers
 
             foreach (var item in items)
             {
-                item.Foreground = ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+                item.Foreground = BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
                 if (item is IMembers)
                 {
@@ -154,17 +167,6 @@ namespace CodeNav.Helpers
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Convert from VSTheme EnvironmentColor to a XAML SolidColorBrush
-        /// </summary>
-        /// <param name="key">VSTheme EnvironmentColor key</param>
-        /// <returns>XAML SolidColorBrush</returns>
-        private static SolidColorBrush ToBrush(ThemeResourceKey key)
-        {
-            var color = VSColorTheme.GetThemedColor(key);
-            return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
         /// <summary>

@@ -3,9 +3,14 @@
                     xmlns:models="clr-namespace:CodeNav.Models"
                     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Menus/ItemContextMenu.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
     <DataTemplate DataType="{x:Type models:CodeItem}">
         <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartLinePosition}" 
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
+                ContextMenu="{StaticResource ItemContextMenu}"
                 BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
@@ -28,7 +33,7 @@
                          FontSize="{Binding FontSize}"          
                          Foreground="{Binding Foreground}" 
                          FontWeight="{Binding FontWeight}" 
-                         Background="{Binding HighlightBackground}"
+                         Background="{Binding Background}"
                          x:Name="ItemName"/>
                     <Run Text="{Binding Type}"       FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                     <Run Text="{Binding Parameters}" FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
