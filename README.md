@@ -19,6 +19,7 @@ Visual Studio extension to show the code structure of your current document
 - Customizable fonts
 - Synced collapsing/expanding regions
 - Collapse/Expand all regions
+- Colored Bookmarks
 
 ## Language support
 - C#
@@ -37,13 +38,16 @@ Visual Studio extension to show the code structure of your current document
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
 
 #### Filter window
-![Preview](https://i.imgur.com/wuVzxsJ.png) 
+![Filter window](https://i.imgur.com/wuVzxsJ.png) 
 
 #### Options window
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
+![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
 
 #### Tool window
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 
+![Tool window](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 
+
+#### Bookmarks
+![Bookmarks](https://i.imgur.com/SqLgsXw.png) 
 
 ## Debugging
 If you experience any problems with CodeNav you can debug what is going on by downloading a debug build of CodeNav.
