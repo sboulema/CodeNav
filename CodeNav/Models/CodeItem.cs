@@ -180,6 +180,20 @@ namespace CodeNav.Models
                 NotifyOfPropertyChange();
             }
         }
+
+        private SolidColorBrush _nameBackground;
+        public SolidColorBrush NameBackground
+        {
+            get
+            {
+                return _nameBackground;
+            }
+            set
+            {
+                _nameBackground = value;
+                NotifyOfPropertyChange();
+            }
+        }
         #endregion
 
         #region Commands

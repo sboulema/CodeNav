@@ -52,10 +52,10 @@ namespace CodeNav.Helpers
                 if (item == null) continue;
                
                 item.FontWeight = FontWeights.Regular;
+                item.NameBackground = Brushes.Transparent;
 
                 if (!BookmarkHelper.IsBookmark(bookmarks, item))
                 {
-                    item.Background = Brushes.Transparent;
                     item.Foreground = foreground;
                 } else
                 {
@@ -101,11 +101,7 @@ namespace CodeNav.Helpers
 
                 item.Foreground = foreground;
                 item.FontWeight = FontWeights.Bold;
-
-                if (!BookmarkHelper.IsBookmark(codeDocumentViewModel, item))
-                {
-                    item.Background = background;
-                }
+                item.NameBackground = background;
 
                 if (element == null && item.Control != null)
                 {
