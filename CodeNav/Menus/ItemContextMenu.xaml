@@ -77,6 +77,9 @@
             </MenuItem.Icon>
         </MenuItem>
 
+        <MenuItem Header="Filter On Bookmarks" Command="{Binding Path=FilterBookmarksCommand}" 
+                  IsCheckable="True" IsChecked="{Binding Path=FilterOnBookmarks}" />
+
         <Separator />
         
         <MenuItem Header="Refresh" Command="{Binding Path=RefreshCommand}">

@@ -35,5 +35,7 @@ namespace CodeNav.Models
         public SortOrderEnum SortOrder;
 
         public Dictionary<string, BookmarkStyle> Bookmarks;
+
+        public bool FilterOnBookmarks;
     }
 }

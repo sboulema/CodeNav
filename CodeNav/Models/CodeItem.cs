@@ -26,6 +26,7 @@ namespace CodeNav.Models
             _bookmarkCommand = new DelegateCommand(Bookmark);
             _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark);
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
+            _filterBookmarksCommand = new DelegateCommand(FilterBookmarks);
         }
 
         public string Name { get; set; }
@@ -42,9 +43,22 @@ namespace CodeNav.Models
         public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
 
-        public List<BookmarkStyle> BookmarkStyles { get
+        public List<BookmarkStyle> BookmarkStyles {
+            get
             {
                 return BookmarkHelper.GetBookmarkStyles();
+            }
+        }
+
+        public bool FilterOnBookmarks
+        {
+            get
+            {
+                return Control.CodeDocumentViewModel.FilterOnBookmarks;
+            }
+            set
+            {
+                Control.CodeDocumentViewModel.FilterOnBookmarks = value;
             }
         }
 
@@ -228,6 +242,10 @@ namespace CodeNav.Models
         private readonly DelegateCommand _clearBookmarksCommand;
         public ICommand ClearBookmarksCommand => _clearBookmarksCommand;
         public void ClearBookmarks(object args) => Control.ClearBookmarks();
+
+        private readonly DelegateCommand _filterBookmarksCommand;
+        public ICommand FilterBookmarksCommand => _filterBookmarksCommand;
+        public void FilterBookmarks(object args) => Control.FilterBookmarks();
         #endregion
     }
 

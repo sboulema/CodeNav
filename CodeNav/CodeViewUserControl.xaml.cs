@@ -114,6 +114,10 @@ namespace CodeNav
 
         public void ClearBookmarks() => BookmarkHelper.ClearBookmarks(CodeDocumentViewModel);
 
+        public void FilterBookmarks() 
+            => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument, 
+                filterOnBookmarks: CodeDocumentViewModel.FilterOnBookmarks, bookmarks: CodeDocumentViewModel.Bookmarks);
+
         public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
             OutliningHelper.RegionsCollapsed(e, CodeDocumentViewModel.CodeDocument);
 
