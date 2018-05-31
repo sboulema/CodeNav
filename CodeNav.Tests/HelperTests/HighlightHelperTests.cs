@@ -29,7 +29,7 @@ namespace CodeNav.Tests.HelperTests
 
             Assert.AreEqual(FontWeights.Bold, highlightedItem.FontWeight);
             Assert.AreEqual(Brushes.Red, highlightedItem.Foreground);
-            Assert.AreEqual(Brushes.Blue, highlightedItem.Background);
+            Assert.AreEqual(Brushes.Blue, highlightedItem.NameBackground);
 
             Assert.AreEqual(Brushes.Green, highlightedClass.BorderBrush);
         }
