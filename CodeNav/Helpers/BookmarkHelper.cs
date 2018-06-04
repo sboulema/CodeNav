@@ -1,8 +1,11 @@
 ﻿using CodeNav.Models;
+using CodeNav.Properties;
 using Microsoft.VisualStudio.PlatformUI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Media;
+using static System.Windows.Forms.Control;
 
 namespace CodeNav.Helpers
 {
@@ -83,7 +86,36 @@ namespace CodeNav.Helpers
         /// Default available bookmark styles
         /// </summary>
         /// <returns>List of bookmark styles</returns>
-        public static List<BookmarkStyle> GetBookmarkStyles() 
+        public static List<BookmarkStyle> GetBookmarkStyles()
+        {
+            if (Settings.Default.BookmarkStyles == null)
+            {
+                Settings.Default.BookmarkStyles = GetDefaultBookmarkStyles();
+                Settings.Default.Save();
+            }
+
+            return Settings.Default.BookmarkStyles;
+        }
+
+        public static void SetBookmarkStyles(ControlCollection controls)
+        {
+            var styles = new List<BookmarkStyle>();
+
+            foreach (var item in controls)
+            {
+                var label = item as Label;
+                styles.Add(new BookmarkStyle(ToMediaColor(label.BackColor), ToMediaColor(label.ForeColor)));
+            }
+
+            Settings.Default.BookmarkStyles = styles;
+            Settings.Default.Save();
+        }
+
+        private static Color ToMediaColor(System.Drawing.Color drawingColor)
+            => Color.FromArgb(drawingColor.A,
+                drawingColor.R, drawingColor.G, drawingColor.B);
+
+        private static List<BookmarkStyle> GetDefaultBookmarkStyles()
             => new List<BookmarkStyle>
             {
                 new BookmarkStyle(Brushes.LightYellow, Brushes.Black),

@@ -26,5 +26,8 @@
     <Setting Name="NewVersionInstalled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="BookmarkStyles" Type="System.Collections.Generic.List&lt;CodeNav.Models.BookmarkStyle&gt;" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -80,6 +80,12 @@
         <MenuItem Header="Filter On Bookmarks" Command="{Binding Path=FilterBookmarksCommand}" 
                   IsCheckable="True" IsChecked="{Binding Path=FilterOnBookmarks}" />
 
+        <MenuItem Header="Customize Bookmark Styles" Command="{Binding Path=CustomizeBookmarkStylesCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ColorPalette}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
         <Separator />
         
         <MenuItem Header="Refresh" Command="{Binding Path=RefreshCommand}">

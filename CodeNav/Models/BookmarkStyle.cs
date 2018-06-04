@@ -12,5 +12,11 @@ namespace CodeNav.Models
             Background = background;
             Foreground = foreground;            
         }
+
+        public BookmarkStyle(Color backgroundColor, Color foregroundColor)
+        {
+            Background = new SolidColorBrush(backgroundColor);
+            Foreground = new SolidColorBrush(foregroundColor);
+        }
     }
 }

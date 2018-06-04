@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.CodeAnalysis.Text;
 using CodeNav.Helpers;
+using CodeNav.Windows;
 
 namespace CodeNav.Models
 {
@@ -27,6 +28,7 @@ namespace CodeNav.Models
             _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark);
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
             _filterBookmarksCommand = new DelegateCommand(FilterBookmarks);
+            _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles);
         }
 
         public string Name { get; set; }
@@ -260,6 +262,14 @@ namespace CodeNav.Models
         private readonly DelegateCommand _filterBookmarksCommand;
         public ICommand FilterBookmarksCommand => _filterBookmarksCommand;
         public void FilterBookmarks(object args) => Control.FilterBookmarks();
+
+        private readonly DelegateCommand _customizeBookmarkStylesCommand;
+        public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
+        public void CustomizeBookmarkStyles(object args)
+        {
+            new CustomizeBookmarkStylesWindow().ShowDialog();
+            NotifyOfPropertyChange("BookmarkStyles");
+        }
         #endregion
     }
 

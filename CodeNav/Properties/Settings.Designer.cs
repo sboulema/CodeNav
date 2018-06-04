@@ -93,7 +93,21 @@ namespace CodeNav.Properties {
                 this["FilterRules"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<CodeNav.Models.BookmarkStyle> BookmarkStyles
+        {
+            get
+            {
+                return ((global::System.Collections.Generic.List<CodeNav.Models.BookmarkStyle>)(this["BookmarkStyles"]));
+            }
+            set
+            {
+                this["BookmarkStyles"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Unknown")]

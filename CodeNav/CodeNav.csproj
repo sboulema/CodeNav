@@ -154,6 +154,12 @@
     <Compile Include="ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowCommand.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowPackage.cs" />
+    <Compile Include="Windows\CustomizeBookmarkStylesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\CustomizeBookmarkStylesWindow.Designer.cs">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -466,6 +472,9 @@
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\CustomizeBookmarkStylesWindow.resx">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
