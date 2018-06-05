@@ -38,12 +38,16 @@ namespace CodeNav.ToolWindow
             // Wire up references for the event handlers
             _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
 
             _control.ShowWaitingForDocument();
         }
+
+        private void DocumentEvents_DocumentOpened(Document document) 
+            => WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
             _control.RegionsCollapsed(e);
@@ -69,12 +73,14 @@ namespace CodeNav.ToolWindow
 
                 // Subscribe to Outlining events
                 var outliningManager = OutliningHelper.GetManager(Package as IServiceProvider, GetCurrentViewHost().TextView);
-                if (outliningManager == null) return;
-                _control.OutliningManager = outliningManager;
-                outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-                outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-                outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-                outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+                if (outliningManager != null)
+                {
+                    _control.OutliningManager = outliningManager;
+                    outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                    outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                    outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                    outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+                }
             }
 
             UpdateDocument(gotFocus, gotFocus != lostFocus);
