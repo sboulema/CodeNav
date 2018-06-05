@@ -17,6 +17,8 @@ namespace CodeNav.Helpers
         /// <param name="codeDocumentViewModel"></param>
         public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
+            if (!codeDocumentViewModel.CodeDocument.Any()) return;
+
             foreach (var bookmark in codeDocumentViewModel.Bookmarks)
             {
                 var codeItem = codeDocumentViewModel.CodeDocument

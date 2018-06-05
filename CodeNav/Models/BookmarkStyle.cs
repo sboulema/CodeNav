@@ -4,8 +4,13 @@ namespace CodeNav.Models
 {
     public class BookmarkStyle
     {
-        public SolidColorBrush Background { get; }
-        public SolidColorBrush Foreground { get; }
+        public SolidColorBrush Background { get; set; }
+        public SolidColorBrush Foreground { get; set; }
+
+        public BookmarkStyle()
+        {
+
+        }
 
         public BookmarkStyle(SolidColorBrush background, SolidColorBrush foreground)
         {

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Windows;
 using Caliburn.Micro;
 using CodeNav.Properties;
 
 namespace CodeNav.Models
 {
+    [DataContract]
     public class CodeDocumentViewModel : PropertyChangedBase
     {
         public CodeDocumentViewModel()
@@ -34,8 +36,12 @@ namespace CodeNav.Models
 
         public SortOrderEnum SortOrder;
 
+        [DataMember]
         public Dictionary<string, BookmarkStyle> Bookmarks;
 
         public bool FilterOnBookmarks;
+
+        [DataMember]
+        public string FilePath;
     }
 }

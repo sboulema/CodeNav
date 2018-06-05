@@ -231,6 +231,9 @@ namespace CodeNav.Models
         public ICommand CollapseAllRegionsCommand => _collapseAllRegionsCommand;
         public void CollapseAllRegions(object args) => Control.ToggleAllRegions(false);
 
+        /// <summary>
+        /// Add a single bookmark
+        /// </summary>
         private readonly DelegateCommand _bookmarkCommand;
         public ICommand BookmarkCommand => _bookmarkCommand;
         public void Bookmark(object args)
@@ -244,8 +247,13 @@ namespace CodeNav.Models
                 Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
             }
             Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
+
+            SaveToSolutionStorage();
         }
 
+        /// <summary>
+        /// Delete a single bookmark
+        /// </summary>
         private readonly DelegateCommand _deleteBookmarkCommand;
         public ICommand DeleteBookmarkCommand => _deleteBookmarkCommand;
         public void DeleteBookmark(object args)
@@ -253,11 +261,21 @@ namespace CodeNav.Models
             BookmarkHelper.ClearBookmark(this);
 
             Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+
+            SaveToSolutionStorage();
         }
 
+        /// <summary>
+        /// Clear all bookmarks
+        /// </summary>
         private readonly DelegateCommand _clearBookmarksCommand;
         public ICommand ClearBookmarksCommand => _clearBookmarksCommand;
-        public void ClearBookmarks(object args) => Control.ClearBookmarks();
+        public void ClearBookmarks(object args)
+        {
+            Control.ClearBookmarks();
+
+            SaveToSolutionStorage();
+        }
 
         private readonly DelegateCommand _filterBookmarksCommand;
         public ICommand FilterBookmarksCommand => _filterBookmarksCommand;
@@ -271,6 +289,24 @@ namespace CodeNav.Models
             NotifyOfPropertyChange("BookmarkStyles");
         }
         #endregion
+
+        private void SaveToSolutionStorage()
+        {
+            var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(Control.Dte.Solution.FileName);
+
+            if (solutionStorageModel.Documents == null)
+            {
+                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
+            }
+
+            var storageItem = solutionStorageModel.Documents
+                .FirstOrDefault(d => d.FilePath.Equals(Control.CodeDocumentViewModel.FilePath));
+            solutionStorageModel.Documents.Remove(storageItem);
+
+            solutionStorageModel.Documents.Add(Control.CodeDocumentViewModel);
+
+            SolutionStorageHelper.Save<SolutionStorageModel>(Control.Dte.Solution.FileName, solutionStorageModel);
+        }
     }
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>

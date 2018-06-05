@@ -140,6 +140,8 @@ namespace CodeNav
             
             LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
 
+            CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
+
             // Do we need to change the side where the margin is displayed
             if (_margin?.MarginSide != Settings.Default.MarginSide && Dte != null)
             {
@@ -280,6 +282,7 @@ namespace CodeNav
                 SortHelper.Sort(CodeDocumentViewModel);
 
                 // Apply bookmarks
+                LoadBookmarksFromStorage();
                 BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel);
 
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
@@ -313,6 +316,20 @@ namespace CodeNav
             if (_backgroundWorker.IsBusy && _backgroundWorker.CancellationPending == false)
             {
                 _backgroundWorker.CancelAsync();
+            }
+        }
+
+        private void LoadBookmarksFromStorage()
+        {
+            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
+
+            if (solutionStorage.Documents == null) return;
+
+            var storageItem = solutionStorage.Documents
+                .FirstOrDefault(s => s.FilePath.Equals(CodeDocumentViewModel.FilePath));
+            if (storageItem != null)
+            {
+                CodeDocumentViewModel.Bookmarks = storageItem.Bookmarks;
             }
         }
     }
