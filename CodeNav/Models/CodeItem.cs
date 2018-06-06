@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.CodeAnalysis.Text;
 using CodeNav.Helpers;
 using CodeNav.Windows;
+using System;
 
 namespace CodeNav.Models
 {
@@ -61,6 +62,14 @@ namespace CodeNav.Models
             set
             {
                 Control.CodeDocumentViewModel.FilterOnBookmarks = value;
+            }
+        }
+
+        public bool BookmarksAvailable
+        {
+            get
+            {
+                return Control.CodeDocumentViewModel.Bookmarks.Any();
             }
         }
 
@@ -238,17 +247,24 @@ namespace CodeNav.Models
         public ICommand BookmarkCommand => _bookmarkCommand;
         public void Bookmark(object args)
         {
-            var bookmarkStyle = args as BookmarkStyle;
-
-            BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
-
-            if (Control.CodeDocumentViewModel.Bookmarks.ContainsKey(Id))
+            try
             {
-                Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
-            }
-            Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
+                var bookmarkStyle = args as BookmarkStyle;
 
-            SaveToSolutionStorage();
+                BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
+
+                if (Control.CodeDocumentViewModel.Bookmarks.ContainsKey(Id))
+                {
+                    Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+                }
+                Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
+
+                SaveToSolutionStorage();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("CodeItem.Bookmark", e);
+            }
         }
 
         /// <summary>
@@ -258,11 +274,18 @@ namespace CodeNav.Models
         public ICommand DeleteBookmarkCommand => _deleteBookmarkCommand;
         public void DeleteBookmark(object args)
         {
-            BookmarkHelper.ClearBookmark(this);
+            try
+            {
+                BookmarkHelper.ClearBookmark(this);
 
-            Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+                Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
 
-            SaveToSolutionStorage();
+                SaveToSolutionStorage();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("CodeItem.DeleteBookmark", e);
+            }
         }
 
         /// <summary>
@@ -272,9 +295,16 @@ namespace CodeNav.Models
         public ICommand ClearBookmarksCommand => _clearBookmarksCommand;
         public void ClearBookmarks(object args)
         {
-            Control.ClearBookmarks();
+            try
+            {
+                Control.ClearBookmarks();
 
-            SaveToSolutionStorage();
+                SaveToSolutionStorage();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("CodeItem.ClearBookmarks", e);
+            }
         }
 
         private readonly DelegateCommand _filterBookmarksCommand;
@@ -292,6 +322,8 @@ namespace CodeNav.Models
 
         private void SaveToSolutionStorage()
         {
+            if (string.IsNullOrEmpty(Control?.Dte?.Solution?.FileName)) return;
+
             var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(Control.Dte.Solution.FileName);
 
             if (solutionStorageModel.Documents == null)

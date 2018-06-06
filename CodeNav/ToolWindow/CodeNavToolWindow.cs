@@ -35,6 +35,11 @@ namespace CodeNav.ToolWindow
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
             _workspace = codeNavToolWindowPackage.Workspace;
 
+            if (_control.Dte == null && codeNavToolWindowPackage.DTE != null)
+            {
+                _control.Dte = codeNavToolWindowPackage.DTE;
+            }        
+
             // Wire up references for the event handlers
             _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;

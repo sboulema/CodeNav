@@ -140,17 +140,19 @@ namespace CodeNav
             
             LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
 
-            if (Dte != null)
+            if (Dte?.ActiveDocument != null)
             {
                 CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
             }          
 
             // Do we need to change the side where the margin is displayed
-            if (_margin?.MarginSide != Settings.Default.MarginSide && Dte != null)
+            if (_margin?.MarginSide != null && 
+                _margin?.MarginSide != Settings.Default.MarginSide && 
+                Dte != null)
             {
                 var filename = _window.Document.FullName;
                 Dte.ExecuteCommand("File.Close");
-                Dte.ExecuteCommand("File.OpenFile", filename);           
+                Dte.ExecuteCommand("File.OpenFile", filename);
             }
 
             if (forceUpdate)
@@ -324,7 +326,7 @@ namespace CodeNav
 
         private void LoadBookmarksFromStorage()
         {
-            if (Dte == null) return;
+            if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
 
             var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
 

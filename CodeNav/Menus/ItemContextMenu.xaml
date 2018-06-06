@@ -71,14 +71,17 @@
             </MenuItem.Header>
         </MenuItem>
 
-        <MenuItem Header="Clear Bookmarks In Document" Command="{Binding Path=ClearBookmarksCommand}">
+        <MenuItem Header="Clear Bookmarks In Document" Command="{Binding Path=ClearBookmarksCommand}"
+            IsEnabled="{Binding BookmarksAvailable}">
             <MenuItem.Icon>
                 <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ClearBookmark}" />
             </MenuItem.Icon>
         </MenuItem>
 
         <MenuItem Header="Filter On Bookmarks" Command="{Binding Path=FilterBookmarksCommand}" 
-                  IsCheckable="True" IsChecked="{Binding Path=FilterOnBookmarks}" />
+                IsCheckable="True" 
+                IsChecked="{Binding Path=FilterOnBookmarks}" 
+                IsEnabled="{Binding Path=BookmarksAvailable}" />
 
         <MenuItem Header="Customize Bookmark Styles" Command="{Binding Path=CustomizeBookmarkStylesCommand}">
             <MenuItem.Icon>
