@@ -89,7 +89,6 @@
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BookmarkHelper.cs" />
-    <Compile Include="Helpers\BrushHelper.cs" />
     <Compile Include="Helpers\CodeItemExtensions.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\DocumentHelper.cs" />
@@ -133,10 +132,10 @@
     <Compile Include="Models\MarginSideEnum.cs" />
     <Compile Include="Models\SolutionStorageModel.cs" />
     <Compile Include="Models\SortOrderEnum.cs" />
-    <Compile Include="OptionsWindow.cs">
+    <Compile Include="Windows\OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionsWindow.Designer.cs">
+    <Compile Include="Windows\OptionsWindow.Designer.cs">
       <DependentUpon>OptionsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="CodeViewUserControl.xaml.cs">
@@ -467,7 +466,7 @@
     <EmbeddedResource Include="FilterWindow.resx">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionsWindow.resx">
+    <EmbeddedResource Include="Windows\OptionsWindow.resx">
       <DependentUpon>OptionsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolWindow\VSPackage.resx">

@@ -29,5 +29,8 @@
     <Setting Name="BookmarkStyles" Type="System.Collections.Generic.List&lt;CodeNav.Models.BookmarkStyle&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="HighlightBackgroundColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Transparent</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

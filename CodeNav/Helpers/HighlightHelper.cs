@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Models;
+using CodeNav.Properties;
 using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
 using Window = EnvDTE.Window;
@@ -25,10 +26,10 @@ namespace CodeNav.Helpers
             }
 
             HighlightCurrentItem(codeDocumentViewModel, ((TextSelection)window.Selection).CurrentLine,
-                BrushHelper.ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                BrushHelper.ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey),
-                BrushHelper.ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey));
+                ColorHelper.ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
+                GetBackgroundBrush(),
+                ColorHelper.ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
+                ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey));
         }
 
         public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
@@ -152,7 +153,7 @@ namespace CodeNav.Helpers
 
             foreach (var item in items)
             {
-                item.Foreground = BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+                item.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
 
                 if (item is IMembers)
                 {
@@ -163,6 +164,17 @@ namespace CodeNav.Helpers
                     }
                 }
             }
+        }
+
+        private static SolidColorBrush GetBackgroundBrush()
+        {
+            var highlightBackgroundColor = Settings.Default.HighlightBackgroundColor;
+            if (highlightBackgroundColor.IsNamedColor && highlightBackgroundColor.Name.Equals("Transparent"))
+            {
+                return ColorHelper.ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);
+            }
+
+            return ColorHelper.ToBrush(highlightBackgroundColor);
         }
 
         /// <summary>

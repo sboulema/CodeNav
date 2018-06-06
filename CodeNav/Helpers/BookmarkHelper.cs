@@ -1,6 +1,7 @@
 ﻿using CodeNav.Models;
 using CodeNav.Properties;
 using Microsoft.VisualStudio.PlatformUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,14 +18,21 @@ namespace CodeNav.Helpers
         /// <param name="codeDocumentViewModel"></param>
         public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
-            if (!codeDocumentViewModel.CodeDocument.Any()) return;
-
-            foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+            try
             {
-                var codeItem = codeDocumentViewModel.CodeDocument
-                    .Flatten()
-                    .First(i => i.Id.Equals(bookmark.Key));
-                ApplyBookmark(codeItem, bookmark.Value as BookmarkStyle);
+                if (!codeDocumentViewModel.CodeDocument.Any()) return;
+
+                foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+                {
+                    var codeItem = codeDocumentViewModel.CodeDocument
+                        .Flatten()
+                        .First(i => i.Id.Equals(bookmark.Key));
+                    ApplyBookmark(codeItem, bookmark.Value as BookmarkStyle);
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("ApplyBookmarks", e);
             }
         }
 
@@ -34,15 +42,22 @@ namespace CodeNav.Helpers
         /// <param name="codeDocumentViewModel">view model</param>
         public static void ClearBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
-            foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+            try
             {
-                var codeItem = codeDocumentViewModel.CodeDocument
-                    .Flatten()
-                    .First(i => i.Id.Equals(bookmark.Key));
-                ClearBookmark(codeItem);
-            }
+                foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+                {
+                    var codeItem = codeDocumentViewModel.CodeDocument
+                        .Flatten()
+                        .First(i => i.Id.Equals(bookmark.Key));
+                    ClearBookmark(codeItem);
+                }
 
-            codeDocumentViewModel.Bookmarks.Clear();
+                codeDocumentViewModel.Bookmarks.Clear();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("ClearBookmarks", e);
+            }
         }
 
         /// <summary>
@@ -63,7 +78,7 @@ namespace CodeNav.Helpers
         public static void ClearBookmark(CodeItem codeItem)
         {
             codeItem.Background = Brushes.Transparent;
-            codeItem.Foreground = BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+            codeItem.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
         }
 
         /// <summary>
@@ -106,16 +121,12 @@ namespace CodeNav.Helpers
             foreach (var item in controls)
             {
                 var label = item as Label;
-                styles.Add(new BookmarkStyle(ToMediaColor(label.BackColor), ToMediaColor(label.ForeColor)));
+                styles.Add(new BookmarkStyle(ColorHelper.ToBrush(label.BackColor), ColorHelper.ToBrush(label.ForeColor)));
             }
 
             Settings.Default.BookmarkStyles = styles;
             Settings.Default.Save();
         }
-
-        private static Color ToMediaColor(System.Drawing.Color drawingColor)
-            => Color.FromArgb(drawingColor.A,
-                drawingColor.R, drawingColor.G, drawingColor.B);
 
         private static List<BookmarkStyle> GetDefaultBookmarkStyles()
             => new List<BookmarkStyle>

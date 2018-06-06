@@ -17,7 +17,7 @@ namespace CodeNav.Mappers
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Struct;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
 
             foreach (var structMember in member.Members)
             {
@@ -36,7 +36,7 @@ namespace CodeNav.Mappers
                 member.StructureStatement.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Struct;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
 
             foreach (var structMember in member.Members)
             {
