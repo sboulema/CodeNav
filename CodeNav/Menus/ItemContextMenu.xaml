@@ -7,7 +7,7 @@
         <ResourceDictionary Source="../Styles/BookmarkButtonStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <ContextMenu x:Key="ItemContextMenu">
+    <ContextMenu x:Key="ItemContextMenu" IsOpen="{Binding Path=ContextMenuIsOpen, Mode=TwoWay}">
         
         <MenuItem Header="Go to Definition" Command="{Binding Path=GoToDefinitionCommand}">
             <MenuItem.Icon>

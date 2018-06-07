@@ -73,6 +73,20 @@ namespace CodeNav.Models
             }
         }
 
+        private bool _contextMenuIsOpen;
+        public bool ContextMenuIsOpen
+        {
+            get
+            {
+                return _contextMenuIsOpen;
+            }
+            set
+            {
+                _contextMenuIsOpen = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
         #region Fonts
         private float _fontSize;
         public float FontSize
@@ -260,6 +274,10 @@ namespace CodeNav.Models
                 Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
 
                 SaveToSolutionStorage();
+
+                ContextMenuIsOpen = false;
+
+                NotifyOfPropertyChange("BookmarksAvailable");              
             }
             catch (Exception e)
             {
@@ -281,6 +299,8 @@ namespace CodeNav.Models
                 Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
 
                 SaveToSolutionStorage();
+
+                NotifyOfPropertyChange("BookmarksAvailable");
             }
             catch (Exception e)
             {
@@ -300,6 +320,8 @@ namespace CodeNav.Models
                 Control.ClearBookmarks();
 
                 SaveToSolutionStorage();
+
+                NotifyOfPropertyChange("BookmarksAvailable");
             }
             catch (Exception e)
             {
