@@ -103,18 +103,30 @@ namespace CodeNav.Helpers
         /// Default available bookmark styles
         /// </summary>
         /// <returns>List of bookmark styles</returns>
-        public static List<BookmarkStyle> GetBookmarkStyles()
+        public static List<BookmarkStyle> GetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
         {
-            if (Settings.Default.BookmarkStyles == null)
+            if (string.IsNullOrEmpty(solutionFilePath)) return GetDefaultBookmarkStyles();
+
+            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
+
+            if (solutionStorage.Documents == null) return GetDefaultBookmarkStyles();
+
+            var storageItem = solutionStorage.Documents
+                .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));
+            if (storageItem != null)
             {
-                Settings.Default.BookmarkStyles = GetDefaultBookmarkStyles();
-                Settings.Default.Save();
+                codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }
 
-            return Settings.Default.BookmarkStyles;
+            if (codeDocumentViewModel.BookmarkStyles == null)
+            {
+                codeDocumentViewModel.BookmarkStyles = GetDefaultBookmarkStyles();
+            }
+
+            return codeDocumentViewModel.BookmarkStyles;
         }
 
-        public static void SetBookmarkStyles(ControlCollection controls)
+        public static void SetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, ControlCollection controls, string solutionFilePath)
         {
             var styles = new List<BookmarkStyle>();
 
@@ -124,8 +136,9 @@ namespace CodeNav.Helpers
                 styles.Add(new BookmarkStyle(ColorHelper.ToBrush(label.BackColor), ColorHelper.ToBrush(label.ForeColor)));
             }
 
-            Settings.Default.BookmarkStyles = styles;
-            Settings.Default.Save();
+            codeDocumentViewModel.BookmarkStyles = styles;
+
+            SolutionStorageHelper.SaveToSolutionStorage(solutionFilePath, codeDocumentViewModel);
         }
 
         private static List<BookmarkStyle> GetDefaultBookmarkStyles()

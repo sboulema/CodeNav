@@ -49,7 +49,7 @@ namespace CodeNav.Models
         public List<BookmarkStyle> BookmarkStyles {
             get
             {
-                return BookmarkHelper.GetBookmarkStyles();
+                return BookmarkHelper.GetBookmarkStyles(Control.CodeDocumentViewModel, Control.Dte?.Solution?.FileName);
             }
         }
 
@@ -333,7 +333,7 @@ namespace CodeNav.Models
         public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
         public void CustomizeBookmarkStyles(object args)
         {
-            new CustomizeBookmarkStylesWindow().ShowDialog();
+            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel, Control.Dte?.Solution?.FileName).ShowDialog();
             NotifyOfPropertyChange("BookmarkStyles");
         }
         #endregion

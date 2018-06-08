@@ -46,7 +46,7 @@
             this.bookmarkStylesFlowLayoutPanel.Location = new System.Drawing.Point(12, 12);
             this.bookmarkStylesFlowLayoutPanel.Name = "bookmarkStylesFlowLayoutPanel";
             this.bookmarkStylesFlowLayoutPanel.Size = new System.Drawing.Size(376, 107);
-            this.bookmarkStylesFlowLayoutPanel.TabIndex = 2;
+            this.bookmarkStylesFlowLayoutPanel.TabIndex = 1;
             // 
             // backgroundButton
             // 
@@ -54,7 +54,7 @@
             this.backgroundButton.Location = new System.Drawing.Point(12, 125);
             this.backgroundButton.Name = "backgroundButton";
             this.backgroundButton.Size = new System.Drawing.Size(75, 23);
-            this.backgroundButton.TabIndex = 4;
+            this.backgroundButton.TabIndex = 2;
             this.backgroundButton.Text = "Background";
             this.backgroundButton.UseVisualStyleBackColor = true;
             this.backgroundButton.Click += new System.EventHandler(this.backgroundButton_Click);
@@ -65,7 +65,7 @@
             this.foregroundButton.Location = new System.Drawing.Point(93, 125);
             this.foregroundButton.Name = "foregroundButton";
             this.foregroundButton.Size = new System.Drawing.Size(75, 23);
-            this.foregroundButton.TabIndex = 5;
+            this.foregroundButton.TabIndex = 3;
             this.foregroundButton.Text = "Foregound";
             this.foregroundButton.UseVisualStyleBackColor = true;
             this.foregroundButton.Click += new System.EventHandler(this.foregroundButton_Click);
@@ -76,7 +76,7 @@
             this.cancelButton.Location = new System.Drawing.Point(313, 173);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 6;
+            this.cancelButton.TabIndex = 5;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
@@ -87,7 +87,7 @@
             this.okButton.Location = new System.Drawing.Point(232, 173);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 7;
+            this.okButton.TabIndex = 4;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);

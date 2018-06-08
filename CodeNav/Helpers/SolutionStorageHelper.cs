@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using CodeNav.Models;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CodeNav.Helpers
 {
@@ -32,6 +35,26 @@ namespace CodeNav.Helpers
 
             var solutionFolder = Path.GetDirectoryName(solutionFilePath);
             File.WriteAllText(Path.Combine(solutionFolder, $"{ApplicationName}.json"), json);
+        }
+
+        public static void SaveToSolutionStorage(string solutionFilePath, CodeDocumentViewModel codeDocumentViewModel)
+        {
+            if (string.IsNullOrEmpty(solutionFilePath)) return;
+
+            var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
+
+            if (solutionStorageModel.Documents == null)
+            {
+                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
+            }
+
+            var storageItem = solutionStorageModel.Documents
+                .FirstOrDefault(d => d.FilePath.Equals(codeDocumentViewModel.FilePath));
+            solutionStorageModel.Documents.Remove(storageItem);
+
+            solutionStorageModel.Documents.Add(codeDocumentViewModel);
+
+            SolutionStorageHelper.Save<SolutionStorageModel>(solutionFilePath, solutionStorageModel);
         }
     }
 }

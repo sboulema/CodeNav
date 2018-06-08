@@ -120,17 +120,6 @@ namespace CodeNav.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<CodeNav.Models.BookmarkStyle> BookmarkStyles {
-            get {
-                return ((global::System.Collections.Generic.List<CodeNav.Models.BookmarkStyle>)(this["BookmarkStyles"]));
-            }
-            set {
-                this["BookmarkStyles"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Transparent")]
         public global::System.Drawing.Color HighlightBackgroundColor {
             get {

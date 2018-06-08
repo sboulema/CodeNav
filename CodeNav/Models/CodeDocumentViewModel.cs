@@ -109,5 +109,8 @@ namespace CodeNav.Models
 
         [DataMember]
         public string FilePath;
+
+        [DataMember]
+        public List<BookmarkStyle> BookmarkStyles;
     }
 }

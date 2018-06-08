@@ -10,20 +10,25 @@ namespace CodeNav.Windows
     public partial class CustomizeBookmarkStylesWindow : Form
     {
         private Label _selectedLabel;
+        private CodeDocumentViewModel _codeDocumentViewModel;
+        private string _solutionFilePath;
 
-        public CustomizeBookmarkStylesWindow()
+        public CustomizeBookmarkStylesWindow(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
         {
+            _codeDocumentViewModel = codeDocumentViewModel;
+            _solutionFilePath = solutionFilePath;
+
             InitializeComponent();
         }
 
         private void CustomizeBookmarkStylesWindow_Load(object sender, EventArgs e)
         {
-            AddBookmarkStyles();
+            loadBookmarkStyles();
         }
 
-        private void AddBookmarkStyles()
+        private void loadBookmarkStyles()
         {
-            foreach (var style in BookmarkHelper.GetBookmarkStyles())
+            foreach (var style in BookmarkHelper.GetBookmarkStyles(_codeDocumentViewModel, _solutionFilePath))
             {
                 var item = new Label
                 {
@@ -77,7 +82,7 @@ namespace CodeNav.Windows
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            BookmarkHelper.SetBookmarkStyles(bookmarkStylesFlowLayoutPanel.Controls);
+            BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, bookmarkStylesFlowLayoutPanel.Controls, _solutionFilePath);
             Close();
         }
     }
