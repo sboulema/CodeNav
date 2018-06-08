@@ -14,7 +14,7 @@ namespace CodeNav.Models
         public CodeDocumentViewModel()
         {
             _codeDocument = new List<CodeItem>();
-            Bookmarks = new Dictionary<string, BookmarkStyle>();
+            Bookmarks = new Dictionary<string, int>();
         }
 
         private List<CodeItem> _codeDocument;
@@ -46,14 +46,14 @@ namespace CodeNav.Models
             }
         }
 
-        public void AddBookmark(string id, BookmarkStyle bookmarkStyle)
+        public void AddBookmark(string id, int bookmarkStyleIndex)
         {
             if (Bookmarks.ContainsKey(id))
             {
                 Bookmarks.Remove(id);
             }
 
-            Bookmarks.Add(id, bookmarkStyle);
+            Bookmarks.Add(id, bookmarkStyleIndex);
 
             NotifyOfPropertyChange("BookmarksAvailable");
         }
@@ -90,9 +90,9 @@ namespace CodeNav.Models
             }
         }
 
-        private Dictionary<string, BookmarkStyle> _bookmarks;
+        private Dictionary<string, int> _bookmarks;
         [DataMember]
-        public Dictionary<string, BookmarkStyle> Bookmarks
+        public Dictionary<string, int> Bookmarks
         {
             get
             {

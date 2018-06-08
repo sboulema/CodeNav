@@ -286,7 +286,7 @@ namespace CodeNav
 
                 // Apply bookmarks
                 LoadBookmarksFromStorage();
-                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel);
+                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
 
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
             }

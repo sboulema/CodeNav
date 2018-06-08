@@ -23,10 +23,10 @@ namespace CodeNav.Windows
 
         private void CustomizeBookmarkStylesWindow_Load(object sender, EventArgs e)
         {
-            loadBookmarkStyles();
+            LoadBookmarkStyles();
         }
 
-        private void loadBookmarkStyles()
+        private void LoadBookmarkStyles()
         {
             foreach (var style in BookmarkHelper.GetBookmarkStyles(_codeDocumentViewModel, _solutionFilePath))
             {

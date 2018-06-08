@@ -267,7 +267,8 @@ namespace CodeNav.Models
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
-                Control.CodeDocumentViewModel.AddBookmark(Id, bookmarkStyle);
+                Control.CodeDocumentViewModel.AddBookmark(Id, 
+                    BookmarkHelper.GetIndex(BookmarkStyles, bookmarkStyle));
 
                 SaveToSolutionStorage();
 
@@ -333,8 +334,9 @@ namespace CodeNav.Models
         public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
         public void CustomizeBookmarkStyles(object args)
         {
-            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel, Control.Dte?.Solution?.FileName).ShowDialog();
-            NotifyOfPropertyChange("BookmarkStyles");
+            var solutionFilePath = Control.Dte?.Solution?.FileName;
+            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel, solutionFilePath).ShowDialog();
+            BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel, solutionFilePath);
         }
         #endregion
 

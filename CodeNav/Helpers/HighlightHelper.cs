@@ -46,7 +46,7 @@ namespace CodeNav.Helpers
             UnHighlight(codeDocumentViewModel.CodeDocument, foreground, codeDocumentViewModel.Bookmarks);
 
         private static void UnHighlight(List<CodeItem> codeItems, SolidColorBrush foreground, 
-            Dictionary<string, BookmarkStyle> bookmarks)
+            Dictionary<string, int> bookmarks)
         {
             foreach (var item in codeItems)
             {
@@ -60,7 +60,7 @@ namespace CodeNav.Helpers
                     item.Foreground = foreground;
                 } else
                 {
-                    item.Foreground = bookmarks[item.Id].Foreground;
+                    item.Foreground = item.BookmarkStyles[bookmarks[item.Id]].Foreground;
                 }
 
                 if (item is IMembers)

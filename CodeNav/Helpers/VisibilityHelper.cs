@@ -18,7 +18,7 @@ namespace CodeNav.Helpers
         /// <param name="filterOnBookmarks">Filters items by being bookmarked</param>
         /// <param name="bookmarks">List of bookmarked items</param>
         public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "", 
-            bool filterOnBookmarks = false, Dictionary<string, BookmarkStyle> bookmarks = null)
+            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace CodeNav.Helpers
         }
 
         private static bool ShouldBeVisible(CodeItem item, string name = "", 
-            bool filterOnBookmarks = false, Dictionary<string, BookmarkStyle> bookmarks = null)
+            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             var visible = true;
 

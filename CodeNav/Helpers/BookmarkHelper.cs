@@ -16,18 +16,20 @@ namespace CodeNav.Helpers
         /// Apply bookmark style to all code items that are bookmarked
         /// </summary>
         /// <param name="codeDocumentViewModel"></param>
-        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
+        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
         {
             try
             {
                 if (!codeDocumentViewModel.CodeDocument.Any()) return;
+
+                GetBookmarkStyles(codeDocumentViewModel, solutionFilePath);
 
                 foreach (var bookmark in codeDocumentViewModel.Bookmarks)
                 {
                     var codeItem = codeDocumentViewModel.CodeDocument
                         .Flatten()
                         .First(i => i.Id.Equals(bookmark.Key));
-                    ApplyBookmark(codeItem, bookmark.Value as BookmarkStyle);
+                    ApplyBookmark(codeItem, codeDocumentViewModel.BookmarkStyles[bookmark.Value]);
                 }
             }
             catch (Exception e)
@@ -96,7 +98,7 @@ namespace CodeNav.Helpers
         /// <param name="bookmarks">List of bookmarks</param>
         /// <param name="codeItem">code item</param>
         /// <returns>if code item is bookmarked</returns>
-        public static bool IsBookmark(Dictionary<string, BookmarkStyle> bookmarks, CodeItem codeItem)
+        public static bool IsBookmark(Dictionary<string, int> bookmarks, CodeItem codeItem)
             => bookmarks.ContainsKey(codeItem.Id);
 
         /// <summary>
@@ -136,9 +138,15 @@ namespace CodeNav.Helpers
                 styles.Add(new BookmarkStyle(ColorHelper.ToBrush(label.BackColor), ColorHelper.ToBrush(label.ForeColor)));
             }
 
-            codeDocumentViewModel.BookmarkStyles = styles;
+            codeDocumentViewModel.BookmarkStyles = styles;   
 
             SolutionStorageHelper.SaveToSolutionStorage(solutionFilePath, codeDocumentViewModel);
+        }
+
+        public static int GetIndex(List<BookmarkStyle> bookmarkStyles, BookmarkStyle bookmarkStyle)
+        {
+            return bookmarkStyles.FindIndex(b => b.Background.Color == bookmarkStyle.Background.Color && 
+            b.Foreground.Color == bookmarkStyle.Foreground.Color);
         }
 
         private static List<BookmarkStyle> GetDefaultBookmarkStyles()
