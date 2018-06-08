@@ -112,8 +112,6 @@ namespace CodeNav
             SelectLine(endLinePosition, true);
         }
 
-        public void ClearBookmarks() => BookmarkHelper.ClearBookmarks(CodeDocumentViewModel);
-
         public void FilterBookmarks() 
             => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument, 
                 filterOnBookmarks: CodeDocumentViewModel.FilterOnBookmarks, bookmarks: CodeDocumentViewModel.Bookmarks);

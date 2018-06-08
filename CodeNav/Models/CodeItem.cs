@@ -267,11 +267,7 @@ namespace CodeNav.Models
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
-                if (Control.CodeDocumentViewModel.Bookmarks.ContainsKey(Id))
-                {
-                    Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
-                }
-                Control.CodeDocumentViewModel.Bookmarks.Add(Id, bookmarkStyle);
+                Control.CodeDocumentViewModel.AddBookmark(Id, bookmarkStyle);
 
                 SaveToSolutionStorage();
 
@@ -296,7 +292,7 @@ namespace CodeNav.Models
             {
                 BookmarkHelper.ClearBookmark(this);
 
-                Control.CodeDocumentViewModel.Bookmarks.Remove(Id);
+                Control.CodeDocumentViewModel.RemoveBookmark(Id);
 
                 SaveToSolutionStorage();
 
@@ -317,7 +313,7 @@ namespace CodeNav.Models
         {
             try
             {
-                Control.ClearBookmarks();
+                Control.CodeDocumentViewModel.ClearBookmarks();
 
                 SaveToSolutionStorage();
 
