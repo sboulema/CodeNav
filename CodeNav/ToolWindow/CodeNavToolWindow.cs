@@ -33,7 +33,7 @@ namespace CodeNav.ToolWindow
         public override void OnToolWindowCreated()
         {
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
-            _workspace = codeNavToolWindowPackage.Workspace;
+            _workspace = codeNavToolWindowPackage.ComponentModel.GetService<VisualStudioWorkspace>();
 
             if (_control.Dte == null && codeNavToolWindowPackage.DTE != null)
             {
