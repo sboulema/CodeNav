@@ -129,5 +129,17 @@ namespace CodeNav.Properties {
                 this["HighlightBackgroundColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseXMLComments {
+            get {
+                return ((bool)(this["UseXMLComments"]));
+            }
+            set {
+                this["UseXMLComments"] = value;
+            }
+        }
     }
 }

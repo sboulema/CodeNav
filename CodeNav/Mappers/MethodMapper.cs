@@ -1,6 +1,8 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
 using System.Linq;
@@ -39,6 +41,11 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
+            if (TriviaSummaryMapper.HasSummary(member) && Settings.Default.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+            
             return item;
         }
 
@@ -74,6 +81,11 @@ namespace CodeNav.Mappers
             item.Id = IdMapper.MapId(item.FullName, member.SubOrFunctionStatement.ParameterList, semanticModel);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && Settings.Default.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             return item;
         }

@@ -22,6 +22,7 @@ namespace CodeNav.Windows
             Settings.Default.MarginSide = (MarginSideEnum)Enum.Parse(typeof(MarginSideEnum), marginSideComboBox.Text);
             Settings.Default.Font = fontDialog1.Font;
             Settings.Default.ShowFilterToolbar = filterToolbarCheckBox.Checked;
+            Settings.Default.UseXMLComments = xmlCommentsCheckBox.Checked;
             Settings.Default.Save();
             Close();
         }
@@ -32,6 +33,7 @@ namespace CodeNav.Windows
             fontDialog1.Font = Settings.Default.Font;
             filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;
             highlightBackgroundButton.BackColor = Settings.Default.HighlightBackgroundColor;
+            xmlCommentsCheckBox.Checked = Settings.Default.UseXMLComments;
         }
 
         private void fontButton_Click(object sender, EventArgs e)

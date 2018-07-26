@@ -41,6 +41,7 @@
             this.highlightBackgroundButton = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.resetButton = new System.Windows.Forms.Button();
+            this.xmlCommentsCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -68,7 +69,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(210, 149);
+            this.okButton.Location = new System.Drawing.Point(210, 157);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -79,7 +80,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(291, 149);
+            this.cancelButton.Location = new System.Drawing.Point(291, 157);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -141,7 +142,7 @@
             // resetButton
             // 
             this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resetButton.Location = new System.Drawing.Point(12, 149);
+            this.resetButton.Location = new System.Drawing.Point(12, 157);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 9;
@@ -149,11 +150,22 @@
             this.resetButton.UseVisualStyleBackColor = true;
             this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
             // 
+            // xmlCommentsCheckBox
+            // 
+            this.xmlCommentsCheckBox.AutoSize = true;
+            this.xmlCommentsCheckBox.Location = new System.Drawing.Point(12, 124);
+            this.xmlCommentsCheckBox.Name = "xmlCommentsCheckBox";
+            this.xmlCommentsCheckBox.Size = new System.Drawing.Size(210, 17);
+            this.xmlCommentsCheckBox.TabIndex = 10;
+            this.xmlCommentsCheckBox.Text = "Use XML comments for method tooltips";
+            this.xmlCommentsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 184);
+            this.ClientSize = new System.Drawing.Size(383, 192);
+            this.Controls.Add(this.xmlCommentsCheckBox);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.highlightBackgroundButton);
             this.Controls.Add(this.label3);
@@ -188,5 +200,6 @@
         private System.Windows.Forms.Button highlightBackgroundButton;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Button resetButton;
+        private System.Windows.Forms.CheckBox xmlCommentsCheckBox;
     }
 }

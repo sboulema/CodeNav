@@ -37,6 +37,7 @@
     <Compile Include="Files\TestInterface3.cs" />
     <Compile Include="Files\TestInterface2.cs" />
     <Compile Include="Files\TestInterface.cs" />
+    <Compile Include="Files\TestMethodsWithComments.cs" />
     <Compile Include="Files\TestNestedNamespaces.cs" />
     <Compile Include="Files\TestNoNamespace.cs" />
     <Compile Include="Files\TestProperties.cs" />
@@ -53,7 +54,8 @@
     <Compile Include="MapperTests\TestEnums.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
     <Compile Include="MapperTests\TestClasses.cs" />
-    <Compile Include="MapperTests\TestMethods.cs" />
+    <Compile Include="MapperTests\TestMethodsWithComments.cs" />
+    <Compile Include="MapperTests\VisualBasic\TestMethods.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
     <Compile Include="MapperTests\TestFields.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="MapperTests\TestUsingsInNamespace.cs" />
     <Compile Include="MapperTests\TypeMapperTests.cs" />
     <Compile Include="MapperTests\TooltipMapperTests.cs" />
+    <Compile Include="MapperTests\VisualBasic\TestMethodsWithComments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapperTests\TestEmptyClass.cs" />
     <Compile Include="MapperTests\TestInterface.cs" />
@@ -129,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\VisualBasic\TestClasses.vb" />
+    <Content Include="Files\VisualBasic\TestMethodsWithComments.vb" />
     <Content Include="Files\VisualBasic\TestModules.vb" />
     <Content Include="Files\VisualBasic\TestNamespaces.vb" />
     <Content Include="Files\VisualBasic\TestMethods.vb" />

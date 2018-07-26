@@ -5,7 +5,7 @@ using CodeNav.Mappers;
 using CodeNav.Models;
 using NUnit.Framework;
 
-namespace CodeNav.Tests.MapperTests
+namespace CodeNav.Tests.MapperTests.VisualBasic
 {
     [TestFixture]
     public class TestMethods

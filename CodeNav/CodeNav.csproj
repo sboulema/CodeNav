@@ -116,6 +116,7 @@
     <Compile Include="Mappers\StatementMapper.cs" />
     <Compile Include="Mappers\StructMapper.cs" />
     <Compile Include="Mappers\SyntaxMapper.cs" />
+    <Compile Include="Mappers\TriviaSummaryMapper.cs" />
     <Compile Include="Mappers\TypeMapper.cs" />
     <Compile Include="Mappers\TooltipMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
