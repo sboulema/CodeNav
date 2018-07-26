@@ -95,6 +95,7 @@
     <Compile Include="Helpers\HighlightHelper.cs" />
     <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\SolutionStorageHelper.cs" />
     <Compile Include="Helpers\OutliningHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />

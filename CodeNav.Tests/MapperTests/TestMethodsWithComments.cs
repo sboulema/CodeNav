@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using NUnit.Framework;
@@ -13,6 +14,8 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void ShouldBeOk()
         {
+            SettingsHelper.UseXMLComments = true;
+
             var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestMethodsWithComments.cs"));
 
             Assert.IsTrue(document.Any());

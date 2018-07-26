@@ -9,17 +9,6 @@ namespace CodeNav.Mappers
 {
     public static class TriviaSummaryMapper
     {
-        //public static string Map(CSharpSyntaxNode member)
-        //{
-        //    var leadingTrivia = member.GetLeadingTrivia();
-        //    var commentTrivia = leadingTrivia.FirstOrDefault(t => t.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia);
-        //    var nodes = commentTrivia.GetStructure().ChildNodes();
-        //    var xmlElement = nodes.FirstOrDefault(n => n.Kind() == SyntaxKind.XmlElement && (n as XmlElementSyntax).StartTag.Name.LocalName.ValueText.Equals("summary"));
-        //    var summaryContent = (xmlElement as XmlElementSyntax).Content;
-        //    var summaryText = summaryContent.ToString().Replace("///", string.Empty).Trim();
-        //    return summaryText;
-        //}
-
         public static string Map(SyntaxNode member)
         {
             var commentTrivia = GetCommentTrivia(member);
