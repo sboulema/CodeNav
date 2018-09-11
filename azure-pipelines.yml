@@ -7,6 +7,7 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 variables:
+  version: '4.5.$(Rev:.r)'
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
@@ -17,6 +18,13 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
+
+- task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-Task@1
+  displayName: 'Set Assembly Manifest Data'
+  inputs:
+    VersionNumber: '$(version)'
+    FileVersionNumber: '$(version)'
+    InformationalVersion: '$(version)'
 
 - task: VSBuild@1
   inputs:
@@ -31,22 +39,14 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    #sourceFolder: # Optional
     contents: '**\*.vsix' 
     targetFolder: '$(Build.ArtifactStagingDirectory)'
-    #cleanTargetFolder: false # Optional
-    #overWrite: false # Optional
     flattenFolders: true
 
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    #arguments: # Optional
-    script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:BUILD_BUILDNUMBER + $_.extension }'
-    #errorActionPreference: 'stop' # Optional. Options: stop, continue, silentlyContinue
-    #failOnStderr: false # Optional
-    #ignoreLASTEXITCODE: false # Optional
-    #pwsh: false # Optional
+    script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:VERSION + $_.extension }'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
