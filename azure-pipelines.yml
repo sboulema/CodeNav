@@ -7,7 +7,8 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 variables:
-  version: '4.5.$(Rev:.r)'
+  patch: $[counter('versioncounter', 211)]
+  version: 4.5.$(patch)
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
@@ -20,7 +21,6 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-Task@1
-  displayName: 'Set Assembly Manifest Data'
   inputs:
     VersionNumber: '$(version)'
     FileVersionNumber: '$(version)'
