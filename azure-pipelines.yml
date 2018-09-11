@@ -31,8 +31,8 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    #pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'CodeNav' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: '$(system.teamProject)' 
     #publishLocation: 'Container' # Options: container, filePath
     #targetPath: # Required when publishLocation == FilePath
     #parallel: false # Optional
