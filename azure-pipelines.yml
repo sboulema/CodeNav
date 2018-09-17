@@ -61,4 +61,4 @@ steps:
 
 - task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@1
   inputs:
-    FileName: '$(Build.ArtifactStagingDirectory)\*.vsix'
+    WorkingDirectory: '$(Build.ArtifactStagingDirectory)'
