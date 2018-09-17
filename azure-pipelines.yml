@@ -26,7 +26,7 @@ steps:
     FileVersionNumber: '$(version)'
     InformationalVersion: '$(version)'
 
-- task: SamirBoulema.Vsix-Tools.Vsix-Tools.Vsix-Tools@1
+- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Update-Version.Vsix-Tools-Update-Version@1
   inputs:
     FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
     VersionNumber: '$(version)'
@@ -58,3 +58,7 @@ steps:
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: '$(system.teamProject)'
+
+- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@1
+  inputs:
+    FileName: '**\*.vsix'
