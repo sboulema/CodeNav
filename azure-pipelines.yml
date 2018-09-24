@@ -21,44 +21,57 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-Task@1
+  displayName: 'Update Assembly Version'
   inputs:
     VersionNumber: '$(version)'
     FileVersionNumber: '$(version)'
     InformationalVersion: '$(version)'
 
 - task: SamirBoulema.Vsix-Tools.Vsix-Tools-Update-Version.Vsix-Tools-Update-Version@1
+  displayName: 'Update Vsix Version'
   inputs:
     FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
     VersionNumber: '$(version)'
 
 - task: VSBuild@1
+  displayName: 'Build Vsix'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  displayName: 'Run Tests'
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: CopyFiles@2
+  displayName: 'Copy Artifacts to Staging'
   inputs:
     contents: '**\*.vsix' 
     targetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 
 - task: PowerShell@2
+  displayName: 'Rename Build Artifacts'
   inputs:
     targetType: 'inline'
     script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:VERSION + $_.extension }'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifacts'
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: '$(system.teamProject)'
 
 - task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@1
+  displayName: 'Upload Vsix to Open Gallery'
   inputs:
     WorkingDirectory: '$(Build.ArtifactStagingDirectory)'
+
+- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@2
+  displayName: 'Upload Vsix to MyGet'
+  inputs:
+    UploadService: MyGetVsix
