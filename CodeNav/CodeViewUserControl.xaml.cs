@@ -288,6 +288,9 @@ namespace CodeNav
                 LoadBookmarksFromStorage();
                 BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
 
+                // Apply history items
+                HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
+
                 LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
             }
             catch (ObjectDisposedException ex)

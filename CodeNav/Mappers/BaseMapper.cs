@@ -52,6 +52,7 @@ namespace CodeNav.Mappers
             element.StartLinePosition = GetStartLinePosition(source);
             element.EndLine = GetEndLine(source);
             element.EndLinePosition = GetEndLinePosition(source);
+            element.Span = source.Span;
             element.Foreground = ColorHelper.ToBrush(Colors.Black);
             element.Access = MapAccess(modifiers, source);
             element.FontSize = Settings.Default.Font.SizeInPoints;

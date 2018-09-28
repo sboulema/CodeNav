@@ -37,6 +37,7 @@ namespace CodeNav.Models
         public LinePosition EndLinePosition { get; set; }
         public int StartLine { get; set; }
         public int EndLine { get; set; }
+        public TextSpan Span { get; set; }
         public ImageMoniker Moniker { get; set; }
         public ImageMoniker OverlayMoniker { get; set; }
         public string Id { get; set; }
@@ -45,6 +46,34 @@ namespace CodeNav.Models
         public CodeItemKindEnum Kind;
         public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
+
+        private ImageMoniker _statusMoniker;
+        public ImageMoniker StatusMoniker
+        {
+            get
+            {
+                return _statusMoniker;
+            }
+            set
+            {
+                _statusMoniker = value;                
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private Visibility _statusMonikerVisibility = Visibility.Collapsed;
+        public Visibility StatusMonikerVisibility
+        {
+            get
+            {
+                return _statusMonikerVisibility;
+            }
+            set
+            {
+                _statusMonikerVisibility = value;
+                NotifyOfPropertyChange();
+            }
+        }
 
         public List<BookmarkStyle> BookmarkStyles {
             get

@@ -9,7 +9,9 @@ using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 
 namespace CodeNav.ToolWindow
 {
+    using System.Linq;
     using System.Runtime.InteropServices;
+    using CodeNav.Properties;
     using Microsoft.VisualStudio.Shell;
 
     [Guid("88d7674e-67d3-4835-9e0e-aa893dfc985a")]
@@ -76,6 +78,11 @@ namespace CodeNav.ToolWindow
                 _control.TextView = textViewHost.TextView;
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
+                if (Settings.Default.ShowHistoryIndicators)
+                {
+                    textViewHost.TextView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+                }    
+
                 // Subscribe to Outlining events
                 var outliningManager = OutliningHelper.GetManager(Package as IServiceProvider, GetCurrentViewHost().TextView);
                 if (outliningManager != null)
@@ -89,6 +96,16 @@ namespace CodeNav.ToolWindow
             }
 
             UpdateDocument(gotFocus, gotFocus != lostFocus);
+        }
+
+        private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
+        {
+            var changedSpans = e.Changes.Select(c => c.OldSpan);
+
+            foreach (var span in changedSpans)
+            {
+                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+            }
         }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();

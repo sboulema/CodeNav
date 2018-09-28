@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Text.Outlining;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Window = EnvDTE.Window;
 using CodeNav.Models;
+using System.Linq;
 
 namespace CodeNav
 {
@@ -201,24 +202,47 @@ namespace CodeNav
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
             }
 
+            // Subscribe to TextBuffer changes
+            if (_textView.TextBuffer != null && Settings.Default.ShowHistoryIndicators)
+            {
+                _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
+                _textView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+            }
+
             // Subscribe to Document Save event
-            if (_window == null) return;
-            _documentEvents = _dte.Events.DocumentEvents[_window.Document];
-            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            if (_window != null)
+            {
+                _documentEvents = _dte.Events.DocumentEvents[_window.Document];
+                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            }     
 
             // Subscribe to Code window activated event
-            if (_window == null) return;
-            _windowEvents = _dte.Events.WindowEvents[_window];
-            _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            if (_window != null)
+            {
+                _windowEvents = _dte.Events.WindowEvents[_window];
+                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
+                _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            }
 
             // Subscribe to Outlining events
-            if (_outliningManager == null) return;
-            _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-            _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-            _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-            _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+            if (_outliningManager != null)
+            {
+                _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+            }
+        }
+
+        private void TextBuffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
+        {
+            var changedSpans = e.Changes.Select(c => c.OldSpan);
+
+            foreach (var span in changedSpans)
+            {
+                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+            }
         }
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
@@ -230,6 +254,7 @@ namespace CodeNav
         public void UnRegisterEvents()
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
+            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
             _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
 
             if (_windowEvents != null)

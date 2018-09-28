@@ -8,7 +8,7 @@ pool:
 
 variables:
   patch: $[counter('versioncounter', 211)]
-  version: 4.5.$(patch)
+  version: 4.6.$(patch)
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
@@ -27,7 +27,7 @@ steps:
     FileVersionNumber: '$(version)'
     InformationalVersion: '$(version)'
 
-- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Update-Version.Vsix-Tools-Update-Version@1
+- task: VsixToolsUpdateVersion@1
   displayName: 'Update Vsix Version'
   inputs:
     FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
@@ -66,12 +66,5 @@ steps:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: '$(system.teamProject)'
 
-- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@1
+- task: VsixToolsUploadVsix@1
   displayName: 'Upload Vsix to Open Gallery'
-  inputs:
-    WorkingDirectory: '$(Build.ArtifactStagingDirectory)'
-
-- task: SamirBoulema.Vsix-Tools.Vsix-Tools-Upload-Vsix.Vsix-Tools-Upload-Vsix@2
-  displayName: 'Upload Vsix to MyGet'
-  inputs:
-    ConnectedServiceName: MyGetVsix

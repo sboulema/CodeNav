@@ -23,6 +23,7 @@ namespace CodeNav.Windows
             Settings.Default.Font = fontDialog1.Font;
             Settings.Default.ShowFilterToolbar = filterToolbarCheckBox.Checked;
             Settings.Default.UseXMLComments = xmlCommentsCheckBox.Checked;
+            Settings.Default.ShowHistoryIndicators = historyIndicatorCheckBox.Checked;
             Settings.Default.Save();
             Close();
         }
@@ -34,6 +35,7 @@ namespace CodeNav.Windows
             filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;
             highlightBackgroundButton.BackColor = Settings.Default.HighlightBackgroundColor;
             xmlCommentsCheckBox.Checked = Settings.Default.UseXMLComments;
+            historyIndicatorCheckBox.Checked = Settings.Default.ShowHistoryIndicators;
         }
 
         private void fontButton_Click(object sender, EventArgs e)

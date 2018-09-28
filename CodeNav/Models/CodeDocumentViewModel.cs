@@ -15,6 +15,7 @@ namespace CodeNav.Models
         {
             _codeDocument = new List<CodeItem>();
             Bookmarks = new Dictionary<string, int>();
+            HistoryItems = new List<CodeItem>();
         }
 
         private List<CodeItem> _codeDocument;
@@ -112,5 +113,7 @@ namespace CodeNav.Models
 
         [DataMember]
         public List<BookmarkStyle> BookmarkStyles;
+
+        public List<CodeItem> HistoryItems;
     }
 }
