@@ -8,12 +8,11 @@ pool:
 
 variables:
   patch: $[counter('versioncounter', 211)]
-  version: 4.6.$(patch)
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: '$(version)'
+name: 4.6.$(patch)
 
 steps:
 - task: NuGetToolInstaller@0
@@ -25,15 +24,15 @@ steps:
 - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-Task@1
   displayName: 'Update Assembly Version'
   inputs:
-    VersionNumber: '$(version)'
-    FileVersionNumber: '$(version)'
-    InformationalVersion: '$(version)'
+    VersionNumber: '$(name)'
+    FileVersionNumber: '$(name)'
+    InformationalVersion: '$(name)'
 
 - task: VsixToolsUpdateVersion@1
   displayName: 'Update Vsix Version'
   inputs:
     FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
-    VersionNumber: '$(version)'
+    VersionNumber: '$(name)'
 
 - task: VSBuild@1
   displayName: 'Build Vsix'
@@ -59,7 +58,7 @@ steps:
   displayName: 'Rename Build Artifacts'
   inputs:
     targetType: 'inline'
-    script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:VERSION + $_.extension }'
+    script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:BUILD_BUILDNUMBER + $_.extension }'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
