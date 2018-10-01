@@ -1,10 +1,8 @@
-![Logo](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/DocumentOutline_256x.png) 
-
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
 
 [![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/sboulema.CodeNav)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=1)
-[![Beerpay](https://beerpay.io/sboulema/CodeNav/badge.svg?style=flat)](https://beerpay.io/sboulema/CodeNav)
+[![Beerpay](https://img.shields.io/beerpay/sboulema/CodeNav.svg?style=flat)](https://beerpay.io/sboulema/CodeNav
 
 ## Features
 - Quickly see all the important methods and properties in your document.
@@ -48,13 +46,6 @@ Visual Studio extension to show the code structure of your current document
 
 #### Bookmarks
 ![Bookmarks](https://i.imgur.com/SqLgsXw.png) 
-
-## Debugging
-If you experience any problems with CodeNav you can debug what is going on by downloading a debug build of CodeNav.
-
-The debug build will write a lot of useful information to the Visual Studio Output window. Please help me and include this information when creating an issue!
-
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OutputWindow.png) 
 
 ---
 
