@@ -24,7 +24,7 @@ namespace CodeNav.Controls
 
             if (dataContext == null)
             {
-                LogHelper.Log("Datacontext error while filtering items by name");
+                // Datacontext error while filtering items by name
                 return;
             }
 
@@ -32,9 +32,9 @@ namespace CodeNav.Controls
             {                
                 VisibilityHelper.SetCodeItemVisibility(dataContext.CodeDocument, FilterTextBox.Text);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                LogHelper.Log($"Error filtering items: {exception}");
+                // Error filtering items
             }           
         }
 

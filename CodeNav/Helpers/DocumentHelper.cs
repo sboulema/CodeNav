@@ -71,7 +71,7 @@ namespace CodeNav.Helpers
 
                 if (startPoint == null)
                 {
-                    LogHelper.Log("Error during mapping: Unable to find TextDocument StartPoint");
+                    // Error during mapping: Unable to find TextDocument StartPoint
                     return null;
                 };
 

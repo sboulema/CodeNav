@@ -47,7 +47,7 @@ namespace CodeNav
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
             var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
-            Logger.Initialize(ServiceProvider, "CodeNav");
+            LogHelper.Initialize(ServiceProvider);
             var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Left);
 
             return codeNav;
@@ -69,7 +69,7 @@ namespace CodeNav
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
         [Import(typeof(SVsServiceProvider))]
-        private IServiceProvider _serviceProvider;
+        private IServiceProvider ServiceProvider;
 
         [Import(typeof(VisualStudioWorkspace))]
         private VisualStudioWorkspace Workspace { get; set; }
@@ -88,10 +88,10 @@ namespace CodeNav
         {
             if (Settings.Default.MarginSide != MarginSideEnum.Right) return null;
 
-            var dte = (DTE)_serviceProvider.GetService(typeof(DTE));
-            var outliningManager = OutliningHelper.GetManager(_serviceProvider, wpfTextViewHost.TextView);
+            var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
+            var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
-            Logger.Initialize(_serviceProvider, "CodeNav");
+            LogHelper.Initialize(ServiceProvider);
             var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Right);
 
             return codeNav;

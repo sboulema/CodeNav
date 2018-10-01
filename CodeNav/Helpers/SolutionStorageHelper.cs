@@ -63,5 +63,11 @@ namespace CodeNav.Helpers
 
             SolutionStorageHelper.Save<SolutionStorageModel>(solutionFilePath, solutionStorageModel);
         }
+
+        public static void SaveToSolutionStorage(CodeViewUserControl control, CodeDocumentViewModel model)
+        {
+            if (string.IsNullOrEmpty(control?.Dte?.Solution?.FileName)) return;
+            SaveToSolutionStorage(control?.Dte?.Solution?.FileName, model);
+        }
     }
 }

@@ -114,6 +114,7 @@ namespace CodeNav.Models
         [DataMember]
         public List<BookmarkStyle> BookmarkStyles;
 
+        [DataMember]
         public List<CodeItem> HistoryItems;
     }
 }

@@ -41,9 +41,10 @@
                     <Run Text="{Binding Parameters}" FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                 </TextBlock>
 
-                <imaging:CrispImage Grid.Column="2" Margin="3,0,0,0" Moniker="{Binding StatusMoniker}" Width="14" Height="14" 
+                <imaging:CrispImage Grid.Column="2" Margin="3,0,0,0" Moniker="{Binding StatusMoniker}" Width="10" Height="10" 
                                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    Visibility="{Binding StatusMonikerVisibility}" />
+                                    Visibility="{Binding StatusMonikerVisibility}" 
+									Grayscale="{Binding StatusGrayscale}" Opacity="{Binding StatusOpacity}" />
             </Grid>
 
         </Button>

@@ -26,7 +26,7 @@
                            FontSize="{Binding FontSize}" 
                            FontStyle="{Binding FontStyle}"
                            FontWeight="SemiBold" 
-                           Foreground="DarkGray" />
+                           Foreground="{Binding Foreground}" />
             </Expander.Header>
             <ItemsControl ItemsSource="{Binding Members}" Background="Transparent" Margin="6,3,6,0">
                 <ItemsControl.ItemContainerStyle>

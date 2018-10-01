@@ -116,14 +116,14 @@ namespace CodeNav.Helpers
                         where startLine == item.StartLine
                         select collapsible).FirstOrDefault();
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
-                LogHelper.Log($"FindCollapsibleFromCodeItem failed for item {item.Name}, exception: {e.Message}");
+                // FindCollapsibleFromCodeItem failed for item
                 return null;
             }
-            catch (ObjectDisposedException e)
+            catch (ObjectDisposedException)
             {
-                LogHelper.Log($"FindCollapsibleFromCodeItem failed because of disposed {e.ObjectName}");
+                // FindCollapsibleFromCodeItem failed because of disposed object
                 return null;
             }
         }

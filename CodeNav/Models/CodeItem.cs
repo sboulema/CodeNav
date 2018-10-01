@@ -10,9 +10,11 @@ using Microsoft.CodeAnalysis.Text;
 using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
+using System.Runtime.Serialization;
 
 namespace CodeNav.Models
 {
+    [DataContract]
     public class CodeItem : PropertyChangedBase
     {
         public CodeItem()
@@ -30,6 +32,7 @@ namespace CodeNav.Models
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
             _filterBookmarksCommand = new DelegateCommand(FilterBookmarks);
             _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles);
+            _clearHistoryCommand = new DelegateCommand(ClearHistory);
         }
 
         public string Name { get; set; }
@@ -40,6 +43,7 @@ namespace CodeNav.Models
         public TextSpan Span { get; set; }
         public ImageMoniker Moniker { get; set; }
         public ImageMoniker OverlayMoniker { get; set; }
+        [DataMember]
         public string Id { get; set; }
         public string Tooltip { get; set; }
         internal string FullName;
@@ -47,6 +51,7 @@ namespace CodeNav.Models
         public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
 
+        #region Status Image
         private ImageMoniker _statusMoniker;
         public ImageMoniker StatusMoniker
         {
@@ -74,6 +79,35 @@ namespace CodeNav.Models
                 NotifyOfPropertyChange();
             }
         }
+
+        private bool _statusGrayscale;
+        public bool StatusGrayscale
+        {
+            get
+            {
+                return _statusGrayscale;
+            }
+            set
+            {
+                _statusGrayscale = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        private double _statusOpacity;
+        public double StatusOpacity
+        {
+            get
+            {
+                return _statusOpacity;
+            }
+            set
+            {
+                _statusOpacity = value;
+                NotifyOfPropertyChange();
+            }
+        }
+        #endregion
 
         public List<BookmarkStyle> BookmarkStyles {
             get
@@ -253,11 +287,19 @@ namespace CodeNav.Models
         #region Commands
         private readonly DelegateCommand _clickItemCommand;
         public ICommand ClickItemCommand => _clickItemCommand;
-        public void ClickItem(object startLinePosition) => Control.SelectLine(startLinePosition);
+        public void ClickItem(object startLinePosition)
+        {
+            HistoryHelper.AddItemToHistory(this);
+            Control.SelectLine(startLinePosition);
+        }
 
         private readonly DelegateCommand _goToDefinitionCommand;
         public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
         public void GoToDefinition(object args) => Control.SelectLine(StartLinePosition);
+
+        private readonly DelegateCommand _clearHistoryCommand;
+        public ICommand ClearHistoryCommand => _clearHistoryCommand;
+        public void ClearHistory(object args) => HistoryHelper.ClearHistory(this);
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;

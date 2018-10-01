@@ -30,9 +30,8 @@ namespace CodeNav.Mappers
             {
                 classSymbol = semanticModel.GetDeclaredSymbol(member) as INamedTypeSymbol;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                LogHelper.Log($"Error during mapping: MapImplementedInterface: {e.Message}");
                 return implementedInterfaces;
             }
 

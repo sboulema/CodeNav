@@ -32,7 +32,7 @@ namespace CodeNav.Mappers
             var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
             _semanticModel = compilation.GetSemanticModel(_tree);
 
-            var root = (CompilationUnitSyntax)_tree.GetRoot();
+            var root = (CompilationUnitSyntax)_tree.GetRoot(); //
 
             return root.Members.Select(MapMember).ToList();
         }
@@ -52,7 +52,7 @@ namespace CodeNav.Mappers
 
             var root = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
 
-            return root.Members.Select(MapMember).ToList();
+            return root.Members.Select(MapMember).ToList(); //
         }
 
         /// <summary>
@@ -69,7 +69,6 @@ namespace CodeNav.Mappers
 
             if (workspace == null)
             {
-                LogHelper.Log("Error during mapping: Workspace is null");
                 return null;
             }
 
@@ -121,7 +120,6 @@ namespace CodeNav.Mappers
         {
             if (document == null)
             {
-                LogHelper.Log("Error during mapping: Document is null");
                 return null;
             }
 
@@ -129,7 +127,6 @@ namespace CodeNav.Mappers
 
             if (_tree == null)
             {
-                LogHelper.Log("Error during mapping: Tree is null");
                 return null;
             }
 
@@ -143,7 +140,6 @@ namespace CodeNav.Mappers
                 case LanguageEnum.VisualBasic:
                     return (root as VisualBasicSyntax.CompilationUnitSyntax).Members.Select(MapMember).ToList();
                 default:
-                    LogHelper.Log("Error during mapping: root is not CSharp or VisualBasic");
                     return null;
             }     
         }

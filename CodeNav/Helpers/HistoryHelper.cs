@@ -9,29 +9,75 @@ namespace CodeNav.Helpers
 {
     public static class HistoryHelper
     {
+        private const int MaxHistoryItems = 5;
+
         public static void AddItemToHistory(CodeDocumentViewModel model, Span span)
         {
             var item = FindCodeItem(model.CodeDocument, span);
+            AddItemToHistory(item);
+        }
+
+        public static void AddItemToHistory(CodeItem item)
+        {
             if (item == null) return;
-            model.HistoryItems.Add(item);
-            ApplyHistoryIndicator(item);
+
+            var model = item.Control.CodeDocumentViewModel;
+
+            // Clear current indicators
+            model.HistoryItems.ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
+
+            // Add new indicator, only keep the five latest history items
+            model.HistoryItems.RemoveAll(i => i.Id.Equals(item.Id));
+            model.HistoryItems.Insert(0, item);
+            model.HistoryItems = model.HistoryItems.Take(MaxHistoryItems).ToList();
+
+            SolutionStorageHelper.SaveToSolutionStorage(item.Control, model);
+            ApplyHistoryIndicator(model);
         }
 
         public static void ApplyHistoryIndicator(CodeDocumentViewModel model)
         {
-            foreach (var historyItem in model.HistoryItems)
+            for (int i = 0; i < model.HistoryItems.Count; i++)
             {
+                CodeItem historyItem = model.HistoryItems[i];
                 var codeItem = model.CodeDocument
                     .Flatten()
-                    .First(i => i.Id.Equals(historyItem.Id));
-                ApplyHistoryIndicator(codeItem);
+                    .FirstOrDefault(item => item.Id.Equals(historyItem.Id));
+                if (codeItem == null) continue;
+                ApplyHistoryIndicator(codeItem, i);
             }
         }
 
-        private static void ApplyHistoryIndicator(CodeItem item)
+        private static void ApplyHistoryIndicator(CodeItem item, int index = 0)
         {
             item.StatusMoniker = KnownMonikers.History;
             item.StatusMonikerVisibility = Visibility.Visible;
+            item.StatusGrayscale = index > 0;
+            item.StatusOpacity = GetOpacity(index);
+        }
+
+        private static double GetOpacity(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return 1;
+                case 1:
+                case 2:
+                    return 0.9;
+                case 3:
+                case 4:
+                    return 0.7;
+                default:
+                    return 1;
+            }
+        }
+
+        public static void ClearHistory(CodeItem item)
+        {
+            item.Control.CodeDocumentViewModel.HistoryItems.Clear();
+            SolutionStorageHelper.SaveToSolutionStorage(item.Control, item.Control.CodeDocumentViewModel);
+            item.Control.UpdateDocument(true);
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)

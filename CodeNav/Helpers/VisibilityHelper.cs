@@ -24,7 +24,7 @@ namespace CodeNav.Helpers
             {
                 if (document == null || !document.Any())
                 {
-                    LogHelper.Log($"No code items have been found to filter on by {name}");
+                    // No code items have been found to filter on by name
                     return new List<CodeItem>();
                 }
 
@@ -71,15 +71,22 @@ namespace CodeNav.Helpers
         /// <param name="document">the list of codeitems to determine if there is anything to show at all</param>
         public static void SetMarginWidth(ColumnDefinition column, List<CodeItem> document)
         {
-            if (column == null) return;
-            if (!Settings.Default.ShowMargin)
+            try
             {
-                column.Width = new GridLength(0);
+                if (column == null) return;
+                if (!Settings.Default.ShowMargin)
+                {
+                    column.Width = new GridLength(0);
+                }
+                else
+                {
+                    column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
+                }
             }
-            else
+            catch (InvalidOperationException)
             {
-                column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
-            }       
+                // Ignore if we are not allowed to set the width
+            }
         }
 
         public static bool IsEmpty(List<CodeItem> document)

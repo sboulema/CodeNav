@@ -58,8 +58,6 @@ namespace CodeNav
             RegisterEvents();
 
             UpdateSettings();
-
-            LogHelper.Log($"CodeNav initialized for {_window.Caption}");
         }
 
         /// <summary>

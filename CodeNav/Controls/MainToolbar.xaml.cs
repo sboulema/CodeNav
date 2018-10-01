@@ -23,7 +23,6 @@ namespace CodeNav.Controls
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            LogHelper.Log("Refreshing document");
             var control = FindParent<CodeViewUserControl>(this);
             control.UpdateDocument(true);
         }

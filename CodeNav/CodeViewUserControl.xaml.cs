@@ -80,28 +80,27 @@ namespace CodeNav
             }
             catch (Exception)
             {
-                LogHelper.Log($"StartLine is not a valid int for {_window.Document.Name}");
+                // StartLine is not a valid int for document
                 return;
             }        
 
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
-                LogHelper.Log($"TextSelection is null for {_window.Document.Name}");
+                // TextSelection is null for document
                 return;
             }
 
             try
             {
-                LogHelper.Log($"GotoLine {line}");
                 textSelection.MoveToLineAndOffset(line, offset, extend);
 
                 var tp = (TextPoint)textSelection.TopPoint;
                 tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                LogHelper.Log($"GotoLine failed: {e.Message}");
+                // GotoLine failed
                 return;
             }   
         }
@@ -136,8 +135,6 @@ namespace CodeNav
                 return;
             }
             
-            LogHelper.Log($"Starting updating document '{_window.Document.Name}'");
-
             if (Dte?.ActiveDocument != null)
             {
                 CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
@@ -245,7 +242,7 @@ namespace CodeNav
 
                 if (result?.CodeItems == null)
                 {
-                    LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated, no results");
+                    // CodeNav for document updated, no results
                     return;
                 }
 
@@ -256,7 +253,7 @@ namespace CodeNav
                 var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
                 if (result.ForceUpdate == false && areEqual)
                 {
-                    LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated, document did not change");
+                    // CodeNav for document updated, document did not change
 
                     // Should the margin be shown and are there any items to show, if not hide the margin
                     VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
@@ -289,13 +286,11 @@ namespace CodeNav
                 BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
 
                 // Apply history items
+                LoadHistoryItemsFromStorage();
                 HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
-
-                LogHelper.Log($"CodeNav for '{DocumentHelper.GetName(_window)}' updated");
             }
             catch (ObjectDisposedException ex)
             {
-                LogHelper.Log($"CodeNav: RunWorkerCompleted exception: {ex.Message}");
                 LogHelper.Log("RunWorkerCompleted exception", ex);
             }
         }
@@ -338,6 +333,22 @@ namespace CodeNav
             if (storageItem != null)
             {
                 CodeDocumentViewModel.Bookmarks = storageItem.Bookmarks;
+            }
+        }
+
+        private void LoadHistoryItemsFromStorage()
+        {
+            if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
+
+            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
+
+            if (solutionStorage.Documents == null) return;
+
+            var storageItem = solutionStorage.Documents
+                .FirstOrDefault(s => s.FilePath.Equals(CodeDocumentViewModel.FilePath));
+            if (storageItem != null)
+            {
+                CodeDocumentViewModel.HistoryItems = storageItem.HistoryItems;
             }
         }
     }

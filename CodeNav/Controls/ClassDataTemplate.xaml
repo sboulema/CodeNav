@@ -22,7 +22,7 @@
                              FontFamily="{Binding FontFamily}" 
                              FontSize="{Binding FontSize}" 
                              FontStyle="{Binding FontStyle}"
-                             Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                             Foreground="{Binding Foreground}" />
                         <Run Text="{Binding Parameters}" 
                              FontFamily="{Binding FontFamily}" 
                              FontSize="{Binding ParameterFontSize}" 

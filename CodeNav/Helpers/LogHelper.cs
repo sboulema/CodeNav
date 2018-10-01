@@ -12,11 +12,11 @@ namespace CodeNav.Helpers
         private const string CustomerToken = "4a0f1123-41cd-4f9a-bca0-835914aa51d3";
         private const string ApplicationName = "CodeNav";
 
-        public static void Log(string message)
+        private const string TelemetryKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
+
+        public static void Initialize(IServiceProvider serviceProvider)
         {
-            #if DEBUG
-            Logger.Log(message);
-            #endif
+            Logger.Initialize(serviceProvider, ApplicationName, GetExecutingAssemblyVersion().ToString(), TelemetryKey);
         }
 
         public static ILogglyClient GetClient()
@@ -59,6 +59,7 @@ namespace CodeNav.Helpers
             }
 
             _client.Log(logEvent);
+            Logger.Log(exception);
         }
 
         private static Version GetExecutingAssemblyVersion()

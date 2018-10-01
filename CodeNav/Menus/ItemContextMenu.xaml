@@ -110,6 +110,14 @@
                 <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.CollapseAll}" />
             </MenuItem.Icon>
         </MenuItem>
+		
+		<Separator />
+		
+		<MenuItem Header="Clear History" Command="{Binding Path=ClearHistoryCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.CleanData}" />
+            </MenuItem.Icon>
+        </MenuItem>
 
     </ContextMenu>
         
