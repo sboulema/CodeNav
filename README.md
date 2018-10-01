@@ -3,6 +3,7 @@
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
 
+[![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/sboulema.CodeNav)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=1)
 [![Beerpay](https://beerpay.io/sboulema/CodeNav/badge.svg?style=flat)](https://beerpay.io/sboulema/CodeNav)
 
 ## Features
@@ -20,6 +21,7 @@ Visual Studio extension to show the code structure of your current document
 - Synced collapsing/expanding regions
 - Collapse/Expand all regions
 - Colored Bookmarks
+- History/edit indicators
 
 ## Language support
 - C#
@@ -31,8 +33,6 @@ Visual Studio extension to show the code structure of your current document
 [Github Releases](https://github.com/sboulema/CodeNav/releases)
 
 [Open VSIX Gallery](http://vsixgallery.com/extension/CodeNav.Samir%20Boulema.19687465-dc94-413d-ad72-6141e90c94d4/)
-
-[AppVeyor](https://ci.appveyor.com/project/sboulema/codenav) [![Build status](https://ci.appveyor.com/api/projects/status/8g968p48t2rkia16?svg=true)](https://ci.appveyor.com/project/sboulema/codenav)
 
 ## Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)

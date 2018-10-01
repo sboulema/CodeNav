@@ -10,7 +10,7 @@
         <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
         <Icon>Resources\DocumentOutline_256x.png</Icon>
         <PreviewImage>Resources\Preview-small.png</PreviewImage>
-        <Tags>code, structure, navigation, map, overview, codemap</Tags>
+        <Tags>code, structure, navigation, map, codemap</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,17.0)" />
