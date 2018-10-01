@@ -50,9 +50,9 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Artifacts to Staging'
   inputs: 
-    contents: |
-     '**\*.vsix'
-     '**\publish-manifest.json'
+    contents:
+    '**\*.vsix'
+    '**\publish-manifest.json'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 
