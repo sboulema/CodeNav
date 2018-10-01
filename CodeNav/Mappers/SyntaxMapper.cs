@@ -97,7 +97,8 @@ namespace CodeNav.Mappers
             }
             catch (ArgumentException e)
             {
-                if (!e.Message.Contains("DeclarationSyntax"))
+                if (!e.Message.Contains("DeclarationSyntax") ||
+                    !e.Message.Contains("SyntaxTree"))
                 {
                     LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument), activeDocument.Language);                 
                 }

@@ -31,6 +31,7 @@ namespace CodeNav.Mappers
 
         private static string MapParameter(VisualBasicSyntax.ParameterSyntax parameter, bool useLongNames, SemanticModel semanticModel)
         {
+            if (semanticModel == null) return string.Empty;
             var symbol = semanticModel.GetDeclaredSymbol(parameter) as IParameterSymbol;
             return TypeMapper.Map(symbol.Type, useLongNames);
         }

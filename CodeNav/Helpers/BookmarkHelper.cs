@@ -18,7 +18,8 @@ namespace CodeNav.Helpers
             {
                 var codeItem = codeDocumentViewModel.CodeDocument
                     .Flatten()
-                    .First(i => i.Id.Equals(bookmark.Key));
+                    .FirstOrDefault(i => i.Id.Equals(bookmark.Key));
+                if (codeItem == null) continue;
                 ApplyBookmark(codeItem, bookmark.Value as BookmarkStyle);
             }
         }
