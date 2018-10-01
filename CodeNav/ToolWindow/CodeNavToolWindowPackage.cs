@@ -19,7 +19,7 @@ namespace CodeNav.ToolWindow
     {
         public const string PackageGuidString = "5c1c8131-1371-4401-8a3e-70e47c8ac0ec";
         public DTE DTE;
-        public VisualStudioWorkspace Workspace;
+        public IComponentModel ComponentModel;
         
         public CodeNavToolWindowPackage()
         {
@@ -34,8 +34,7 @@ namespace CodeNav.ToolWindow
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {           
             DTE = await GetServiceAsync(typeof(DTE)) as DTE;
-            var componentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
-            Workspace = componentModel.GetService<VisualStudioWorkspace>();
+            ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
 
             CodeNavToolWindowCommand.Initialize(this);
             await base.InitializeAsync(cancellationToken, progress);

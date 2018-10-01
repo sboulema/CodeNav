@@ -9,7 +9,9 @@ using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 
 namespace CodeNav.ToolWindow
 {
+    using System.Linq;
     using System.Runtime.InteropServices;
+    using CodeNav.Properties;
     using Microsoft.VisualStudio.Shell;
 
     [Guid("88d7674e-67d3-4835-9e0e-aa893dfc985a")]
@@ -33,17 +35,26 @@ namespace CodeNav.ToolWindow
         public override void OnToolWindowCreated()
         {
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
-            _workspace = codeNavToolWindowPackage.Workspace;
+            _workspace = codeNavToolWindowPackage.ComponentModel.GetService<VisualStudioWorkspace>();
+
+            if (_control.Dte == null && codeNavToolWindowPackage.DTE != null)
+            {
+                _control.Dte = codeNavToolWindowPackage.DTE;
+            }        
 
             // Wire up references for the event handlers
             _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
 
             _control.ShowWaitingForDocument();
         }
+
+        private void DocumentEvents_DocumentOpened(Document document) 
+            => WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
             _control.RegionsCollapsed(e);
@@ -67,17 +78,34 @@ namespace CodeNav.ToolWindow
                 _control.TextView = textViewHost.TextView;
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
+                if (Settings.Default.ShowHistoryIndicators)
+                {
+                    textViewHost.TextView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+                }    
+
                 // Subscribe to Outlining events
                 var outliningManager = OutliningHelper.GetManager(Package as IServiceProvider, GetCurrentViewHost().TextView);
-                if (outliningManager == null) return;
-                _control.OutliningManager = outliningManager;
-                outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-                outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-                outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-                outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+                if (outliningManager != null)
+                {
+                    _control.OutliningManager = outliningManager;
+                    outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                    outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                    outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                    outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+                }
             }
 
             UpdateDocument(gotFocus, gotFocus != lostFocus);
+        }
+
+        private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
+        {
+            var changedSpans = e.Changes.Select(c => c.OldSpan);
+
+            foreach (var span in changedSpans)
+            {
+                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+            }
         }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();

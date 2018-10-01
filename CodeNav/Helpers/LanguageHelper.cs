@@ -17,6 +17,7 @@ namespace CodeNav.Helpers
                 case "Visual Basic":
                     return LanguageEnum.VisualBasic;
                 case "C#":
+                case "CSharp":
                     return LanguageEnum.CSharp;
                 default:
                     return LanguageEnum.Unknown;

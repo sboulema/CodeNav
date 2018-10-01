@@ -1,4 +1,4 @@
-﻿namespace CodeNav
+﻿namespace CodeNav.Windows
 {
     partial class OptionsWindow
     {
@@ -37,6 +37,12 @@
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.fontButton = new System.Windows.Forms.Button();
             this.filterToolbarCheckBox = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.highlightBackgroundButton = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.resetButton = new System.Windows.Forms.Button();
+            this.xmlCommentsCheckBox = new System.Windows.Forms.CheckBox();
+            this.historyIndicatorCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -64,7 +70,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(210, 111);
+            this.okButton.Location = new System.Drawing.Point(210, 180);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -75,7 +81,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(291, 111);
+            this.cancelButton.Location = new System.Drawing.Point(291, 180);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -116,11 +122,65 @@
             this.filterToolbarCheckBox.Text = "Show the filter toolbar";
             this.filterToolbarCheckBox.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 97);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(111, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Highlight background:";
+            // 
+            // highlightBackgroundButton
+            // 
+            this.highlightBackgroundButton.Location = new System.Drawing.Point(126, 92);
+            this.highlightBackgroundButton.Name = "highlightBackgroundButton";
+            this.highlightBackgroundButton.Size = new System.Drawing.Size(23, 23);
+            this.highlightBackgroundButton.TabIndex = 8;
+            this.highlightBackgroundButton.UseVisualStyleBackColor = true;
+            this.highlightBackgroundButton.Click += new System.EventHandler(this.highlightBackgroundButton_Click);
+            // 
+            // resetButton
+            // 
+            this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.resetButton.Location = new System.Drawing.Point(12, 180);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(75, 23);
+            this.resetButton.TabIndex = 9;
+            this.resetButton.Text = "Reset";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // xmlCommentsCheckBox
+            // 
+            this.xmlCommentsCheckBox.AutoSize = true;
+            this.xmlCommentsCheckBox.Location = new System.Drawing.Point(12, 124);
+            this.xmlCommentsCheckBox.Name = "xmlCommentsCheckBox";
+            this.xmlCommentsCheckBox.Size = new System.Drawing.Size(210, 17);
+            this.xmlCommentsCheckBox.TabIndex = 10;
+            this.xmlCommentsCheckBox.Text = "Use XML comments for method tooltips";
+            this.xmlCommentsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // historyIndicatorCheckBox
+            // 
+            this.historyIndicatorCheckBox.AutoSize = true;
+            this.historyIndicatorCheckBox.Location = new System.Drawing.Point(12, 147);
+            this.historyIndicatorCheckBox.Name = "historyIndicatorCheckBox";
+            this.historyIndicatorCheckBox.Size = new System.Drawing.Size(156, 17);
+            this.historyIndicatorCheckBox.TabIndex = 11;
+            this.historyIndicatorCheckBox.Text = "Show history/edit indicators";
+            this.historyIndicatorCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 146);
+            this.ClientSize = new System.Drawing.Size(383, 215);
+            this.Controls.Add(this.historyIndicatorCheckBox);
+            this.Controls.Add(this.xmlCommentsCheckBox);
+            this.Controls.Add(this.resetButton);
+            this.Controls.Add(this.highlightBackgroundButton);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.filterToolbarCheckBox);
             this.Controls.Add(this.fontButton);
             this.Controls.Add(this.label2);
@@ -148,5 +208,11 @@
         private System.Windows.Forms.FontDialog fontDialog1;
         private System.Windows.Forms.Button fontButton;
         private System.Windows.Forms.CheckBox filterToolbarCheckBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button highlightBackgroundButton;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Button resetButton;
+        private System.Windows.Forms.CheckBox xmlCommentsCheckBox;
+        private System.Windows.Forms.CheckBox historyIndicatorCheckBox;
     }
 }

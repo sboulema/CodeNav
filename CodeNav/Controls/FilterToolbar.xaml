@@ -22,6 +22,7 @@
                      ToolTip="Text to filter the CodeNav contents by" 
                      TextChanged="TextBoxBase_OnTextChanged"
                      Background="Transparent"
+                     Text="{Binding FilterText, Mode=TwoWay}"
                      Foreground="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}" 
                      CaretBrush="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowTextBrushKey}}"/>
             <TextBlock IsHitTestVisible="False" Text="Enter text to filter by..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
@@ -39,13 +40,32 @@
         </Grid>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" Width="Auto" Margin="0,-3,3,-3" Visibility="{Binding ShowFilterToolbarVisibility}">
-            <Button Click="ButtonClear_OnClick" ToolTip="Click to clear text filter contents">
+            <Button Click="ButtonClear_OnClick" ToolTip="Click to clear text filter contents" Visibility="{Binding ClearFilterVisibility}">
                 <Button.Template>
                     <ControlTemplate>
                         <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.DeleteFilter}" />
                     </ControlTemplate>
                 </Button.Template>
             </Button>
+
+            <ToggleButton Style="{StaticResource {x:Type ToggleButton}}" Visibility="{Binding BookmarksAvailable}"
+                         ToolTip="Filter on bookmarks" Click="ButtonFilterBookmark_OnClick">
+                <ToggleButton.Template>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="ToggleBorder" BorderBrush="SteelBlue" BorderThickness="0">
+                            <imaging:CrispImage Width="14" Height="14" Moniker="{x:Static catalog:KnownMonikers.Bookmark}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="ToggleBorder" Property="BorderThickness" Value="0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
 
             <Button Click="ButtonFilter_OnClick" ToolTip="Click to filter by item kind">
                 <Button.Template>

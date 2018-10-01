@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using CodeNav.Models;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace CodeNav
 {

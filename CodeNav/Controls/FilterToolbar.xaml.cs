@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using System.Windows.Media;
+using System.Linq;
 
 namespace CodeNav.Controls
 {
@@ -48,6 +49,13 @@ namespace CodeNav.Controls
 
             var control = FindParent<CodeViewUserControl>(this);
             control.UpdateDocument(true);         
+        }
+
+        private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)
+        {
+            var control = FindParent<CodeViewUserControl>(this);
+            control.CodeDocumentViewModel.FilterOnBookmarks = !control.CodeDocumentViewModel.FilterOnBookmarks;
+            control.FilterBookmarks();
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject

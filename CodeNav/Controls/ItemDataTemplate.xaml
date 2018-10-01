@@ -15,12 +15,14 @@
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
                 ToolTip="{Binding Tooltip}"
+                Background="{Binding Background}"
                 Margin="-3">
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid Margin="0,0,3,0" Width="16" Height="16">
@@ -31,13 +33,17 @@
                 <TextBlock Grid.Column="1" FontFamily="{Binding FontFamily}" FontStyle="{Binding FontStyle}">
                     <Run Text="{Binding Name}"       
                          FontSize="{Binding FontSize}"          
-                         Foreground="{Binding Foreground}" 
+                         Foreground="{Binding Foreground}"
+                         Background="{Binding NameBackground}"
                          FontWeight="{Binding FontWeight}" 
-                         Background="{Binding Background}"
                          x:Name="ItemName"/>
                     <Run Text="{Binding Type}"       FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                     <Run Text="{Binding Parameters}" FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />
                 </TextBlock>
+
+                <imaging:CrispImage Grid.Column="2" Moniker="{Binding StatusMoniker}" Width="14" Height="14" 
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Visibility="{Binding StatusMonikerVisibility}" />
             </Grid>
 
         </Button>

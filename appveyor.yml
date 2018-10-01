@@ -1,5 +1,7 @@
-version: 4.3.{build}
+version: 4.5.{build}
 skip_tags: true
+
+image: Visual Studio 2017
 
 configuration: 
 - Release
@@ -35,4 +37,5 @@ after_build:
         Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + '_' + $env:APPVEYOR_BUILD_VERSION + '_' + $env:CONFIGURATION + $_.extension }
     } 
 
-    Vsix-PushArtifacts | Vsix-PublishToGallery
+#    Vsix-PushArtifacts | Vsix-PublishToGallery
+Vsix-PushArtifacts

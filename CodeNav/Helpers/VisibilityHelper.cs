@@ -15,7 +15,10 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">List of codeItems</param>
         /// <param name="name">Filters items by name</param>
-        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "")
+        /// <param name="filterOnBookmarks">Filters items by being bookmarked</param>
+        /// <param name="bookmarks">List of bookmarked items</param>
+        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "", 
+            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             try
             {
@@ -27,14 +30,14 @@ namespace CodeNav.Helpers
 
                 foreach (var item in document)
                 {
-                    item.IsVisible = ShouldBeVisible(item, name) ? Visibility.Visible : Visibility.Collapsed;
+                    item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
 
                     if (item is IMembers)
                     {
                         var hasMembersItem = (IMembers)item;
                         if (hasMembersItem.Members.Any())
                         {
-                            SetCodeItemVisibility(hasMembersItem.Members, name);
+                            SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                         }
                         item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
                             ? Visibility.Visible
@@ -94,7 +97,8 @@ namespace CodeNav.Helpers
             return isEmpty;
         }
 
-        private static bool ShouldBeVisible(CodeItem item, string name = "")
+        private static bool ShouldBeVisible(CodeItem item, string name = "", 
+            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             var visible = true;
 
@@ -109,7 +113,12 @@ namespace CodeNav.Helpers
                     visible = filterRule.Visible;
                 }
             }
-            
+
+            if (filterOnBookmarks)
+            {
+                visible = BookmarkHelper.IsBookmark(bookmarks, item);
+            }
+
             return visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
         }
 

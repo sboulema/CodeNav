@@ -62,7 +62,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DeployExtension Condition=" '$(AppVeyor)' != '' ">False</DeployExtension>
+    <DeployExtension Condition=" '$(AppVeyor)' != '' Or '$(TF_BUILD)' != '' ">False</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,7 +71,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DeployExtension Condition=" '$(AppVeyor)' != '' ">False</DeployExtension>
+    <DeployExtension Condition=" '$(AppVeyor)' != '' Or '$(TF_BUILD)' != '' ">False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeNavMargin.cs" />
@@ -89,13 +89,15 @@
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BookmarkHelper.cs" />
-    <Compile Include="Helpers\BrushHelper.cs" />
     <Compile Include="Helpers\CodeItemExtensions.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\DocumentHelper.cs" />
     <Compile Include="Helpers\HighlightHelper.cs" />
+    <Compile Include="Helpers\HistoryHelper.cs" />
     <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="Helpers\SettingsHelper.cs" />
+    <Compile Include="Helpers\SolutionStorageHelper.cs" />
     <Compile Include="Helpers\OutliningHelper.cs" />
     <Compile Include="Helpers\SortHelper.cs" />
     <Compile Include="Helpers\VisibilityHelper.cs" />
@@ -116,6 +118,7 @@
     <Compile Include="Mappers\StatementMapper.cs" />
     <Compile Include="Mappers\StructMapper.cs" />
     <Compile Include="Mappers\SyntaxMapper.cs" />
+    <Compile Include="Mappers\TriviaSummaryMapper.cs" />
     <Compile Include="Mappers\TypeMapper.cs" />
     <Compile Include="Mappers\TooltipMapper.cs" />
     <Compile Include="Models\BackgroundWorkerRequest.cs" />
@@ -130,11 +133,12 @@
     <Compile Include="Models\IMembers.cs" />
     <Compile Include="Models\LanguageEnum.cs" />
     <Compile Include="Models\MarginSideEnum.cs" />
+    <Compile Include="Models\SolutionStorageModel.cs" />
     <Compile Include="Models\SortOrderEnum.cs" />
-    <Compile Include="OptionsWindow.cs">
+    <Compile Include="Windows\OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionsWindow.Designer.cs">
+    <Compile Include="Windows\OptionsWindow.Designer.cs">
       <DependentUpon>OptionsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="CodeViewUserControl.xaml.cs">
@@ -154,6 +158,12 @@
     <Compile Include="ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowCommand.cs" />
     <Compile Include="ToolWindow\CodeNavToolWindowPackage.cs" />
+    <Compile Include="Windows\CustomizeBookmarkStylesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\CustomizeBookmarkStylesWindow.Designer.cs">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -459,13 +469,16 @@
     <EmbeddedResource Include="FilterWindow.resx">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionsWindow.resx">
+    <EmbeddedResource Include="Windows\OptionsWindow.resx">
       <DependentUpon>OptionsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ToolWindow\VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\CustomizeBookmarkStylesWindow.resx">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -97,8 +97,8 @@ namespace CodeNav.Mappers
                 Id = name,
                 Tooltip = name,
                 StartLine = GetStartLine(source),
-                Foreground = ColorHelper.CreateSolidColorBrush(Colors.Black),
-                BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray),
+                Foreground = ColorHelper.ToBrush(Colors.Black),
+                BorderBrush = ColorHelper.ToBrush(Colors.DarkGray),
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region
             };

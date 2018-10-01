@@ -43,7 +43,7 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Enum;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
 
             foreach (var enumMember in member.Members)
             {
@@ -63,7 +63,7 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Enum;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
-            item.BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
 
             foreach (var enumMember in member.Members)
             {

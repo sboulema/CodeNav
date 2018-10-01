@@ -1,6 +1,8 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace CodeNav.Mappers
                 // Map method as item containing statements
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
-                ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+                ((CodeClassItem)item).BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
             }
             else
             {
@@ -39,6 +41,11 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+            
             return item;
         }
 
@@ -56,7 +63,7 @@ namespace CodeNav.Mappers
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.SubOrFunctionStatement.Identifier,
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
-                ((CodeClassItem)item).BorderBrush = ColorHelper.CreateSolidColorBrush(Colors.DarkGray);
+                ((CodeClassItem)item).BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
             }
             else
             {
@@ -74,6 +81,11 @@ namespace CodeNav.Mappers
             item.Id = IdMapper.MapId(item.FullName, member.SubOrFunctionStatement.ParameterList, semanticModel);
             item.Kind = CodeItemKindEnum.Method;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             return item;
         }

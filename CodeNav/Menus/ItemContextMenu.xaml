@@ -7,7 +7,7 @@
         <ResourceDictionary Source="../Styles/BookmarkButtonStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <ContextMenu x:Key="ItemContextMenu">
+    <ContextMenu x:Key="ItemContextMenu" IsOpen="{Binding Path=ContextMenuIsOpen, Mode=TwoWay}">
         
         <MenuItem Header="Go to Definition" Command="{Binding Path=GoToDefinitionCommand}">
             <MenuItem.Icon>
@@ -71,9 +71,21 @@
             </MenuItem.Header>
         </MenuItem>
 
-        <MenuItem Header="Clear Bookmarks In Document" Command="{Binding Path=ClearBookmarksCommand}">
+        <MenuItem Header="Clear Bookmarks In Document" Command="{Binding Path=ClearBookmarksCommand}"
+            IsEnabled="{Binding BookmarksAvailable}">
             <MenuItem.Icon>
                 <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ClearBookmark}" />
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Header="Filter On Bookmarks" Command="{Binding Path=FilterBookmarksCommand}" 
+                IsCheckable="True" 
+                IsChecked="{Binding Path=FilterOnBookmarks}" 
+                IsEnabled="{Binding Path=BookmarksAvailable}" />
+
+        <MenuItem Header="Customize Bookmark Styles" Command="{Binding Path=CustomizeBookmarkStylesCommand}">
+            <MenuItem.Icon>
+                <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ColorPalette}" />
             </MenuItem.Icon>
         </MenuItem>
 

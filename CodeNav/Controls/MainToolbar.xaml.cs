@@ -4,6 +4,7 @@ using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using CodeNav.Properties;
+using CodeNav.Windows;
 
 namespace CodeNav.Controls
 {

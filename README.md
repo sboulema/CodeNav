@@ -14,7 +14,7 @@ Visual Studio extension to show the code structure of your current document
 - Dark theme support
 - Show as an editor margin (left side / right side / hidden) 
 - Show as a seperate toolwindow (View -> Other Windows -> CodeNav)
-- Filter items by kind (method, property), access (public, private) and name
+- Filter items by kind (method, property), access (public, private), name and bookmark
 - Cursor position will be reflected by highlighting the current method in the list
 - Customizable fonts
 - Synced collapsing/expanding regions

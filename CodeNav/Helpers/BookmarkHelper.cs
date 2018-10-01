@@ -1,8 +1,12 @@
 ﻿using CodeNav.Models;
+using CodeNav.Properties;
 using Microsoft.VisualStudio.PlatformUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Media;
+using static System.Windows.Forms.Control;
 
 namespace CodeNav.Helpers
 {
@@ -12,15 +16,26 @@ namespace CodeNav.Helpers
         /// Apply bookmark style to all code items that are bookmarked
         /// </summary>
         /// <param name="codeDocumentViewModel"></param>
-        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
+        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
         {
-            foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+            try
             {
-                var codeItem = codeDocumentViewModel.CodeDocument
-                    .Flatten()
-                    .FirstOrDefault(i => i.Id.Equals(bookmark.Key));
-                if (codeItem == null) continue;
-                ApplyBookmark(codeItem, bookmark.Value as BookmarkStyle);
+                if (!codeDocumentViewModel.CodeDocument.Any()) return;
+
+                GetBookmarkStyles(codeDocumentViewModel, solutionFilePath);
+
+                foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+                {
+                    var codeItem = codeDocumentViewModel.CodeDocument
+                        .Flatten()
+                        .FirstOrDefault(i => i.Id.Equals(bookmark.Key));
+                    if (codeItem == null) continue;
+                    ApplyBookmark(codeItem, codeDocumentViewModel.BookmarkStyles[bookmark.Value]);
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("ApplyBookmarks", e);
             }
         }
 
@@ -30,15 +45,22 @@ namespace CodeNav.Helpers
         /// <param name="codeDocumentViewModel">view model</param>
         public static void ClearBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
-            foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+            try
             {
-                var codeItem = codeDocumentViewModel.CodeDocument
-                    .Flatten()
-                    .First(i => i.Id.Equals(bookmark.Key));
-                ClearBookmark(codeItem);
-            }
+                foreach (var bookmark in codeDocumentViewModel.Bookmarks)
+                {
+                    var codeItem = codeDocumentViewModel.CodeDocument
+                        .Flatten()
+                        .First(i => i.Id.Equals(bookmark.Key));
+                    ClearBookmark(codeItem);
+                }
 
-            codeDocumentViewModel.Bookmarks.Clear();
+                codeDocumentViewModel.Bookmarks.Clear();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("ClearBookmarks", e);
+            }
         }
 
         /// <summary>
@@ -59,7 +81,7 @@ namespace CodeNav.Helpers
         public static void ClearBookmark(CodeItem codeItem)
         {
             codeItem.Background = Brushes.Transparent;
-            codeItem.Foreground = BrushHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+            codeItem.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
         }
 
         /// <summary>
@@ -77,14 +99,58 @@ namespace CodeNav.Helpers
         /// <param name="bookmarks">List of bookmarks</param>
         /// <param name="codeItem">code item</param>
         /// <returns>if code item is bookmarked</returns>
-        public static bool IsBookmark(Dictionary<string, BookmarkStyle> bookmarks, CodeItem codeItem)
+        public static bool IsBookmark(Dictionary<string, int> bookmarks, CodeItem codeItem)
             => bookmarks.ContainsKey(codeItem.Id);
 
         /// <summary>
         /// Default available bookmark styles
         /// </summary>
         /// <returns>List of bookmark styles</returns>
-        public static List<BookmarkStyle> GetBookmarkStyles() 
+        public static List<BookmarkStyle> GetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
+        {
+            if (string.IsNullOrEmpty(solutionFilePath)) return GetDefaultBookmarkStyles();
+
+            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
+
+            if (solutionStorage.Documents == null) return GetDefaultBookmarkStyles();
+
+            var storageItem = solutionStorage.Documents
+                .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));
+            if (storageItem != null)
+            {
+                codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
+            }
+
+            if (codeDocumentViewModel.BookmarkStyles == null)
+            {
+                codeDocumentViewModel.BookmarkStyles = GetDefaultBookmarkStyles();
+            }
+
+            return codeDocumentViewModel.BookmarkStyles;
+        }
+
+        public static void SetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, ControlCollection controls, string solutionFilePath)
+        {
+            var styles = new List<BookmarkStyle>();
+
+            foreach (var item in controls)
+            {
+                var label = item as Label;
+                styles.Add(new BookmarkStyle(ColorHelper.ToBrush(label.BackColor), ColorHelper.ToBrush(label.ForeColor)));
+            }
+
+            codeDocumentViewModel.BookmarkStyles = styles;   
+
+            SolutionStorageHelper.SaveToSolutionStorage(solutionFilePath, codeDocumentViewModel);
+        }
+
+        public static int GetIndex(List<BookmarkStyle> bookmarkStyles, BookmarkStyle bookmarkStyle)
+        {
+            return bookmarkStyles.FindIndex(b => b.Background.Color == bookmarkStyle.Background.Color && 
+            b.Foreground.Color == bookmarkStyle.Foreground.Color);
+        }
+
+        private static List<BookmarkStyle> GetDefaultBookmarkStyles()
             => new List<BookmarkStyle>
             {
                 new BookmarkStyle(Brushes.LightYellow, Brushes.Black),
