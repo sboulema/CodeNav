@@ -24,15 +24,15 @@ steps:
 - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-Task@1
   displayName: 'Update Assembly Version'
   inputs:
-    VersionNumber: '$(name)'
-    FileVersionNumber: '$(name)'
-    InformationalVersion: '$(name)'
+    VersionNumber: '$(Build.BuildNumber)'
+    FileVersionNumber: '$(Build.BuildNumber)'
+    InformationalVersion: '$(Build.BuildNumber)'
 
 - task: VsixToolsUpdateVersion@1
   displayName: 'Update Vsix Version'
   inputs:
     FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
-    VersionNumber: '$(name)'
+    VersionNumber: '$(Build.BuildNumber)'
 
 - task: VSBuild@1
   displayName: 'Build Vsix'
