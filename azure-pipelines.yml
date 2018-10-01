@@ -13,6 +13,8 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+name: '$(version)'
+
 steps:
 - task: NuGetToolInstaller@0
 
