@@ -82,6 +82,7 @@
     <Compile Include="Controls\MainToolbar.xaml.cs">
       <DependentUpon>MainToolbar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\SymbolHelper.cs" />
     <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>

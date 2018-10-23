@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using CodeNav.Helpers;
 
 namespace CodeNav.Mappers
 {
@@ -50,8 +51,8 @@ namespace CodeNav.Mappers
             var item = BaseMapper.MapBase<CodePropertyItem>(member, member.PropertyStatement.Identifier, 
                 member.PropertyStatement.Modifiers, control, semanticModel);
 
-            var symbol = semanticModel.GetDeclaredSymbol(member) as IPropertySymbol;
-            item.Type = TypeMapper.Map(symbol.Type);
+            var symbol = SymbolHelper.GetSymbol<IPropertySymbol>(semanticModel, member);
+            item.Type = TypeMapper.Map(symbol?.Type);
 
             if (member.Accessors != null)
             {

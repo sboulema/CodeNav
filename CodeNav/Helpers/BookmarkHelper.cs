@@ -51,7 +51,7 @@ namespace CodeNav.Helpers
                 {
                     var codeItem = codeDocumentViewModel.CodeDocument
                         .Flatten()
-                        .First(i => i.Id.Equals(bookmark.Key));
+                        .FirstOrDefault(i => i.Id.Equals(bookmark.Key));
                     ClearBookmark(codeItem);
                 }
 
@@ -80,6 +80,8 @@ namespace CodeNav.Helpers
         /// <param name="codeItem">code item</param>
         public static void ClearBookmark(CodeItem codeItem)
         {
+            if (codeItem == null) return;
+
             codeItem.Background = Brushes.Transparent;
             codeItem.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
         }

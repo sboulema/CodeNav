@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
+using System;
 using System.Linq;
 using System.Windows.Media;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -71,10 +72,10 @@ namespace CodeNav.Mappers
                 item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubOrFunctionStatement.Identifier,
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
 
-                var symbol = semanticModel.GetDeclaredSymbol(member) as IMethodSymbol;
+                var symbol = SymbolHelper.GetSymbol<IMethodSymbol>(semanticModel, member);
                 ((CodeFunctionItem)item).Type = TypeMapper.Map(symbol?.ReturnType);
                 ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.SubOrFunctionStatement.ParameterList, semanticModel);
-                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, 
+                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name,
                     member.SubOrFunctionStatement.ParameterList, semanticModel);
             }
 

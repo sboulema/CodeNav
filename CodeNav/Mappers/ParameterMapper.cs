@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CodeNav.Helpers;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -32,7 +33,7 @@ namespace CodeNav.Mappers
         private static string MapParameter(VisualBasicSyntax.ParameterSyntax parameter, bool useLongNames, SemanticModel semanticModel)
         {
             if (semanticModel == null) return string.Empty;
-            var symbol = semanticModel.GetDeclaredSymbol(parameter) as IParameterSymbol;
+            var symbol = SymbolHelper.GetSymbol<IParameterSymbol>(semanticModel, parameter);
             return TypeMapper.Map(symbol.Type, useLongNames);
         }
     }
