@@ -51,6 +51,20 @@ namespace CodeNav.Models
         public CodeItemAccessEnum Access;
         internal CodeViewUserControl Control;
 
+        private double _opacity;
+        public double Opacity
+        {
+            get
+            {
+                return _opacity;
+            }
+            set
+            {
+                _opacity = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
         #region Status Image
         private ImageMoniker _statusMoniker;
         public ImageMoniker StatusMoniker

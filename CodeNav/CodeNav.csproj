@@ -82,10 +82,10 @@
     <Compile Include="Controls\MainToolbar.xaml.cs">
       <DependentUpon>MainToolbar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FilterWindow.cs">
+    <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FilterWindow.Designer.cs">
+    <Compile Include="Windows\FilterWindow.Designer.cs">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BookmarkHelper.cs" />
@@ -472,7 +472,7 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FilterWindow.resx">
+    <EmbeddedResource Include="Windows\FilterWindow.resx">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\OptionsWindow.resx">
@@ -503,6 +503,7 @@
     <Analyzer Include="..\packages\Microsoft.VisualStudio.SDK.Analyzers.15.7.4\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.17\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

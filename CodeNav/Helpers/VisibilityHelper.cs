@@ -31,6 +31,7 @@ namespace CodeNav.Helpers
                 foreach (var item in document)
                 {
                     item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
+                    item.Opacity = SetOpacity(item);
 
                     if (item is IMembers)
                     {
@@ -102,6 +103,43 @@ namespace CodeNav.Helpers
                 }
             }
             return isEmpty;
+        }
+
+        /// <summary>
+        /// Set opacity of code item to value given in the filter window
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        private static double SetOpacity(CodeItem item)
+        {
+            if (Settings.Default.FilterRules != null)
+            {
+                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
+                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+
+                if (filterRule != null)
+                {
+                    return GetOpacityValue(filterRule.Opacity);
+                }
+            }
+            return 1.0;
+        }
+
+        /// <summary>
+        /// Get opacity value from filter rule setting
+        /// </summary>
+        /// <param name="opacitySetting"></param>
+        /// <returns></returns>
+        private static double GetOpacityValue(string opacitySetting)
+        {
+            if (string.IsNullOrEmpty(opacitySetting)) return 1.0;
+
+            double.TryParse(opacitySetting, out var opacity);
+
+            if (opacity < 0 || opacity > 1) return 1.0;
+
+            return opacity;
         }
 
         private static bool ShouldBeVisible(CodeItem item, string name = "", 

@@ -16,7 +16,8 @@
                 HorizontalAlignment="Stretch"
                 ToolTip="{Binding Tooltip}"
                 Background="{Binding Background}"
-                Margin="-3">
+                Margin="-3"
+                Opacity="{Binding Opacity}">
 
             <Grid>
                 <Grid.ColumnDefinitions>
