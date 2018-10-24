@@ -1,39 +1,32 @@
-﻿using Loggly;
-using Loggly.Config;
+﻿using Microsoft.ApplicationInsights;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CodeNav.Helpers
 {
     public static class LogHelper
     {
-        private static ILogglyClient _client;
-        private const string CustomerToken = "4a0f1123-41cd-4f9a-bca0-835914aa51d3";
-        private const string ApplicationName = "CodeNav";
+        private static TelemetryClient _client;
+        private const string InstrumentationKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
 
-        private const string TelemetryKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
-
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static void GetClient()
         {
-            Logger.Initialize(serviceProvider, ApplicationName, GetExecutingAssemblyVersion().ToString(), TelemetryKey);
-        }
+            _client = new TelemetryClient();
+            _client.Context.Session.Id = Guid.NewGuid().ToString();
+            _client.InstrumentationKey = InstrumentationKey;
+            _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
 
-        public static ILogglyClient GetClient()
-        {
-            var config = LogglyConfig.Instance;
-            config.CustomerToken = CustomerToken;
-            config.ApplicationName = ApplicationName;
-
-            config.Transport.EndpointHostname = "logs-01.loggly.com";
-            config.Transport.EndpointPort = 443;
-            config.Transport.LogTransport = LogTransport.Https;
-
-            var ct = new ApplicationNameTag();
-            ct.Formatter = "application-{0}";
-            config.TagConfig.Tags.Add(ct);
-
-            return new LogglyClient();
+            byte[] enc = Encoding.UTF8.GetBytes(Environment.UserName + Environment.MachineName);
+            using (var crypto = new MD5CryptoServiceProvider())
+            {
+                byte[] hash = crypto.ComputeHash(enc);
+                _client.Context.User.Id = Convert.ToBase64String(hash);
+            }
         }
 
         public static void Log(string message, Exception exception = null, 
@@ -41,25 +34,25 @@ namespace CodeNav.Helpers
         {
             if (_client == null)
             {
-                _client = GetClient();
+                GetClient();
             }
 
-            var logEvent = new LogglyEvent();
-            logEvent.Data.Add("version", GetExecutingAssemblyVersion());
-            logEvent.Data.Add("message", message);
-
-            if (exception != null)
+            var properties = new Dictionary<string, string>
             {
-                logEvent.Data.Add("exception", exception);
-            }
+                { "version", GetExecutingAssemblyVersion().ToString() },
+                { "message", JsonConvert.SerializeObject(message) },
+                { "language", language },
+                { "additional", JsonConvert.SerializeObject(additional) },
+            };
 
-            if (additional != null)
+            if (exception == null)
             {
-                logEvent.Data.Add("additional", additional);
+                _client.TrackEvent(message, properties);
             }
-
-            _client.Log(logEvent);
-            Logger.Log(exception);
+            else
+            {
+                _client.TrackException(exception, properties);
+            }
         }
 
         private static Version GetExecutingAssemblyVersion()

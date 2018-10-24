@@ -47,7 +47,6 @@ namespace CodeNav
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
             var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
-            LogHelper.Initialize(ServiceProvider);
             var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Left);
 
             return codeNav;
@@ -91,7 +90,6 @@ namespace CodeNav
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
             var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
 
-            LogHelper.Initialize(ServiceProvider);
             var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Right);
 
             return codeNav;
