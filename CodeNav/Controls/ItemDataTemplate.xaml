@@ -15,7 +15,7 @@
                 HorizontalContentAlignment="Stretch"
                 HorizontalAlignment="Stretch"
                 ToolTip="{Binding Tooltip}"
-                Background="{Binding Background}"
+                Background="{Binding BackgroundBrush}"
                 Margin="-3"
                 Opacity="{Binding Opacity}">
 
@@ -34,7 +34,7 @@
                 <TextBlock Grid.Column="1" FontFamily="{Binding FontFamily}" FontStyle="{Binding FontStyle}">
                     <Run Text="{Binding Name}"       
                          FontSize="{Binding FontSize}"          
-                         Foreground="{Binding Foreground}"
+                         Foreground="{Binding ForegroundBrush}"
                          Background="{Binding NameBackground}"
                          FontWeight="{Binding FontWeight}" 
                          x:Name="ItemName"/>

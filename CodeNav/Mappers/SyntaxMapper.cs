@@ -10,6 +10,7 @@ using CodeNav.Helpers;
 using Microsoft.VisualStudio.LanguageServices;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System.Threading.Tasks;
 
 namespace CodeNav.Mappers
 {

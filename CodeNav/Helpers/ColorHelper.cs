@@ -26,5 +26,11 @@ namespace CodeNav.Helpers
 
         public static Color ToMediaColor(System.Drawing.Color drawingColor)
             => Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
+
+        public static Color ToMediaColor(ThemeResourceKey key)
+            => ToMediaColor(VSColorTheme.GetThemedColor(key));
+
+        public static System.Drawing.Color ToDrawingColor(Color color)
+            => System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
     }
 }

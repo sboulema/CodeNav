@@ -22,13 +22,13 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red, Brushes.Blue, Brushes.Green, Brushes.White);
+            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
 
             var highlightedClass = (document.CodeDocument.First() as IMembers).Members.First() as CodeClassItem;
             var highlightedItem = highlightedClass.Members[2];
 
             Assert.AreEqual(FontWeights.Bold, highlightedItem.FontWeight);
-            Assert.AreEqual(Brushes.Red, highlightedItem.Foreground);
+            Assert.AreEqual(Brushes.Red.Color, highlightedItem.ForegroundColor);
             Assert.AreEqual(Brushes.Blue, highlightedItem.NameBackground);
 
             Assert.AreEqual(Brushes.Green, highlightedClass.BorderBrush);
@@ -42,9 +42,9 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red, Brushes.Blue, Brushes.Green, Brushes.White);
+            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
 
-            HighlightHelper.HighlightCurrentItem(document, 18, Brushes.Red, Brushes.Blue, Brushes.Green, Brushes.White);
+            HighlightHelper.HighlightCurrentItem(document, 18, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
 
 
             var highlightedItems = new List<CodeItem>();
@@ -59,8 +59,8 @@ namespace CodeNav.Tests.HelperTests
             {
                 if (item.Kind == CodeItemKindEnum.Property && (
                     item.FontWeight == FontWeights.Bold ||
-                    item.Background == Brushes.Blue ||
-                    item.Foreground == Brushes.Red))
+                    item.BackgroundColor == Brushes.Blue.Color ||
+                    item.ForegroundColor == Brushes.Red.Color))
                 {
                     found.Add(item);
                 }

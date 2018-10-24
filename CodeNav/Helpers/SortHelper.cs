@@ -7,15 +7,18 @@ namespace CodeNav.Helpers
     public static class SortHelper
     {
         public static List<CodeItem> Sort(CodeDocumentViewModel viewModel)
+            => Sort(viewModel.CodeDocument, viewModel.SortOrder);
+
+        public static List<CodeItem> Sort(List<CodeItem> document, SortOrderEnum sortOrder)
         {
-            switch (viewModel.SortOrder)
+            switch (sortOrder)
             {
                 case SortOrderEnum.SortByFile:
-                    return SortByFile(viewModel.CodeDocument);
+                    return SortByFile(document);
                 case SortOrderEnum.SortByName:
-                    return SortByName(viewModel.CodeDocument);
+                    return SortByName(document);
                 default:
-                    return viewModel.CodeDocument;
+                    return document;
             }
         }
 

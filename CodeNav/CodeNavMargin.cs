@@ -261,9 +261,9 @@ namespace CodeNav
             }        
         }
 
-        private void DocumentEvents_DocumentSaved(Document document) => _control.UpdateDocument();
+        private async void DocumentEvents_DocumentSaved(Document document) => await _control.UpdateDocumentAsync();
 
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => _control.UpdateDocument();
+        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => await _control.UpdateDocumentAsync();
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
@@ -350,8 +350,6 @@ namespace CodeNav
             if (_isDisposed) return;
 
             UnRegisterEvents();
-
-            _control?.Dispose();
 
             GC.SuppressFinalize(this);
             _isDisposed = true;

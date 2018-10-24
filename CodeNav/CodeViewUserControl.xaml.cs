@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
+using System.Threading.Tasks;
 
 namespace CodeNav
 {
@@ -28,7 +29,6 @@ namespace CodeNav
         private Window _window;
         private readonly ColumnDefinition _column;
         private List<CodeItem> _cache;
-        private readonly BackgroundWorker _backgroundWorker;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
         internal IWpfTextView TextView;
         internal IOutliningManager OutliningManager;
@@ -46,11 +46,6 @@ namespace CodeNav
             CodeDocumentViewModel = new CodeDocumentViewModel();
             DataContext = CodeDocumentViewModel;
 
-            // Setup backgroundworker to update datacontext
-            _backgroundWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
-            _backgroundWorker.DoWork += BackgroundWorker_DoWork;
-            _backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
-
             _window = window;
             _column = column;
             TextView = textView;
@@ -65,7 +60,7 @@ namespace CodeNav
         public void SetWindow(Window window) => _window = window;
         public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
 
-        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument(true);
+        private async void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => await UpdateDocumentAsync(true);
 
         public void SelectLine(object startLinePosition, bool extend = false)
         {
@@ -124,74 +119,82 @@ namespace CodeNav
         public void ToggleAllRegions(bool isExpanded) =>
             OutliningHelper.SetAllRegions(CodeDocumentViewModel.CodeDocument, isExpanded);
 
-        public void UpdateDocument(bool forceUpdate = false)
-        {
-            try
+        public async Task UpdateDocumentAsync(bool forceUpdate = false)
+        {          
+            await Task.Run(() =>
             {
-                if (_window?.Document == null) return;
-            }
-            catch (Exception)
-            {
-                return;
-            }
-            
-            if (Dte?.ActiveDocument != null)
-            {
-                CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
-            }          
-
-            // Do we need to change the side where the margin is displayed
-            if (_margin?.MarginSide != null && 
-                _margin?.MarginSide != Settings.Default.MarginSide && 
-                Dte != null)
-            {
-                var filename = _window.Document.FullName;
-                Dte.ExecuteCommand("File.Close");
-                Dte.ExecuteCommand("File.OpenFile", filename);
-            }
-
-            if (forceUpdate)
-            {
-                _cache = null;
-                CodeDocumentViewModel.CodeDocument.Clear();
-            }
-
-            // Do we have a cached version of this document
-            if (_cache != null)
-            {
-                CodeDocumentViewModel.CodeDocument = _cache;
-            }
-
-            // If not show a loading item
-            if (!CodeDocumentViewModel.CodeDocument.Any())
-            {
-                CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
-            }
-
-            // Is the backgroundworker already doing something, if so stop it
-            if (_backgroundWorker.IsBusy)
-            {
-                _backgroundWorker.CancelAsync();
-            }
-
-            // Start the backgroundworker to update the list of code items
-            if (!_backgroundWorker.CancellationPending)
-            {
-                try
+                if (Dte?.ActiveDocument != null)
                 {
-                    _backgroundWorker.RunWorkerAsync(
-                        new BackgroundWorkerRequest
-                        {
-                            Document = _window.Document,
-                            ForceUpdate = forceUpdate
-                        }
-                    );
+                    CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
                 }
-                catch (ObjectDisposedException)
+
+                // Do we need to change the side where the margin is displayed
+                if (_margin?.MarginSide != null &&
+                    _margin?.MarginSide != Settings.Default.MarginSide &&
+                    Dte != null)
                 {
+                    var filename = _window.Document.FullName;
+                    Dte.ExecuteCommand("File.Close");
+                    Dte.ExecuteCommand("File.OpenFile", filename);
+                }
+
+                if (forceUpdate)
+                {
+                    _cache = null;
+                    CodeDocumentViewModel.CodeDocument.Clear();
+                }
+
+                // Do we have a cached version of this document
+                if (_cache != null)
+                {
+                    CodeDocumentViewModel.CodeDocument = _cache;
+                }
+
+                // If not show a loading item
+                if (!CodeDocumentViewModel.CodeDocument.Any())
+                {
+                    CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
+                }
+
+                var codeItems = SyntaxMapper.MapDocument(_window.Document, this, _workspace);
+
+                if (codeItems == null)
+                {
+                    // CodeNav for document updated, no results
                     return;
-                }         
-            }
+                }
+
+                // Filter all null items from the code document
+                SyntaxMapper.FilterNullItems(codeItems);
+
+                // Sort items
+                CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
+                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+
+                // Set currently active codeitem
+                HighlightHelper.SetForeground(codeItems);
+
+                // Apply current visibility settings to the document
+                VisibilityHelper.SetCodeItemVisibility(codeItems);
+
+                // Set the new list of codeitems as DataContext
+                CodeDocumentViewModel.CodeDocument = codeItems;
+                _cache = codeItems;
+
+                // Apply bookmarks
+                LoadBookmarksFromStorage();
+                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
+
+                // Apply history items
+                LoadHistoryItemsFromStorage();
+                HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
+            });
+
+            // Sync all regions
+            OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
+
+            // Should the margin be shown and are there any items to show, if not hide the margin
+            VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
         }
 
         #region Custom Items
@@ -213,7 +216,7 @@ namespace CodeNav
                             Name = name,
                             FullName = name,
                             Id = name,
-                            Foreground = new SolidColorBrush(Colors.Black),
+                            ForegroundColor = Colors.Black,
                             BorderBrush = new SolidColorBrush(Colors.DarkGray),
                             Moniker = moniker
                         }
@@ -234,90 +237,10 @@ namespace CodeNav
 
         public void HighlightCurrentItem() => HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
 
-        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                var result = e.Result as BackgroundWorkerResult;
-
-                if (result?.CodeItems == null)
-                {
-                    // CodeNav for document updated, no results
-                    return;
-                }
-
-                // Filter all null items from the code document
-                SyntaxMapper.FilterNullItems(result.CodeItems);
-
-                // Do we need to update the DataContext?
-                var areEqual = AreDocumentsEqual(CodeDocumentViewModel.CodeDocument, result.CodeItems);
-                if (result.ForceUpdate == false && areEqual)
-                {
-                    // CodeNav for document updated, document did not change
-
-                    // Should the margin be shown and are there any items to show, if not hide the margin
-                    VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
-
-                    return;
-                }
-
-                // Set the new list of codeitems as DataContext
-                CodeDocumentViewModel.CodeDocument = result.CodeItems;
-                _cache = result.CodeItems;
-
-                // Set currently active codeitem
-                HighlightHelper.SetForeground(CodeDocumentViewModel.CodeDocument);
-
-                // Should the margin be shown and are there any items to show, if not hide the margin
-                VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
-
-                // Apply current visibility settings to the document
-                VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument);
-
-                // Sync all regions
-                OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
-
-                // Sort items
-                CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                SortHelper.Sort(CodeDocumentViewModel);
-
-                // Apply bookmarks
-                LoadBookmarksFromStorage();
-                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
-
-                // Apply history items
-                LoadHistoryItemsFromStorage();
-                HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
-            }
-            catch (ObjectDisposedException ex)
-            {
-                LogHelper.Log("RunWorkerCompleted exception", ex);
-            }
-        }
-
-        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            if (!_backgroundWorker.CancellationPending)
-            {
-                var request = e.Argument as BackgroundWorkerRequest;
-                if (request == null) return;
-                var codeItems = SyntaxMapper.MapDocument(request.Document, this, _workspace);
-                e.Result = new BackgroundWorkerResult { CodeItems = codeItems, ForceUpdate = request.ForceUpdate };
-            }
-        }
-
         private static bool AreDocumentsEqual(List<CodeItem> existingItems, List<CodeItem> newItems)
         {
             if (existingItems == null || newItems == null) return false;
             return existingItems.SequenceEqual(newItems, new CodeItemComparer());
-        }
-
-        public void Dispose()
-        {
-            if (_backgroundWorker.IsBusy && _backgroundWorker.CancellationPending == false)
-            {
-                _backgroundWorker.CancelAsync();
-            }
         }
 
         private void LoadBookmarksFromStorage()

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
@@ -21,21 +22,21 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonRefresh_OnClickAsync(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
-            control.UpdateDocument(true);
+            await control.UpdateDocumentAsync(true);
         }
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName);
 
-        private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonOptions_OnClickAsync(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
             new OptionsWindow().ShowDialog();
-            control.UpdateDocument(true);
+            await control.UpdateDocumentAsync(true);
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject

@@ -1,5 +1,4 @@
 ﻿using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;
@@ -70,8 +69,8 @@ namespace CodeNav.Helpers
         /// <param name="bookmarkStyle">bookmark style</param>
         public static void ApplyBookmark(CodeItem codeItem, BookmarkStyle bookmarkStyle)
         {
-            codeItem.Background = bookmarkStyle.Background;
-            codeItem.Foreground = bookmarkStyle.Foreground;
+            codeItem.BackgroundColor = bookmarkStyle.BackgroundColor;
+            codeItem.ForegroundColor = bookmarkStyle.ForegroundColor;
         }
 
         /// <summary>
@@ -82,8 +81,8 @@ namespace CodeNav.Helpers
         {
             if (codeItem == null) return;
 
-            codeItem.Background = Brushes.Transparent;
-            codeItem.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+            codeItem.BackgroundColor = Brushes.Transparent.Color;
+            codeItem.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
         }
 
         /// <summary>
@@ -118,7 +117,7 @@ namespace CodeNav.Helpers
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));
-            if (storageItem != null)
+            if (storageItem != null && storageItem.BookmarkStyles.Any(bs => bs.BackgroundColor.A != 0))
             {
                 codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }
@@ -138,7 +137,7 @@ namespace CodeNav.Helpers
             foreach (var item in controls)
             {
                 var label = item as Label;
-                styles.Add(new BookmarkStyle(ColorHelper.ToBrush(label.BackColor), ColorHelper.ToBrush(label.ForeColor)));
+                styles.Add(new BookmarkStyle(ColorHelper.ToMediaColor(label.BackColor), ColorHelper.ToMediaColor(label.ForeColor)));
             }
 
             codeDocumentViewModel.BookmarkStyles = styles;   
@@ -148,19 +147,19 @@ namespace CodeNav.Helpers
 
         public static int GetIndex(List<BookmarkStyle> bookmarkStyles, BookmarkStyle bookmarkStyle)
         {
-            return bookmarkStyles.FindIndex(b => b.Background.Color == bookmarkStyle.Background.Color && 
-            b.Foreground.Color == bookmarkStyle.Foreground.Color);
+            return bookmarkStyles.FindIndex(b => b.BackgroundColor == bookmarkStyle.BackgroundColor && 
+            b.ForegroundColor == bookmarkStyle.ForegroundColor);
         }
 
         private static List<BookmarkStyle> GetDefaultBookmarkStyles()
             => new List<BookmarkStyle>
             {
-                new BookmarkStyle(Brushes.LightYellow, Brushes.Black),
-                new BookmarkStyle(Brushes.PaleVioletRed, Brushes.White),
-                new BookmarkStyle(Brushes.LightGreen, Brushes.Black),
-                new BookmarkStyle(Brushes.LightBlue, Brushes.Black),
-                new BookmarkStyle(Brushes.MediumPurple, Brushes.White),
-                new BookmarkStyle(Brushes.LightGray, Brushes.Black),
+                new BookmarkStyle(Brushes.LightYellow.Color, Brushes.Black.Color),
+                new BookmarkStyle(Brushes.PaleVioletRed.Color, Brushes.White.Color),
+                new BookmarkStyle(Brushes.LightGreen.Color, Brushes.Black.Color),
+                new BookmarkStyle(Brushes.LightBlue.Color, Brushes.Black.Color),
+                new BookmarkStyle(Brushes.MediumPurple.Color, Brushes.White.Color),
+                new BookmarkStyle(Brushes.LightGray.Color, Brushes.Black.Color),
             };
     }
 }

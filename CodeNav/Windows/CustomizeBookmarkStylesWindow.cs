@@ -32,8 +32,8 @@ namespace CodeNav.Windows
             {
                 var item = new Label
                 {
-                    BackColor = ToDrawingColor(style.Background),
-                    ForeColor = ToDrawingColor(style.Foreground),
+                    BackColor = ColorHelper.ToDrawingColor(style.BackgroundColor),
+                    ForeColor = ColorHelper.ToDrawingColor(style.ForegroundColor),
                     Text = "Method",
                     Width = 50,
                     Height = 50,
@@ -55,12 +55,6 @@ namespace CodeNav.Windows
             _selectedLabel = sender as Label;
             _selectedLabel.BorderStyle = BorderStyle.FixedSingle;
         }
-
-        private Color ToDrawingColor(SolidColorBrush solidColorBrush) 
-            => Color.FromArgb(solidColorBrush.Color.A, 
-                            solidColorBrush.Color.R, 
-                            solidColorBrush.Color.G, 
-                            solidColorBrush.Color.B);
 
         private void backgroundButton_Click(object sender, EventArgs e)
         {

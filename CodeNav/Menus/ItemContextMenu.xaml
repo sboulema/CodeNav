@@ -59,7 +59,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Background="{Binding Background}" 
+                                <Button Background="{Binding BackgroundBrush}" 
                                         Style="{StaticResource BookmarkButtonStyle}" 
                                         Command="{Binding Path=DataContext.BookmarkCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" 
                                         CommandParameter="{Binding}" />

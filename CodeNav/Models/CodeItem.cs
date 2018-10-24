@@ -11,6 +11,8 @@ using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.Models
 {
@@ -24,7 +26,7 @@ namespace CodeNav.Models
             _goToEndCommand = new DelegateCommand(GoToEnd);
             _selectInCodeCommand = new DelegateCommand(SelectInCode);
             _copyNameCommand = new DelegateCommand(CopyName);
-            _refreshCommand = new DelegateCommand(Refresh);
+            _refreshCommand = new DelegateCommand(RefreshAsync);
             _expandAllRegionsCommand = new DelegateCommand(ExpandAllRegions);
             _collapseAllRegionsCommand = new DelegateCommand(CollapseAllRegions);
             _bookmarkCommand = new DelegateCommand(Bookmark);
@@ -32,7 +34,7 @@ namespace CodeNav.Models
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
             _filterBookmarksCommand = new DelegateCommand(FilterBookmarks);
             _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles);
-            _clearHistoryCommand = new DelegateCommand(ClearHistory);
+            _clearHistoryCommand = new DelegateCommand(ClearHistoryAsync);
         }
 
         public string Name { get; set; }
@@ -253,33 +255,49 @@ namespace CodeNav.Models
         #endregion
 
         #region Foreground
-        private SolidColorBrush _foreground;
-        public SolidColorBrush Foreground
+        private Color _foregroundColor;
+        public Color ForegroundColor
         {
             get
             {
-                return _foreground;
+                return _foregroundColor;
             }
             set
             {
-                _foreground = value;
-                NotifyOfPropertyChange();
+                _foregroundColor = value;
+                NotifyOfPropertyChange("ForegroundBrush");
+            }
+        }
+
+        public SolidColorBrush ForegroundBrush
+        {
+            get
+            {
+                return ColorHelper.ToBrush(_foregroundColor);
             }
         }
         #endregion
 
         #region Background
-        private SolidColorBrush _background;
-        public SolidColorBrush Background
+        private Color _backgroundColor;
+        public Color BackgroundColor
         {
             get
             {
-                return _background;
+                return _backgroundColor;
             }
             set
             {
-                _background = value;
-                NotifyOfPropertyChange();
+                _backgroundColor = value;
+                NotifyOfPropertyChange("BackgroundBrush");
+            }
+        }
+
+        public SolidColorBrush BackgroundBrush
+        {
+            get
+            {
+                return ColorHelper.ToBrush(_backgroundColor);
             }
         }
 
@@ -313,7 +331,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
-        public void ClearHistory(object args) => HistoryHelper.ClearHistory(this);
+        public async void ClearHistoryAsync(object args) => await HistoryHelper.ClearHistoryAsync(this);
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
@@ -329,7 +347,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        public void Refresh(object args) => Control.UpdateDocument(true);
+        public async void RefreshAsync(object args) => await Control.UpdateDocumentAsync(true);
 
         private readonly DelegateCommand _expandAllRegionsCommand;
         public ICommand ExpandAllRegionsCommand => _expandAllRegionsCommand;

@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using System.Windows.Media;
-using System.Linq;
 
 namespace CodeNav.Controls
 {
@@ -43,12 +42,12 @@ namespace CodeNav.Controls
             FilterTextBox.Text = string.Empty;
         }
 
-        private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
+        private async void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
         {
             new FilterWindow().ShowDialog();
 
             var control = FindParent<CodeViewUserControl>(this);
-            control.UpdateDocument(true);         
+            await control.UpdateDocumentAsync(true);         
         }
 
         private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)

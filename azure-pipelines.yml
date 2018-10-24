@@ -12,7 +12,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: 4.8.$(patch)
+name: 5.0.$(patch)
 
 steps:
 - task: NuGetToolInstaller@0

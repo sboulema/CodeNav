@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
+using AsyncTask = System.Threading.Tasks.Task;
 
 namespace CodeNav.ToolWindow
 {
@@ -44,17 +45,17 @@ namespace CodeNav.ToolWindow
 
             // Wire up references for the event handlers
             _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSavedAsync;
             _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            _windowEvents.WindowActivated += WindowEvents_WindowActivatedAsync;
 
             _control.ShowWaitingForDocument();
         }
 
         private void DocumentEvents_DocumentOpened(Document document) 
-            => WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
+            => WindowEvents_WindowActivatedAsync(document.ActiveWindow, document.ActiveWindow);
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
             _control.RegionsCollapsed(e);
@@ -62,14 +63,9 @@ namespace CodeNav.ToolWindow
         private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
             _control.RegionsExpanded(e);
 
-        protected override void Dispose(bool disposing)
-        {
-            _control.Dispose();
-        }
+        private async void DocumentEvents_DocumentSavedAsync(Document document) => await UpdateDocumentAsync(document.ActiveWindow);
 
-        private void DocumentEvents_DocumentSaved(Document document) => UpdateDocument(document.ActiveWindow);
-
-        private void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
+        private async void WindowEvents_WindowActivatedAsync(Window gotFocus, Window lostFocus)
         {
             // Wire up reference for Caret events
             var textViewHost = GetCurrentViewHost();
@@ -95,7 +91,7 @@ namespace CodeNav.ToolWindow
                 }
             }
 
-            UpdateDocument(gotFocus, gotFocus != lostFocus);
+            await UpdateDocumentAsync(gotFocus, gotFocus != lostFocus);
         }
 
         private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
@@ -110,14 +106,14 @@ namespace CodeNav.ToolWindow
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
-        private void UpdateDocument(Window window, bool forceUpdate = false)
+        private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
         {
             // If the activated window does not have code we are not interested
             if (window.Document == null) return;
 
             _control.SetWindow(window);
             _control.SetWorkspace(_workspace);
-            _control.UpdateDocument(forceUpdate);
+            await _control.UpdateDocumentAsync(forceUpdate);
         }
 
         private IWpfTextViewHost GetCurrentViewHost()

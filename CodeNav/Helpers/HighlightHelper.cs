@@ -26,26 +26,26 @@ namespace CodeNav.Helpers
             }
 
             HighlightCurrentItem(codeDocumentViewModel, ((TextSelection)window.Selection).CurrentLine,
-                ColorHelper.ToBrush(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
+                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
                 GetBackgroundBrush(),
                 ColorHelper.ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey));
+                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
 
         public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
-            SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border, SolidColorBrush regularForeground)
+            Color foregroundColor, SolidColorBrush background, SolidColorBrush border, Color regularForegroundColor)
         {
             if (codeDocumentViewModel == null) return;
 
-            UnHighlight(codeDocumentViewModel, regularForeground);
+            UnHighlight(codeDocumentViewModel, regularForegroundColor);
             var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, currentLine);
-            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foreground, background, border);
+            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, background, border);
         }
 
-        private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, SolidColorBrush foreground) =>
-            UnHighlight(codeDocumentViewModel.CodeDocument, foreground, codeDocumentViewModel.Bookmarks);
+        private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, Color foregroundColor) =>
+            UnHighlight(codeDocumentViewModel.CodeDocument, foregroundColor, codeDocumentViewModel.Bookmarks);
 
-        private static void UnHighlight(List<CodeItem> codeItems, SolidColorBrush foreground, 
+        private static void UnHighlight(List<CodeItem> codeItems, Color foregroundColor, 
             Dictionary<string, int> bookmarks)
         {
             foreach (var item in codeItems)
@@ -57,10 +57,10 @@ namespace CodeNav.Helpers
 
                 if (!BookmarkHelper.IsBookmark(bookmarks, item))
                 {
-                    item.Foreground = foreground;
+                    item.ForegroundColor = foregroundColor;
                 } else
                 {
-                    item.Foreground = item.BookmarkStyles[bookmarks[item.Id]].Foreground;
+                    item.ForegroundColor = item.BookmarkStyles[bookmarks[item.Id]].ForegroundColor;
                 }
 
                 if (item is IMembers)
@@ -69,7 +69,7 @@ namespace CodeNav.Helpers
 
                     if (hasMembersItem.Members.Any())
                     {
-                        UnHighlight(hasMembersItem.Members, foreground, bookmarks);
+                        UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks);
                     }
                 }
 
@@ -88,7 +88,7 @@ namespace CodeNav.Helpers
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
         private static void Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
-            SolidColorBrush foreground, SolidColorBrush background, SolidColorBrush border)
+            Color foregroundColor, SolidColorBrush background, SolidColorBrush border)
         {
             FrameworkElement element = null;
 
@@ -100,7 +100,7 @@ namespace CodeNav.Helpers
                 var item = FindCodeItem(codeDocumentViewModel.CodeDocument, id);
                 if (item == null) return;
 
-                item.Foreground = foreground;
+                item.ForegroundColor = foregroundColor;
                 item.FontWeight = FontWeights.Bold;
                 item.NameBackground = background;
 
@@ -153,7 +153,7 @@ namespace CodeNav.Helpers
 
             foreach (var item in items)
             {
-                item.Foreground = ColorHelper.ToBrush(EnvironmentColors.ToolWindowTextColorKey);
+                item.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
 
                 if (item is IMembers)
                 {

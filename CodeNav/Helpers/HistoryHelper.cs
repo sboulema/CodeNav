@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace CodeNav.Helpers
@@ -73,11 +74,11 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static void ClearHistory(CodeItem item)
+        public static async Task ClearHistoryAsync(CodeItem item)
         {
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
             SolutionStorageHelper.SaveToSolutionStorage(item.Control, item.Control.CodeDocumentViewModel);
-            item.Control.UpdateDocument(true);
+            await item.Control.UpdateDocumentAsync(true);
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)
