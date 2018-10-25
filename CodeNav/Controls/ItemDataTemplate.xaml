@@ -35,7 +35,7 @@
                     <Run Text="{Binding Name}"       
                          FontSize="{Binding FontSize}"          
                          Foreground="{Binding ForegroundBrush}"
-                         Background="{Binding NameBackground}"
+                         Background="{Binding NameBackgroundBrush}"
                          FontWeight="{Binding FontWeight}" 
                          x:Name="ItemName"/>
                     <Run Text="{Binding Type}"       FontSize="{Binding ParameterFontSize}" Foreground="DarkGray" />

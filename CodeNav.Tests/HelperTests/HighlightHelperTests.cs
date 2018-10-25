@@ -22,14 +22,14 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
+            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
             var highlightedClass = (document.CodeDocument.First() as IMembers).Members.First() as CodeClassItem;
             var highlightedItem = highlightedClass.Members[2];
 
             Assert.AreEqual(FontWeights.Bold, highlightedItem.FontWeight);
             Assert.AreEqual(Brushes.Red.Color, highlightedItem.ForegroundColor);
-            Assert.AreEqual(Brushes.Blue, highlightedItem.NameBackground);
+            Assert.AreEqual(Brushes.Blue.Color, highlightedItem.NameBackgroundColor);
 
             Assert.AreEqual(Brushes.Green, highlightedClass.BorderBrush);
         }
@@ -42,9 +42,9 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
+            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
-            HighlightHelper.HighlightCurrentItem(document, 18, Brushes.Red.Color, Brushes.Blue, Brushes.Green, Brushes.White.Color);
+            HighlightHelper.HighlightCurrentItem(document, 18, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
 
             var highlightedItems = new List<CodeItem>();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeNav.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -16,17 +17,24 @@ namespace CodeNav.Models
         public List<CodeItem> Members { get; set; }
         public string Parameters { get; set; }
 
-        private SolidColorBrush _borderBrush;
+        private Color _borderColor;
+        public Color BorderColor
+        {
+            get
+            {
+                return _borderColor;
+            }
+            set
+            {
+                _borderColor = value;
+                NotifyOfPropertyChange("BorderBrush");
+            }
+        }
         public SolidColorBrush BorderBrush
         {
             get
             {
-                return _borderBrush;
-            }
-            set
-            {
-                _borderBrush = value;
-                NotifyOfPropertyChange();
+                return ColorHelper.ToBrush(_borderColor);
             }
         }
 

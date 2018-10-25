@@ -27,7 +27,7 @@ namespace CodeNav.Mappers
                 // Map method as item containing statements
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
-                ((CodeClassItem)item).BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+                ((CodeClassItem)item).BorderColor = Colors.DarkGray;
             }
             else
             {
@@ -64,7 +64,7 @@ namespace CodeNav.Mappers
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.SubOrFunctionStatement.Identifier,
                     member.SubOrFunctionStatement.Modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
-                ((CodeClassItem)item).BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+                ((CodeClassItem)item).BorderColor = Colors.DarkGray;
             }
             else
             {

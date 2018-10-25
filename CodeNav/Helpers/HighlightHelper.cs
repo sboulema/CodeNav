@@ -27,19 +27,19 @@ namespace CodeNav.Helpers
 
             HighlightCurrentItem(codeDocumentViewModel, ((TextSelection)window.Selection).CurrentLine,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                GetBackgroundBrush(),
-                ColorHelper.ToBrush(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
+                GetBackgroundBrush().Color,
+                ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
 
         public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
-            Color foregroundColor, SolidColorBrush background, SolidColorBrush border, Color regularForegroundColor)
+            Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
         {
             if (codeDocumentViewModel == null) return;
 
             UnHighlight(codeDocumentViewModel, regularForegroundColor);
             var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, currentLine);
-            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, background, border);
+            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
         }
 
         private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, Color foregroundColor) =>
@@ -53,7 +53,7 @@ namespace CodeNav.Helpers
                 if (item == null) continue;
                
                 item.FontWeight = FontWeights.Regular;
-                item.NameBackground = Brushes.Transparent;
+                item.NameBackgroundColor = Brushes.Transparent.Color;
 
                 if (!BookmarkHelper.IsBookmark(bookmarks, item))
                 {
@@ -76,7 +76,7 @@ namespace CodeNav.Helpers
                 if (item is CodeClassItem)
                 {
                     var classItem = (CodeClassItem)item;
-                    classItem.BorderBrush = new SolidColorBrush(Colors.DarkGray);
+                    classItem.BorderColor = Colors.DarkGray;
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace CodeNav.Helpers
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
         private static void Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
-            Color foregroundColor, SolidColorBrush background, SolidColorBrush border)
+            Color foregroundColor, Color backgroundColor, Color borderColor)
         {
             FrameworkElement element = null;
 
@@ -102,7 +102,7 @@ namespace CodeNav.Helpers
 
                 item.ForegroundColor = foregroundColor;
                 item.FontWeight = FontWeights.Bold;
-                item.NameBackground = background;
+                item.NameBackgroundColor = backgroundColor;
 
                 if (element == null && item.Control != null)
                 {
@@ -122,7 +122,7 @@ namespace CodeNav.Helpers
 
                 if (item is CodeClassItem)
                 {
-                    (item as CodeClassItem).BorderBrush = border;
+                    (item as CodeClassItem).BorderColor = borderColor;
                 }
             }           
         }

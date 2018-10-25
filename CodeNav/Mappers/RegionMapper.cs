@@ -79,7 +79,7 @@ namespace CodeNav.Mappers
                         StartLine = r.StartLine,
                         EndLine = r.EndLine,
                         ForegroundColor = r.ForegroundColor,
-                        BorderBrush = r.BorderBrush,
+                        BorderColor = r.BorderColor,
                         FontSize = r.FontSize,
                         Kind = r.Kind,
                         Members = ToHierarchy(regionList, r.StartLine, r.EndLine)
@@ -98,7 +98,7 @@ namespace CodeNav.Mappers
                 Tooltip = name,
                 StartLine = GetStartLine(source),
                 ForegroundColor = Colors.Black,
-                BorderBrush = ColorHelper.ToBrush(Colors.DarkGray),
+                BorderColor = Colors.DarkGray,
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region
             };

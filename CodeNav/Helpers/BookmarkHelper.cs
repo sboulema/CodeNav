@@ -117,7 +117,8 @@ namespace CodeNav.Helpers
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));
-            if (storageItem != null && storageItem.BookmarkStyles.Any(bs => bs.BackgroundColor.A != 0))
+            if (storageItem != null && storageItem.BookmarkStyles != null && 
+                storageItem.BookmarkStyles.Any(bs => bs.BackgroundColor.A != 0))
             {
                 codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }

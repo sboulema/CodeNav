@@ -20,7 +20,7 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Class;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
             var regions = RegionMapper.MapRegions(tree, member.Span);
@@ -76,7 +76,7 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Class;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapInheritance(member);
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
             var regions = RegionMapper.MapRegions(tree, member.Span);

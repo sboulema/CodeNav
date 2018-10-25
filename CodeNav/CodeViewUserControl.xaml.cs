@@ -217,7 +217,7 @@ namespace CodeNav
                             FullName = name,
                             Id = name,
                             ForegroundColor = Colors.Black,
-                            BorderBrush = new SolidColorBrush(Colors.DarkGray),
+                            BorderColor = Colors.DarkGray,
                             Moniker = moniker
                         }
                     }

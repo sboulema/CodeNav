@@ -72,7 +72,7 @@ namespace CodeNav.Mappers
                 FullName = name,
                 Id = name,
                 ForegroundColor = Colors.Black,
-                BorderBrush = ColorHelper.ToBrush(Colors.DarkGray),
+                BorderColor = Colors.DarkGray,
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.ImplementedInterface,
                 IsExpanded = true
@@ -108,7 +108,7 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             foreach (var interfaceMember in member.Members)
@@ -127,7 +127,7 @@ namespace CodeNav.Mappers
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.InterfaceStatement.Identifier, 
                 member.InterfaceStatement.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
             foreach (var interfaceMember in member.Members)

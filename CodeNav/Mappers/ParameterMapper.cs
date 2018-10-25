@@ -34,7 +34,7 @@ namespace CodeNav.Mappers
         {
             if (semanticModel == null) return string.Empty;
             var symbol = SymbolHelper.GetSymbol<IParameterSymbol>(semanticModel, parameter);
-            return TypeMapper.Map(symbol.Type, useLongNames);
+            return TypeMapper.Map(symbol?.Type, useLongNames);
         }
     }
 }

@@ -11,8 +11,6 @@ using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.Models
 {
@@ -301,17 +299,25 @@ namespace CodeNav.Models
             }
         }
 
-        private SolidColorBrush _nameBackground;
-        public SolidColorBrush NameBackground
+        private Color _nameBackgroundColor;
+        public Color NameBackgroundColor
         {
             get
             {
-                return _nameBackground;
+                return _nameBackgroundColor;
             }
             set
             {
-                _nameBackground = value;
-                NotifyOfPropertyChange();
+                _nameBackgroundColor = value;
+                NotifyOfPropertyChange("NameBackgroundBrush");
+            }
+        }
+
+        public SolidColorBrush NameBackgroundBrush
+        {
+            get
+            {
+                return ColorHelper.ToBrush(_nameBackgroundColor);
             }
         }
         #endregion

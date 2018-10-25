@@ -93,7 +93,7 @@ namespace CodeNav.Mappers
             item.Name = $"Switch {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
             // Map switch cases
@@ -113,7 +113,7 @@ namespace CodeNav.Mappers
             item.Name = $"Select {item.Name}";
             item.Kind = CodeItemKindEnum.Switch;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.BorderBrush = ColorHelper.ToBrush(Colors.DarkGray);
+            item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
             // Map switch cases
