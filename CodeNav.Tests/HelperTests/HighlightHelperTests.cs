@@ -30,8 +30,7 @@ namespace CodeNav.Tests.HelperTests
             Assert.AreEqual(FontWeights.Bold, highlightedItem.FontWeight);
             Assert.AreEqual(Brushes.Red.Color, highlightedItem.ForegroundColor);
             Assert.AreEqual(Brushes.Blue.Color, highlightedItem.NameBackgroundColor);
-
-            Assert.AreEqual(Brushes.Green, highlightedClass.BorderBrush);
+            Assert.AreEqual(Brushes.Green.Color, highlightedClass.BorderColor);
         }
 
         [Test]
