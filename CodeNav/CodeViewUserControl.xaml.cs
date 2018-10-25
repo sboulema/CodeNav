@@ -18,6 +18,7 @@ using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Threading;
 
 namespace CodeNav
 {
@@ -120,8 +121,12 @@ namespace CodeNav
             OutliningHelper.SetAllRegions(CodeDocumentViewModel.CodeDocument, isExpanded);
 
         public async Task UpdateDocumentAsync(bool forceUpdate = false)
-        {          
-            await Task.Run(() =>
+        {
+            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            Document activeDocument;
+
+            try
             {
                 if (Dte?.ActiveDocument != null)
                 {
@@ -138,63 +143,87 @@ namespace CodeNav
                     Dte.ExecuteCommand("File.OpenFile", filename);
                 }
 
-                if (forceUpdate)
+                activeDocument = _window.Document;
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error starting UpdateDocument", e);
+                return;
+            }
+
+            await Task.Run(() =>
+            {
+                try
                 {
-                    _cache = null;
-                    CodeDocumentViewModel.CodeDocument.Clear();
-                }
+                    if (forceUpdate)
+                    {
+                        _cache = null;
+                        CodeDocumentViewModel.CodeDocument.Clear();
+                    }
 
-                // Do we have a cached version of this document
-                if (_cache != null)
+                    // Do we have a cached version of this document
+                    if (_cache != null)
+                    {
+                        CodeDocumentViewModel.CodeDocument = _cache;
+                    }
+
+                    // If not show a loading item
+                    if (!CodeDocumentViewModel.CodeDocument.Any())
+                    {
+                        CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
+                    }
+
+                    var codeItems = SyntaxMapper.MapDocument(activeDocument, this, _workspace);
+
+                    if (codeItems == null)
+                    {
+                        // CodeNav for document updated, no results
+                        return;
+                    }
+
+                    // Filter all null items from the code document
+                    SyntaxMapper.FilterNullItems(codeItems);
+
+                    // Sort items
+                    CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
+                    SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+
+                    // Set currently active codeitem
+                    HighlightHelper.SetForeground(codeItems);
+
+                    // Apply current visibility settings to the document
+                    VisibilityHelper.SetCodeItemVisibility(codeItems);
+
+                    // Set the new list of codeitems as DataContext
+                    CodeDocumentViewModel.CodeDocument = codeItems;
+                    _cache = codeItems;
+
+                    // Apply bookmarks
+                    LoadBookmarksFromStorage();
+                    BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
+
+                    // Apply history items
+                    LoadHistoryItemsFromStorage();
+                    HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
+                }
+                catch (Exception e)
                 {
-                    CodeDocumentViewModel.CodeDocument = _cache;
+                    LogHelper.Log("Error running UpdateDocument", e);
                 }
-
-                // If not show a loading item
-                if (!CodeDocumentViewModel.CodeDocument.Any())
-                {
-                    CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
-                }
-
-                var codeItems = SyntaxMapper.MapDocument(_window.Document, this, _workspace);
-
-                if (codeItems == null)
-                {
-                    // CodeNav for document updated, no results
-                    return;
-                }
-
-                // Filter all null items from the code document
-                SyntaxMapper.FilterNullItems(codeItems);
-
-                // Sort items
-                CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
-
-                // Set currently active codeitem
-                HighlightHelper.SetForeground(codeItems);
-
-                // Apply current visibility settings to the document
-                VisibilityHelper.SetCodeItemVisibility(codeItems);
-
-                // Set the new list of codeitems as DataContext
-                CodeDocumentViewModel.CodeDocument = codeItems;
-                _cache = codeItems;
-
-                // Apply bookmarks
-                LoadBookmarksFromStorage();
-                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
-
-                // Apply history items
-                LoadHistoryItemsFromStorage();
-                HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
             });
 
-            // Sync all regions
-            OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
+            try
+            {
+                // Sync all regions
+                OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
 
-            // Should the margin be shown and are there any items to show, if not hide the margin
-            VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+                // Should the margin be shown and are there any items to show, if not hide the margin
+                VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error finishing UpdateDocument", e);
+            }
         }
 
         #region Custom Items
