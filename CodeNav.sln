@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26206.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28210.120
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav", "CodeNav\CodeNav.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F472B188-F0AE-48F0-B5A0-62F62468D78B}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
 		publish-manifest.json = publish-manifest.json
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav", "CodeNav\CodeNav.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.Tests", "CodeNav.Tests\CodeNav.Tests.csproj", "{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}"
 EndProject
