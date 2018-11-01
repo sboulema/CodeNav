@@ -145,6 +145,16 @@ namespace CodeNav
 
                 activeDocument = _window.Document;
             }
+            catch (ArgumentException)
+            {
+                // ActiveDocument is invalid, no sense to update
+                return;
+            }
+            catch (ObjectDisposedException)
+            {
+                // Window/Document already disposed, no sense to update
+                return;
+            }
             catch (Exception e)
             {
                 LogHelper.Log("Error starting UpdateDocument", e);

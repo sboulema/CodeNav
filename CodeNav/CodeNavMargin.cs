@@ -76,13 +76,13 @@ namespace CodeNav
                 var window = dte.Windows.Item(i);
                 try
                 {
-                    if (window.Document == null) continue;
+                    if (window?.Document == null) continue;
                     if (!window.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase)) continue;
                     return window;
                 }
                 catch (Exception e)
                 {
-                    LogHelper.Log($"Exception getting parent window: {e.Message}");
+                    LogHelper.Log("Exception getting parent window", e);
                 }
             }
 
