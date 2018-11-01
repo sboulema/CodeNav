@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeNav.Models;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 
@@ -20,10 +22,10 @@ namespace CodeNav.Helpers
             return outliningManagerService.GetOutliningManager(textView);
         }
 
-        public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document) => 
+        public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document) =>
             e.CollapsedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, false));
 
-        public static void RegionsExpanded(RegionsExpandedEventArgs e, IEnumerable<CodeItem> document) => 
+        public static void RegionsExpanded(RegionsExpandedEventArgs e, IEnumerable<CodeItem> document) =>
             e.ExpandedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, true));
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">document that holds the regions</param>
         /// <param name="isExpanded">should region be expanded</param>
-        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded) => 
+        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded) =>
             document.ToList().ForEach(
                 root => root.Descendants().Where(i => i.Kind == CodeItemKindEnum.Region).ToList()
                     .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
@@ -72,7 +74,8 @@ namespace CodeNav.Helpers
             var startLine = GetStartLineForCollapsible(region);
 
             document.ToList().ForEach(
-                root => root.Descendants().Where(i => i.StartLine == startLine && i.Kind == CodeItemKindEnum.Region).ToList()
+                root => root.Descendants().Where(i => i.StartLine == startLine 
+                    && (i.Kind == CodeItemKindEnum.Region || i.Kind == CodeItemKindEnum.Class)).ToList()
                     .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
             );
         }
@@ -108,8 +111,7 @@ namespace CodeNav.Helpers
 
             try
             {
-                var snapshotLine = textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(item.StartLine);
-                var collapsibles = manager.GetAllRegions(snapshotLine.Extent);
+                var collapsibles = manager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
 
                 return (from collapsible in collapsibles
                         let startLine = GetStartLineForCollapsible(collapsible)
@@ -126,6 +128,15 @@ namespace CodeNav.Helpers
                 // FindCollapsibleFromCodeItem failed because of disposed object
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Convert a <see cref="TextSpan"/> to a <see cref="SnapshotSpan"/> on the given <see cref="ITextSnapshot"/> instance
+        /// </summary>
+        private static SnapshotSpan ToSnapshotSpan(IWpfTextView textView, TextSpan textSpan)
+        {
+            var span = new Span(textSpan.Start, textSpan.Length);
+            return new SnapshotSpan(textView.TextSnapshot, span);
         }
 
         /// <summary>
