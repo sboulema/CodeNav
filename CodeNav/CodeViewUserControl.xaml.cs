@@ -32,13 +32,13 @@ namespace CodeNav
         private List<CodeItem> _cache;
         internal readonly CodeDocumentViewModel CodeDocumentViewModel;
         internal IWpfTextView TextView;
-        internal IOutliningManager OutliningManager;
+        internal IOutliningManagerService OutliningManagerService;
         private VisualStudioWorkspace _workspace;
         private CodeNavMargin _margin;
         public DTE Dte;
 
         public CodeViewUserControl(Window window, ColumnDefinition column = null, 
-            IWpfTextView textView = null, IOutliningManager outliningManager = null, 
+            IWpfTextView textView = null, IOutliningManagerService outliningManagerService = null, 
             VisualStudioWorkspace workspace = null, CodeNavMargin margin = null, DTE dte = null)
         {
             InitializeComponent();
@@ -50,7 +50,7 @@ namespace CodeNav
             _window = window;
             _column = column;
             TextView = textView;
-            OutliningManager = outliningManager;
+            OutliningManagerService = outliningManagerService;
             _workspace = workspace;
             _margin = margin;
             Dte = dte;
@@ -225,7 +225,7 @@ namespace CodeNav
             try
             {
                 // Sync all regions
-                OutliningHelper.SyncAllRegions(OutliningManager, TextView, CodeDocumentViewModel.CodeDocument);
+                OutliningHelper.SyncAllRegions(OutliningManagerService, TextView, CodeDocumentViewModel.CodeDocument);
 
                 // Should the margin be shown and are there any items to show, if not hide the margin
                 VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);

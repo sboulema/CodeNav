@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using CodeNav.Models;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Outlining;
 
 namespace CodeNav
 {
@@ -45,9 +46,9 @@ namespace CodeNav
             if (Settings.Default.MarginSide != MarginSideEnum.Left) return null;
 
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
-            var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
+            var outliningManagerService = OutliningHelper.GetOutliningManagerService(ServiceProvider);
 
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Left);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManagerService, Workspace, MarginSideEnum.Left);
 
             return codeNav;
         }
@@ -88,9 +89,9 @@ namespace CodeNav
             if (Settings.Default.MarginSide != MarginSideEnum.Right) return null;
 
             var dte = (DTE)ServiceProvider.GetService(typeof(DTE));
-            var outliningManager = OutliningHelper.GetManager(ServiceProvider, wpfTextViewHost.TextView);
+            var outliningManagerService = (IOutliningManagerService)ServiceProvider.GetService(typeof(IOutliningManagerService));
 
-            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManager, Workspace, MarginSideEnum.Right);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, dte, outliningManagerService, Workspace, MarginSideEnum.Right);
 
             return codeNav;
         }

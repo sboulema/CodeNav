@@ -32,18 +32,20 @@ namespace CodeNav
         private readonly Grid _codeNavGrid;
         private WindowEvents _windowEvents;
         private DocumentEvents _documentEvents;
+        private readonly IOutliningManagerService _outliningManagerService;
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManager outliningManager, 
+        public CodeNavMargin(IWpfTextViewHost textViewHost, DTE dte, IOutliningManagerService outliningManagerService, 
             VisualStudioWorkspace workspace, MarginSideEnum side)
         {
             // Wire up references for the event handlers in RegisterEvents
             _dte = dte;
             _textView = textViewHost.TextView;
             _window = GetWindow(textViewHost, dte);
-            _outliningManager = outliningManager;
+            _outliningManagerService = outliningManagerService;
+            _outliningManager = OutliningHelper.GetOutliningManager(_outliningManagerService, _textView);
             _workspace = workspace;
             MarginSide = side;
 
@@ -130,7 +132,7 @@ namespace CodeNav
             var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
             _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
-                textViewHost.TextView, _outliningManager, _workspace, this, _dte);
+                textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
             grid.Children.Add(_control);
 
             Grid.SetColumn(_control, columnIndex);

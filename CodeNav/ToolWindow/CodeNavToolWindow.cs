@@ -77,13 +77,15 @@ namespace CodeNav.ToolWindow
                 if (Settings.Default.ShowHistoryIndicators)
                 {
                     textViewHost.TextView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
-                }    
+                }
 
                 // Subscribe to Outlining events
-                var outliningManager = OutliningHelper.GetManager(Package as IServiceProvider, GetCurrentViewHost().TextView);
-                if (outliningManager != null)
+                var outliningManagerService = OutliningHelper.GetOutliningManagerService(Package as IServiceProvider);
+                var outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, GetCurrentViewHost().TextView);
+
+                if (outliningManager != null && outliningManagerService != null)
                 {
-                    _control.OutliningManager = outliningManager;
+                    _control.OutliningManagerService = outliningManagerService;
                     outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
                     outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
                     outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;

@@ -12,15 +12,20 @@ namespace CodeNav.Helpers
 {
     public static class OutliningHelper
     {
-        private static IOutliningManager _manager;
+        private static IOutliningManagerService _outliningManagerService;
         private static IWpfTextView _textView;
 
-        public static IOutliningManager GetManager(IServiceProvider serviceProvider, ITextView textView)
+        public static IOutliningManagerService GetOutliningManagerService(IServiceProvider serviceProvider)
         {
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
-            var outliningManagerService = componentModel.GetService<IOutliningManagerService>();
-            return outliningManagerService.GetOutliningManager(textView);
+            return componentModel.GetService<IOutliningManagerService>();
         }
+
+        public static IOutliningManager GetOutliningManager(IOutliningManagerService outliningManagerService, ITextView textView) 
+            => outliningManagerService.GetOutliningManager(textView);
+
+        public static IOutliningManager GetOutliningManager(IServiceProvider serviceProvider, ITextView textView)
+            => GetOutliningManager(GetOutliningManagerService(serviceProvider), textView);
 
         public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document) =>
             e.CollapsedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, false));
@@ -39,18 +44,18 @@ namespace CodeNav.Helpers
                     .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
             );
 
-        public static void SyncAllRegions(IOutliningManager manager, IWpfTextView textView, IEnumerable<CodeItem> document)
+        public static void SyncAllRegions(IOutliningManagerService outliningManagerService, IWpfTextView textView, IEnumerable<CodeItem> document)
         {
-            if (manager == null) return;
+            if (outliningManagerService == null) return;
 
-            _manager = manager;
+            _outliningManagerService = outliningManagerService;
             _textView = textView;
 
             foreach (var item in document)
             {
                 if (!(item is IMembers)) continue;
 
-                var collapsible = FindCollapsibleFromCodeItem(item, manager, textView);
+                var collapsible = FindCollapsibleFromCodeItem(item, outliningManagerService, textView);
 
                 if (collapsible == null)
                 {
@@ -63,7 +68,7 @@ namespace CodeNav.Helpers
 
                 (item as IMembers).IsExpandedChanged += OnIsExpandedChanged;
 
-                SyncAllRegions(manager, textView, (item as IMembers).Members);
+                SyncAllRegions(outliningManagerService, textView, (item as IMembers).Members);
             }
         }
 
@@ -101,17 +106,19 @@ namespace CodeNav.Helpers
         /// cref="IMembers" />.
         /// </summary>
         /// <param name="item">The IMembers CodeItem.</param>
-        /// <param name="manager">The outlining manager to get all regions</param>
+        /// <param name="outliningManagerService">The outlining manager to get all regions</param>
         /// <param name="textView">The textview to find collapsibles in</param>
         /// <returns>The <see cref="ICollapsible" /> on the same starting line, otherwise null.</returns>
-        private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, IOutliningManager manager, IWpfTextView textView)
+        private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, 
+            IOutliningManagerService outliningManagerService, IWpfTextView textView)
         {
             if (item.Kind == CodeItemKindEnum.ImplementedInterface) return null;
             if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount) return null;
 
             try
             {
-                var collapsibles = manager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
+                var outliningManager = outliningManagerService.GetOutliningManager(textView);
+                var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
 
                 return (from collapsible in collapsibles
                         let startLine = GetStartLineForCollapsible(collapsible)
@@ -136,7 +143,7 @@ namespace CodeNav.Helpers
         private static SnapshotSpan ToSnapshotSpan(IWpfTextView textView, TextSpan textSpan)
         {
             var span = new Span(textSpan.Start, textSpan.Length);
-            return new SnapshotSpan(textView.TextSnapshot, span);
+            return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, span);
         }
 
         /// <summary>
@@ -149,16 +156,18 @@ namespace CodeNav.Helpers
             var item = sender as IMembers;
             if (item != null)
             {
-                var iCollapsible = FindCollapsibleFromCodeItem((CodeItem)item, _manager, _textView);
+                var iCollapsible = FindCollapsibleFromCodeItem((CodeItem)item, _outliningManagerService, _textView);
                 if (iCollapsible != null)
                 {
+                    var outliningManager = _outliningManagerService.GetOutliningManager(_textView);
+
                     if (item.IsExpanded && iCollapsible.IsCollapsed)
                     {
-                        _manager.Expand(iCollapsible as ICollapsed);
+                        outliningManager.Expand(iCollapsible as ICollapsed);
                     }
                     else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
                     {
-                        _manager.TryCollapse(iCollapsible);
+                        outliningManager.TryCollapse(iCollapsible);
                     }
                 }
             }
