@@ -49,6 +49,11 @@ namespace CodeNav.Helpers
                 // Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))
                 // We have other ways to try and map this document
             }
+            catch (ArgumentException)
+            {
+                // The parameter is incorrect. (Exception from HRESULT: 0x80070057 (E_INVALIDARG))
+                // We have other ways to try and map this document
+            }
             catch (Exception e)
             {
                 LogHelper.Log("Error getting FullName for document", e);
@@ -88,6 +93,34 @@ namespace CodeNav.Helpers
                 LogHelper.Log("Error getting Text for document", e);
             }
             return text;
+        }
+
+        /// <summary>
+        /// Get the active document
+        /// </summary>
+        /// <param name="dte"></param>
+        /// <returns></returns>
+        public static Document GetActiveDocument(DTE dte)
+        {
+            try
+            {
+                return dte?.ActiveDocument;
+            }
+            catch (ArgumentException)
+            {
+                // ActiveDocument is invalid, no sense to update
+                return null;
+            }
+            catch (ObjectDisposedException)
+            {
+                // Window/Document already disposed, no sense to update
+                return null;
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error starting UpdateDocument", e);
+                return null;
+            }
         }
     }
 }

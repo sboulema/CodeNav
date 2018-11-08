@@ -16,6 +16,8 @@ using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using Window = EnvDTE.Window;
 using CodeNav.Models;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace CodeNav
 {
@@ -69,26 +71,44 @@ namespace CodeNav
         /// <param name="dte"></param>
         /// <returns></returns>
         private static Window GetWindow(IWpfTextViewHost textViewHost, _DTE dte)
-        {            
-            ITextDocument document;
-            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+        {
+            if (textViewHost == null || dte == null) return null;
 
-            for (var i = 1; i < dte.Windows.Count + 1; i++)
+            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
+
+            return GetWindows(dte).FirstOrDefault(w => 
+                w != null &&
+                w.Document != null &&
+                w.Document.FullName != null &&
+                w.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase) == true);
+        }
+
+        /// <summary>
+        /// Get all open windows as list
+        /// </summary>
+        /// <param name="dte"></param>
+        /// <returns></returns>
+        private static List<Window> GetWindows(_DTE dte)
+        {
+            var windowsList = new List<Window>();
+
+            try
             {
-                var window = dte.Windows.Item(i);
-                try
+                for (var i = 1; i < dte.Windows.Count + 1; i++)
                 {
-                    if (window?.Document == null) continue;
-                    if (!window.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase)) continue;
-                    return window;
-                }
-                catch (Exception e)
-                {
-                    LogHelper.Log("Exception getting parent window", e);
+                    windowsList.Add(dte.Windows.Item(i));
                 }
             }
+            catch (COMException)
+            {
+                // Unspecified error (Exception from HRESULT: 0x80004005 (E_FAIL)) 
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Exception getting parent window", e);
+            }
 
-            return null;
+            return windowsList;
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost)

@@ -124,41 +124,20 @@ namespace CodeNav
         {
             await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            Document activeDocument;
+            var activeDocument = DocumentHelper.GetActiveDocument(Dte);
 
-            try
-            {
-                if (Dte?.ActiveDocument != null)
-                {
-                    CodeDocumentViewModel.FilePath = Dte.ActiveDocument.FullName;
-                }
+            if (activeDocument == null) return;
 
-                // Do we need to change the side where the margin is displayed
-                if (_margin?.MarginSide != null &&
-                    _margin?.MarginSide != Settings.Default.MarginSide &&
-                    Dte != null)
-                {
-                    var filename = _window.Document.FullName;
-                    Dte.ExecuteCommand("File.Close");
-                    Dte.ExecuteCommand("File.OpenFile", filename);
-                }
+            CodeDocumentViewModel.FilePath = activeDocument.FullName;
 
-                activeDocument = _window.Document;
-            }
-            catch (ArgumentException)
+            // Do we need to change the side where the margin is displayed
+            if (_margin?.MarginSide != null &&
+                _margin?.MarginSide != Settings.Default.MarginSide &&
+                Dte != null)
             {
-                // ActiveDocument is invalid, no sense to update
-                return;
-            }
-            catch (ObjectDisposedException)
-            {
-                // Window/Document already disposed, no sense to update
-                return;
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log("Error starting UpdateDocument", e);
-                return;
+                var filename = activeDocument.FullName;
+                Dte.ExecuteCommand("File.Close");
+                Dte.ExecuteCommand("File.OpenFile", filename);
             }
 
             await Task.Run(() =>
