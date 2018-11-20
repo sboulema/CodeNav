@@ -6,6 +6,12 @@
 pool:
   vmImage: 'VS2017-Win2016'
 
+trigger:
+  branches:
+    include:
+    - master
+# tags: none
+
 variables:
   patch: $[counter('versioncounter', 211)]
   solution: '**/*.sln'

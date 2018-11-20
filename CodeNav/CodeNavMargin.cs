@@ -47,7 +47,7 @@ namespace CodeNav
             _textView = textViewHost.TextView;
             _window = GetWindow(textViewHost, dte);
             _outliningManagerService = outliningManagerService;
-            _outliningManager = OutliningHelper.GetOutliningManager(_outliningManagerService, _textView);
+            _outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, _textView);
             _workspace = workspace;
             MarginSide = side;
 

@@ -21,11 +21,11 @@ namespace CodeNav.Helpers
             return componentModel.GetService<IOutliningManagerService>();
         }
 
-        public static IOutliningManager GetOutliningManager(IOutliningManagerService outliningManagerService, ITextView textView) 
-            => outliningManagerService.GetOutliningManager(textView);
-
-        public static IOutliningManager GetOutliningManager(IServiceProvider serviceProvider, ITextView textView)
-            => GetOutliningManager(GetOutliningManagerService(serviceProvider), textView);
+        public static IOutliningManager GetOutliningManager(IOutliningManagerService outliningManagerService, ITextView textView)
+        {
+            if (outliningManagerService == null) return null;
+            return outliningManagerService.GetOutliningManager(textView);
+        }
 
         public static void RegionsCollapsed(RegionsCollapsedEventArgs e, IEnumerable<CodeItem> document) =>
             e.CollapsedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, false));
@@ -117,7 +117,9 @@ namespace CodeNav.Helpers
 
             try
             {
-                var outliningManager = outliningManagerService.GetOutliningManager(textView);
+                var outliningManager = GetOutliningManager(outliningManagerService, textView);
+                if (outliningManager == null) return null;
+
                 var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
 
                 return (from collapsible in collapsibles
