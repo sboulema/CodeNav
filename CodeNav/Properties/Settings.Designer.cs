@@ -153,5 +153,17 @@ namespace CodeNav.Properties {
                 this["ShowHistoryIndicators"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DisableHighlight {
+            get {
+                return ((bool)(this["DisableHighlight"]));
+            }
+            set {
+                this["DisableHighlight"] = value;
+            }
+        }
     }
 }

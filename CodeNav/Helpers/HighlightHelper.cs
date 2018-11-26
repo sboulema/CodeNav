@@ -16,6 +16,8 @@ namespace CodeNav.Helpers
     {
         public static void HighlightCurrentItem(Window window, CodeDocumentViewModel codeDocumentViewModel)
         {
+            if (Settings.Default.DisableHighlight) return;
+
             try
             {
                 if (!(window?.Selection is TextSelection)) return;

@@ -43,6 +43,7 @@
             this.resetButton = new System.Windows.Forms.Button();
             this.xmlCommentsCheckBox = new System.Windows.Forms.CheckBox();
             this.historyIndicatorCheckBox = new System.Windows.Forms.CheckBox();
+            this.disableHighlightCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -171,11 +172,22 @@
             this.historyIndicatorCheckBox.Text = "Show history/edit indicators";
             this.historyIndicatorCheckBox.UseVisualStyleBackColor = true;
             // 
+            // disableHighlightCheckBox
+            // 
+            this.disableHighlightCheckBox.AutoSize = true;
+            this.disableHighlightCheckBox.Location = new System.Drawing.Point(239, 147);
+            this.disableHighlightCheckBox.Name = "disableHighlightCheckBox";
+            this.disableHighlightCheckBox.Size = new System.Drawing.Size(127, 17);
+            this.disableHighlightCheckBox.TabIndex = 12;
+            this.disableHighlightCheckBox.Text = "Disable auto-highlight";
+            this.disableHighlightCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(383, 215);
+            this.Controls.Add(this.disableHighlightCheckBox);
             this.Controls.Add(this.historyIndicatorCheckBox);
             this.Controls.Add(this.xmlCommentsCheckBox);
             this.Controls.Add(this.resetButton);
@@ -214,5 +226,6 @@
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.CheckBox xmlCommentsCheckBox;
         private System.Windows.Forms.CheckBox historyIndicatorCheckBox;
+        private System.Windows.Forms.CheckBox disableHighlightCheckBox;
     }
 }
