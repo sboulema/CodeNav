@@ -97,8 +97,7 @@ namespace CodeNav.Mappers
             }
             catch (Exception e)
             {
-                LogHelper.Log($"Error during mapping: {e}");
-                LogHelper.Log("Error during mapping", e, DocumentHelper.GetText(activeDocument), activeDocument.Language);
+                LogHelper.Log("Error during mapping", e, null, activeDocument.Language);
                 return null;
             }
         }
@@ -152,9 +151,16 @@ namespace CodeNav.Mappers
                 case LanguageEnum.CSharp:
                     _tree = CSharpSyntaxTree.ParseText(text);
 
-                    var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                    var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
-                    _semanticModel = compilation.GetSemanticModel(_tree);
+                    try
+                    {
+                        var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+                        var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlib });
+                        _semanticModel = compilation.GetSemanticModel(_tree);
+                    }
+                    catch (ArgumentException) // SyntaxTree not found to remove 
+                    {
+                        return new List<CodeItem>();
+                    }
 
                     var root = (CompilationUnitSyntax)_tree.GetRoot();
 
@@ -162,9 +168,16 @@ namespace CodeNav.Mappers
                 case LanguageEnum.VisualBasic:
                     _tree = VisualBasic.VisualBasicSyntaxTree.ParseText(text);
 
-                    var mscorlibVB = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                    var compilationVB = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlibVB });
-                    _semanticModel = compilationVB.GetSemanticModel(_tree);
+                    try
+                    {
+                        var mscorlibVB = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+                        var compilationVB = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { _tree }, new[] { mscorlibVB });
+                        _semanticModel = compilationVB.GetSemanticModel(_tree);
+                    }
+                    catch (ArgumentException) // SyntaxTree not found to remove 
+                    {
+                        return new List<CodeItem>();
+                    }
 
                     var rootVB = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
 
