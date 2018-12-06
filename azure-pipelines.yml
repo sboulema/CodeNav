@@ -53,6 +53,12 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: VsixToolsSignVsix@1
+  displayName: 'Sign Vsix'
+  inputs:
+    CertFile: $(Build.SourcesDirectory)\$(system.teamProject)\Key.pfx
+    Password: CodeNavVsixSignPassword
+
 - task: CopyFiles@2
   displayName: 'Copy Artifacts to Staging'
   inputs: 
