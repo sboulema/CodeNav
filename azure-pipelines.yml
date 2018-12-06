@@ -17,7 +17,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  - group: VSIX Signing
+  group: VSIX Signing
 
 name: 5.1.$(patch)
 
