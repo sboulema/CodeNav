@@ -6,21 +6,11 @@
 pool:
   vmImage: 'VS2017-Win2016'
 
-#trigger:
-#  branches:
-#    include:
-#    - master
-
 trigger:
   branches:
     include:
     - master
     - feature/*
-  tags:
-    include:
-    - releases/*
-    exclude:
-    - releases/old*
 
 variables:
   patch: $[counter('versioncounter', 211)]
