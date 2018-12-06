@@ -14,7 +14,8 @@ pool:
 trigger:
   branches:
     include:
-    - *
+    - master
+    - feature/*
   tags:
     include:
     - releases/*
