@@ -7,7 +7,9 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 trigger:
-  tags: none
+  tags:
+    exclude:
+    - *
 
 variables:
   patch: $[counter('versioncounter', 211)]
