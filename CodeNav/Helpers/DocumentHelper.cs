@@ -1,5 +1,7 @@
 ﻿using EnvDTE;
 using System;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace CodeNav.Helpers
@@ -93,6 +95,16 @@ namespace CodeNav.Helpers
                 LogHelper.Log("Error getting Text for document", e);
             }
             return text;
+        }
+
+        public static int GetNumberOfLines(Document document)
+        {
+            if (File.Exists(document.FullName))
+            {
+                return File.ReadLines(document.FullName).Count();
+            }
+
+            return 0;
         }
 
         /// <summary>

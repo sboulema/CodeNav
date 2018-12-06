@@ -25,6 +25,7 @@ namespace CodeNav.Windows
             Settings.Default.UseXMLComments = xmlCommentsCheckBox.Checked;
             Settings.Default.ShowHistoryIndicators = historyIndicatorCheckBox.Checked;
             Settings.Default.DisableHighlight = disableHighlightCheckBox.Checked;
+            Settings.Default.AutoLoadLineThreshold = int.Parse(autoLoadLineThresholdTextBox.Text);
             Settings.Default.Save();
             Close();
         }
@@ -38,6 +39,7 @@ namespace CodeNav.Windows
             xmlCommentsCheckBox.Checked = Settings.Default.UseXMLComments;
             historyIndicatorCheckBox.Checked = Settings.Default.ShowHistoryIndicators;
             disableHighlightCheckBox.Checked = Settings.Default.DisableHighlight;
+            autoLoadLineThresholdTextBox.Text = Settings.Default.AutoLoadLineThreshold.ToString();
         }
 
         private void fontButton_Click(object sender, EventArgs e)

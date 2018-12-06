@@ -153,7 +153,7 @@ namespace CodeNav.Properties {
                 this["ShowHistoryIndicators"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
@@ -163,6 +163,18 @@ namespace CodeNav.Properties {
             }
             set {
                 this["DisableHighlight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int AutoLoadLineThreshold {
+            get {
+                return ((int)(this["AutoLoadLineThreshold"]));
+            }
+            set {
+                this["AutoLoadLineThreshold"] = value;
             }
         }
     }

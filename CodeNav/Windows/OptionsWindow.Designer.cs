@@ -44,6 +44,8 @@
             this.xmlCommentsCheckBox = new System.Windows.Forms.CheckBox();
             this.historyIndicatorCheckBox = new System.Windows.Forms.CheckBox();
             this.disableHighlightCheckBox = new System.Windows.Forms.CheckBox();
+            this.autoLoadLineThresholdTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -71,7 +73,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(210, 180);
+            this.okButton.Location = new System.Drawing.Point(210, 237);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -82,7 +84,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(291, 180);
+            this.cancelButton.Location = new System.Drawing.Point(291, 237);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -144,7 +146,7 @@
             // resetButton
             // 
             this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resetButton.Location = new System.Drawing.Point(12, 180);
+            this.resetButton.Location = new System.Drawing.Point(12, 237);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 9;
@@ -175,18 +177,36 @@
             // disableHighlightCheckBox
             // 
             this.disableHighlightCheckBox.AutoSize = true;
-            this.disableHighlightCheckBox.Location = new System.Drawing.Point(239, 147);
+            this.disableHighlightCheckBox.Location = new System.Drawing.Point(12, 170);
             this.disableHighlightCheckBox.Name = "disableHighlightCheckBox";
             this.disableHighlightCheckBox.Size = new System.Drawing.Size(127, 17);
             this.disableHighlightCheckBox.TabIndex = 12;
             this.disableHighlightCheckBox.Text = "Disable auto-highlight";
             this.disableHighlightCheckBox.UseVisualStyleBackColor = true;
             // 
+            // autoLoadLineThresholdTextBox
+            // 
+            this.autoLoadLineThresholdTextBox.Location = new System.Drawing.Point(12, 193);
+            this.autoLoadLineThresholdTextBox.Name = "autoLoadLineThresholdTextBox";
+            this.autoLoadLineThresholdTextBox.Size = new System.Drawing.Size(56, 20);
+            this.autoLoadLineThresholdTextBox.TabIndex = 13;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(74, 196);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(199, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Do not auto load CodeNav line threshold";
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 215);
+            this.ClientSize = new System.Drawing.Size(383, 272);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.autoLoadLineThresholdTextBox);
             this.Controls.Add(this.disableHighlightCheckBox);
             this.Controls.Add(this.historyIndicatorCheckBox);
             this.Controls.Add(this.xmlCommentsCheckBox);
@@ -227,5 +247,7 @@
         private System.Windows.Forms.CheckBox xmlCommentsCheckBox;
         private System.Windows.Forms.CheckBox historyIndicatorCheckBox;
         private System.Windows.Forms.CheckBox disableHighlightCheckBox;
+        private System.Windows.Forms.TextBox autoLoadLineThresholdTextBox;
+        private System.Windows.Forms.Label label4;
     }
 }

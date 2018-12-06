@@ -215,10 +215,16 @@ namespace CodeNav
             }
         }
 
+        public bool IsLargeDocument()
+        {
+            return DocumentHelper.GetNumberOfLines(Dte.ActiveDocument) > Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
+        }
+
         #region Custom Items
 
         private static List<CodeItem> CreateLoadingItem() => CreateItem("Loading...", KnownMonikers.Refresh);
         private static List<CodeItem> CreateSelectDocumentItem() => CreateItem("Waiting for active code document...", KnownMonikers.DocumentOutline);
+        public List<CodeItem> CreateLineThresholdPassedItem() => CreateItem("Click Refresh to load file...", KnownMonikers.DocumentError);
 
         private static List<CodeItem> CreateItem(string name, ImageMoniker moniker)
         {

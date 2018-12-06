@@ -57,9 +57,9 @@ namespace CodeNav
             // Add the view/content to the margin area
             _codeNavGrid = CreateGrid(textViewHost);
             _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
-            Children.Add(_codeNavGrid);        
+            Children.Add(_codeNavGrid);
 
-            RegisterEvents();
+            RegisterEvents();      
 
             UpdateSettings();
         }
@@ -275,7 +275,11 @@ namespace CodeNav
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
             _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
-            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+
+            if (_documentEvents != null)
+            {
+                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            }
 
             if (_windowEvents != null)
             {
@@ -283,9 +287,29 @@ namespace CodeNav
             }        
         }
 
-        private async void DocumentEvents_DocumentSaved(Document document) => await _control.UpdateDocumentAsync();
+        private async void DocumentEvents_DocumentSaved(Document document)
+        {
+            if (!_control.IsLargeDocument())
+            {
+                await _control.UpdateDocumentAsync();
+            }
+            else
+            {
+                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
+            }
+        }
 
-        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus) => await _control.UpdateDocumentAsync();
+        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
+        {
+            if (!_control.IsLargeDocument())
+            {
+                await _control.UpdateDocumentAsync();
+            }
+            else
+            {
+                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
+            }
+        }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 

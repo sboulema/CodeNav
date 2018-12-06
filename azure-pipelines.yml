@@ -7,10 +7,7 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 trigger:
-  branches:
-    include:
-    - master
-# tags: none
+  tags: none
 
 variables:
   patch: $[counter('versioncounter', 211)]
@@ -18,7 +15,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: 5.0.$(patch)
+name: 5.1.$(patch)
 
 steps:
 - task: NuGetToolInstaller@0
