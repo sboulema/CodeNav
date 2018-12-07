@@ -72,8 +72,8 @@ steps:
   displayName: 'Sign Vsix'
   inputs:
     CertFile: '9322597b-751b-46c1-b87f-a686f6f7c01c'
-    Password: '$(CertPassword)'
-    SHA1: '$(CertSha)'
+    Password: $(CertPassword)
+    SHA1: $(CertSha)
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Build Artifacts'
