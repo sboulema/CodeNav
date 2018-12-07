@@ -17,7 +17,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  group: VSIX Signing
+  group: VsixSign
 
 name: 5.1.$(patch)
 
@@ -71,8 +71,9 @@ steps:
 - task: VsixToolsSignVsix@1
   displayName: 'Sign Vsix'
   inputs:
-    CertFile: $(Build.SourcesDirectory)\$(system.teamProject)\Key.pfx
-    Password: CodeNavVsixSignPassword
+    CertFile: '7a8aa7f6-32b0-4788-a5f5-4679a8decb9f'
+    Password: '$(CertPassword)'
+    SHA1: '$(CertSha)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Build Artifacts'
