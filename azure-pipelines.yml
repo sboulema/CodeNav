@@ -19,7 +19,7 @@ variables:
   buildConfiguration: 'Release'
   group: VsixSign
 
-name: 5.1.$(patch)
+name: 5.2.$(patch)
 
 steps:
 - task: NuGetToolInstaller@0
@@ -67,16 +67,6 @@ steps:
     targetType: 'inline'
     script: 'Get-ChildItem ./*.vsix -Recurse | Rename-Item -NewName {$_.basename + "_" + $env:BUILD_BUILDNUMBER + $_.extension }'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
-
-- task: VsixToolsSignVsix@1
-  displayName: 'Sign Vsix'
-  inputs:
-    CertFile: '9322597b-751b-46c1-b87f-a686f6f7c01c'
-    Password: $(CertPassword)
-    SHA1: $(CertSha)
-    Username: $(Username)
-    PAT: $(PersonalAccessToken)
-
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Build Artifacts'

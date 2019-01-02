@@ -22,6 +22,13 @@ namespace CodeNav.Mappers
             return prettyPrint ? $"({string.Join(", ", paramList)})" : string.Join(string.Empty, paramList);
         }
 
+        public static string MapParameters(BracketedParameterListSyntax parameters, bool useLongNames = false, bool prettyPrint = true)
+        {
+            if (parameters == null) return string.Empty;
+            var paramList = (from ParameterSyntax parameter in parameters.Parameters select TypeMapper.Map(parameter.Type, useLongNames)).ToList();
+            return prettyPrint ? $"[{string.Join(", ", paramList)}]" : string.Join(string.Empty, paramList);
+        }
+
         public static string MapParameters(VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel, 
             bool useLongNames = false, bool prettyPrint = true)
         {

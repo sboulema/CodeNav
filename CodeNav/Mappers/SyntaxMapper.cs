@@ -217,6 +217,8 @@ namespace CodeNav.Mappers
                     return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.ConstructorDeclaration:
                     return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, _control, _semanticModel);
+                case SyntaxKind.IndexerDeclaration:
+                    return IndexerMapper.MapIndexer(member as IndexerDeclarationSyntax, _control, _semanticModel);
                 default:
                     return null;
             }

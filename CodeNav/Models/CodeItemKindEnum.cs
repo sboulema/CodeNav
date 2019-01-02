@@ -12,6 +12,7 @@
         EnumMember,
         Event,
         ImplementedInterface,
+        Indexer,
 		Interface,
         Method,
         Namespace,

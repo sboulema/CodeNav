@@ -84,6 +84,7 @@
       <DependentUpon>MainToolbar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\SymbolHelper.cs" />
+    <Compile Include="Mappers\IndexerMapper.cs" />
     <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>

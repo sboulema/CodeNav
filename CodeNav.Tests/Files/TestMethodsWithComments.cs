@@ -36,5 +36,11 @@
         {
 
         }
+
+        internal string this[int index]
+        {
+            get { return "some value"; }
+            set { /* Do something. */ }
+        }
     }
 }
