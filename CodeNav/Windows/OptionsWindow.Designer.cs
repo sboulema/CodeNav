@@ -46,6 +46,7 @@
             this.disableHighlightCheckBox = new System.Windows.Forms.CheckBox();
             this.autoLoadLineThresholdTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.hideItemsWithoutChildrenCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -73,7 +74,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(210, 237);
+            this.okButton.Location = new System.Drawing.Point(210, 258);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -84,7 +85,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(291, 237);
+            this.cancelButton.Location = new System.Drawing.Point(291, 258);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -146,7 +147,7 @@
             // resetButton
             // 
             this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resetButton.Location = new System.Drawing.Point(12, 237);
+            this.resetButton.Location = new System.Drawing.Point(12, 258);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 9;
@@ -200,11 +201,22 @@
             this.label4.TabIndex = 14;
             this.label4.Text = "Do not auto load CodeNav line threshold";
             // 
+            // hideItemsWithoutChildrenCheckBox
+            // 
+            this.hideItemsWithoutChildrenCheckBox.AutoSize = true;
+            this.hideItemsWithoutChildrenCheckBox.Location = new System.Drawing.Point(12, 219);
+            this.hideItemsWithoutChildrenCheckBox.Name = "hideItemsWithoutChildrenCheckBox";
+            this.hideItemsWithoutChildrenCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.hideItemsWithoutChildrenCheckBox.TabIndex = 15;
+            this.hideItemsWithoutChildrenCheckBox.Text = "Hide items without any children";
+            this.hideItemsWithoutChildrenCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 272);
+            this.ClientSize = new System.Drawing.Size(383, 293);
+            this.Controls.Add(this.hideItemsWithoutChildrenCheckBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.autoLoadLineThresholdTextBox);
             this.Controls.Add(this.disableHighlightCheckBox);
@@ -249,5 +261,6 @@
         private System.Windows.Forms.CheckBox disableHighlightCheckBox;
         private System.Windows.Forms.TextBox autoLoadLineThresholdTextBox;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox hideItemsWithoutChildrenCheckBox;
     }
 }

@@ -40,9 +40,12 @@ namespace CodeNav.Helpers
                         {
                             SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                         }
-                        item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
+                        if (SettingsHelper.HideItemsWithoutChildren)
+                        {
+                            item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
                             ? Visibility.Visible
                             : Visibility.Collapsed;
+                        }                       
                     }
                 }
             }
