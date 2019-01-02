@@ -177,5 +177,17 @@ namespace CodeNav.Properties {
                 this["AutoLoadLineThreshold"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideItemsWithoutChildren {
+            get {
+                return ((bool)(this["HideItemsWithoutChildren"]));
+            }
+            set {
+                this["HideItemsWithoutChildren"] = value;
+            }
+        }
     }
 }

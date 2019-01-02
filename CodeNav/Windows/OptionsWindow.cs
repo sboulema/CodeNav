@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using CodeNav.Properties;
 using CodeNav.Models;
+using CodeNav.Helpers;
 
 namespace CodeNav.Windows
 {
@@ -26,7 +27,9 @@ namespace CodeNav.Windows
             Settings.Default.ShowHistoryIndicators = historyIndicatorCheckBox.Checked;
             Settings.Default.DisableHighlight = disableHighlightCheckBox.Checked;
             Settings.Default.AutoLoadLineThreshold = int.Parse(autoLoadLineThresholdTextBox.Text);
+            Settings.Default.HideItemsWithoutChildren = hideItemsWithoutChildrenCheckBox.Checked;
             Settings.Default.Save();
+            SettingsHelper.Refresh();
             Close();
         }
 
@@ -40,6 +43,7 @@ namespace CodeNav.Windows
             historyIndicatorCheckBox.Checked = Settings.Default.ShowHistoryIndicators;
             disableHighlightCheckBox.Checked = Settings.Default.DisableHighlight;
             autoLoadLineThresholdTextBox.Text = Settings.Default.AutoLoadLineThreshold.ToString();
+            hideItemsWithoutChildrenCheckBox.Checked = Settings.Default.HideItemsWithoutChildren;
         }
 
         private void fontButton_Click(object sender, EventArgs e)
@@ -59,6 +63,7 @@ namespace CodeNav.Windows
         private void resetButton_Click(object sender, EventArgs e)
         {
             Settings.Default.Reset();
+            SettingsHelper.Refresh();
             Close();
         }
     }
