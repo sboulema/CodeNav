@@ -25,9 +25,12 @@ namespace CodeNav.Windows
             Settings.Default.ShowFilterToolbar = filterToolbarCheckBox.Checked;
             Settings.Default.UseXMLComments = xmlCommentsCheckBox.Checked;
             Settings.Default.ShowHistoryIndicators = historyIndicatorCheckBox.Checked;
-            Settings.Default.DisableHighlight = disableHighlightCheckBox.Checked;
-            Settings.Default.AutoLoadLineThreshold = int.Parse(autoLoadLineThresholdTextBox.Text);
+            Settings.Default.DisableHighlight = disableHighlightCheckBox.Checked;        
             Settings.Default.HideItemsWithoutChildren = hideItemsWithoutChildrenCheckBox.Checked;
+
+            int.TryParse(autoLoadLineThresholdTextBox.Text, out var autoLoadLineThreshold);
+            Settings.Default.AutoLoadLineThreshold = autoLoadLineThreshold;
+
             Settings.Default.Save();
             SettingsHelper.Refresh();
             Close();

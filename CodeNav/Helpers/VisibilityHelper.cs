@@ -10,6 +10,9 @@ namespace CodeNav.Helpers
 {
     public static class VisibilityHelper
     {
+        public static List<CodeItem> SetCodeItemVisibility(CodeDocumentViewModel model)
+            => SetCodeItemVisibility(model.CodeDocument, model.FilterText, model.FilterOnBookmarks, model.Bookmarks);
+
         /// <summary>
         /// Loop through all codeItems and look into Settings to see if the item should be visible or not.
         /// </summary>
@@ -40,12 +43,17 @@ namespace CodeNav.Helpers
                         {
                             SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                         }
-                        if (SettingsHelper.HideItemsWithoutChildren)
+
+                        // If an item has any visible members, it should be visible.
+                        // If an item does not have any visible members, hide it depending on an option
+                        if (hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
                         {
-                            item.IsVisible = hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible)
-                            ? Visibility.Visible
-                            : Visibility.Collapsed;
-                        }                       
+                            item.IsVisible = Visibility.Visible;
+                        }
+                        else
+                        {
+                            item.IsVisible = SettingsHelper.HideItemsWithoutChildren ? Visibility.Collapsed : Visibility.Visible;
+                        }                    
                     }
                 }
             }
@@ -167,7 +175,12 @@ namespace CodeNav.Helpers
                 visible = BookmarkHelper.IsBookmark(bookmarks, item);
             }
 
-            return visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
+            if (!string.IsNullOrEmpty(name))
+            {
+                visible = visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return visible;
         }
 
         public static bool ShouldBeVisible(CodeItemKindEnum kind)

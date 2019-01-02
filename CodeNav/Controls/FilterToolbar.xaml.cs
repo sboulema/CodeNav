@@ -27,9 +27,11 @@ namespace CodeNav.Controls
                 return;
             }
 
+            dataContext.FilterText = FilterTextBox.Text;
+
             try
             {                
-                VisibilityHelper.SetCodeItemVisibility(dataContext.CodeDocument, FilterTextBox.Text);
+                VisibilityHelper.SetCodeItemVisibility(dataContext);
             }
             catch (Exception)
             {

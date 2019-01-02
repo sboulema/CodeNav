@@ -108,8 +108,7 @@ namespace CodeNav
         }
 
         public void FilterBookmarks() 
-            => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeDocument, 
-                filterOnBookmarks: CodeDocumentViewModel.FilterOnBookmarks, bookmarks: CodeDocumentViewModel.Bookmarks);
+            => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
         public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
             OutliningHelper.RegionsCollapsed(e, CodeDocumentViewModel.CodeDocument);
@@ -180,12 +179,12 @@ namespace CodeNav
                     // Set currently active codeitem
                     HighlightHelper.SetForeground(codeItems);
 
-                    // Apply current visibility settings to the document
-                    VisibilityHelper.SetCodeItemVisibility(codeItems);
-
                     // Set the new list of codeitems as DataContext
                     CodeDocumentViewModel.CodeDocument = codeItems;
                     _cache = codeItems;
+
+                    // Apply current visibility settings to the document
+                    VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
                     // Apply bookmarks
                     LoadBookmarksFromStorage();
