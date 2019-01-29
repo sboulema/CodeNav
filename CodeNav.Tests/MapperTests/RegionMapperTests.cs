@@ -81,5 +81,31 @@ namespace CodeNav.Tests.MapperTests
             var regionR1 = regionClass.Members.FirstOrDefault(m => m.Name.Equals("#Region")) as CodeRegionItem;
             Assert.NotNull(regionR1, "Region #Region not found");
         }
+
+        [Test]
+        public void TestRegionsSpan()
+        {
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegions.cs"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Namespace, document.First().Kind);
+
+            // There should be a single class
+            var regionClass = (document.First() as IMembers).Members.First() as CodeClassItem;
+            Assert.NotNull(regionClass);
+
+            // The class should have a function in it
+            Assert.NotNull(regionClass.Members.FirstOrDefault(m => m.Name.Equals("OutsideRegionFunction")));
+
+            // The class should have a region in it
+            var regionR1 = regionClass.Members.FirstOrDefault(m => m.Name.Equals("#R1")) as CodeRegionItem;
+            Assert.NotNull(regionR1, "Region #R1 not found");
+
+            // The region should have correct span for outlining usages
+            Assert.AreEqual(74, regionR1.Span.Start);
+            Assert.AreEqual(84, regionR1.Span.End);
+        }
     }
 }

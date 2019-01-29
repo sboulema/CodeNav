@@ -82,6 +82,7 @@ namespace CodeNav.Mappers
                         BorderColor = r.BorderColor,
                         FontSize = r.FontSize,
                         Kind = r.Kind,
+                        Span = r.Span,
                         Members = ToHierarchy(regionList, r.StartLine, r.EndLine)
                     }).ToList<CodeItem>();
         }
@@ -100,7 +101,8 @@ namespace CodeNav.Mappers
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.Region
+                Kind = CodeItemKindEnum.Region,
+                Span = source.Span
             };
         }
 
