@@ -59,6 +59,8 @@
     <Compile Include="HelperTests\LanguageHelperTests.cs" />
     <Compile Include="HelperTests\SortHelperTests.cs" />
     <Compile Include="HelperTests\HighlightHelperTests.cs" />
+    <Compile Include="MapperTests\JavaScript\TestVariables.cs" />
+    <Compile Include="MapperTests\JavaScript\TestFunctions.cs" />
     <Compile Include="MapperTests\RegionMapperTests.cs" />
     <Compile Include="MapperTests\TestEnums.cs" />
     <Compile Include="MapperTests\TestEmptyInterface.cs" />

@@ -1,5 +1,4 @@
-﻿using CodeNav.Mappers.JavaScript;
-using CodeNav.Models;
+﻿using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,7 @@ using System.Windows.Media;
 using Zu.TypeScript;
 using Zu.TypeScript.TsTypes;
 
-namespace CodeNav.Mappers
+namespace CodeNav.Mappers.JavaScript
 {
     public static class SyntaxMapperJS
     {
@@ -20,7 +19,7 @@ namespace CodeNav.Mappers
         public static List<CodeItem> Map(Document document, CodeViewUserControl control)
             => Map(document.FilePath, control);
 
-        private static List<CodeItem> Map(string filePath, CodeViewUserControl control)
+        public static List<CodeItem> Map(string filePath, CodeViewUserControl control)
         {
             _control = control;
 
@@ -33,6 +32,7 @@ namespace CodeNav.Mappers
                 new CodeNamespaceItem
                 {
                     Id = "Namespace" + filePath,
+                    Kind = CodeItemKindEnum.Namespace,
                     Members = new List<CodeItem>
                     {
                         new CodeClassItem
@@ -104,7 +104,7 @@ namespace CodeNav.Mappers
 
             if (variable.Parent.Kind != SyntaxKind.SourceFile) return new List<CodeItem>();
 
-            var item = BaseMapperJS.MapBase<CodeFunctionItem>(variable, declarator.IdentifierStr, _control);
+            var item = BaseMapperJS.MapBase<CodeItem>(variable, declarator.IdentifierStr, _control);
             item.Kind = CodeItemKindEnum.Variable;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 

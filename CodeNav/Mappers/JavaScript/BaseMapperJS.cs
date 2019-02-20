@@ -25,7 +25,7 @@ namespace CodeNav.Mappers.JavaScript
             element.StartLinePosition = new LinePosition(GetLineNumber(member, member.NodeStart), 0);
             element.EndLine = GetLineNumber(member, member.End);
             element.EndLinePosition = new LinePosition(GetLineNumber(member, member.End), 0);
-            element.Span = new TextSpan(member.First.Pos.GetValueOrDefault(0), member.Last.End.GetValueOrDefault(0));
+            element.Span = new TextSpan(member.NodeStart, member.End.GetValueOrDefault() - member.NodeStart);
             element.ForegroundColor = Colors.Black;
             element.Access = CodeItemAccessEnum.Public;
             element.FontSize = Settings.Default.Font.SizeInPoints;

@@ -24,6 +24,6 @@ function outerFunction() {
     var assignedInnerFunction = function (a, b) { return a * b };
 }
 
-async function functionAsync() {
+async function asyncFunction() {
     // Async function
 }

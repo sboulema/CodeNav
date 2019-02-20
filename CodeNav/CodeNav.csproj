@@ -87,7 +87,7 @@
     <Compile Include="Mappers\IndexerMapper.cs" />
     <Compile Include="Mappers\JavaScript\BaseMapperJS.cs" />
     <Compile Include="Mappers\JavaScript\FunctionMapperJS.cs" />
-    <Compile Include="Mappers\SyntaxMapperJS.cs" />
+    <Compile Include="Mappers\JavaScript\SyntaxMapperJS.cs" />
     <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
