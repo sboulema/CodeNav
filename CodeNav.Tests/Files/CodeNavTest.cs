@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using CodeNav.Models;
 
+#pragma warning disable
+
 namespace CodeNav.Tests
 {
     public class CodeNavTest
@@ -16,7 +18,8 @@ namespace CodeNav.Tests
         protected int Version = 1;
 
         public bool Field = true;
-        
+
+
         private int _secret = 2;
 
         int NoModifierProperty { get; set; }
@@ -144,3 +147,5 @@ namespace CodeNav.Tests
         Sunday
     }
 }
+
+#pragma warning restore

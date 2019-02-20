@@ -84,7 +84,7 @@ namespace CodeNav.Helpers
 
                 text = startPoint.GetText(textDocument.EndPoint);
             }
-            catch (COMException e)
+            catch (COMException)
             {
                 // Catastrophic failure (Exception from HRESULT: 0x8000FFFF (E_UNEXPECTED))
                 // We were unable to get a start- or endpoint for the document. 

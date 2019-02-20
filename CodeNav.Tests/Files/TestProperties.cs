@@ -1,5 +1,7 @@
 ﻿using System;
 
+#pragma warning disable
+
 namespace CodeNav.Tests.Files
 {
     public class TestProperties
@@ -18,3 +20,5 @@ namespace CodeNav.Tests.Files
         public int Property => _property; 
     }
 }
+
+#pragma warning restore

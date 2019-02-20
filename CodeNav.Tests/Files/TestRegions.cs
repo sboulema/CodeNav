@@ -1,4 +1,6 @@
-﻿namespace CodeNav.Tests.Files
+﻿#pragma warning disable
+
+namespace CodeNav.Tests.Files
 {
     public class Class2
     {
@@ -52,3 +54,5 @@
         #endregion
     }
 }
+
+#pragma warning restore
