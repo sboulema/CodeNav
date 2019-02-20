@@ -104,8 +104,8 @@ namespace CodeNav.Tests.MapperTests
             Assert.NotNull(regionR1, "Region #R1 not found");
 
             // The region should have correct span for outlining usages
-            Assert.AreEqual(74, regionR1.Span.Start);
-            Assert.AreEqual(84, regionR1.Span.End);
+            Assert.AreEqual(101, regionR1.Span.Start);
+            Assert.AreEqual(111, regionR1.Span.End);
         }
     }
 }

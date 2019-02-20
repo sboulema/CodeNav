@@ -46,7 +46,9 @@ namespace CodeNav
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
         [Import(typeof(SVsServiceProvider))]
+        #pragma warning disable CS0649
         private IServiceProvider ServiceProvider;
+        #pragma warning restore CS0649
 
         [Import(typeof(VisualStudioWorkspace))]
         private VisualStudioWorkspace Workspace { get; set; }
