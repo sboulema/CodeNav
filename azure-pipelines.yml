@@ -19,7 +19,7 @@ variables:
   buildConfiguration: 'Release'
   group: VsixSign
 
-name: 5.2.$(patch)
+name: 6.0.$(patch)
 
 steps:
 - task: NuGetToolInstaller@0

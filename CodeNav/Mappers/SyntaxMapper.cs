@@ -114,6 +114,11 @@ namespace CodeNav.Mappers
                 return null;
             }
 
+            if (Path.GetExtension(document.FilePath).Equals(".js"))
+            {
+                return SyntaxMapperJS.Map(document, _control);
+            }
+
             _tree = document.GetSyntaxTreeAsync().Result;
 
             if (_tree == null)
@@ -145,6 +150,11 @@ namespace CodeNav.Mappers
             var text = DocumentHelper.GetText(document);
 
             if (string.IsNullOrEmpty(text)) return new List<CodeItem>();
+
+            if (Path.GetExtension(document.FullName).Equals(".js"))
+            {
+                return SyntaxMapperJS.Map(document, _control);
+            }
 
             switch (LanguageHelper.GetLanguage(document.Language))
             {

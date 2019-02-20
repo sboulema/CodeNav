@@ -85,6 +85,9 @@
     </Compile>
     <Compile Include="Helpers\SymbolHelper.cs" />
     <Compile Include="Mappers\IndexerMapper.cs" />
+    <Compile Include="Mappers\JavaScript\BaseMapperJS.cs" />
+    <Compile Include="Mappers\JavaScript\FunctionMapperJS.cs" />
+    <Compile Include="Mappers\SyntaxMapperJS.cs" />
     <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -382,6 +385,9 @@
     <Reference Include="System.Threading.Thread, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Thread.4.0.0\lib\net46\System.Threading.Thread.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -394,6 +400,9 @@
     </Reference>
     <Reference Include="System.Xml.XPath.XDocument, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.XPath.XDocument.4.0.1\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
+    </Reference>
+    <Reference Include="TypeScriptAST, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TypeScriptAST.1.0.2\lib\net452\TypeScriptAST.dll</HintPath>
     </Reference>
     <Reference Include="VsixLogger">
       <HintPath>..\packages\VsixLogger.1.1.44.0\lib\net45\VsixLogger.dll</HintPath>

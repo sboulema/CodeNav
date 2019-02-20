@@ -24,6 +24,7 @@ Visual Studio extension to show the code structure of your current document
 ## Language support
 - C#
 - Visual Basic
+- JavaScript
 
 ## Installing
 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav) [![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/v/SamirBoulema.CodeNav.svg?style=flat)](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)

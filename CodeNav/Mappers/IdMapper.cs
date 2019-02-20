@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Linq;
+using Zu.TypeScript.TsTypes;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace CodeNav.Mappers
@@ -19,6 +20,11 @@ namespace CodeNav.Mappers
         public static string MapId(SyntaxToken identifier, VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel)
         {
             return MapId(identifier.Text, parameters, semanticModel);
+        }
+
+        public static string MapId(string name, NodeArray<ParameterDeclaration> parameters)
+        {
+            return name + string.Join(string.Empty, parameters.Select(p => p.IdentifierStr));
         }
 
         public static string MapId(string name, ParameterListSyntax parameters)

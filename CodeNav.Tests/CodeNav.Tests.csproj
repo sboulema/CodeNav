@@ -36,6 +36,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Files\CodeNavTest.cs" />
+    <Content Include="Files\JavaScript\TestVariable.js" />
+    <Content Include="Files\JavaScript\TestFunction.js" />
     <Compile Include="Files\TestEmptyInterface.cs" />
     <Compile Include="Files\TestEmptyClass.cs" />
     <Compile Include="Files\TestVisibility.cs" />
