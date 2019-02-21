@@ -39,7 +39,7 @@ namespace CodeNav.Mappers.JavaScript
 
         private static int GetLineNumber(Node member, int? pos)
         {
-            return member.SourceStr.Take(pos.GetValueOrDefault(0)).Count(c => c == '\n');
+            return member.SourceStr.Take(pos.GetValueOrDefault(0)).Count(c => c == '\n') + 1;
         }
     }
 }

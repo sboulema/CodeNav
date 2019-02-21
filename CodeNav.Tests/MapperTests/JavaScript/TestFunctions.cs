@@ -28,7 +28,7 @@ namespace CodeNav.Tests.MapperTests.JavaScript
         public void TestBasicFunction()
         {
             Assert.AreEqual("firstFunction", root.Members.FirstOrDefault().Name);
-            Assert.AreEqual(2, root.Members.FirstOrDefault().EndLine);
+            Assert.AreEqual(3, root.Members.FirstOrDefault().EndLine);
             Assert.AreEqual(0, root.Members.FirstOrDefault().Span.Start);
             Assert.AreEqual(51, root.Members.FirstOrDefault().Span.End);
         }
@@ -75,7 +75,7 @@ namespace CodeNav.Tests.MapperTests.JavaScript
         public void TestAsyncFunction()
         {
             Assert.AreEqual("asyncFunction", root.Members[6].Name);
-            Assert.AreEqual(26, root.Members[6].StartLine);
+            Assert.AreEqual(27, root.Members[6].StartLine);
         }
     }
 }

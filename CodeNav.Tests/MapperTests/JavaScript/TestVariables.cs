@@ -34,7 +34,7 @@ namespace CodeNav.Tests.MapperTests.JavaScript
         public void TestAssignedVariable()
         {
             Assert.AreEqual("assignedVariable", root.Members[1].Name);
-            Assert.AreEqual(2, root.Members[1].StartLine);
+            Assert.AreEqual(3, root.Members[1].StartLine);
         }
     }
 }

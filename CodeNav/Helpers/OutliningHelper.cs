@@ -66,8 +66,11 @@ namespace CodeNav.Helpers
                     (item as IMembers).IsExpanded = !collapsible.IsCollapsed;
                 }
 
-                (item as IMembers).IsExpandedChanged += OnIsExpandedChanged;
-
+                if (item is ICodeCollapsible)
+                {
+                    (item as ICodeCollapsible).IsExpandedChanged += OnIsExpandedChanged;
+                }
+                
                 SyncAllRegions(outliningManagerService, textView, (item as IMembers).Members);
             }
         }
@@ -80,7 +83,7 @@ namespace CodeNav.Helpers
 
             document.ToList().ForEach(
                 root => root.Descendants().Where(i => i.StartLine == startLine 
-                    && (i.Kind == CodeItemKindEnum.Region || i.Kind == CodeItemKindEnum.Class)).ToList()
+                    && (i is IMembers)).ToList()
                     .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
             );
         }
