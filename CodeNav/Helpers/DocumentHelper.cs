@@ -18,6 +18,7 @@ namespace CodeNav.Helpers
             var name = string.Empty;
             try
             {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
                 name = window.Document.Name;
             }
             catch (ObjectDisposedException)
@@ -44,6 +45,7 @@ namespace CodeNav.Helpers
 
             try
             {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
                 name = document.FullName;
             }
             catch (COMException)
@@ -73,6 +75,7 @@ namespace CodeNav.Helpers
             var text = string.Empty;
             try
             {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
                 var textDocument = (TextDocument)document.Object("TextDocument");
                 var startPoint = textDocument?.StartPoint?.CreateEditPoint();
 
@@ -99,6 +102,8 @@ namespace CodeNav.Helpers
 
         public static int GetNumberOfLines(Document document)
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             if (File.Exists(document.FullName))
             {
                 return File.ReadLines(document.FullName).Count();

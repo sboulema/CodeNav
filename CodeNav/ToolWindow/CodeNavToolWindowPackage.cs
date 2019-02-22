@@ -31,7 +31,9 @@ namespace CodeNav.ToolWindow
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-        {           
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             DTE = await GetServiceAsync(typeof(DTE)) as DTE;
             ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
 

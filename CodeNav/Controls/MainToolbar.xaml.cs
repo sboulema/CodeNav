@@ -22,7 +22,7 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private async void ButtonRefresh_OnClickAsync(object sender, RoutedEventArgs e)
+        private async void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
             await control.UpdateDocumentAsync(true);
@@ -32,7 +32,7 @@ namespace CodeNav.Controls
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName);
 
-        private async void ButtonOptions_OnClickAsync(object sender, RoutedEventArgs e)
+        private async void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
             var control = FindParent<CodeViewUserControl>(this);
             new OptionsWindow().ShowDialog();

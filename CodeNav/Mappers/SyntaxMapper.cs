@@ -11,6 +11,8 @@ using Microsoft.VisualStudio.LanguageServices;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using CodeNav.Mappers.JavaScript;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.Mappers
 {
@@ -63,7 +65,7 @@ namespace CodeNav.Mappers
         /// <param name="control">CodeNav control that will show the result</param>
         /// <param name="workspace">Current Visual Studio workspace</param>
         /// <returns>List of found code items</returns>
-        public static List<CodeItem> MapDocument(EnvDTE.Document activeDocument, CodeViewUserControl control, 
+        public static async Task<List<CodeItem>> MapDocumentAsync(EnvDTE.Document activeDocument, CodeViewUserControl control, 
             VisualStudioWorkspace workspace)
         {
             _control = control;
@@ -75,6 +77,8 @@ namespace CodeNav.Mappers
 
             try
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 var filePath = DocumentHelper.GetFullName(activeDocument);
 
                 if (string.IsNullOrEmpty(filePath))
@@ -93,7 +97,7 @@ namespace CodeNav.Mappers
 
                 var document = workspace.CurrentSolution.GetDocument(id);
 
-                return MapDocument(document);
+                return await MapDocumentAsync(document);
             }
             catch (Exception e)
             {
@@ -107,7 +111,7 @@ namespace CodeNav.Mappers
         /// </summary>
         /// <param name="document">a CodeAnalysis document</param>
         /// <returns>List of found code items</returns>
-        public static List<CodeItem> MapDocument(Document document)
+        public static async Task<List<CodeItem>> MapDocumentAsync(Document document)
         {
             if (document == null)
             {
@@ -119,15 +123,15 @@ namespace CodeNav.Mappers
                 return SyntaxMapperJS.Map(document, _control);
             }
 
-            _tree = document.GetSyntaxTreeAsync().Result;
+            _tree = await document.GetSyntaxTreeAsync();
 
             if (_tree == null)
             {
                 return null;
             }
 
-            _semanticModel = document.GetSemanticModelAsync().Result;
-            var root = _tree.GetRoot();
+            _semanticModel = await document.GetSemanticModelAsync();
+            var root = await _tree.GetRootAsync();
 
             switch (LanguageHelper.GetLanguage(root.Language))
             {
@@ -147,6 +151,8 @@ namespace CodeNav.Mappers
         /// <returns>List of found code items</returns>
         public static List<CodeItem> MapDocument(EnvDTE.Document document)
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             var text = DocumentHelper.GetText(document);
 
             if (string.IsNullOrEmpty(text)) return new List<CodeItem>();

@@ -14,7 +14,10 @@ namespace CodeNav.Mappers.JavaScript
         private static CodeViewUserControl _control;
 
         public static List<CodeItem> Map(EnvDTE.Document document, CodeViewUserControl control)
-            => Map(document.FullName, control);
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            return Map(document.FullName, control);
+        }
 
         public static List<CodeItem> Map(Document document, CodeViewUserControl control)
             => Map(document.FilePath, control);

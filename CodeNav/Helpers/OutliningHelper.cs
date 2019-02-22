@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeNav.Models;
+using Microsoft;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Text;
@@ -18,6 +19,7 @@ namespace CodeNav.Helpers
         public static IOutliningManagerService GetOutliningManagerService(IServiceProvider serviceProvider)
         {
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             return componentModel.GetService<IOutliningManagerService>();
         }
 

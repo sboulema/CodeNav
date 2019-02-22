@@ -11,6 +11,7 @@ using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace CodeNav.Models
 {
@@ -24,7 +25,7 @@ namespace CodeNav.Models
             _goToEndCommand = new DelegateCommand(GoToEnd);
             _selectInCodeCommand = new DelegateCommand(SelectInCode);
             _copyNameCommand = new DelegateCommand(CopyName);
-            _refreshCommand = new DelegateCommand(RefreshAsync);
+            _refreshCommand = new DelegateCommand(Refresh);
             _expandAllRegionsCommand = new DelegateCommand(ExpandAllRegions);
             _collapseAllRegionsCommand = new DelegateCommand(CollapseAllRegions);
             _bookmarkCommand = new DelegateCommand(Bookmark);
@@ -32,7 +33,7 @@ namespace CodeNav.Models
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
             _filterBookmarksCommand = new DelegateCommand(FilterBookmarks);
             _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles);
-            _clearHistoryCommand = new DelegateCommand(ClearHistoryAsync);
+            _clearHistoryCommand = new DelegateCommand(ClearHistory);
         }
 
         public string Name { get; set; }
@@ -328,24 +329,39 @@ namespace CodeNav.Models
         public void ClickItem(object startLinePosition)
         {
             HistoryHelper.AddItemToHistory(this);
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
             Control.SelectLine(startLinePosition);
         }
 
         private readonly DelegateCommand _goToDefinitionCommand;
         public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
-        public void GoToDefinition(object args) => Control.SelectLine(StartLinePosition);
+        public void GoToDefinition(object args)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            Control.SelectLine(StartLinePosition);
+        }
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
-        public async void ClearHistoryAsync(object args) => await HistoryHelper.ClearHistoryAsync(this);
+        #pragma warning disable VSTHRD100
+        public async void ClearHistory(object args) => await HistoryHelper.ClearHistoryAsync(this);
+        #pragma warning restore VSTHRD100
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
-        public void GoToEnd(object args) => Control.SelectLine(EndLinePosition);
+        public void GoToEnd(object args)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            Control.SelectLine(EndLinePosition);
+        }
 
         private readonly DelegateCommand _selectInCodeCommand;
         public ICommand SelectInCodeCommand => _selectInCodeCommand;
-        public void SelectInCode(object args) => Control.Select(StartLinePosition, EndLinePosition);
+        public void SelectInCode(object args)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            Control.Select(StartLinePosition, EndLinePosition);
+        }
 
         private readonly DelegateCommand _copyNameCommand;
         public ICommand CopyNameCommand => _copyNameCommand;
@@ -353,7 +369,9 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        public async void RefreshAsync(object args) => await Control.UpdateDocumentAsync(true);
+        #pragma warning disable VSTHRD100
+        public async void Refresh(object args) => await Control.UpdateDocumentAsync(true);
+        #pragma warning restore VSTHRD100
 
         private readonly DelegateCommand _expandAllRegionsCommand;
         public ICommand ExpandAllRegionsCommand => _expandAllRegionsCommand;
@@ -378,6 +396,8 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.AddBookmark(Id, 
                     BookmarkHelper.GetIndex(BookmarkStyles, bookmarkStyle));
+
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
                 SaveToSolutionStorage();
 
@@ -404,6 +424,8 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.RemoveBookmark(Id);
 
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
                 SaveToSolutionStorage();
 
                 NotifyOfPropertyChange("BookmarksAvailable");
@@ -424,6 +446,8 @@ namespace CodeNav.Models
             try
             {
                 Control.CodeDocumentViewModel.ClearBookmarks();
+
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
                 SaveToSolutionStorage();
 
@@ -451,6 +475,8 @@ namespace CodeNav.Models
 
         private void SaveToSolutionStorage()
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             if (string.IsNullOrEmpty(Control?.Dte?.Solution?.FileName)) return;
 
             var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(Control.Dte.Solution.FileName);

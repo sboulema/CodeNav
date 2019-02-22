@@ -18,6 +18,8 @@ namespace CodeNav.Helpers
         {
             if (Settings.Default.DisableHighlight) return;
 
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             try
             {
                 if (!(window?.Selection is TextSelection)) return;

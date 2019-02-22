@@ -93,6 +93,8 @@ namespace CodeNav.ToolWindow
                 throw new NotSupportedException("Cannot create tool window");
             }
 
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
