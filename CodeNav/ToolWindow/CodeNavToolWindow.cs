@@ -41,21 +41,27 @@ namespace CodeNav.ToolWindow
             if (_control.Dte == null && codeNavToolWindowPackage.DTE != null)
             {
                 _control.Dte = codeNavToolWindowPackage.DTE;
-            }        
+            }
 
             // Wire up references for the event handlers
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSavedAsync;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
             _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivatedAsync;
+            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
 
             _control.ShowWaitingForDocument();
         }
 
-        private void DocumentEvents_DocumentOpened(Document document) 
-            => WindowEvents_WindowActivatedAsync(document.ActiveWindow, document.ActiveWindow);
+        private void DocumentEvents_DocumentOpened(Document document)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
+            WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
+        }
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
             _control.RegionsCollapsed(e);
@@ -63,9 +69,15 @@ namespace CodeNav.ToolWindow
         private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
             _control.RegionsExpanded(e);
 
-        private async void DocumentEvents_DocumentSavedAsync(Document document) => await UpdateDocumentAsync(document.ActiveWindow);
+        #pragma warning disable VSTHRD100
+        private async void DocumentEvents_DocumentSaved(Document document)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        private async void WindowEvents_WindowActivatedAsync(Window gotFocus, Window lostFocus)
+            await UpdateDocumentAsync(document.ActiveWindow);
+        }
+
+        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
         {
             // Wire up reference for Caret events
             var textViewHost = GetCurrentViewHost();
@@ -95,6 +107,7 @@ namespace CodeNav.ToolWindow
 
             await UpdateDocumentAsync(gotFocus, gotFocus != lostFocus);
         }
+        #pragma warning restore VSTHRD100
 
         private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
         {
@@ -106,11 +119,17 @@ namespace CodeNav.ToolWindow
             }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            _control.HighlightCurrentItem();
+        }
 
         private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
         {
             // If the activated window does not have code we are not interested
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             if (window.Document == null) return;
 
             _control.SetWindow(window);

@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Button Click="ButtonRefresh_OnClickAsync" ToolTip="Refresh" Margin="3,3,0,0">
+        <Button Click="ButtonRefresh_OnClick" ToolTip="Refresh" Margin="3,3,0,0">
             <Button.Template>
                 <ControlTemplate>
                     <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Refresh}" />
@@ -82,7 +82,7 @@
                     </ControlTemplate>
                 </ToggleButton.Template>
             </ToggleButton>
-            <Button Click="ButtonOptions_OnClickAsync" ToolTip="CodeNav options">
+            <Button Click="ButtonOptions_OnClick" ToolTip="CodeNav options">
                 <Button.Template>
                     <ControlTemplate>
                         <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static catalog:KnownMonikers.Settings}" />

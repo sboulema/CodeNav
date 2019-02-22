@@ -59,6 +59,8 @@ namespace CodeNav
             _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
             Children.Add(_codeNavGrid);
 
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             RegisterEvents();      
 
             UpdateSettings();
@@ -77,10 +79,10 @@ namespace CodeNav
             textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
 
             return GetWindows(dte).FirstOrDefault(w => 
-                w != null &&
-                w.Document != null &&
-                w.Document.FullName != null &&
-                w.Document.FullName.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase) == true);
+            {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+                return w?.Document?.FullName?.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase) == true;
+            });
         }
 
         /// <summary>
@@ -94,6 +96,8 @@ namespace CodeNav
 
             try
             {
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
                 for (var i = 1; i < dte.Windows.Count + 1; i++)
                 {
                     windowsList.Add(dte.Windows.Item(i));
@@ -215,6 +219,8 @@ namespace CodeNav
 
         public void RegisterEvents()
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             // Subscribe to Cursor move event
             if (_textView?.Caret != null)
             {
@@ -231,7 +237,7 @@ namespace CodeNav
 
             // Subscribe to Document Save event
             if (_window != null)
-            {
+            {  
                 _documentEvents = _dte.Events.DocumentEvents[_window.Document];
                 _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
                 _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
@@ -287,8 +293,11 @@ namespace CodeNav
             }        
         }
 
+        #pragma warning disable VSTHRD100
         private async void DocumentEvents_DocumentSaved(Document document)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             if (!_control.IsLargeDocument())
             {
                 await _control.UpdateDocumentAsync();
@@ -301,6 +310,8 @@ namespace CodeNav
 
         private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             if (!_control.IsLargeDocument())
             {
                 await _control.UpdateDocumentAsync();
@@ -310,8 +321,13 @@ namespace CodeNav
                 _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
             }
         }
+#pragma warning restore VSTHRD100
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            _control.HighlightCurrentItem();
+        }
 
         #endregion
 

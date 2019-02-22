@@ -30,6 +30,8 @@ namespace CodeNav
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             return CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Left);
         }
     }
@@ -55,6 +57,8 @@ namespace CodeNav
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             return CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Right);
         }
     }
@@ -65,6 +69,8 @@ namespace CodeNav
             VisualStudioWorkspace visualStudioWorkspace, IServiceProvider serviceProvider, MarginSideEnum side)
         {
             if (Settings.Default.MarginSide != side) return null;
+
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var dte = (DTE)serviceProvider.GetService(typeof(DTE));
             var outliningManagerService = OutliningHelper.GetOutliningManagerService(serviceProvider);

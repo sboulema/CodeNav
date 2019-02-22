@@ -61,7 +61,9 @@ namespace CodeNav
         public void SetWindow(Window window) => _window = window;
         public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
 
+        #pragma warning disable VSTHRD100
         private async void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => await UpdateDocumentAsync(true);
+        #pragma warning restore VSTHRD100
 
         public void SelectLine(object startLinePosition, bool extend = false)
         {
@@ -78,7 +80,9 @@ namespace CodeNav
             {
                 // StartLine is not a valid int for document
                 return;
-            }        
+            }
+
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
@@ -103,6 +107,8 @@ namespace CodeNav
 
         public void Select(object startLinePosition, object endLinePosition)
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             SelectLine(startLinePosition);
             SelectLine(endLinePosition, true);
         }
@@ -139,66 +145,63 @@ namespace CodeNav
                 Dte.ExecuteCommand("File.OpenFile", filename);
             }
 
-            await Task.Run(() =>
+            try
             {
-                try
+                if (forceUpdate)
                 {
-                    if (forceUpdate)
-                    {
-                        _cache = null;
-                        CodeDocumentViewModel.CodeDocument.Clear();
-                    }
-
-                    // Do we have a cached version of this document
-                    if (_cache != null)
-                    {
-                        CodeDocumentViewModel.CodeDocument = _cache;
-                    }
-
-                    // If not show a loading item
-                    if (!CodeDocumentViewModel.CodeDocument.Any())
-                    {
-                        CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
-                    }
-
-                    var codeItems = SyntaxMapper.MapDocument(activeDocument, this, _workspace);
-
-                    if (codeItems == null)
-                    {
-                        // CodeNav for document updated, no results
-                        return;
-                    }
-
-                    // Filter all null items from the code document
-                    SyntaxMapper.FilterNullItems(codeItems);
-
-                    // Sort items
-                    CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                    SortHelper.Sort(codeItems, Settings.Default.SortOrder);
-
-                    // Set currently active codeitem
-                    HighlightHelper.SetForeground(codeItems);
-
-                    // Set the new list of codeitems as DataContext
-                    CodeDocumentViewModel.CodeDocument = codeItems;
-                    _cache = codeItems;
-
-                    // Apply current visibility settings to the document
-                    VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
-
-                    // Apply bookmarks
-                    LoadBookmarksFromStorage();
-                    BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
-
-                    // Apply history items
-                    LoadHistoryItemsFromStorage();
-                    HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
+                    _cache = null;
+                    CodeDocumentViewModel.CodeDocument.Clear();
                 }
-                catch (Exception e)
+
+                // Do we have a cached version of this document
+                if (_cache != null)
                 {
-                    LogHelper.Log("Error running UpdateDocument", e);
+                    CodeDocumentViewModel.CodeDocument = _cache;
                 }
-            });
+
+                // If not show a loading item
+                if (!CodeDocumentViewModel.CodeDocument.Any())
+                {
+                    CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
+                }
+
+                var codeItems = await SyntaxMapper.MapDocumentAsync(activeDocument, this, _workspace);
+
+                if (codeItems == null)
+                {
+                    // CodeNav for document updated, no results
+                    return;
+                }
+
+                // Filter all null items from the code document
+                SyntaxMapper.FilterNullItems(codeItems);
+
+                // Sort items
+                CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
+                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+
+                // Set currently active codeitem
+                HighlightHelper.SetForeground(codeItems);
+
+                // Set the new list of codeitems as DataContext
+                CodeDocumentViewModel.CodeDocument = codeItems;
+                _cache = codeItems;
+
+                // Apply current visibility settings to the document
+                VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
+
+                // Apply bookmarks
+                LoadBookmarksFromStorage();
+                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
+
+                // Apply history items
+                LoadHistoryItemsFromStorage();
+                HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error running UpdateDocument", e);
+            }
 
             try
             {
@@ -216,6 +219,8 @@ namespace CodeNav
 
         public bool IsLargeDocument()
         {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
             return DocumentHelper.GetNumberOfLines(Dte.ActiveDocument) > Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
         }
 
@@ -258,7 +263,11 @@ namespace CodeNav
 
         #endregion
 
-        public void HighlightCurrentItem() => HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
+        public void HighlightCurrentItem()
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
+        }
 
         private static bool AreDocumentsEqual(List<CodeItem> existingItems, List<CodeItem> newItems)
         {
@@ -269,6 +278,8 @@ namespace CodeNav
         private void LoadBookmarksFromStorage()
         {
             if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
+
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
 
@@ -285,6 +296,8 @@ namespace CodeNav
         private void LoadHistoryItemsFromStorage()
         {
             if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
+
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
 
