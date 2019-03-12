@@ -1,4 +1,5 @@
 ﻿using CodeNav.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
@@ -36,22 +37,33 @@ namespace CodeNav.Mappers.JavaScript
         {
             var expression = declarator.Initializer as NewExpression;
 
-            if (!expression.IdentifierStr.Equals("Function")) return null;
+            if (!expression.IdentifierStr?.Equals("Function") ?? false) return null;
 
             return MapFunction(expression, new NodeArray<ParameterDeclaration>(), declarator.IdentifierStr, control);
         }
 
         public static List<CodeItem> MapFunction(Node function, NodeArray<ParameterDeclaration> parameters, string id, CodeViewUserControl control)
         {
-            var children = function.Children
+            if (function == null) return null;
+
+            List<CodeItem> children;
+
+            try
+            {
+                children = function.Children
                 .FirstOrDefault(c => c.Kind == SyntaxKind.Block)?.Children
                 .SelectMany(SyntaxMapperJS.MapMember)
                 .ToList();
-
-            SyntaxMapper.FilterNullItems(children);
+            }
+            catch (NullReferenceException)
+            {
+                return new List<CodeItem>();
+            }
 
             if (children != null && children.Any())
             {
+                SyntaxMapper.FilterNullItems(children);
+
                 var item = BaseMapperJS.MapBase<CodeClassItem>(function, id, control);
 
                 item.BorderColor = Colors.DarkGray;
