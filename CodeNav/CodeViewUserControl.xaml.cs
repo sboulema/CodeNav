@@ -55,6 +55,8 @@ namespace CodeNav
             _margin = margin;
             Dte = dte;
 
+            LogHelper.Dte = dte;
+
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
 

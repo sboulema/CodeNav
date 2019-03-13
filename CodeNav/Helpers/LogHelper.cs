@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights;
+﻿using EnvDTE;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace CodeNav.Helpers
     {
         private static TelemetryClient _client;
         private const string InstrumentationKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
+        public static DTE Dte;
 
         public static void GetClient()
         {
@@ -43,6 +45,7 @@ namespace CodeNav.Helpers
                 { "message", JsonConvert.SerializeObject(message) },
                 { "language", language },
                 { "additional", JsonConvert.SerializeObject(additional) },
+                { "vsVersion", Dte?.Version ?? string.Empty }
             };
 
             if (exception == null)
