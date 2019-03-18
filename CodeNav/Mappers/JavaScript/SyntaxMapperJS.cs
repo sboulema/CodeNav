@@ -46,7 +46,7 @@ namespace CodeNav.Mappers.JavaScript
                             Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Class, CodeItemAccessEnum.Public),
                             Name = Path.GetFileNameWithoutExtension(filePath),
                             BorderColor = Colors.DarkGray,
-                            Members = ast.RootNode.Children.SelectMany(MapMember).ToList()
+                            Members = ast.RootNode.Children?.SelectMany(MapMember)?.ToList() ?? new List<CodeItem>()
                         }
                     }
                 }
