@@ -124,8 +124,10 @@ namespace CodeNav
         public void RegionsExpanded(RegionsExpandedEventArgs e) =>
             OutliningHelper.RegionsExpanded(e, CodeDocumentViewModel.CodeDocument);
 
-        public void ToggleAllRegions(bool isExpanded) =>
-            OutliningHelper.SetAllRegions(CodeDocumentViewModel.CodeDocument, isExpanded);
+        public void ToggleAll(bool isExpanded, List<CodeItem> root = null)
+        {
+            OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
+        }
 
         public async Task UpdateDocumentAsync(bool forceUpdate = false)
         {

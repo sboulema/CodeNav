@@ -72,11 +72,11 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="False">
                                 <Setter TargetName="ButtonRegionFrame" Property="Moniker" Value="{x:Static catalog:KnownMonikers.CollapseAll}"/>
-                                <Setter Property="ToolTip" Value="Collapse all regions" />
+                                <Setter Property="ToolTip" Value="Collapse all" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="ButtonRegionFrame" Property="Moniker" Value="{x:Static catalog:KnownMonikers.ExpandAll}"/>
-                                <Setter Property="ToolTip" Value="Expand all regions" />
+                                <Setter Property="ToolTip" Value="Expand all" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

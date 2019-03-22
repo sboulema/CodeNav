@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
@@ -54,7 +53,7 @@ namespace CodeNav.Controls
 
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)
         {
-            FindParent<CodeViewUserControl>(this).ToggleAllRegions(!(sender as ToggleButton).IsChecked.Value);
+            FindParent<CodeViewUserControl>(this).ToggleAll(!(sender as ToggleButton).IsChecked.Value);
         }
 
         private void Sort(SortOrderEnum sortOrder)

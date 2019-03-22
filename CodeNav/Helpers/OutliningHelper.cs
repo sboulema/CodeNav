@@ -36,15 +36,14 @@ namespace CodeNav.Helpers
             e.ExpandedRegions.ToList().ForEach(region => SetRegionIsExpanded(document, region, true));
 
         /// <summary>
-        /// Set all #region collapsibles in a document
+        /// Set all collapsibles in a document
         /// </summary>
-        /// <param name="document">document that holds the regions</param>
-        /// <param name="isExpanded">should region be expanded</param>
-        public static void SetAllRegions(IEnumerable<CodeItem> document, bool isExpanded) =>
-            document.ToList().ForEach(
-                root => root.Descendants().Where(i => i.Kind == CodeItemKindEnum.Region).ToList()
-                    .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
-            );
+        /// <param name="document">document that holds the collapsibles</param>
+        /// <param name="isExpanded">should collapsible be expanded</param>
+        public static void ToggleAll(IEnumerable<CodeItem> document, bool isExpanded) =>
+            document.ToList()
+                .ForEach(root => root.Descendants().Where(i => i is ICodeCollapsible).ToList()
+                .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded));
 
         public static void SyncAllRegions(IOutliningManagerService outliningManagerService, IWpfTextView textView, IEnumerable<CodeItem> document)
         {

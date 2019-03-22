@@ -26,7 +26,8 @@
                            FontSize="{Binding FontSize}" 
                            FontStyle="{Binding FontStyle}"
                            FontWeight="SemiBold" 
-                           Foreground="{Binding ForegroundBrush}" />
+                           Foreground="{Binding ForegroundBrush}" 
+                           ContextMenu="{StaticResource ItemContextMenu}" />
             </Expander.Header>
             <ItemsControl ItemsSource="{Binding Members}" Background="Transparent" Margin="6,3,6,0">
                 <ItemsControl.ItemContainerStyle>

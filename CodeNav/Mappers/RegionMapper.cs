@@ -21,7 +21,7 @@ namespace CodeNav.Mappers
         /// <param name="tree">SyntaxTree for the given file</param>
         /// <param name="span">Start and end line in which we search for regions</param>
         /// <returns>Flat list of regions</returns>
-        public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span)
+        public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span, CodeViewUserControl control)
         {
             var regionList = new List<CodeRegionItem>();
 
@@ -35,7 +35,7 @@ namespace CodeNav.Mappers
                              i.RawKind == (int)VisualBasic.SyntaxKind.RegionDirectiveTrivia) && 
                              span.Contains(i.Span)))
             {
-                regionList.Add(MapRegion(regionDirective));
+                regionList.Add(MapRegion(regionDirective, control));
             }
 
             if (!regionList.Any()) return regionList;
@@ -50,6 +50,7 @@ namespace CodeNav.Mappers
                 if (reg != null)
                 {
                     reg.EndLine = GetEndLine(endRegionDirective);
+                    reg.EndLinePosition = GetEndLinePosition(endRegionDirective);
                 }             
             }
 
@@ -77,17 +78,20 @@ namespace CodeNav.Mappers
                         Id = r.Name,
                         Tooltip = r.Name,
                         StartLine = r.StartLine,
+                        StartLinePosition = r.StartLinePosition,
                         EndLine = r.EndLine,
+                        EndLinePosition = r.EndLinePosition,
                         ForegroundColor = r.ForegroundColor,
                         BorderColor = r.BorderColor,
                         FontSize = r.FontSize,
                         Kind = r.Kind,
                         Span = r.Span,
+                        Control = r.Control,
                         Members = ToHierarchy(regionList, r.StartLine, r.EndLine)
                     }).ToList<CodeItem>();
         }
 
-        private static CodeRegionItem MapRegion(SyntaxTrivia source)
+        private static CodeRegionItem MapRegion(SyntaxTrivia source, CodeViewUserControl control)
         {
             var name = MapRegionName(source);
 
@@ -98,11 +102,13 @@ namespace CodeNav.Mappers
                 Id = name,
                 Tooltip = name,
                 StartLine = GetStartLine(source),
+                StartLinePosition = GetStartLinePosition(source),
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region,
-                Span = source.Span
+                Span = source.Span,
+                Control = control
             };
         }
 
@@ -195,8 +201,14 @@ namespace CodeNav.Mappers
         private static int GetStartLine(SyntaxTrivia source) =>
             source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
 
+        private static LinePosition GetStartLinePosition(SyntaxTrivia source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition;
+
         private static int GetEndLine(SyntaxTrivia source) =>
             source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
+
+        private static LinePosition GetEndLinePosition(SyntaxTrivia source) =>
+            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition;
 
         /// <summary>
         /// Check if item 1 is contained within item 2

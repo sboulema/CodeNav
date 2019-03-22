@@ -99,13 +99,13 @@
 
         <Separator />
         
-        <MenuItem Header="Expand All Regions" Command="{Binding Path=ExpandAllRegionsCommand}">
+        <MenuItem Header="Expand All" Command="{Binding Path=ExpandAllCommand}">
             <MenuItem.Icon>
                 <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.ExpandAll}" />
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="Collapse All Regions" Command="{Binding Path=CollapseAllRegionsCommand}">
+        <MenuItem Header="Collapse All" Command="{Binding Path=CollapseAllCommand}">
             <MenuItem.Icon>
                 <imaging:CrispImage Moniker="{x:Static catalog:KnownMonikers.CollapseAll}" />
             </MenuItem.Icon>

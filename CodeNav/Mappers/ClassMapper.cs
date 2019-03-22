@@ -23,7 +23,7 @@ namespace CodeNav.Mappers
             item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
-            var regions = RegionMapper.MapRegions(tree, member.Span);
+            var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);
 
             foreach (var classMember in member.Members)
@@ -79,7 +79,7 @@ namespace CodeNav.Mappers
             item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
-            var regions = RegionMapper.MapRegions(tree, member.Span);
+            var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);
 
             foreach (var classMember in member.Members)

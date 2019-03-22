@@ -15,7 +15,7 @@
                   ToolTip="{Binding Tooltip}"
                   x:Name="Expander">
             <Expander.Header>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource ItemContextMenu}">
                     <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker}" Margin="0,0,3,0" DockPanel.Dock="Left" />
                     <TextBlock>
                         <Run Text="{Binding Name}" 

@@ -26,8 +26,8 @@ namespace CodeNav.Models
             _selectInCodeCommand = new DelegateCommand(SelectInCode);
             _copyNameCommand = new DelegateCommand(CopyName);
             _refreshCommand = new DelegateCommand(Refresh);
-            _expandAllRegionsCommand = new DelegateCommand(ExpandAllRegions);
-            _collapseAllRegionsCommand = new DelegateCommand(CollapseAllRegions);
+            _expandAllCommand = new DelegateCommand(ExpandAll);
+            _collapseAllCommand = new DelegateCommand(CollapseAll);
             _bookmarkCommand = new DelegateCommand(Bookmark);
             _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark);
             _clearBookmarksCommand = new DelegateCommand(ClearBookmarks);
@@ -373,13 +373,13 @@ namespace CodeNav.Models
         public async void Refresh(object args) => await Control.UpdateDocumentAsync(true);
         #pragma warning restore VSTHRD100
 
-        private readonly DelegateCommand _expandAllRegionsCommand;
-        public ICommand ExpandAllRegionsCommand => _expandAllRegionsCommand;
-        public void ExpandAllRegions(object args) => Control.ToggleAllRegions(true);
+        private readonly DelegateCommand _expandAllCommand;
+        public ICommand ExpandAllCommand => _expandAllCommand;
+        public void ExpandAll(object args) => Control.ToggleAll(true, new List<CodeItem>() { this });
 
-        private readonly DelegateCommand _collapseAllRegionsCommand;
-        public ICommand CollapseAllRegionsCommand => _collapseAllRegionsCommand;
-        public void CollapseAllRegions(object args) => Control.ToggleAllRegions(false);
+        private readonly DelegateCommand _collapseAllCommand;
+        public ICommand CollapseAllCommand => _collapseAllCommand;
+        public void CollapseAll(object args) => Control.ToggleAll(false, new List<CodeItem>() { this });
 
         /// <summary>
         /// Add a single bookmark
