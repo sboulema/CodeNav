@@ -104,6 +104,8 @@ namespace CodeNav.Helpers
         {
             System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
+            if (document == null) return 0;
+
             if (File.Exists(document.FullName))
             {
                 return File.ReadLines(document.FullName).Count();
