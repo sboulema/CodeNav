@@ -102,7 +102,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member, 
-            CodeViewUserControl control, SemanticModel semanticModel)
+            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -111,16 +111,34 @@ namespace CodeNav.Mappers
             item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
+            var regions = RegionMapper.MapRegions(tree, member.Span, control);
+
             foreach (var interfaceMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(interfaceMember));
+                var memberItem = SyntaxMapper.MapMember(interfaceMember);
+                if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
+                {
+                    item.Members.Add(memberItem);
+                }
+            }
+
+            // Add regions to interface if they have a region member inside them
+            if (regions.Any())
+            {
+                foreach (var region in regions)
+                {
+                    if (region.Members.Any())
+                    {
+                        item.Members.Add(region);
+                    }
+                }
             }
 
             return item;
         }
 
         public static CodeInterfaceItem MapInterface(VisualBasicSyntax.InterfaceBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -130,9 +148,27 @@ namespace CodeNav.Mappers
             item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
+            var regions = RegionMapper.MapRegions(tree, member.Span, control);
+
             foreach (var interfaceMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(interfaceMember));
+                var memberItem = SyntaxMapper.MapMember(interfaceMember);
+                if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
+                {
+                    item.Members.Add(memberItem);
+                }
+            }
+
+            // Add regions to interface if they have a region member inside them
+            if (regions.Any())
+            {
+                foreach (var region in regions)
+                {
+                    if (region.Members.Any())
+                    {
+                        item.Members.Add(region);
+                    }
+                }
             }
 
             return item;

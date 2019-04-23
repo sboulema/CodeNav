@@ -85,5 +85,29 @@ namespace CodeNav.Tests.MapperTests
             // Namespace item should have 1 member
             Assert.AreEqual(1, (document.First() as IMembers).Members.Count);
         }
+
+        [Test]
+        public void TestInterfaceWithRegion()
+        {
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterfaceRegion.cs"));
+
+            Assert.IsTrue(document.Any());
+
+            // First item should be a namespace
+            Assert.AreEqual(CodeItemKindEnum.Namespace, document.First().Kind);
+
+            // Namespace item should have 1 member
+            Assert.AreEqual(1, (document.First() as IMembers).Members.Count);
+
+            // First item should be an interface
+            var innerInterface = (document.First() as IMembers).Members.First() as CodeInterfaceItem;
+            Assert.AreEqual(4, innerInterface.Members.Count);
+
+            // Region in interface should have 1 member
+            var region = innerInterface.Members[3] as CodeRegionItem;
+
+            Assert.AreEqual(CodeItemKindEnum.Region, region.Kind);
+            Assert.AreEqual(1, region.Members.Count);
+        }
     }
 }

@@ -216,7 +216,7 @@ namespace CodeNav.Mappers
                 case SyntaxKind.EnumMemberDeclaration:
                     return EnumMapper.MapEnumMember(member as EnumMemberDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.InterfaceDeclaration:
-                    return InterfaceMapper.MapInterface(member as InterfaceDeclarationSyntax, _control, _semanticModel);
+                    return InterfaceMapper.MapInterface(member as InterfaceDeclarationSyntax, _control, _semanticModel, _tree);
                 case SyntaxKind.FieldDeclaration:
                     return FieldMapper.MapField(member as FieldDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.PropertyDeclaration:
@@ -249,12 +249,14 @@ namespace CodeNav.Mappers
                 case VisualBasic.SyntaxKind.FunctionBlock:
                 case VisualBasic.SyntaxKind.SubBlock:
                     return MethodMapper.MapMethod(member as VisualBasicSyntax.MethodBlockSyntax, _control, _semanticModel);
+                case VisualBasic.SyntaxKind.SubStatement:
+                    return MethodMapper.MapMethod(member as VisualBasicSyntax.MethodStatementSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.EnumBlock:
                     return EnumMapper.MapEnum(member as VisualBasicSyntax.EnumBlockSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.EnumMemberDeclaration:
                     return EnumMapper.MapEnumMember(member as VisualBasicSyntax.EnumMemberDeclarationSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.InterfaceBlock:
-                    return InterfaceMapper.MapInterface(member as VisualBasicSyntax.InterfaceBlockSyntax, _control, _semanticModel);
+                    return InterfaceMapper.MapInterface(member as VisualBasicSyntax.InterfaceBlockSyntax, _control, _semanticModel, _tree);
                 case VisualBasic.SyntaxKind.FieldDeclaration:
                     return FieldMapper.MapField(member as VisualBasicSyntax.FieldDeclarationSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.PropertyBlock:

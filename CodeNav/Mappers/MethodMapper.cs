@@ -1,11 +1,8 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
-using System;
 using System.Linq;
 using System.Windows.Media;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -47,6 +44,24 @@ namespace CodeNav.Mappers
                 item.Tooltip = TriviaSummaryMapper.Map(member);
             }
             
+            return item;
+        }
+
+        public static CodeItem MapMethod(VisualBasicSyntax.MethodStatementSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (member == null) return null;
+
+            var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
+
+            item.Id = IdMapper.MapId(item.FullName, member.ParameterList, semanticModel);
+            item.Kind = CodeItemKindEnum.Method;
+            item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             return item;
         }
 

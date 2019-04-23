@@ -41,6 +41,7 @@
     <Content Include="Files\JavaScript\TestFunction.js" />
     <Compile Include="Files\TestEmptyInterface.cs" />
     <Compile Include="Files\TestEmptyClass.cs" />
+    <Compile Include="Files\TestInterfaceRegion.cs" />
     <Compile Include="Files\TestVisibility.cs" />
     <Compile Include="Files\TestInterface3.cs" />
     <Compile Include="Files\TestInterface2.cs" />
