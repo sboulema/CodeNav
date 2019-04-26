@@ -1,4 +1,5 @@
-﻿using CodeNav.Models;
+﻿using CodeNav.Helpers;
+using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -14,6 +15,12 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, control, semanticModel);
             item.Kind = CodeItemKindEnum.Namespace;
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             foreach (var namespaceMember in member.Members)
             {
                 item.Members.Add(SyntaxMapper.MapMember(namespaceMember));
@@ -28,6 +35,12 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.NamespaceStatement.Name, control, semanticModel);
             item.Kind = CodeItemKindEnum.Namespace;
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             foreach (var namespaceMember in member.Members)
             {
                 item.Members.Add(SyntaxMapper.MapMember(namespaceMember));

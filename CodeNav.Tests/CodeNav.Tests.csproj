@@ -41,6 +41,7 @@
     <Content Include="Files\JavaScript\TestFunction.js" />
     <Compile Include="Files\TestEmptyInterface.cs" />
     <Compile Include="Files\TestEmptyClass.cs" />
+    <Compile Include="Files\TestInterface4.cs" />
     <Compile Include="Files\TestInterfaceRegion.cs" />
     <Compile Include="Files\TestVisibility.cs" />
     <Compile Include="Files\TestInterface3.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="MapperTests\TestEmptyInterface.cs" />
     <Compile Include="MapperTests\TestClasses.cs" />
     <Compile Include="MapperTests\TestIndexers.cs" />
+    <Compile Include="MapperTests\TestInterface4.cs" />
     <Compile Include="MapperTests\TestMethodsWithComments.cs" />
     <Compile Include="MapperTests\VisualBasic\TestMethods.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />

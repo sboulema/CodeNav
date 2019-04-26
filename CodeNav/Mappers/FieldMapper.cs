@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
+using CodeNav.Helpers;
 
 namespace CodeNav.Mappers
 {
@@ -36,6 +37,11 @@ namespace CodeNav.Mappers
                 ? CodeItemKindEnum.Constant
                 : CodeItemKindEnum.Variable;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             return item;
         }

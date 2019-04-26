@@ -82,6 +82,10 @@ namespace CodeNav.Mappers
             {
                 var implementation = implementingClass.FindImplementationForInterfaceMember(member);
                 if (implementation == null || !implementation.DeclaringSyntaxReferences.Any()) continue;
+
+                // Ignore interface members not directly implemented in the current class
+                if (implementation.ContainingSymbol != implementingClass) continue;
+
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
 
@@ -110,6 +114,11 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
 
@@ -147,6 +156,11 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Interface;
             item.BorderColor = Colors.DarkGray;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
 

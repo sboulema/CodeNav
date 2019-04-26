@@ -40,6 +40,12 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
             item.Kind = CodeItemKindEnum.Property;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             return item;
         }
 
@@ -75,6 +81,12 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
             item.Kind = CodeItemKindEnum.Property;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             return item;
         }
     }

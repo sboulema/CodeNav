@@ -19,6 +19,11 @@ namespace CodeNav.Mappers
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderColor = Colors.DarkGray;
 
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             foreach (var structMember in member.Members)
             {
                 item.Members.Add(SyntaxMapper.MapMember(structMember));
@@ -37,6 +42,11 @@ namespace CodeNav.Mappers
             item.Kind = CodeItemKindEnum.Struct;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderColor = Colors.DarkGray;
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             foreach (var structMember in member.Members)
             {

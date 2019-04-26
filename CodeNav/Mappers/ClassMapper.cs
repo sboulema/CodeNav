@@ -23,6 +23,11 @@ namespace CodeNav.Mappers
             item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
 
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);
 
@@ -78,6 +83,11 @@ namespace CodeNav.Mappers
             item.Parameters = MapInheritance(member);
             item.BorderColor = Colors.DarkGray;
             item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);

@@ -45,6 +45,11 @@ namespace CodeNav.Mappers
             item.Parameters = MapMembersToString(member.Members);
             item.BorderColor = Colors.DarkGray;
 
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
+
             foreach (var enumMember in member.Members)
             {
                 item.Members.Add(SyntaxMapper.MapMember(enumMember));
@@ -64,6 +69,11 @@ namespace CodeNav.Mappers
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.Parameters = MapMembersToString(member.Members);
             item.BorderColor = Colors.DarkGray;
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             foreach (var enumMember in member.Members)
             {

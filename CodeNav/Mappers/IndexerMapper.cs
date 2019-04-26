@@ -1,4 +1,5 @@
-﻿using CodeNav.Models;
+﻿using CodeNav.Helpers;
+using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,6 +17,11 @@ namespace CodeNav.Mappers
             item.Tooltip = TooltipMapper.Map(item.Access, item.Type, item.Name, item.Parameters);
             item.Kind = CodeItemKindEnum.Indexer;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+
+            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            {
+                item.Tooltip = TriviaSummaryMapper.Map(member);
+            }
 
             return item;
         }
