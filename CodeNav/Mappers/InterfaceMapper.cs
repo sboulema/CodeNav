@@ -42,7 +42,8 @@ namespace CodeNav.Mappers
 
             foreach (var implementedInterface in interfacesList.Distinct())
             {
-                implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, implementedInterface.GetMembers(), classSymbol));
+                implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, 
+                    implementedInterface.GetMembers(), classSymbol, member));
             }
 
             return implementedInterfaces;
@@ -64,7 +65,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeImplementedInterfaceItem MapImplementedInterface(string name,
-            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass)
+            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass, SyntaxNode currentClass)
         {
             var item = new CodeImplementedInterfaceItem
             {
@@ -85,6 +86,12 @@ namespace CodeNav.Mappers
 
                 // Ignore interface members not directly implemented in the current class
                 if (implementation.ContainingSymbol != implementingClass) continue;
+
+                // Ignore interface members not directly implemented in the current file (partial class)
+                if (implementingClass.DeclaringSyntaxReferences != null &&
+                    implementingClass.DeclaringSyntaxReferences.Any() &&
+                    implementingClass.DeclaringSyntaxReferences.First().SyntaxTree.FilePath != currentClass.SyntaxTree.FilePath)
+                    continue;
 
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
