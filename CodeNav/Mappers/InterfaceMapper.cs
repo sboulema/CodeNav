@@ -88,9 +88,9 @@ namespace CodeNav.Mappers
                 if (implementation.ContainingSymbol != implementingClass) continue;
 
                 // Ignore interface members not directly implemented in the current file (partial class)
-                if (implementingClass.DeclaringSyntaxReferences != null &&
-                    implementingClass.DeclaringSyntaxReferences.Any() &&
-                    implementingClass.DeclaringSyntaxReferences.First().SyntaxTree.FilePath != currentClass.SyntaxTree.FilePath)
+                if (implementation.DeclaringSyntaxReferences != null &&
+                    implementation.DeclaringSyntaxReferences.Any() &&
+                    implementation.DeclaringSyntaxReferences.First().SyntaxTree.FilePath != currentClass.SyntaxTree.FilePath)
                     continue;
 
                 var reference = implementation.DeclaringSyntaxReferences.First();
