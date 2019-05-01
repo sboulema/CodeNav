@@ -27,6 +27,8 @@ namespace CodeNav.Mappers
 
             if (tree == null) return regionList;
 
+            if (Settings.Default.IgnoreRegions) return regionList;
+
             var root = tree.GetRoot();
             
             // Find all start points of regions

@@ -27,6 +27,7 @@ namespace CodeNav.Windows
             Settings.Default.ShowHistoryIndicators = historyIndicatorCheckBox.Checked;
             Settings.Default.DisableHighlight = disableHighlightCheckBox.Checked;        
             Settings.Default.HideItemsWithoutChildren = hideItemsWithoutChildrenCheckBox.Checked;
+            Settings.Default.IgnoreRegions = ignoreRegionsCheckBox.Checked;
 
             int.TryParse(autoLoadLineThresholdTextBox.Text, out var autoLoadLineThreshold);
             Settings.Default.AutoLoadLineThreshold = autoLoadLineThreshold;
@@ -47,6 +48,7 @@ namespace CodeNav.Windows
             disableHighlightCheckBox.Checked = Settings.Default.DisableHighlight;
             autoLoadLineThresholdTextBox.Text = Settings.Default.AutoLoadLineThreshold.ToString();
             hideItemsWithoutChildrenCheckBox.Checked = Settings.Default.HideItemsWithoutChildren;
+            ignoreRegionsCheckBox.Checked = Settings.Default.IgnoreRegions;
         }
 
         private void fontButton_Click(object sender, EventArgs e)
