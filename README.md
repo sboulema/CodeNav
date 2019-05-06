@@ -3,6 +3,7 @@ Visual Studio extension to show the code structure of your current document
 
 [![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/sboulema.CodeNav)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=1)
 [![Beerpay](https://img.shields.io/beerpay/sboulema/CodeNav.svg?style=flat)](https://beerpay.io/sboulema/CodeNav)
+[![Donate](https://img.shields.io/badge/%F0%9F%92%B0-Donate-green.svg)](https://beerpay.io/sboulema/CodeNav)
 
 ## Features
 - Quickly see all the important methods and properties in your document.
@@ -37,7 +38,7 @@ Visual Studio extension to show the code structure of your current document
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
 
 #### Filter window
-![Filter window](https://i.imgur.com/wuVzxsJ.png) 
+![Filter window](https://i.imgur.com/MVI8ddx.png) 
 
 #### Options window
 ![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
