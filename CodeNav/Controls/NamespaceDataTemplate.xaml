@@ -1,16 +1,73 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:models="clr-namespace:CodeNav.Models">
-    
+                    xmlns:models="clr-namespace:CodeNav.Models"
+                    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Styles/PlusMinusExpanderStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
-        <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent">
-            <ItemsControl.ItemContainerStyle>
-                <Style>
-                    <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
-                    <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-        </ItemsControl>
+        <StackPanel>
+            <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent" Visibility="{Binding NotIgnoreVisibility}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="{Binding Orientation}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                        <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+
+            <Expander IsExpanded="{Binding IsExpanded}" Style="{StaticResource PlusMinusExpander}" 
+                  Visibility="{Binding IgnoreVisibility}"
+                  BorderBrush="{Binding BorderBrush}"
+                  HorizontalAlignment="Stretch" 
+                  ToolTip="{Binding Tooltip}"
+                  x:Name="Expander">
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource ItemContextMenu}">
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Moniker}" Margin="0,0,3,0" DockPanel.Dock="Left" />
+                        <TextBlock>
+                        <Run Text="{Binding Name}" 
+                             FontFamily="{Binding FontFamily}" 
+                             FontSize="{Binding FontSize}" 
+                             FontStyle="{Binding FontStyle}"
+                             Foreground="{Binding ForegroundBrush}" />
+                        <Run Text="{Binding Parameters}" 
+                             FontFamily="{Binding FontFamily}" 
+                             FontSize="{Binding ParameterFontSize}" 
+                             FontStyle="{Binding FontStyle}"
+                             Foreground="DarkGray" />
+                        </TextBlock>
+                    </StackPanel>
+                </Expander.Header>
+                <ItemsControl ItemsSource="{Binding Members}" Background="Transparent" Margin="6,3,6,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="{Binding Orientation}"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style>
+                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,6"/>
+                            <Setter Property="FrameworkElement.Visibility" Value="{Binding IsVisible}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </Expander>
+            
+        </StackPanel>
+
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Expander" Property="BorderBrush" Value="SteelBlue"/>
+            </Trigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
     
 </ResourceDictionary>

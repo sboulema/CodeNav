@@ -78,6 +78,9 @@
   <ItemGroup>
     <Compile Include="CodeNavMargin.cs" />
     <Compile Include="CodeNavMarginFactory.cs" />
+    <Compile Include="CodeViewUserControlTop.xaml.cs">
+      <DependentUpon>CodeViewUserControlTop.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FilterToolbar.xaml.cs">
       <DependentUpon>FilterToolbar.xaml</DependentUpon>
     </Compile>
@@ -85,6 +88,7 @@
       <DependentUpon>MainToolbar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\SymbolHelper.cs" />
+    <Compile Include="ICodeViewUserControl.cs" />
     <Compile Include="Mappers\IndexerMapper.cs" />
     <Compile Include="Mappers\JavaScript\BaseMapperJS.cs" />
     <Compile Include="Mappers\JavaScript\FunctionMapperJS.cs" />
@@ -517,6 +521,10 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CodeViewUserControlTop.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CodeViewUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -618,6 +626,7 @@
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.0.102\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

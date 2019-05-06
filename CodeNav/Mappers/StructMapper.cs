@@ -9,8 +9,8 @@ namespace CodeNav.Mappers
 {
     public static class StructMapper
     {
-        public static CodeClassItem MapStruct(StructDeclarationSyntax member, 
-            CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeClassItem MapStruct(StructDeclarationSyntax member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -33,7 +33,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeClassItem MapStruct(VisualBasicSyntax.StructureBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

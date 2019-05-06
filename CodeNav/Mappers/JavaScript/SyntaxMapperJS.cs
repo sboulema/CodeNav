@@ -11,18 +11,18 @@ namespace CodeNav.Mappers.JavaScript
 {
     public static class SyntaxMapperJS
     {
-        private static CodeViewUserControl _control;
+        private static ICodeViewUserControl _control;
 
-        public static List<CodeItem> Map(EnvDTE.Document document, CodeViewUserControl control)
+        public static List<CodeItem> Map(EnvDTE.Document document, ICodeViewUserControl control)
         {
             System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
             return Map(document.FullName, control);
         }
 
-        public static List<CodeItem> Map(Document document, CodeViewUserControl control)
+        public static List<CodeItem> Map(Document document, ICodeViewUserControl control)
             => Map(document.FilePath, control);
 
-        public static List<CodeItem> Map(string filePath, CodeViewUserControl control)
+        public static List<CodeItem> Map(string filePath, ICodeViewUserControl control)
         {
             _control = control;
 

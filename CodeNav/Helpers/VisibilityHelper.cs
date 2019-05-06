@@ -36,24 +36,12 @@ namespace CodeNav.Helpers
                     item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
                     item.Opacity = SetOpacity(item);
 
-                    if (item is IMembers)
+                    if (item is IMembers hasMembersItem)
                     {
-                        var hasMembersItem = (IMembers)item;
                         if (hasMembersItem.Members.Any())
                         {
                             SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                         }
-
-                        // If an item has any visible members, it should be visible.
-                        // If an item does not have any visible members, hide it depending on an option
-                        if (hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
-                        {
-                            item.IsVisible = Visibility.Visible;
-                        }
-                        else
-                        {
-                            item.IsVisible = SettingsHelper.HideItemsWithoutChildren ? Visibility.Collapsed : Visibility.Visible;
-                        }                    
                     }
                 }
             }
@@ -63,6 +51,42 @@ namespace CodeNav.Helpers
             }
 
             return document;
+        }
+
+        /// <summary>
+        /// Toggle visibility of the CodeNav margin
+        /// </summary>
+        /// <param name="row">the grid row of which the visibility will be toggled</param>
+        /// <param name="condition">if condition is True visibility will be set to hidden</param>
+        public static void SetMarginHeight(RowDefinition row, bool condition)
+        {
+            if (row == null) return;
+            row.Height = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+        }
+
+        /// <summary>
+        /// Toggle visibility of the CodeNav margin
+        /// </summary>
+        /// <param name="row">the grid row of which the visibility will be toggled</param>
+        /// <param name="document">the list of codeitems to determine if there is anything to show at all</param>
+        public static void SetMarginHeight(RowDefinition row, List<CodeItem> document)
+        {
+            try
+            {
+                if (row == null) return;
+                if (!Settings.Default.ShowMargin)
+                {
+                    row.Height = new GridLength(0);
+                }
+                else
+                {
+                    row.Height = IsEmpty(document) ? new GridLength(0) : new GridLength(0, GridUnitType.Star);
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore if we are not allowed to set the width
+            }
         }
 
         /// <summary>
@@ -123,9 +147,9 @@ namespace CodeNav.Helpers
         /// <returns></returns>
         private static double SetOpacity(CodeItem item)
         {
-            if (Settings.Default.FilterRules != null)
+            if (SettingsHelper.FilterRules != null)
             {
-                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
                     (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
                     (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
 
@@ -158,15 +182,26 @@ namespace CodeNav.Helpers
         {
             var visible = true;
 
-            if (Settings.Default.FilterRules != null)
+            if (SettingsHelper.FilterRules != null)
             {
-                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
                     (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
                     (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
 
                 if (filterRule != null)
                 {
                     visible = filterRule.Visible;
+
+                    // If an item has any visible members, it should be visible.
+                    // If an item does not have any visible members, hide it depending on an option
+                    if ((item as IMembers).Members.Any(m => m.IsVisible == Visibility.Visible))
+                    {
+                        visible = true;
+                    }
+                    else
+                    {
+                        visible = !filterRule.HideIfEmpty;
+                    }
                 }
             }
 
@@ -187,9 +222,9 @@ namespace CodeNav.Helpers
         {
             var visible = true;
 
-            if (Settings.Default.FilterRules != null)
+            if (SettingsHelper.FilterRules != null)
             {
-                var filterRule = Settings.Default.FilterRules.LastOrDefault(f =>
+                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
                     (f.Kind == kind || f.Kind == CodeItemKindEnum.All));
 
                 if (filterRule != null)
@@ -200,6 +235,23 @@ namespace CodeNav.Helpers
 
             return visible;
         } 
+
+        public static Visibility GetIgnoreVisibility(CodeItem item)
+        {
+            if (SettingsHelper.FilterRules != null)
+            {
+                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
+                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
+                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+
+                if (filterRule != null)
+                {
+                    return filterRule.Ignore ? Visibility.Collapsed : Visibility.Visible;
+                }
+            }
+
+            return Visibility.Visible;
+        }
 
         private static bool Contains(this string source, string toCheck, StringComparison comp)
         {

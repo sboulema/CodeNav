@@ -112,8 +112,8 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member, 
-            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
+        public static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member,
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -154,7 +154,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeInterfaceItem MapInterface(VisualBasicSyntax.InterfaceBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 

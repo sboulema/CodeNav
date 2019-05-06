@@ -177,29 +177,5 @@ namespace CodeNav.Properties {
                 this["AutoLoadLineThreshold"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool HideItemsWithoutChildren {
-            get {
-                return ((bool)(this["HideItemsWithoutChildren"]));
-            }
-            set {
-                this["HideItemsWithoutChildren"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool IgnoreRegions {
-            get {
-                return ((bool)(this["IgnoreRegions"]));
-            }
-            set {
-                this["IgnoreRegions"] = value;
-            }
-        }
     }
 }

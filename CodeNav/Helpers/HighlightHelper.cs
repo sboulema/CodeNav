@@ -110,7 +110,7 @@ namespace CodeNav.Helpers
 
                 if (element == null && item.Control != null)
                 {
-                    element = item.Control.CodeItemsControl;
+                    element = GetCodeItemsControl(item.Control);
                 }
 
                 var found = FindItemContainer(element as ItemsControl, item);
@@ -249,6 +249,16 @@ namespace CodeNav.Helpers
                 }
             }
             return null;
+        }
+
+        private static FrameworkElement GetCodeItemsControl(ICodeViewUserControl control)
+        {
+            if (control is CodeViewUserControl)
+            {
+                return (control as CodeViewUserControl).CodeItemsControl;
+            }
+
+            return (control as CodeViewUserControlTop).CodeItemsControl;
         }
     }
 

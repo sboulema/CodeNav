@@ -11,7 +11,7 @@ namespace CodeNav.Mappers.JavaScript
 {
     public static class BaseMapperJS
     {
-        public static T MapBase<T>(Node member, string id, CodeViewUserControl control) where T : CodeItem
+        public static T MapBase<T>(Node member, string id, ICodeViewUserControl control) where T : CodeItem
         {
             var element = Activator.CreateInstance<T>();
 

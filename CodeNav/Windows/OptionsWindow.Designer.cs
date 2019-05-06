@@ -46,8 +46,6 @@
             this.disableHighlightCheckBox = new System.Windows.Forms.CheckBox();
             this.autoLoadLineThresholdTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.hideItemsWithoutChildrenCheckBox = new System.Windows.Forms.CheckBox();
-            this.ignoreRegionsCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -66,7 +64,8 @@
             this.marginSideComboBox.Items.AddRange(new object[] {
             "Left",
             "Right",
-            "None"});
+            "None",
+            "Top"});
             this.marginSideComboBox.Location = new System.Drawing.Point(242, 12);
             this.marginSideComboBox.Name = "marginSideComboBox";
             this.marginSideComboBox.Size = new System.Drawing.Size(121, 21);
@@ -75,7 +74,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(210, 276);
+            this.okButton.Location = new System.Drawing.Point(210, 225);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
@@ -86,7 +85,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(291, 276);
+            this.cancelButton.Location = new System.Drawing.Point(291, 225);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -148,7 +147,7 @@
             // resetButton
             // 
             this.resetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.resetButton.Location = new System.Drawing.Point(12, 276);
+            this.resetButton.Location = new System.Drawing.Point(12, 225);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(75, 23);
             this.resetButton.TabIndex = 9;
@@ -202,33 +201,11 @@
             this.label4.TabIndex = 14;
             this.label4.Text = "Do not auto load CodeNav line threshold";
             // 
-            // hideItemsWithoutChildrenCheckBox
-            // 
-            this.hideItemsWithoutChildrenCheckBox.AutoSize = true;
-            this.hideItemsWithoutChildrenCheckBox.Location = new System.Drawing.Point(12, 219);
-            this.hideItemsWithoutChildrenCheckBox.Name = "hideItemsWithoutChildrenCheckBox";
-            this.hideItemsWithoutChildrenCheckBox.Size = new System.Drawing.Size(172, 17);
-            this.hideItemsWithoutChildrenCheckBox.TabIndex = 15;
-            this.hideItemsWithoutChildrenCheckBox.Text = "Hide items without any children";
-            this.hideItemsWithoutChildrenCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // ignoreRegionsCheckBox
-            // 
-            this.ignoreRegionsCheckBox.AutoSize = true;
-            this.ignoreRegionsCheckBox.Location = new System.Drawing.Point(12, 242);
-            this.ignoreRegionsCheckBox.Name = "ignoreRegionsCheckBox";
-            this.ignoreRegionsCheckBox.Size = new System.Drawing.Size(93, 17);
-            this.ignoreRegionsCheckBox.TabIndex = 16;
-            this.ignoreRegionsCheckBox.Text = "Ignore regions";
-            this.ignoreRegionsCheckBox.UseVisualStyleBackColor = true;
-            // 
             // OptionsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(383, 311);
-            this.Controls.Add(this.ignoreRegionsCheckBox);
-            this.Controls.Add(this.hideItemsWithoutChildrenCheckBox);
+            this.ClientSize = new System.Drawing.Size(383, 260);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.autoLoadLineThresholdTextBox);
             this.Controls.Add(this.disableHighlightCheckBox);
@@ -273,7 +250,5 @@
         private System.Windows.Forms.CheckBox disableHighlightCheckBox;
         private System.Windows.Forms.TextBox autoLoadLineThresholdTextBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox hideItemsWithoutChildrenCheckBox;
-        private System.Windows.Forms.CheckBox ignoreRegionsCheckBox;
     }
 }

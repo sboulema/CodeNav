@@ -37,11 +37,13 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.cancelButton = new System.Windows.Forms.Button();
             this.filterRulesDataGridView = new System.Windows.Forms.DataGridView();
-            this.filterRuleBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.HideIfEmpty = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Ignore = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.kindDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.accessDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.visibleDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.opacityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.filterRuleBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.filterRulesDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.filterRuleBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -49,7 +51,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.Location = new System.Drawing.Point(175, 201);
+            this.okButton.Location = new System.Drawing.Point(266, 198);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 1;
@@ -82,7 +84,7 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(256, 201);
+            this.cancelButton.Location = new System.Drawing.Point(347, 198);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
@@ -96,7 +98,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.filterRulesDataGridView.AutoGenerateColumns = false;
-            this.filterRulesDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.filterRulesDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.filterRulesDataGridView.BackgroundColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -111,7 +113,9 @@
             this.kindDataGridViewTextBoxColumn,
             this.accessDataGridViewTextBoxColumn,
             this.visibleDataGridViewCheckBoxColumn,
-            this.opacityDataGridViewTextBoxColumn});
+            this.opacityDataGridViewTextBoxColumn,
+            this.HideIfEmpty,
+            this.Ignore});
             this.filterRulesDataGridView.DataSource = this.filterRuleBindingSource;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
@@ -131,12 +135,20 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.filterRulesDataGridView.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.filterRulesDataGridView.Size = new System.Drawing.Size(320, 179);
+            this.filterRulesDataGridView.Size = new System.Drawing.Size(411, 176);
             this.filterRulesDataGridView.TabIndex = 6;
             // 
-            // filterRuleBindingSource
+            // HideIfEmpty
             // 
-            this.filterRuleBindingSource.DataSource = typeof(CodeNav.Models.FilterRule);
+            this.HideIfEmpty.DataPropertyName = "HideIfEmpty";
+            this.HideIfEmpty.HeaderText = "HideIfEmpty";
+            this.HideIfEmpty.Name = "HideIfEmpty";
+            // 
+            // Ignore
+            // 
+            this.Ignore.DataPropertyName = "Ignore";
+            this.Ignore.HeaderText = "Ignore";
+            this.Ignore.Name = "Ignore";
             // 
             // kindDataGridViewTextBoxColumn
             // 
@@ -146,7 +158,6 @@
             this.kindDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.kindDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.kindDataGridViewTextBoxColumn.ToolTipText = "Opacity value between 0 and 1";
-            this.kindDataGridViewTextBoxColumn.Width = 53;
             // 
             // accessDataGridViewTextBoxColumn
             // 
@@ -155,27 +166,28 @@
             this.accessDataGridViewTextBoxColumn.Name = "accessDataGridViewTextBoxColumn";
             this.accessDataGridViewTextBoxColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.accessDataGridViewTextBoxColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.accessDataGridViewTextBoxColumn.Width = 67;
             // 
             // visibleDataGridViewCheckBoxColumn
             // 
             this.visibleDataGridViewCheckBoxColumn.DataPropertyName = "Visible";
             this.visibleDataGridViewCheckBoxColumn.HeaderText = "Visible";
             this.visibleDataGridViewCheckBoxColumn.Name = "visibleDataGridViewCheckBoxColumn";
-            this.visibleDataGridViewCheckBoxColumn.Width = 43;
             // 
             // opacityDataGridViewTextBoxColumn
             // 
             this.opacityDataGridViewTextBoxColumn.DataPropertyName = "Opacity";
             this.opacityDataGridViewTextBoxColumn.HeaderText = "Opacity";
             this.opacityDataGridViewTextBoxColumn.Name = "opacityDataGridViewTextBoxColumn";
-            this.opacityDataGridViewTextBoxColumn.Width = 68;
+            // 
+            // filterRuleBindingSource
+            // 
+            this.filterRuleBindingSource.DataSource = typeof(CodeNav.Models.FilterRule);
             // 
             // FilterWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(343, 236);
+            this.ClientSize = new System.Drawing.Size(434, 233);
             this.Controls.Add(this.filterRulesDataGridView);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
@@ -201,5 +213,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn accessDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewCheckBoxColumn visibleDataGridViewCheckBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn opacityDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn HideIfEmpty;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Ignore;
     }
 }

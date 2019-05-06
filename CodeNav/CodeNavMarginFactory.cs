@@ -63,6 +63,33 @@ namespace CodeNav
         }
     }
 
+    [Export(typeof(IWpfTextViewMarginProvider))]
+    [Name(CodeNavMargin.MarginName + "Top")]
+    [Order(After = PredefinedMarginNames.Top)]  // Ensure that the margin occurs after the vertical scrollbar
+    [MarginContainer(PredefinedMarginNames.Top)]       // Set the container to the right of the editor window
+    [ContentType("CSharp")]                              // Show this margin for supported code-based types
+    [ContentType("Basic")]
+    [ContentType("JavaScript")]
+    [ContentType("TypeScript")]
+    [TextViewRole(PredefinedTextViewRoles.Debuggable)]   // This is to prevent the margin from loading in the diff view
+    internal sealed class CodeNavTopFactory : IWpfTextViewMarginProvider
+    {
+        [Import(typeof(SVsServiceProvider))]
+        #pragma warning disable CS0649
+        private IServiceProvider ServiceProvider;
+        #pragma warning restore CS0649
+
+        [Import(typeof(VisualStudioWorkspace))]
+        private VisualStudioWorkspace Workspace { get; set; }
+
+        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+
+            return CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Top);
+        }
+    }
+
     internal static class CodeNavFactory
     {
         public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, 

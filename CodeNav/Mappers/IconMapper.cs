@@ -16,6 +16,9 @@ namespace CodeNav.Mappers
 
             switch (kind)
             {
+                case CodeItemKindEnum.Namespace:
+                    monikerString = $"Namespace{accessString}";
+                    break;
                 case CodeItemKindEnum.Class:
                     monikerString = $"Class{accessString}";
                     break;

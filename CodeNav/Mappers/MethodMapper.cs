@@ -11,7 +11,7 @@ namespace CodeNav.Mappers
 {
     public static class MethodMapper
     {
-        public static CodeItem MapMethod(MethodDeclarationSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapMethod(MethodDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -47,7 +47,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapMethod(VisualBasicSyntax.MethodStatementSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapMethod(VisualBasicSyntax.MethodStatementSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -65,7 +65,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapMethod(VisualBasicSyntax.MethodBlockSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapMethod(VisualBasicSyntax.MethodBlockSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -106,7 +106,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapConstructor(VisualBasicSyntax.ConstructorBlockSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapConstructor(VisualBasicSyntax.ConstructorBlockSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -121,7 +121,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapConstructor(ConstructorDeclarationSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapConstructor(ConstructorDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

@@ -21,13 +21,21 @@ namespace CodeNav.Mappers
         /// <param name="tree">SyntaxTree for the given file</param>
         /// <param name="span">Start and end line in which we search for regions</param>
         /// <returns>Flat list of regions</returns>
-        public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span, CodeViewUserControl control)
+        public static List<CodeRegionItem> MapRegions(SyntaxTree tree, TextSpan span, ICodeViewUserControl control)
         {
             var regionList = new List<CodeRegionItem>();
 
             if (tree == null) return regionList;
 
-            if (Settings.Default.IgnoreRegions) return regionList;
+            if (SettingsHelper.FilterRules != null)
+            {
+                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f => f.Kind == CodeItemKindEnum.Region || f.Kind == CodeItemKindEnum.All);
+
+                if (filterRule != null && filterRule.Ignore)
+                {
+                    return regionList;
+                }
+            }
 
             var root = tree.GetRoot();
             
@@ -93,7 +101,7 @@ namespace CodeNav.Mappers
                     }).ToList<CodeItem>();
         }
 
-        private static CodeRegionItem MapRegion(SyntaxTrivia source, CodeViewUserControl control)
+        private static CodeRegionItem MapRegion(SyntaxTrivia source, ICodeViewUserControl control)
         {
             var name = MapRegionName(source);
 

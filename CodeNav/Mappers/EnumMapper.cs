@@ -11,7 +11,7 @@ namespace CodeNav.Mappers
     public static class EnumMapper
     {
         public static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -23,7 +23,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapEnumMember(VisualBasicSyntax.EnumMemberDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -35,7 +35,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeClassItem MapEnum(EnumDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -59,7 +59,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeClassItem MapEnum(VisualBasicSyntax.EnumBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

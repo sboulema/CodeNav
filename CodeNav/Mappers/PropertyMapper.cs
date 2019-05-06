@@ -12,7 +12,7 @@ namespace CodeNav.Mappers
     public class PropertyMapper
     {
         public static CodePropertyItem MapProperty(PropertyDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -50,7 +50,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodePropertyItem MapProperty(VisualBasicSyntax.PropertyBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

@@ -43,6 +43,7 @@
     <Compile Include="Files\TestEmptyClass.cs" />
     <Compile Include="Files\TestInterface4.cs" />
     <Compile Include="Files\TestInterfaceRegion.cs" />
+    <Compile Include="Files\TestNamespaceRegions.cs" />
     <Compile Include="Files\TestPartial2.cs" />
     <Compile Include="Files\TestPartial1.cs" />
     <Compile Include="Files\TestVisibility.cs" />

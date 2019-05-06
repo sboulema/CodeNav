@@ -11,8 +11,8 @@ namespace CodeNav.Mappers
 {
     public static class FieldMapper
     {
-        public static CodeItem MapField(FieldDeclarationSyntax member, 
-            CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapField(FieldDeclarationSyntax member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -20,7 +20,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapField(VisualBasicSyntax.FieldDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -28,7 +28,7 @@ namespace CodeNav.Mappers
         }
 
         private static CodeItem MapField(SyntaxNode member, SyntaxToken identifier, SyntaxTokenList modifiers,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

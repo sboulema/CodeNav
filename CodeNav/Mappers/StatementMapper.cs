@@ -15,7 +15,7 @@ namespace CodeNav.Mappers
     /// </summary>
     public static class StatementMapper
     {
-        public static List<CodeItem> MapStatement(StatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        public static List<CodeItem> MapStatement(StatementSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return new List<CodeItem>();
 
@@ -32,7 +32,7 @@ namespace CodeNav.Mappers
             }
         }
 
-        public static List<CodeItem> MapStatement(VisualBasicSyntax.StatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        public static List<CodeItem> MapStatement(VisualBasicSyntax.StatementSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return new List<CodeItem>();
 
@@ -47,10 +47,10 @@ namespace CodeNav.Mappers
             }
         }
 
-        public static List<CodeItem> MapStatement(BlockSyntax statement, CodeViewUserControl control, SemanticModel semanticModel) 
+        public static List<CodeItem> MapStatement(BlockSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel) 
             => MapStatement(statement as StatementSyntax, control, semanticModel);
 
-        public static List<CodeItem> MapStatements(SyntaxList<StatementSyntax> statements, CodeViewUserControl control, SemanticModel semanticModel)
+        public static List<CodeItem> MapStatements(SyntaxList<StatementSyntax> statements, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             var list = new List<CodeItem>();
 
@@ -64,7 +64,7 @@ namespace CodeNav.Mappers
             return list;
         }
 
-        public static List<CodeItem> MapStatement(SyntaxList<VisualBasicSyntax.StatementSyntax> statements, CodeViewUserControl control, SemanticModel semanticModel)
+        public static List<CodeItem> MapStatement(SyntaxList<VisualBasicSyntax.StatementSyntax> statements, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             var list = new List<CodeItem>();
 
@@ -85,7 +85,7 @@ namespace CodeNav.Mappers
         /// <param name="control"></param>
         /// <param name="semanticModel"></param>
         /// <returns></returns>
-        private static CodeItem MapSwitch(SwitchStatementSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        private static CodeItem MapSwitch(SwitchStatementSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return null;
 
@@ -105,7 +105,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        private static CodeItem MapSwitch(VisualBasicSyntax.SelectBlockSyntax statement, CodeViewUserControl control, SemanticModel semanticModel)
+        private static CodeItem MapSwitch(VisualBasicSyntax.SelectBlockSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (statement == null) return null;
 
@@ -132,7 +132,7 @@ namespace CodeNav.Mappers
         /// <param name="control"></param>
         /// <param name="semanticModel"></param>
         /// <returns></returns>
-        private static CodeItem MapSwitchSection(SwitchSectionSyntax section, CodeViewUserControl control, SemanticModel semanticModel)
+        private static CodeItem MapSwitchSection(SwitchSectionSyntax section, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (section == null) return null;
 
@@ -145,7 +145,7 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        private static CodeItem MapSwitchSection(VisualBasicSyntax.CaseBlockSyntax section, CodeViewUserControl control, SemanticModel semanticModel)
+        private static CodeItem MapSwitchSection(VisualBasicSyntax.CaseBlockSyntax section, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (section == null) return null;
 

@@ -11,8 +11,8 @@ namespace CodeNav.Mappers
 {
     public class ClassMapper
     {
-        public static CodeClassItem MapClass(ClassDeclarationSyntax member, 
-            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
+        public static CodeClassItem MapClass(ClassDeclarationSyntax member,
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -72,7 +72,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeClassItem MapClass(VisualBasicSyntax.TypeBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 

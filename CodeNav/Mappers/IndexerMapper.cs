@@ -7,7 +7,7 @@ namespace CodeNav.Mappers
 {
     public class IndexerMapper
     {
-        public static CodeItem MapIndexer(IndexerDeclarationSyntax member, CodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem MapIndexer(IndexerDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

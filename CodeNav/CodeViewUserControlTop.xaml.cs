@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -25,10 +24,10 @@ namespace CodeNav
     /// <summary>
     /// Interaction logic for CodeViewUserControl.xaml
     /// </summary>
-    public partial class CodeViewUserControl : ICodeViewUserControl
+    public partial class CodeViewUserControlTop : ICodeViewUserControl
     {
         private Window _window;
-        private readonly ColumnDefinition _column;
+        private readonly RowDefinition _row;
         private List<CodeItem> _cache;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         internal IWpfTextView TextView;
@@ -37,7 +36,7 @@ namespace CodeNav
         private CodeNavMargin _margin;
         public DTE Dte { get; set; }
 
-        public CodeViewUserControl(Window window, ColumnDefinition column = null, 
+        public CodeViewUserControlTop(Window window, RowDefinition row = null, 
             IWpfTextView textView = null, IOutliningManagerService outliningManagerService = null, 
             VisualStudioWorkspace workspace = null, CodeNavMargin margin = null, DTE dte = null)
         {
@@ -48,7 +47,7 @@ namespace CodeNav
             DataContext = CodeDocumentViewModel;
 
             _window = window;
-            _column = column;
+            _row = row;
             TextView = textView;
             OutliningManagerService = outliningManagerService;
             _workspace = workspace;
@@ -213,7 +212,7 @@ namespace CodeNav
                 OutliningHelper.SyncAllRegions(OutliningManagerService, TextView, CodeDocumentViewModel.CodeDocument);
 
                 // Should the margin be shown and are there any items to show, if not hide the margin
-                VisibilityHelper.SetMarginWidth(_column, CodeDocumentViewModel.CodeDocument);
+                VisibilityHelper.SetMarginHeight(_row, CodeDocumentViewModel.CodeDocument);
             }
             catch (Exception e)
             {

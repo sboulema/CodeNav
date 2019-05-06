@@ -26,7 +26,7 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        private CodeViewUserControl _control;      
+        private ICodeViewUserControl _control;      
         private readonly DTE _dte;
         private readonly IWpfTextView _textView;      
         private readonly Window _window;
@@ -55,8 +55,16 @@ namespace CodeNav
             if (_window == null) return;
 
             // Add the view/content to the margin area
-            _codeNavGrid = CreateGrid(textViewHost);
-            _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
+            if (side == MarginSideEnum.Top)
+            {
+                _codeNavGrid = CreateGridTop(textViewHost);
+            }
+            else
+            {
+                _codeNavGrid = CreateGrid(textViewHost);
+                _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
+            }
+
             Children.Add(_codeNavGrid);
 
             System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
@@ -155,13 +163,36 @@ namespace CodeNav
 
             var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
-            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex], 
+            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex],
                 textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
-            grid.Children.Add(_control);
 
-            Grid.SetColumn(_control, columnIndex);
+            grid.Children.Add(_control as UIElement);
+
+            Grid.SetColumn(_control as UIElement, columnIndex);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide == MarginSideEnum.Left ? 2 : 0);
+
+            return grid;
+        }
+
+        private Grid CreateGridTop(IWpfTextViewHost textViewHost)
+        {
+            var grid = new Grid();
+            grid.RowDefinitions.Add(new RowDefinition
+            {
+                Height = new GridLength(0, Settings.Default.ShowMargin ? GridUnitType.Star : GridUnitType.Pixel)
+            });
+            grid.RowDefinitions.Add(new RowDefinition());
+
+            VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
+
+            _control = new CodeViewUserControlTop(_window, grid.RowDefinitions[0],
+                textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
+
+            grid.Children.Add(_control as UIElement);
+
+            Grid.SetRow(_control as UIElement, 0);
+            Grid.SetRow(textViewHost.HostControl, 1);
 
             return grid;
         }
@@ -210,9 +241,9 @@ namespace CodeNav
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!double.IsNaN(_control.ActualWidth) && _control.ActualWidth != 0)
+            if (!double.IsNaN((_control as FrameworkElement).ActualWidth) && (_control as FrameworkElement).ActualWidth != 0)
             {
-                Settings.Default.Width = _control.ActualWidth;
+                Settings.Default.Width = (_control as FrameworkElement).ActualWidth;
                 Settings.Default.Save();
             }
         }

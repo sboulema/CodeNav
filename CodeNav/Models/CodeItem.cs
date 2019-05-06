@@ -11,7 +11,6 @@ using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace CodeNav.Models
 {
@@ -50,7 +49,7 @@ namespace CodeNav.Models
         internal string FullName;
         public CodeItemKindEnum Kind;
         public CodeItemAccessEnum Access;
-        internal CodeViewUserControl Control;
+        internal ICodeViewUserControl Control;
 
         private double _opacity;
         public double Opacity

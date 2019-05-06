@@ -9,31 +9,31 @@ namespace CodeNav.Mappers.JavaScript
 {
     public static class FunctionMapperJS
     {
-        public static List<CodeItem> MapFunction(FunctionDeclaration function, CodeViewUserControl control)
+        public static List<CodeItem> MapFunction(FunctionDeclaration function, ICodeViewUserControl control)
         {
             return MapFunction(function, function.Parameters, function.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunctionExpression(VariableDeclaration declarator, CodeViewUserControl control)
+        public static List<CodeItem> MapFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl control)
         {
             var function = declarator.Initializer as FunctionExpression;
 
             return MapFunction(function, function.Parameters, declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunctionExpression(FunctionExpression function, CodeViewUserControl control)
+        public static List<CodeItem> MapFunctionExpression(FunctionExpression function, ICodeViewUserControl control)
         {
             return MapFunction(function, function.Parameters, function.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapArrowFunctionExpression(VariableDeclaration declarator, CodeViewUserControl control)
+        public static List<CodeItem> MapArrowFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl control)
         {
             var function = declarator.Initializer as ArrowFunction;
 
             return MapFunction(function, function.Parameters, declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapNewExpression(VariableDeclaration declarator, CodeViewUserControl control)
+        public static List<CodeItem> MapNewExpression(VariableDeclaration declarator, ICodeViewUserControl control)
         {
             var expression = declarator.Initializer as NewExpression;
 
@@ -42,7 +42,7 @@ namespace CodeNav.Mappers.JavaScript
             return MapFunction(expression, new NodeArray<ParameterDeclaration>(), declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunction(Node function, NodeArray<ParameterDeclaration> parameters, string id, CodeViewUserControl control)
+        public static List<CodeItem> MapFunction(Node function, NodeArray<ParameterDeclaration> parameters, string id, ICodeViewUserControl control)
         {
             if (function == null) return null;
 

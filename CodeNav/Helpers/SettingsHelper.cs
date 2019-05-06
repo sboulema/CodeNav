@@ -1,4 +1,6 @@
-﻿using CodeNav.Properties;
+﻿using CodeNav.Models;
+using CodeNav.Properties;
+using System.Collections.Generic;
 
 namespace CodeNav.Helpers
 {
@@ -18,24 +20,24 @@ namespace CodeNav.Helpers
             set => _useXmlComments = value;
         }
 
-        private static bool? _hideItemsWithoutChildren;
-        public static bool HideItemsWithoutChildren
+        private static List<FilterRule> _filterRules;
+        public static List<FilterRule> FilterRules
         {
             get
             {
-                if (_hideItemsWithoutChildren == null)
+                if (_filterRules == null)
                 {
-                    _hideItemsWithoutChildren = Settings.Default.HideItemsWithoutChildren;
+                    _filterRules = Settings.Default.FilterRules;
                 }
-                return _hideItemsWithoutChildren.Value;
+                return _filterRules;
             }
-            set => _hideItemsWithoutChildren = value;
+            set => _filterRules = value;
         }
 
         public static void Refresh()
         {
             _useXmlComments = null;
-            _hideItemsWithoutChildren = null;
+            _filterRules = null;
         }
     }
 }

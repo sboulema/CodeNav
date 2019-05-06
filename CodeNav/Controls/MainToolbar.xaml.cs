@@ -23,7 +23,7 @@ namespace CodeNav.Controls
 
         private async void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            var control = FindParent<CodeViewUserControl>(this);
+            var control = FindParent(this);
             await control.UpdateDocumentAsync(true);
         }
 
@@ -33,9 +33,18 @@ namespace CodeNav.Controls
 
         private async void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
-            var control = FindParent<CodeViewUserControl>(this);
+            var control = FindParent(this);
             new OptionsWindow().ShowDialog();
             await control.UpdateDocumentAsync(true);
+        }
+
+        private static ICodeViewUserControl FindParent(DependencyObject child)
+        {
+            var control = FindParent<CodeViewUserControl>(child);
+
+            if (control != null) return control;
+
+            return FindParent<CodeViewUserControlTop>(child);
         }
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
@@ -58,7 +67,7 @@ namespace CodeNav.Controls
 
         private void Sort(SortOrderEnum sortOrder)
         {
-            var control = FindParent<CodeViewUserControl>(this);
+            var control = FindParent(this);
             control.CodeDocumentViewModel.SortOrder = sortOrder;
             control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
             Settings.Default.SortOrder = sortOrder;

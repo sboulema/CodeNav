@@ -18,7 +18,7 @@ namespace CodeNav.Mappers
 {
     public static class SyntaxMapper
     {
-        private static CodeViewUserControl _control;
+        private static ICodeViewUserControl _control;
         private static SyntaxTree _tree;
         private static SemanticModel _semanticModel;
 
@@ -65,7 +65,7 @@ namespace CodeNav.Mappers
         /// <param name="control">CodeNav control that will show the result</param>
         /// <param name="workspace">Current Visual Studio workspace</param>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocumentAsync(EnvDTE.Document activeDocument, CodeViewUserControl control, 
+        public static async Task<List<CodeItem>> MapDocumentAsync(EnvDTE.Document activeDocument, ICodeViewUserControl control, 
             VisualStudioWorkspace workspace)
         {
             _control = control;
@@ -230,7 +230,7 @@ namespace CodeNav.Mappers
                 case SyntaxKind.DelegateDeclaration:
                     return DelegateEventMapper.MapDelegate(member as DelegateDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.NamespaceDeclaration:
-                    return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel);
+                    return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel, _tree);
                 case SyntaxKind.ConstructorDeclaration:
                     return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.IndexerDeclaration:
@@ -271,7 +271,7 @@ namespace CodeNav.Mappers
                 case VisualBasic.SyntaxKind.DelegateFunctionStatement:
                     return DelegateEventMapper.MapDelegate(member as VisualBasicSyntax.DelegateStatementSyntax, _control, _semanticModel);
                 case VisualBasic.SyntaxKind.NamespaceBlock:
-                    return NamespaceMapper.MapNamespace(member as VisualBasicSyntax.NamespaceBlockSyntax, _control, _semanticModel);
+                    return NamespaceMapper.MapNamespace(member as VisualBasicSyntax.NamespaceBlockSyntax, _control, _semanticModel, _tree);
                 case VisualBasic.SyntaxKind.ConstructorBlock:
                     return MethodMapper.MapConstructor(member as VisualBasicSyntax.ConstructorBlockSyntax, _control, _semanticModel);
                 default:

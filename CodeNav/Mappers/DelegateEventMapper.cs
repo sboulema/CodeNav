@@ -9,7 +9,7 @@ namespace CodeNav.Mappers
     public static class DelegateEventMapper
     {
         public static CodeItem MapDelegate(DelegateDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Delegate;
@@ -18,7 +18,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapDelegate(VisualBasicSyntax.DelegateStatementSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Delegate;
@@ -27,7 +27,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapEvent(EventFieldDeclarationSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 
@@ -39,7 +39,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapEvent(VisualBasicSyntax.EventBlockSyntax member,
-            CodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null) return null;
 

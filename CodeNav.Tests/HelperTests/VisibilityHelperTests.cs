@@ -3,6 +3,7 @@ using CodeNav.Mappers;
 using CodeNav.Models;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -21,7 +22,15 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestVisibility.cs"))
             };
 
-            SettingsHelper.HideItemsWithoutChildren = hideItemsWithoutChildren;
+            SettingsHelper.FilterRules = new List<FilterRule>
+            {
+                new FilterRule
+                {
+                    Access = CodeItemAccessEnum.All,
+                    Kind = CodeItemKindEnum.Class,
+                    HideIfEmpty = hideItemsWithoutChildren
+                }
+            };
 
             VisibilityHelper.SetCodeItemVisibility(document.CodeDocument);
 
