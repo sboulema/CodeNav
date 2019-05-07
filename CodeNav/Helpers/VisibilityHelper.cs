@@ -33,16 +33,13 @@ namespace CodeNav.Helpers
 
                 foreach (var item in document)
                 {
+                    if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
+                    {
+                        SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
+                    }
+
                     item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
                     item.Opacity = SetOpacity(item);
-
-                    if (item is IMembers hasMembersItem)
-                    {
-                        if (hasMembersItem.Members.Any())
-                        {
-                            SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
-                        }
-                    }
                 }
             }
             catch (Exception e)
@@ -190,15 +187,15 @@ namespace CodeNav.Helpers
 
                 if (filterRule != null)
                 {
-                    visible = filterRule.Visible;
+                    if (filterRule.Visible == false)
+                    {
+                        return false;
+                    }
 
                     // If an item has any visible members, it should be visible.
                     // If an item does not have any visible members, hide it depending on an option
-                    if ((item as IMembers).Members.Any(m => m.IsVisible == Visibility.Visible))
-                    {
-                        visible = true;
-                    }
-                    else
+                    if (item is IMembers hasMembersItem &&
+                        !hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
                     {
                         visible = !filterRule.HideIfEmpty;
                     }

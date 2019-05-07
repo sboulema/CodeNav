@@ -177,5 +177,53 @@ namespace CodeNav.Properties {
                 this["AutoLoadLineThreshold"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("270")]
+        public int FilterWindowHeight {
+            get {
+                return ((int)(this["FilterWindowHeight"]));
+            }
+            set {
+                this["FilterWindowHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("450")]
+        public int FilterWindowWidth {
+            get {
+                return ((int)(this["FilterWindowWidth"]));
+            }
+            set {
+                this["FilterWindowWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FilterWindowLeft {
+            get {
+                return ((int)(this["FilterWindowLeft"]));
+            }
+            set {
+                this["FilterWindowLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int FilterWindowTop {
+            get {
+                return ((int)(this["FilterWindowTop"]));
+            }
+            set {
+                this["FilterWindowTop"] = value;
+            }
+        }
     }
 }
