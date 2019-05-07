@@ -28,6 +28,7 @@ namespace CodeNav.Tests.HelperTests
                 {
                     Access = CodeItemAccessEnum.All,
                     Kind = CodeItemKindEnum.Class,
+                    Visible = true,
                     HideIfEmpty = hideItemsWithoutChildren
                 }
             };
