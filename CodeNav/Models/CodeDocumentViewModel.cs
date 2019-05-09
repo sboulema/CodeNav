@@ -28,6 +28,38 @@ namespace CodeNav.Models
             {
                 _codeDocument = value;
                 NotifyOfPropertyChange();
+                NotifyOfPropertyChange("CodeDocumentTop");
+            }
+        }
+
+        public List<CodeItem> CodeDocumentTop
+        {
+            get
+            {
+                var result = new List<CodeItem>();
+
+                TraverseDepth(_codeDocument, result, 0);
+
+                return result;
+            }
+        }
+
+        private void TraverseDepth(List<CodeItem> items, List<CodeItem> result, int depth)
+        {
+            foreach (var item in items)
+            {
+                if (depth >= result.Count)
+                {
+                    result.Add(new CodeDepthGroupItem());
+                }
+
+                (result[depth] as IMembers).Members.Add(item);
+
+                if (item is IMembers hasMembersItem)
+                {
+                    depth++;
+                    TraverseDepth(hasMembersItem.Members, result, depth);
+                }
             }
         }
 

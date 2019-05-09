@@ -93,6 +93,7 @@
     <Compile Include="Mappers\JavaScript\BaseMapperJS.cs" />
     <Compile Include="Mappers\JavaScript\FunctionMapperJS.cs" />
     <Compile Include="Mappers\JavaScript\SyntaxMapperJS.cs" />
+    <Compile Include="Models\CodeDepthGroupItem.cs" />
     <Compile Include="Models\ICodeCollapsible.cs" />
     <Compile Include="Windows\FilterWindow.cs">
       <SubType>Form</SubType>
@@ -528,6 +529,10 @@
     <Page Include="CodeViewUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DepthGroupDataTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\FilterToolbar.xaml">
       <SubType>Designer</SubType>

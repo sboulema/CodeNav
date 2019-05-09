@@ -11,8 +11,6 @@ namespace CodeNav.Models
             Members = new List<CodeItem>();
         }
 
-        public Orientation Orientation { get; set; }
-
         public Visibility IgnoreVisibility { get; set; }
 
         public Visibility NotIgnoreVisibility

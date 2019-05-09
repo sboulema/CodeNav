@@ -10,11 +10,6 @@
     <DataTemplate DataType="{x:Type models:CodeNamespaceItem}">
         <StackPanel>
             <ItemsControl ItemsSource="{Binding Members}" BorderThickness="0" Background="Transparent" Visibility="{Binding NotIgnoreVisibility}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="{Binding Orientation}"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
                         <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
@@ -47,11 +42,6 @@
                     </StackPanel>
                 </Expander.Header>
                 <ItemsControl ItemsSource="{Binding Members}" Background="Transparent" Margin="6,3,6,0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="{Binding Orientation}"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
                         <Style>
                             <Setter Property="FrameworkElement.Margin" Value="0,0,0,6"/>

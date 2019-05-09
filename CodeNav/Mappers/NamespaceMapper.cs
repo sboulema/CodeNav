@@ -19,7 +19,6 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, control, semanticModel);
             item.Kind = CodeItemKindEnum.Namespace;
-            item.Orientation = Settings.Default.MarginSide == MarginSideEnum.Top ? Orientation.Horizontal : Orientation.Vertical;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderColor = Colors.DarkGray;
             item.IgnoreVisibility = VisibilityHelper.GetIgnoreVisibility(item);
@@ -62,7 +61,6 @@ namespace CodeNav.Mappers
 
             var item = BaseMapper.MapBase<CodeNamespaceItem>(member, member.NamespaceStatement.Name, control, semanticModel);
             item.Kind = CodeItemKindEnum.Namespace;
-            item.Orientation = Settings.Default.MarginSide == MarginSideEnum.Top ? Orientation.Horizontal : Orientation.Vertical;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderColor = Colors.DarkGray;
 

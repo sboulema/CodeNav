@@ -195,6 +195,7 @@ namespace CodeNav.Helpers
                     // If an item has any visible members, it should be visible.
                     // If an item does not have any visible members, hide it depending on an option
                     if (item is IMembers hasMembersItem &&
+                        hasMembersItem?.Members != null &&
                         !hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
                     {
                         visible = !filterRule.HideIfEmpty;
