@@ -12,14 +12,15 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Controls/NamespaceDataTemplate.xaml" />
+                <!--<ResourceDictionary Source="Controls/NamespaceDataTemplate.xaml" />-->
                 <ResourceDictionary Source="Controls/ItemDataTemplate.xaml" />
-                <ResourceDictionary Source="Controls/RegionDataTemplate.xaml" />
-                <ResourceDictionary Source="Controls/ClassDataTemplate.xaml" />
+                <!--<ResourceDictionary Source="Controls/RegionDataTemplate.xaml" />
+                <ResourceDictionary Source="Controls/ClassDataTemplate.xaml" />-->
                 <ResourceDictionary Source="Controls/DepthGroupDataTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+
 
     <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowBorderBrushKey}}">
         <Grid>
