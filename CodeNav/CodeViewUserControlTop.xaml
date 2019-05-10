@@ -6,16 +6,13 @@
              xmlns:controls="clr-namespace:CodeNav.Controls"
              xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="500"
+             d:DesignHeight="26" d:DesignWidth="500"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<ResourceDictionary Source="Controls/NamespaceDataTemplate.xaml" />-->
                 <ResourceDictionary Source="Controls/ItemDataTemplate.xaml" />
-                <!--<ResourceDictionary Source="Controls/RegionDataTemplate.xaml" />
-                <ResourceDictionary Source="Controls/ClassDataTemplate.xaml" />-->
                 <ResourceDictionary Source="Controls/DepthGroupDataTemplate.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -34,11 +31,11 @@
 
             <controls:FilterToolbar Grid.Column="1" DataContext="{Binding}" Visibility="{Binding ShowFilterToolbarVisibility}"/>
 
-            <ScrollViewer x:Name="CodeScrollViewer" Grid.Column="2" HorizontalScrollBarVisibility="Auto" Margin="0,3,0,0">
-                <ItemsControl x:Name="CodeItemsControl" ItemsSource="{Binding CodeDocumentTop}" Margin="4,0,4,0">
+            <ScrollViewer x:Name="CodeScrollViewer" Grid.Column="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                <ItemsControl x:Name="CodeItemsControl" ItemsSource="{Binding CodeDocumentTop}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
+                            <StackPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
