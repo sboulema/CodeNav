@@ -58,6 +58,7 @@ namespace CodeNav.Helpers
                
                 item.FontWeight = FontWeights.Regular;
                 item.NameBackgroundColor = Brushes.Transparent.Color;
+                item.IsHighlighted = false;
 
                 if (!BookmarkHelper.IsBookmark(bookmarks, item))
                 {
@@ -96,9 +97,6 @@ namespace CodeNav.Helpers
         {
             FrameworkElement element = null;
 
-            // Reverse Ids, so they are in Namespace -> Class -> Method order
-            //ids = ids.Reverse();
-
             foreach (var id in ids)
             {
                 var item = FindCodeItem(codeDocumentViewModel.CodeDocument, id);
@@ -107,6 +105,7 @@ namespace CodeNav.Helpers
                 item.ForegroundColor = foregroundColor;
                 item.FontWeight = FontWeights.Bold;
                 item.NameBackgroundColor = backgroundColor;
+                item.IsHighlighted = true;
 
                 if (element == null && item.Control != null)
                 {
@@ -259,6 +258,15 @@ namespace CodeNav.Helpers
             }
 
             return (control as CodeViewUserControlTop).CodeItemsControl;
+        }
+
+        public static void SetSelectedIndex(List<CodeItem> items)
+        {
+            foreach (CodeDepthGroupItem groupItem in items)
+            {
+                var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
+                groupItem.SelectedIndex = groupItem.Members.IndexOf(selectedItem);
+            }
         }
     }
 

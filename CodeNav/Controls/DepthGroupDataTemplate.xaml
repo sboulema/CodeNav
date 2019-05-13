@@ -10,7 +10,7 @@
         <ComboBox ItemsSource="{Binding Members}" 
                   Margin="3"
                   Style="{StaticResource ComboBoxFlatStyle}"
-                  SelectedIndex="0"/>
+                  SelectedIndex="{Binding SelectedIndex}" />
     </DataTemplate>
 
 </ResourceDictionary>

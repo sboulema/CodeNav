@@ -50,6 +50,7 @@ namespace CodeNav.Models
         public CodeItemKindEnum Kind;
         public CodeItemAccessEnum Access;
         internal ICodeViewUserControl Control;
+        public bool IsHighlighted;
 
         private double _opacity;
         public double Opacity

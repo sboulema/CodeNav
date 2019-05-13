@@ -40,7 +40,13 @@ namespace CodeNav.Models
 
                 TraverseDepth(_codeDocument, result, 0);
 
+                HighlightHelper.SetSelectedIndex(result);
+
                 return result;
+            }
+            set
+            {
+                NotifyOfPropertyChange();
             }
         }
 

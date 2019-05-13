@@ -269,13 +269,11 @@ namespace CodeNav
         public void HighlightCurrentItem()
         {
             System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
-        }
 
-        private static bool AreDocumentsEqual(List<CodeItem> existingItems, List<CodeItem> newItems)
-        {
-            if (existingItems == null || newItems == null) return false;
-            return existingItems.SequenceEqual(newItems, new CodeItemComparer());
+            HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
+
+            // Force NotifyPropertyChanged
+            CodeDocumentViewModel.CodeDocumentTop = null;
         }
 
         private void LoadBookmarksFromStorage()
