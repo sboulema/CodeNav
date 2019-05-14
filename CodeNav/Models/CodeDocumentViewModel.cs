@@ -59,12 +59,15 @@ namespace CodeNav.Models
                     result.Add(new CodeDepthGroupItem());
                 }
 
-                (result[depth] as IMembers).Members.Add(item);
+                (result[depth] as IMembers).Members.Add(item);             
 
-                if (item is IMembers hasMembersItem)
+                if (item is IMembers hasMembersItem && 
+                    hasMembersItem != null &&
+                    (hasMembersItem.Members.Any(i => i.IsHighlighted) || item.IsHighlighted))
                 {
                     depth++;
                     TraverseDepth(hasMembersItem.Members, result, depth);
+                    depth--;
                 }
             }
         }

@@ -26,6 +26,8 @@
         </Button>
 
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="Auto" Margin="0,3,0,0">
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+
             <RadioButton x:Name="ButtonSortByFile" GroupName="SortOrder" Style="{StaticResource {x:Type ToggleButton}}"
                          ToolTip="Sort by file order" Click="ButtonSortByFileOrder_OnClick" Margin="0,0,3,0">
                 <RadioButton.Template>
@@ -62,6 +64,8 @@
                     </ControlTemplate>
                 </RadioButton.Template>
             </RadioButton>
+
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
         </StackPanel>
 
         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Width="Auto" Margin="0,3,3,0">
