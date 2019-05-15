@@ -228,8 +228,11 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e)
         {
-            ((GridSplitter)_codeNavGrid.Children[0]).Background =
-                ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+            if (_control is CodeViewUserControl)
+            {
+                ((GridSplitter)_codeNavGrid.Children[0]).Background =
+                    ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+            }
         }
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

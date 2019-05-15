@@ -10,7 +10,15 @@
         <ComboBox ItemsSource="{Binding Members}" 
                   Margin="3"
                   Style="{StaticResource ComboBoxFlatStyle}"
-                  SelectedIndex="{Binding SelectedIndex}" />
+                  SelectedIndex="{Binding SelectedIndex}" 
+                  IsEditable="False" 
+                  IsReadOnly="True">
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ComboBoxItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ComboBox.ItemContainerStyle>
+        </ComboBox>
     </DataTemplate>
 
 </ResourceDictionary>
