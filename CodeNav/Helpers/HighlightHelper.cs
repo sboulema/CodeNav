@@ -265,7 +265,7 @@ namespace CodeNav.Helpers
             foreach (CodeDepthGroupItem groupItem in items)
             {
                 var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
-                groupItem.SelectedIndex = groupItem.Members.IndexOf(selectedItem);
+                groupItem.SelectedIndex = selectedItem != null ? groupItem.Members.IndexOf(selectedItem) : 0;
             }
         }
     }
