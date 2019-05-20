@@ -1,10 +1,8 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Media;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
@@ -39,15 +37,15 @@ namespace CodeNav.Mappers
                 }
             }
 
-            // Add regions to class if they have a region member inside them
+            // Add regions to namespace if they are not present in any children of the namespace
             if (regions.Any())
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (FindHelper.FindCodeItem(item.Members, region.Id) == null)
                     {
                         item.Members.Add(region);
-                    }
+                    }                   
                 }
             }
 
@@ -85,7 +83,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (FindHelper.FindCodeItem(item.Members, region.Id) == null)
                     {
                         item.Members.Add(region);
                     }

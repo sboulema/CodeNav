@@ -13,6 +13,8 @@ namespace CodeNav.Helpers
 
         public NavBarOverrider(CodeNavMargin margin)
         {
+            if (margin == null) return;
+
             _control = margin._control as UIElement;
             _wpfTextView = margin._textView;
             _wpfTextView.VisualElement.Loaded += FindNaviBar;

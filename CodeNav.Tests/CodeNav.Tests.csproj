@@ -46,6 +46,7 @@
     <Compile Include="Files\TestNamespaceRegions.cs" />
     <Compile Include="Files\TestPartial2.cs" />
     <Compile Include="Files\TestPartial1.cs" />
+    <Compile Include="Files\TestNestedRegions.cs" />
     <Compile Include="Files\TestVisibility.cs" />
     <Compile Include="Files\TestInterface3.cs" />
     <Compile Include="Files\TestInterface2.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="MapperTests\TestIndexers.cs" />
     <Compile Include="MapperTests\TestInterface4.cs" />
     <Compile Include="MapperTests\TestMethodsWithComments.cs" />
+    <Compile Include="MapperTests\TestNestedRegions.cs" />
     <Compile Include="MapperTests\VisualBasic\TestMethods.cs" />
     <Compile Include="MapperTests\TestInterface3.cs" />
     <Compile Include="MapperTests\TestInterface2.cs" />
