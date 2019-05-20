@@ -37,7 +37,7 @@ Visual Studio extension to show the code structure of your current document
 ## Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
 
-![Top Margin](https://i.imgur.com/j3gxDQg.jpg)
+![Top Margin](https://i.imgur.com/5ymPOxe.jpg)
 
 #### Filter window
 ![Filter window](https://i.imgur.com/MVI8ddx.png) 
