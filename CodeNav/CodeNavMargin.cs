@@ -26,9 +26,9 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        private ICodeViewUserControl _control;      
+        public ICodeViewUserControl _control;      
         private readonly DTE _dte;
-        private readonly IWpfTextView _textView;      
+        public readonly IWpfTextView _textView;      
         private readonly Window _window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
@@ -151,7 +151,7 @@ namespace CodeNav
                 ResizeDirection = GridResizeDirection.Columns,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey),
+                Background = WpfHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey),
                 ToolTip = "What you can do with this bar:" + Environment.NewLine +
                 "- double-click it to toggle CodeNav visibility" + Environment.NewLine +
                 "- click and drag it to adjust CodeNav width"
@@ -189,18 +189,12 @@ namespace CodeNav
             _control = new CodeViewUserControlTop(_window, grid.RowDefinitions[0],
                 textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
 
-            grid.Children.Add(_control as UIElement);
+            //grid.Children.Add(_control as UIElement);
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
 
             return grid;
-        }
-
-        private static SolidColorBrush ToBrush(ThemeResourceKey key)
-        {
-            var color = VSColorTheme.GetThemedColor(key);
-            return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
         /// <summary>
@@ -231,7 +225,7 @@ namespace CodeNav
             if (_control is CodeViewUserControl)
             {
                 ((GridSplitter)_codeNavGrid.Children[0]).Background =
-                    ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+                    WpfHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
             }
         }
 

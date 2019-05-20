@@ -87,7 +87,9 @@
     <Compile Include="Controls\MainToolbar.xaml.cs">
       <DependentUpon>MainToolbar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\NavBarOverrider.cs" />
     <Compile Include="Helpers\SymbolHelper.cs" />
+    <Compile Include="Helpers\WpfHelper.cs" />
     <Compile Include="ICodeViewUserControl.cs" />
     <Compile Include="Mappers\IndexerMapper.cs" />
     <Compile Include="Mappers\JavaScript\BaseMapperJS.cs" />
