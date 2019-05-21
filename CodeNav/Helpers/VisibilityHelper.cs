@@ -20,7 +20,7 @@ namespace CodeNav.Helpers
         /// <param name="name">Filters items by name</param>
         /// <param name="filterOnBookmarks">Filters items by being bookmarked</param>
         /// <param name="bookmarks">List of bookmarked items</param>
-        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "", 
+        public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "",
             bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             try
@@ -144,17 +144,13 @@ namespace CodeNav.Helpers
         /// <returns></returns>
         private static double SetOpacity(CodeItem item)
         {
-            if (SettingsHelper.FilterRules != null)
-            {
-                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
-                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
-                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+            var filterRule = GetFilterRule(item);
 
-                if (filterRule != null)
-                {
-                    return GetOpacityValue(filterRule.Opacity);
-                }
+            if (filterRule != null)
+            {
+                return GetOpacityValue(filterRule.Opacity);
             }
+
             return 1.0;
         }
 
@@ -174,33 +170,24 @@ namespace CodeNav.Helpers
             return opacity;
         }
 
-        private static bool ShouldBeVisible(CodeItem item, string name = "", 
+        /// <summary>
+        /// Determine if an item should be visible
+        /// </summary>
+        /// <param name="item">CodeItem that is checked</param>
+        /// <param name="name">Text filter</param>
+        /// <param name="filterOnBookmarks">Are we only showing bookmarks?</param>
+        /// <param name="bookmarks">List of current bookmarks</param>
+        /// <returns></returns>
+        private static bool ShouldBeVisible(CodeItem item, string name = "",
             bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
         {
             var visible = true;
 
-            if (SettingsHelper.FilterRules != null)
+            var filterRule = GetFilterRule(item);
+
+            if (filterRule != null && filterRule.Visible == false)
             {
-                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
-                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
-                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
-
-                if (filterRule != null)
-                {
-                    if (filterRule.Visible == false)
-                    {
-                        return false;
-                    }
-
-                    // If an item has any visible members, it should be visible.
-                    // If an item does not have any visible members, hide it depending on an option
-                    if (item is IMembers hasMembersItem &&
-                        hasMembersItem?.Members != null &&
-                        !hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
-                    {
-                        visible = !filterRule.HideIfEmpty;
-                    }
-                }
+                return false;
             }
 
             if (filterOnBookmarks)
@@ -211,6 +198,21 @@ namespace CodeNav.Helpers
             if (!string.IsNullOrEmpty(name))
             {
                 visible = visible && item.Name.Contains(name, StringComparison.OrdinalIgnoreCase);
+            }
+
+            // If an item has any visible members, it should be visible.
+            // If an item does not have any visible members, hide it depending on an option
+            if (item is IMembers hasMembersItem &&
+                hasMembersItem?.Members != null)
+            {
+                if (hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible))
+                {
+                    visible = true;
+                }
+                else if (!hasMembersItem.Members.Any(m => m.IsVisible == Visibility.Visible) && filterRule != null)
+                {
+                    visible = !filterRule.HideIfEmpty;
+                }
             }
 
             return visible;
@@ -232,20 +234,15 @@ namespace CodeNav.Helpers
             }
 
             return visible;
-        } 
+        }
 
         public static Visibility GetIgnoreVisibility(CodeItem item)
         {
-            if (SettingsHelper.FilterRules != null)
-            {
-                var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
-                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
-                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+            var filterRule = GetFilterRule(item);
 
-                if (filterRule != null)
-                {
-                    return filterRule.Ignore ? Visibility.Collapsed : Visibility.Visible;
-                }
+            if (filterRule != null)
+            {
+                return filterRule.Ignore ? Visibility.Collapsed : Visibility.Visible;
             }
 
             return Visibility.Visible;
@@ -254,6 +251,17 @@ namespace CodeNav.Helpers
         private static bool Contains(this string source, string toCheck, StringComparison comp)
         {
             return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
+        }
+
+        private static FilterRule GetFilterRule(CodeItem item)
+        {
+            if (SettingsHelper.FilterRules == null) return null;
+
+            var filterRule = SettingsHelper.FilterRules.LastOrDefault(f =>
+                    (f.Access == item.Access || f.Access == CodeItemAccessEnum.All) &&
+                    (f.Kind == item.Kind || f.Kind == CodeItemKindEnum.All));
+
+            return filterRule;
         }
     }
 }
