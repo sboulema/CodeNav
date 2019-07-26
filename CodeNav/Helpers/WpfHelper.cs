@@ -65,7 +65,7 @@ namespace CodeNav.Helpers
                 }
             }
 
-            return default;
+            return default(T);
         }
     }
 }
