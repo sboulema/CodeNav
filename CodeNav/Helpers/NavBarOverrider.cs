@@ -50,7 +50,7 @@ namespace CodeNav.Helpers
                 UnloadEvents();
             }
 
-            _control.SetCurrentValue(Grid.BackgroundProperty, WpfHelper.ToBrush(EnvironmentColors.ComboBoxBackgroundBrushKey));
+            _control.SetCurrentValue(Grid.BackgroundProperty, ColorHelper.ToBrush(EnvironmentColors.ComboBoxBackgroundBrushKey));
             _control.SetCurrentValue(Grid.ColumnSpanProperty, 5);
             container.Children.Add(_control);
 

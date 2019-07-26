@@ -137,8 +137,6 @@
     <Compile Include="Mappers\TriviaSummaryMapper.cs" />
     <Compile Include="Mappers\TypeMapper.cs" />
     <Compile Include="Mappers\TooltipMapper.cs" />
-    <Compile Include="Models\BackgroundWorkerRequest.cs" />
-    <Compile Include="Models\BackgroundWorkerResult.cs" />
     <Compile Include="Models\BookmarkStyle.cs" />
     <Compile Include="Models\CodePropertyItem.cs" />
     <Compile Include="Models\CodeNamespaceItem.cs" />

@@ -151,7 +151,7 @@ namespace CodeNav
                 ResizeDirection = GridResizeDirection.Columns,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = WpfHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey),
+                Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey),
                 ToolTip = "What you can do with this bar:" + Environment.NewLine +
                 "- double-click it to toggle CodeNav visibility" + Environment.NewLine +
                 "- click and drag it to adjust CodeNav width"
@@ -171,6 +171,15 @@ namespace CodeNav
             Grid.SetColumn(_control as UIElement, columnIndex);
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide == MarginSideEnum.Left ? 2 : 0);
+
+            if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
+            {
+                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+            }
+            else
+            {
+                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
+            }
 
             return grid;
         }
@@ -193,6 +202,15 @@ namespace CodeNav
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
+
+            if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
+            {
+                grid.GetGridChildByType<CodeViewUserControlTop>().Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+            }
+            else
+            {
+                grid.GetGridChildByType<CodeViewUserControlTop>().Background = ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
+            }
 
             return grid;
         }
@@ -224,8 +242,7 @@ namespace CodeNav
         {
             if (_control is CodeViewUserControl)
             {
-                ((GridSplitter)_codeNavGrid.Children[0]).Background =
-                    WpfHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+                ((GridSplitter)_codeNavGrid.Children[0]).Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);              
             }
         }
 

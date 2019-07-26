@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace CodeNav.Helpers
@@ -54,10 +55,17 @@ namespace CodeNav.Helpers
             return null;
         }
 
-        public static SolidColorBrush ToBrush(ThemeResourceKey key)
+        public static T GetGridChildByType<T>(this Grid grid) where T : class
         {
-            var color = VSColorTheme.GetThemedColor(key);
-            return new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
+            foreach (var child in grid.Children)
+            {
+                if (child is T)
+                {
+                    return child as T;
+                }
+            }
+
+            return default;
         }
     }
 }

@@ -39,12 +39,14 @@ namespace CodeNav.Windows
         {
             marginSideComboBox.SelectedItem = Settings.Default.MarginSide.ToString();
             fontDialog1.Font = Settings.Default.Font;
-            filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;
-            highlightBackgroundButton.BackColor = Settings.Default.HighlightBackgroundColor;
+            filterToolbarCheckBox.Checked = Settings.Default.ShowFilterToolbar;            
             xmlCommentsCheckBox.Checked = Settings.Default.UseXMLComments;
             historyIndicatorCheckBox.Checked = Settings.Default.ShowHistoryIndicators;
             disableHighlightCheckBox.Checked = Settings.Default.DisableHighlight;
             autoLoadLineThresholdTextBox.Text = Settings.Default.AutoLoadLineThreshold.ToString();
+
+            highlightBackgroundButton.BackColor = Settings.Default.HighlightBackgroundColor;
+            windowBackgroundButton.BackColor = Settings.Default.WindowBackgroundColor;
         }
 
         private void fontButton_Click(object sender, EventArgs e)
@@ -66,6 +68,15 @@ namespace CodeNav.Windows
             Settings.Default.Reset();
             SettingsHelper.Refresh();
             Close();
+        }
+
+        private void WindowBackgroundButton_Click(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Settings.Default.WindowBackgroundColor = colorDialog1.Color;
+                windowBackgroundButton.BackColor = colorDialog1.Color;
+            }
         }
     }
 }
