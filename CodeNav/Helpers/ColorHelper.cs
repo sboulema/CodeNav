@@ -32,5 +32,11 @@ namespace CodeNav.Helpers
 
         public static System.Drawing.Color ToDrawingColor(Color color)
             => System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
+
+        public static System.Drawing.Color ToDrawingColor(SolidColorBrush solidColorBrush)
+            => ToDrawingColor(solidColorBrush.Color);
+
+        public static System.Drawing.Color Transparent()
+            => ToDrawingColor(Brushes.Transparent);
     }
 }

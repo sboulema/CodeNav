@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using CodeNav.Properties;
 using CodeNav.Models;
 using CodeNav.Helpers;
+using System.Windows.Media;
+using System.Drawing;
 
 namespace CodeNav.Windows
 {
@@ -63,10 +65,28 @@ namespace CodeNav.Windows
             }
         }
 
-        private void resetButton_Click(object sender, EventArgs e)
+        private void ResetButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.Reset();
+            Settings.Default.Width = 200;
+            Settings.Default.MarginSide = MarginSideEnum.Left;
+            Settings.Default.Font = new Font("Segoe UI", (float)11.25);
+            Settings.Default.ShowFilterToolbar = true;
+            Settings.Default.ShowMargin = true;
+            Settings.Default.FilterRules = null;
+            Settings.Default.SortOrder = SortOrderEnum.Unknown;
+            Settings.Default.NewVersionInstalled = true;
+            Settings.Default.HighlightBackgroundColor = ColorHelper.Transparent();
+            Settings.Default.UseXMLComments = false;
+            Settings.Default.ShowHistoryIndicators = true;
+            Settings.Default.DisableHighlight = false;
+            Settings.Default.AutoLoadLineThreshold = 0;
+            Settings.Default.FilterWindowHeight = 270;
+            Settings.Default.FilterWindowWidth = 450;
+            Settings.Default.FilterWindowLeft = 0;
+            Settings.Default.FilterWindowTop = 0;
+            Settings.Default.WindowBackgroundColor = ColorHelper.Transparent();           
             Settings.Default.Save();
+
             SettingsHelper.Refresh();
             Close();
         }
