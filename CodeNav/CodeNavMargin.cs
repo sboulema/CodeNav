@@ -174,7 +174,7 @@ namespace CodeNav
 
             if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
             {
-                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+                grid.GetGridChildByType<CodeViewUserControl>().Background = Brushes.Transparent;
             }
             else
             {
@@ -205,7 +205,7 @@ namespace CodeNav
 
             if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
             {
-                grid.GetGridChildByType<CodeViewUserControlTop>().Background = ColorHelper.ToBrush(EnvironmentColors.EnvironmentBackgroundColorKey);
+                grid.GetGridChildByType<CodeViewUserControlTop>().Background = Brushes.Transparent;
             }
             else
             {

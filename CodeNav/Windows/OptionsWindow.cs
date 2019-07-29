@@ -66,6 +66,7 @@ namespace CodeNav.Windows
         private void resetButton_Click(object sender, EventArgs e)
         {
             Settings.Default.Reset();
+            Settings.Default.Save();
             SettingsHelper.Refresh();
             Close();
         }
