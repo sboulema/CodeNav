@@ -113,7 +113,7 @@ namespace CodeNav.Helpers
 
             var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
 
-            if (solutionStorage.Documents == null) return GetDefaultBookmarkStyles();
+            if (solutionStorage?.Documents == null) return GetDefaultBookmarkStyles();
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));

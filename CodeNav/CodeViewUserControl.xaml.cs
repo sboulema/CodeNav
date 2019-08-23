@@ -305,7 +305,7 @@ namespace CodeNav
 
             var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
 
-            if (solutionStorage.Documents == null) return;
+            if (solutionStorage?.Documents == null) return;
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(CodeDocumentViewModel.FilePath));
