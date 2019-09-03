@@ -45,12 +45,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.fontButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.windowBackgroundButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.highlightBackgroundButton = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.fontButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -219,6 +219,25 @@
             this.tabPage2.Text = "Fonts and Colors";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 74);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(31, 13);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Font:";
+            // 
+            // fontButton
+            // 
+            this.fontButton.Location = new System.Drawing.Point(123, 69);
+            this.fontButton.Name = "fontButton";
+            this.fontButton.Size = new System.Drawing.Size(75, 23);
+            this.fontButton.TabIndex = 14;
+            this.fontButton.Text = "Choose...";
+            this.fontButton.UseVisualStyleBackColor = true;
+            this.fontButton.Click += new System.EventHandler(this.FontButton_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -253,24 +272,6 @@
             this.highlightBackgroundButton.Size = new System.Drawing.Size(23, 23);
             this.highlightBackgroundButton.TabIndex = 10;
             this.highlightBackgroundButton.UseVisualStyleBackColor = true;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 74);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(31, 13);
-            this.label2.TabIndex = 13;
-            this.label2.Text = "Font:";
-            // 
-            // fontButton
-            // 
-            this.fontButton.Location = new System.Drawing.Point(123, 69);
-            this.fontButton.Name = "fontButton";
-            this.fontButton.Size = new System.Drawing.Size(75, 23);
-            this.fontButton.TabIndex = 14;
-            this.fontButton.Text = "Choose...";
-            this.fontButton.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 

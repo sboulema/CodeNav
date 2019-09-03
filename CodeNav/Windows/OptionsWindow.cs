@@ -51,7 +51,7 @@ namespace CodeNav.Windows
             windowBackgroundButton.BackColor = Settings.Default.WindowBackgroundColor;
         }
 
-        private void fontButton_Click(object sender, EventArgs e)
+        private void FontButton_Click(object sender, EventArgs e)
         {           
             fontDialog1.ShowDialog();
         }
