@@ -198,19 +198,13 @@ namespace CodeNav
             _control = new CodeViewUserControlTop(_window, grid.RowDefinitions[0],
                 textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
 
-            //grid.Children.Add(_control as UIElement);
-
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
 
-            if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
-            {
-                grid.GetGridChildByType<CodeViewUserControlTop>().Background = Brushes.Transparent;
-            }
-            else
-            {
-                grid.GetGridChildByType<CodeViewUserControlTop>().Background = ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
-            }
+            // Apply custom background color to CodeNav grid child
+            (_control as CodeViewUserControlTop).Background = 
+                Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent") 
+                ? Brushes.Transparent : ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
 
             return grid;
         }
