@@ -29,7 +29,7 @@ namespace CodeNav.Mappers
             }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
-            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);
+            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, control);
 
             foreach (var classMember in member.Members)
             {
@@ -90,7 +90,7 @@ namespace CodeNav.Mappers
             }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
-            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel);
+            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, control);
 
             foreach (var classMember in member.Members)
             {

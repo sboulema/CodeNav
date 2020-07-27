@@ -21,7 +21,7 @@ namespace CodeNav.Mappers
         }
 
         public static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(SyntaxNode member,
-            SemanticModel semanticModel)
+            SemanticModel semanticModel, ICodeViewUserControl control)
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
 
@@ -43,7 +43,7 @@ namespace CodeNav.Mappers
             foreach (var implementedInterface in interfacesList.Distinct())
             {
                 implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, 
-                    implementedInterface.GetMembers(), classSymbol, member));
+                    implementedInterface.GetMembers(), classSymbol, member, control));
             }
 
             return implementedInterfaces;
@@ -65,7 +65,8 @@ namespace CodeNav.Mappers
         }
 
         public static CodeImplementedInterfaceItem MapImplementedInterface(string name,
-            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass, SyntaxNode currentClass)
+            ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass, SyntaxNode currentClass,
+            ICodeViewUserControl control)
         {
             var item = new CodeImplementedInterfaceItem
             {
@@ -76,7 +77,8 @@ namespace CodeNav.Mappers
                 BorderColor = Colors.DarkGray,
                 FontSize = Settings.Default.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.ImplementedInterface,
-                IsExpanded = true
+                IsExpanded = true,
+                Control = control
             };
 
             foreach (var member in members)
