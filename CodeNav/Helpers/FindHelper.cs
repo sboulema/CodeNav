@@ -8,6 +8,11 @@ namespace CodeNav.Helpers
     {
         public static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
         {
+            if (items == null)
+            {
+                return null;
+            }
+
             foreach (var item in items)
             {
                 if (item.Id.Equals(id))
@@ -28,6 +33,7 @@ namespace CodeNav.Helpers
                     }
                 }
             }
+
             return null;
         }
     }

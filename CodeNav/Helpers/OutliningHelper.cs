@@ -149,7 +149,15 @@ namespace CodeNav.Helpers
         private static SnapshotSpan ToSnapshotSpan(IWpfTextView textView, TextSpan textSpan)
         {
             var span = new Span(textSpan.Start, textSpan.Length);
-            return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, span);
+
+            try
+            {
+                return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, span);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return default;
+            }
         }
 
         /// <summary>
