@@ -156,7 +156,7 @@ namespace CodeNav.Helpers
             }
             catch (ArgumentOutOfRangeException)
             {
-                return default;
+                return new SnapshotSpan();
             }
         }
 
