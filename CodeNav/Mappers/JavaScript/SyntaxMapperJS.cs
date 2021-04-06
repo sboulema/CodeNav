@@ -51,7 +51,7 @@ namespace CodeNav.Mappers.JavaScript
                             Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Class, CodeItemAccessEnum.Public),
                             Name = Path.GetFileNameWithoutExtension(filePath),
                             BorderColor = Colors.DarkGray,
-                            Members = ast?.RootNode?.Children?.SelectMany(MapMember)?.ToList() ?? new List<CodeItem>()
+                            Members = MapMembers(ast)
                         }
                     }
                 }
@@ -80,6 +80,18 @@ namespace CodeNav.Mappers.JavaScript
             }
 
             return new List<CodeItem>();
+        }
+
+        private static List<CodeItem> MapMembers(TypeScriptAST ast)
+        {
+            if (ast == null ||
+                ast.RootNode == null ||
+                ast.RootNode.Children == null)
+            {
+                return new List<CodeItem>();
+            }
+
+            return ast.RootNode.Children.SelectMany(MapMember).ToList();
         }
 
         private static List<CodeItem> MapBinaryExpression(BinaryExpression expression)

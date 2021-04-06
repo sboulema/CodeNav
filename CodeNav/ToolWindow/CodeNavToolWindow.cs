@@ -127,14 +127,21 @@ namespace CodeNav.ToolWindow
 
         private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
         {
-            // If the activated window does not have code we are not interested
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            try
+            {
+                // If the activated window does not have code we are not interested
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            if (window.Document == null) return;
+                if (window == null || window.Document == null) return;
 
-            _control.SetWindow(window);
-            _control.SetWorkspace(_workspace);
-            await _control.UpdateDocumentAsync(forceUpdate);
+                _control.SetWindow(window);
+                _control.SetWorkspace(_workspace);
+                await _control.UpdateDocumentAsync(forceUpdate);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error updating document in ToolWindow", e);
+            }
         }
 
         private IWpfTextViewHost GetCurrentViewHost()

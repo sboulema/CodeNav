@@ -156,7 +156,7 @@ namespace CodeNav.Helpers
             }
             catch (ArgumentOutOfRangeException)
             {
-                return new SnapshotSpan();
+                return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, 0, 0);
             }
         }
 
