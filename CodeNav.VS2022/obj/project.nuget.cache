@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ua38c9WjrgV0kWWYaEkxA2MNMAjPsQwECKYYeRd0810M49pX9jKuYzAFymK9g6m2YNxHuso4dUfMLq0tLqC1dA==",
+  "dgSpecHash": "Zfqja4Q1IrpvEVug4Zp5dhAeDJfTCq8DlBHS75TMDuWvhAEMXmt716HZcN9ElNTfjoi/UtFXY/Aqrxe6eVCOkw==",
   "success": true,
   "projectFilePath": "C:\\Repos\\CodeNav\\CodeNav.VS2022\\CodeNav.VS2022.csproj",
   "expectedPackageFiles": [
@@ -108,6 +108,7 @@
     "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.visualstudio.vshelp80\\17.0.0-previews-1-31410-258\\microsoft.visualstudio.vshelp80.17.0.0-previews-1-31410-258.nupkg.sha512",
     "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.visualstudio.wcfreference.interop\\17.0.0-previews-1-31410-258\\microsoft.visualstudio.wcfreference.interop.17.0.0-previews-1-31410-258.nupkg.sha512",
     "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.visualstudio.web.browserlink.12.0\\12.0.0\\microsoft.visualstudio.web.browserlink.12.0.12.0.0.nupkg.sha512",
+    "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.vssdk.buildtools\\17.0.1619-preview1\\microsoft.vssdk.buildtools.17.0.1619-preview1.nupkg.sha512",
     "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\sboulema\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
     "C:\\Users\\sboulema\\.nuget\\packages\\nerdbank.streams\\2.6.81\\nerdbank.streams.2.6.81.nupkg.sha512",

@@ -6,6 +6,7 @@
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <Import Project="$(NuGetPackageRoot)microsoft.visualstudio.threading.analyzers\17.0.17-alpha\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.visualstudio.threading.analyzers\17.0.17-alpha\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.visualstudio.sdk.analyzers\16.9.2-alpha\build\Microsoft.VisualStudio.SDK.Analyzers.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.visualstudio.sdk.analyzers\16.9.2-alpha\build\Microsoft.VisualStudio.SDK.Analyzers.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.vssdk.buildtools\17.0.1619-preview1\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.vssdk.buildtools\17.0.1619-preview1\build\Microsoft.VSSDK.BuildTools.targets')" />
     <Import Project="$(NuGetPackageRoot)microsoft.codeanalysis.analyzers\3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.codeanalysis.analyzers\3.3.2\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
   </ImportGroup>
 </Project>

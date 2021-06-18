@@ -42,6 +42,10 @@
               "target": "Package",
               "version": "[3.11.0-1.final, )"
             },
+            "Microsoft.VSSDK.BuildTools": {
+              "target": "Package",
+              "version": "[17.0.1619-preview1, )"
+            },
             "Microsoft.VisualStudio.LanguageServices": {
               "target": "Package",
               "version": "[3.11.0-1.final, )"

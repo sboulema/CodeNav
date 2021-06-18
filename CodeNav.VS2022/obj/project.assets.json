@@ -2312,6 +2312,16 @@
           "lib/net40/Microsoft.VisualStudio.Web.BrowserLink.12.0.dll": {}
         }
       },
+      "Microsoft.VSSDK.BuildTools/17.0.1619-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.VisualStudio.SDK.Analyzers": "15.8.33"
+        },
+        "build": {
+          "build/Microsoft.VSSDK.BuildTools.props": {},
+          "build/Microsoft.VSSDK.BuildTools.targets": {}
+        }
+      },
       "Microsoft.Win32.Primitives/4.3.0": {
         "type": "package",
         "frameworkAssemblies": [
@@ -5495,6 +5505,16 @@
           "lib/net40/Microsoft.VisualStudio.Web.BrowserLink.12.0.dll": {}
         }
       },
+      "Microsoft.VSSDK.BuildTools/17.0.1619-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.VisualStudio.SDK.Analyzers": "15.8.33"
+        },
+        "build": {
+          "build/Microsoft.VSSDK.BuildTools.props": {},
+          "build/Microsoft.VSSDK.BuildTools.targets": {}
+        }
+      },
       "Microsoft.Win32.Primitives/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -8652,6 +8672,16 @@
           "lib/net40/Microsoft.VisualStudio.Web.BrowserLink.12.0.dll": {}
         }
       },
+      "Microsoft.VSSDK.BuildTools/17.0.1619-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.VisualStudio.SDK.Analyzers": "15.8.33"
+        },
+        "build": {
+          "build/Microsoft.VSSDK.BuildTools.props": {},
+          "build/Microsoft.VSSDK.BuildTools.targets": {}
+        }
+      },
       "Microsoft.Win32.Primitives/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -11807,6 +11837,16 @@
         },
         "runtime": {
           "lib/net40/Microsoft.VisualStudio.Web.BrowserLink.12.0.dll": {}
+        }
+      },
+      "Microsoft.VSSDK.BuildTools/17.0.1619-preview1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.VisualStudio.SDK.Analyzers": "15.8.33"
+        },
+        "build": {
+          "build/Microsoft.VSSDK.BuildTools.props": {},
+          "build/Microsoft.VSSDK.BuildTools.targets": {}
         }
       },
       "Microsoft.Win32.Primitives/4.3.0": {
@@ -15198,6 +15238,104 @@
         "microsoft.visualstudio.web.browserlink.12.0.nuspec"
       ]
     },
+    "Microsoft.VSSDK.BuildTools/17.0.1619-preview1": {
+      "sha512": "HfE/YjBwJmAXj4+k4jHuA07zMGPMmAC8pDAzmPmDh/ubECkFG9OwHOj+WpxmiQbrpFAX0hEF91c7WbSAkTlOKg==",
+      "type": "package",
+      "path": "microsoft.vssdk.buildtools/17.0.1619-preview1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "PackageIcon.png",
+        "build/Microsoft.VSSDK.BuildTools.props",
+        "build/Microsoft.VSSDK.BuildTools.targets",
+        "microsoft.vssdk.buildtools.17.0.1619-preview1.nupkg.sha512",
+        "microsoft.vssdk.buildtools.nuspec",
+        "tools/vssdk/Empty.resx",
+        "tools/vssdk/Microsoft.VisualStudio.ExtensionEngine.dll",
+        "tools/vssdk/Microsoft.VisualStudio.Sdk.BuildTasks.17.0.dll",
+        "tools/vssdk/Microsoft.VisualStudio.Sdk.BuildTasks.dll",
+        "tools/vssdk/Microsoft.VisualStudio.Sdk.Common.targets",
+        "tools/vssdk/Microsoft.VisualStudio.Setup.Common.dll",
+        "tools/vssdk/Microsoft.VisualStudio.Threading.dll",
+        "tools/vssdk/Microsoft.VisualStudio.Validation.dll",
+        "tools/vssdk/Microsoft.VsSDK.Cpp.Overrides.targets",
+        "tools/vssdk/Microsoft.VsSDK.Cpp.targets",
+        "tools/vssdk/Microsoft.VsSDK.targets",
+        "tools/vssdk/Newtonsoft.Json.dll",
+        "tools/vssdk/PkgDefMgmt.dll",
+        "tools/vssdk/ProjectItemsSchema.xml",
+        "tools/vssdk/bin/ConvertCTCToVSCT.pl",
+        "tools/vssdk/bin/CreatePkgDef.exe",
+        "tools/vssdk/bin/CreatePkgDef.exe.config",
+        "tools/vssdk/bin/DebugSamples.dll",
+        "tools/vssdk/bin/RegRiched20.exe",
+        "tools/vssdk/bin/VSCT.exe",
+        "tools/vssdk/bin/VSCTCompress.dll",
+        "tools/vssdk/bin/VSCTLibrary.dll",
+        "tools/vssdk/bin/VsixCommandLine.dll",
+        "tools/vssdk/bin/VsixPublisher.exe",
+        "tools/vssdk/bin/VsixPublisher.exe.config",
+        "tools/vssdk/bin/VsixUtil.exe",
+        "tools/vssdk/bin/VsixUtil.exe.config",
+        "tools/vssdk/bin/lib/Microsoft.Diagnostics.Tracing.EventSource.dll",
+        "tools/vssdk/bin/lib/Microsoft.TeamFoundation.Common.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.RemoteControl.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Services.Common.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Services.WebApi.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Setup.Common.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Shell.Framework.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Telemetry.dll",
+        "tools/vssdk/bin/lib/Microsoft.VisualStudio.Utilities.Internal.dll",
+        "tools/vssdk/bin/lib/Newtonsoft.Json.dll",
+        "tools/vssdk/bin/lib/System.Net.Http.Formatting.dll",
+        "tools/vssdk/bin/lib/System.ValueTuple.dll",
+        "tools/vssdk/bin/lib/VsixCommandLine.dll",
+        "tools/vssdk/bin/x86/CreatePkgDef.exe",
+        "tools/vssdk/bin/x86/CreatePkgDef.exe.config",
+        "tools/vssdk/bin/x86/VSCTCompress.dll",
+        "tools/vssdk/bin/x86/lib/Microsoft.VisualStudio.Shell.Framework.dll",
+        "tools/vssdk/inc/AppIDCmdUsed.vsct",
+        "tools/vssdk/inc/EmulatorCmdUsed.vsct",
+        "tools/vssdk/inc/KnownImageIds.vsct",
+        "tools/vssdk/inc/Menus.vsct",
+        "tools/vssdk/inc/MnuHelpIds.h",
+        "tools/vssdk/inc/RazorCmdId.h",
+        "tools/vssdk/inc/RazorCmdUsed.vsct",
+        "tools/vssdk/inc/RazorGuids.h",
+        "tools/vssdk/inc/SharedCmdDef.vsct",
+        "tools/vssdk/inc/SharedCmdPlace.vsct",
+        "tools/vssdk/inc/ShellCmdDef.vsct",
+        "tools/vssdk/inc/ShellCmdPlace.vsct",
+        "tools/vssdk/inc/VsDbgCmd.h",
+        "tools/vssdk/inc/VsDbgCmdPlace.vsct",
+        "tools/vssdk/inc/VsDbgCmdUsed.vsct",
+        "tools/vssdk/inc/editids.h",
+        "tools/vssdk/inc/sccmnid.h",
+        "tools/vssdk/inc/sharedids.h",
+        "tools/vssdk/inc/stdidcmd.h",
+        "tools/vssdk/inc/venusids.h",
+        "tools/vssdk/inc/venusmenu.vsct",
+        "tools/vssdk/inc/virtkeys.h",
+        "tools/vssdk/inc/vsdebugguids.h",
+        "tools/vssdk/inc/vsshlids.h",
+        "tools/vssdk/inc/wbids.h",
+        "tools/vssdk/offreg.dll",
+        "tools/vssdk/schemas/PackageLanguagePackManifestSchema.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Assets.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Dependencies.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.DesignNamespace.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Installation.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Installer.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Metadata.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.Prerequisites.xsd",
+        "tools/vssdk/schemas/PackageManifestSchema.xsd",
+        "tools/vssdk/schemas/VSIXLanguagePackSchema.xsd",
+        "tools/vssdk/schemas/VSIXManifestSchema.xsd"
+      ]
+    },
     "Microsoft.Win32.Primitives/4.3.0": {
       "sha512": "9ZQKCWxH7Ijp9BfahvL2Zyf1cJIk8XYLF6Yjzr2yi0b2cOut/HQ31qf1ThHAgCc3WiZMdnWcfJCgN82/0UunxA==",
       "type": "package",
@@ -17137,6 +17275,7 @@
     ".NETFramework,Version=v4.7.2": [
       "Caliburn.Micro.Core >= 4.0.173",
       "Microsoft.CodeAnalysis >= 3.11.0-1.final",
+      "Microsoft.VSSDK.BuildTools >= 17.0.1619-preview1",
       "Microsoft.VisualStudio.LanguageServices >= 3.11.0-1.final",
       "Microsoft.VisualStudio.SDK >= 17.0.0-previews-1-31410-273",
       "TypeScriptAST >= 1.0.2"
@@ -17182,6 +17321,12 @@
           "Microsoft.CodeAnalysis": {
             "target": "Package",
             "version": "[3.11.0-1.final, )"
+          },
+          "Microsoft.VSSDK.BuildTools": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[17.0.1619-preview1, )"
           },
           "Microsoft.VisualStudio.LanguageServices": {
             "target": "Package",
