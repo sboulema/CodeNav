@@ -13,3 +13,7 @@
 /CodeNav.Tests/*.user
 /CodeNav.Tests/Files/.vs
 /Visual Studio 2019
+/CodeNav.VS2019/obj
+/CodeNav.VS2019/bin
+/CodeNav.VS2022/obj
+/CodeNav.VS2022/bin
