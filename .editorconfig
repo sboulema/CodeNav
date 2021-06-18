@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# IDE0008: Use explicit type
+dotnet_diagnostic.IDE0008.severity = none
+
+# IDE0022: Use block body for methods
+dotnet_diagnostic.IDE0022.severity = none

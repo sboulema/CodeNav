@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Repos\\CodeNav\\CodeNav\\CodeNav.csproj": {}
+  },
+  "projects": {
+    "C:\\Repos\\CodeNav\\CodeNav\\CodeNav.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Repos\\CodeNav\\CodeNav\\CodeNav.csproj",
+        "projectName": "CodeNav",
+        "projectPath": "C:\\Repos\\CodeNav\\CodeNav\\CodeNav.csproj",
+        "packagesPath": "C:\\Users\\sboulema\\.nuget\\packages\\",
+        "outputPath": "C:\\Repos\\CodeNav\\CodeNav\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "configFilePaths": [
+          "C:\\Users\\sboulema\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "Caliburn.Micro.Core": {
+              "target": "Package",
+              "version": "[4.0.173, )"
+            },
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[3.11.0-1.final, )"
+            },
+            "Microsoft.VisualStudio.LanguageServices": {
+              "target": "Package",
+              "version": "[3.11.0-1.final, )"
+            },
+            "Microsoft.VisualStudio.SDK": {
+              "target": "Package",
+              "version": "[17.0.0-previews-1-31410-273, )"
+            },
+            "TypeScriptAST": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

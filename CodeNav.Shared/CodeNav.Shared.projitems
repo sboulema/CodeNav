@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1cd2e5f0-6306-4483-916b-a0c067b253e2</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CodeNav.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CodeViewUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)CodeViewUserControlTop.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\ClassDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\DepthGroupDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\FilterToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\ItemDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\MainToolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\NamespaceDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\RegionDataTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Menus\ItemContextMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\BookmarkButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\ComboBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\PlusMinusExpanderStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeNavMargin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeNavMarginFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeViewUserControl.xaml.cs">
+      <DependentUpon>CodeViewUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CodeViewUserControlTop.xaml.cs">
+      <DependentUpon>CodeViewUserControlTop.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\FilterToolbar.xaml.cs">
+      <DependentUpon>FilterToolbar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\MainToolbar.xaml.cs">
+      <DependentUpon>MainToolbar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BookmarkHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CodeItemExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ColorHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DocumentHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FindHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\HighlightHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\HistoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LanguageHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\NavBarOverrider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\OutliningHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SettingsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SolutionStorageHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SortHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SymbolHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\VisibilityHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WpfHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICodeViewUserControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\BaseMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\ClassMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\DelegateEventMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\EnumMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\FieldMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\FontStyleMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\IconMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\IdMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\IndexerMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\InterfaceMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\BaseMapperJS.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\FunctionMapperJS.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\SyntaxMapperJS.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\MethodMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\NamespaceMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\ParameterMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\PropertyMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\RegionMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\StatementMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\StructMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\SyntaxMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\TooltipMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\TriviaSummaryMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\TypeMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\BookmarkStyle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeClassItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeDepthGroupItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeDocumentViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeFunctionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeInterfaceItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeItemAccessEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeItemKindEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeNamespaceItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodePropertyItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CodeRegionItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FilterRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ICodeCollapsible.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IMembers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\LanguageEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MarginSideEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SolutionStorageModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SortOrderEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\CustomizeBookmarkStylesWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\CustomizeBookmarkStylesWindow.Designer.cs">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.Designer.cs">
+      <DependentUpon>FilterWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.Designer.cs">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Key.pfx" />
+    <None Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowPackage.vsct" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ToolWindow\VSPackage.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\CustomizeBookmarkStylesWindow.resx">
+      <DependentUpon>CustomizeBookmarkStylesWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.resx">
+      <DependentUpon>FilterWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.resx">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
