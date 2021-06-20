@@ -273,6 +273,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\DocumentOutline_256x.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Preview-small.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="ToolWindow\CodeNavToolWindowPackage.vsct" />
   </ItemGroup>
   <ItemGroup>
