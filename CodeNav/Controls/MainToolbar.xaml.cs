@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
@@ -21,7 +22,12 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private async void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+        {
+            _ = RefreshDocument();
+        }
+
+        private async Task RefreshDocument()
         {
             var control = FindParent(this);
             await control.UpdateDocumentAsync(true);
@@ -31,7 +37,12 @@ namespace CodeNav.Controls
 
         private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName);
 
-        private async void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
+        {
+            _ = OpenOptionsDialog();
+        }
+
+        private async Task OpenOptionsDialog()
         {
             var control = FindParent(this);
             new OptionsWindow().ShowDialog();
@@ -49,15 +60,24 @@ namespace CodeNav.Controls
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
-            //get parent item
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
-            if (parentObject == null) return null;
-            //check if the parent matches the type we’re looking for
-            T parent = parentObject as T;
-            if (parent != null)
+            // Get parent item
+            var parentObject = VisualTreeHelper.GetParent(child);
+
+            // We’ve reached the end of the tree
+            if (parentObject == null)
+            {
+                return null;
+            }
+
+            // Check if the parent matches the type we’re looking for
+            if (parentObject is T parent)
+            {
                 return parent;
+            }
             else
+            {
                 return FindParent<T>(parentObject);
+            }
         }
 
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)

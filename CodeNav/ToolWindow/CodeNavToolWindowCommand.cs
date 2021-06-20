@@ -32,18 +32,12 @@ namespace CodeNav.ToolWindow
         /// <param name="package">Owner package, not null.</param>
         private CodeNavToolWindowCommand(Package package)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException("package");
-            }
+            this.package = package ?? throw new ArgumentNullException("package");
 
-            this.package = package;
-
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null)
+            if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
+                var menuItem = new MenuCommand(ShowToolWindow, menuCommandID);
                 commandService.AddCommand(menuItem);
             }
         }
@@ -64,7 +58,7 @@ namespace CodeNav.ToolWindow
         {
             get
             {
-                return this.package;
+                return package;
             }
         }
 
@@ -87,7 +81,7 @@ namespace CodeNav.ToolWindow
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.package.FindToolWindow(typeof(CodeNavToolWindow), 0, true);
+            ToolWindowPane window = package.FindToolWindow(typeof(CodeNavToolWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException("Cannot create tool window");
@@ -95,7 +89,7 @@ namespace CodeNav.ToolWindow
 
             System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
 
-            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            var windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
     }

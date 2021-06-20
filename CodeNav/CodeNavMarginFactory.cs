@@ -47,8 +47,10 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]   // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
+        #pragma warning disable 0649
         [Import(typeof(SVsServiceProvider))]
         private readonly IServiceProvider ServiceProvider;
+        #pragma warning restore 0649
 
         [Import(typeof(VisualStudioWorkspace))]
         private VisualStudioWorkspace Workspace { get; set; }
@@ -72,8 +74,10 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class CodeNavTopFactory : IWpfTextViewMarginProvider
     {
+        #pragma warning disable 0649
         [Import(typeof(SVsServiceProvider))]
         private readonly IServiceProvider ServiceProvider;
+        #pragma warning restore 0649
 
         [Import(typeof(VisualStudioWorkspace))]
         private VisualStudioWorkspace Workspace { get; set; }

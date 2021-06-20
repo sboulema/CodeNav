@@ -13,6 +13,9 @@
         <Tags>code, structure, navigation, map, codemap</Tags>
     </Metadata>
     <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[15.0,17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[15.0,17.0)" />
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>

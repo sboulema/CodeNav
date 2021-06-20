@@ -40,7 +40,7 @@ namespace CodeNav.Mappers
             var interfacesList = new List<INamedTypeSymbol>();
             GetInterfaces(interfacesList, classSymbol.Interfaces);
 
-            foreach (var implementedInterface in interfacesList.Distinct())
+            foreach (INamedTypeSymbol implementedInterface in interfacesList.Distinct(SymbolEqualityComparer.Default))
             {
                 implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, 
                     implementedInterface.GetMembers(), classSymbol, member, control));
@@ -90,7 +90,7 @@ namespace CodeNav.Mappers
                 }
 
                 // Ignore interface members not directly implemented in the current class
-                if (implementation.ContainingSymbol != implementingClass)
+                if (!implementation.ContainingSymbol.Equals(implementingClass, SymbolEqualityComparer.Default))
                 {
                     continue;
                 }

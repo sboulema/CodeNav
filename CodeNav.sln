@@ -11,20 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.VS2019", "CodeNav.VS2019\CodeNav.VS2019.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav", "CodeNav\CodeNav.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.Tests", "CodeNav.Tests\CodeNav.Tests.csproj", "{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeNav.Shared", "CodeNav.Shared\CodeNav.Shared.shproj", "{1CD2E5F0-6306-4483-916B-A0C067B253E2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.VS2022", "CodeNav.VS2022\CodeNav.VS2022.csproj", "{20CFD890-0B48-43FA-AE42-872C8857ECC9}"
-EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		CodeNav.Shared\CodeNav.Shared.projitems*{1cd2e5f0-6306-4483-916b-a0c067b253e2}*SharedItemsImports = 13
-		CodeNav.Shared\CodeNav.Shared.projitems*{20cfd890-0b48-43fa-ae42-872c8857ecc9}*SharedItemsImports = 4
-		CodeNav.Shared\CodeNav.Shared.projitems*{5f314b23-2d45-4748-90be-362411f06ef0}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -58,18 +49,6 @@ Global
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x64.Build.0 = Release|Any CPU
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x86.ActiveCfg = Release|Any CPU
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x86.Build.0 = Release|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|x64.Build.0 = Debug|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|x86.ActiveCfg = Debug|x86
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Debug|x86.Build.0 = Debug|x86
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|x64.ActiveCfg = Release|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|x64.Build.0 = Release|Any CPU
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|x86.ActiveCfg = Release|x86
-		{20CFD890-0B48-43FA-AE42-872C8857ECC9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

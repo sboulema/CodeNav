@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace CodeNav.Controls
 {
@@ -19,9 +20,7 @@ namespace CodeNav.Controls
 
         private void TextBoxBase_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            var dataContext = DataContext as CodeDocumentViewModel;
-
-            if (dataContext == null)
+            if (!(DataContext is CodeDocumentViewModel dataContext))
             {
                 // Datacontext error while filtering items by name
                 return;
@@ -44,12 +43,17 @@ namespace CodeNav.Controls
             FilterTextBox.Text = string.Empty;
         }
 
-        private async void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
+        {
+            _ = OpenFilterDialog();
+        }
+
+        private async Task OpenFilterDialog()
         {
             new FilterWindow().ShowDialog();
 
             var control = FindParent<CodeViewUserControl>(this);
-            await control.UpdateDocumentAsync(true);         
+            await control.UpdateDocumentAsync(true);
         }
 
         private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)
@@ -61,15 +65,24 @@ namespace CodeNav.Controls
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
-            //get parent item
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);    //we’ve reached the end of the tree
-            if (parentObject == null) return null;
-            //check if the parent matches the type we’re looking for
-            T parent = parentObject as T;
-            if (parent != null)
+            // Get parent item
+            var parentObject = VisualTreeHelper.GetParent(child);
+
+            // We’ve reached the end of the tree
+            if (parentObject == null)
+            {
+                return null;
+            }
+
+            // Check if the parent matches the type we’re looking for
+            if (parentObject is T parent)
+            {
                 return parent;
+            }
             else
+            {
                 return FindParent<T>(parentObject);
+            }
         }
     }
 }

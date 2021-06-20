@@ -5,3 +5,6 @@ dotnet_diagnostic.IDE0008.severity = none
 
 # IDE0022: Use block body for methods
 dotnet_diagnostic.IDE0022.severity = none
+
+# VSTHRD200: Use "Async" suffix for async methods
+dotnet_diagnostic.VSTHRD200.severity = none
