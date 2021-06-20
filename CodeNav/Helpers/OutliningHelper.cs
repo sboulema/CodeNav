@@ -167,22 +167,23 @@ namespace CodeNav.Helpers
         /// <param name="eventArgs">The event arguments.</param>
         private static void OnIsExpandedChanged(object sender, EventArgs eventArgs)
         {
-            var item = sender as IMembers;
-            if (item != null)
+            if (!(sender is IMembers item))
             {
-                var iCollapsible = FindCollapsibleFromCodeItem((CodeItem)item, _outliningManagerService, _textView);
-                if (iCollapsible != null)
-                {
-                    var outliningManager = _outliningManagerService.GetOutliningManager(_textView);
+                return;
+            }
 
-                    if (item.IsExpanded && iCollapsible.IsCollapsed)
-                    {
-                        outliningManager.Expand(iCollapsible as ICollapsed);
-                    }
-                    else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
-                    {
-                        outliningManager.TryCollapse(iCollapsible);
-                    }
+            var iCollapsible = FindCollapsibleFromCodeItem((CodeItem)item, _outliningManagerService, _textView);
+            if (iCollapsible != null)
+            {
+                var outliningManager = _outliningManagerService.GetOutliningManager(_textView);
+
+                if (item.IsExpanded && iCollapsible.IsCollapsed)
+                {
+                    outliningManager.Expand(iCollapsible as ICollapsed);
+                }
+                else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
+                {
+                    outliningManager.TryCollapse(iCollapsible);
                 }
             }
         }

@@ -184,6 +184,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\LICENSE">
+      <Link>Resources\LICENSE</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="app.config" />
     <None Include="Properties\DataSources\CodeNav.Models.FilterRule.datasource" />
     <None Include="Properties\Settings.settings">
@@ -269,13 +273,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Resources\DocumentOutline_256x.ico">
-      <Link>Resources\DocumentOutline_256x.ico</Link>
-    </Content>
-    <Content Include="..\Resources\License.txt">
-      <Link>Resources\License.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="ToolWindow\CodeNavToolWindowPackage.vsct" />
   </ItemGroup>
   <ItemGroup>

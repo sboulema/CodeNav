@@ -21,7 +21,7 @@ namespace CodeNav.Helpers
             {
                 if (!codeDocumentViewModel.CodeDocument.Any()) return;
 
-                GetBookmarkStyles(codeDocumentViewModel, solutionFilePath);
+                _ = GetBookmarkStyles(codeDocumentViewModel, solutionFilePath);
 
                 foreach (var bookmark in codeDocumentViewModel.Bookmarks)
                 {

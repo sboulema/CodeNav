@@ -20,16 +20,12 @@ namespace CodeNav.Helpers
                     return item;
                 }
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    var hasMembersItem = (IMembers)item;
-                    if (hasMembersItem.Members.Any())
+                    var found = FindCodeItem(hasMembersItem.Members, id);
+                    if (found != null)
                     {
-                        var found = FindCodeItem(hasMembersItem.Members, id);
-                        if (found != null)
-                        {
-                            return found;
-                        }
+                        return found;
                     }
                 }
             }

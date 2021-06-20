@@ -5,7 +5,7 @@
         <DisplayName>CodeNav</DisplayName>
         <Description xml:space="preserve">Show the code structure of your current document</Description>
         <MoreInfo>https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav</MoreInfo>
-        <License>Resources\License.txt</License>
+        <License>Resources\LICENSE</License>
         <GettingStartedGuide>https://github.com/sboulema/CodeNav/blob/master/README.md</GettingStartedGuide>
         <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
         <Icon>Resources\DocumentOutline_256x.png</Icon>

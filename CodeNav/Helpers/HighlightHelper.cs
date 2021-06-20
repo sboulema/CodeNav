@@ -68,19 +68,13 @@ namespace CodeNav.Helpers
                     item.ForegroundColor = item.BookmarkStyles[bookmarks[item.Id]].ForegroundColor;
                 }
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    var hasMembersItem = (IMembers)item;
-
-                    if (hasMembersItem.Members.Any())
-                    {
-                        UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks);
-                    }
+                    UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks);
                 }
 
-                if (item is CodeClassItem)
+                if (item is CodeClassItem classItem)
                 {
-                    var classItem = (CodeClassItem)item;
                     classItem.BorderColor = Colors.DarkGray;
                 }
             }
@@ -141,9 +135,9 @@ namespace CodeNav.Helpers
                     itemsToHighlight.Add(item);
                 }
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem)
                 {
-                    itemsToHighlight.AddRange(GetItemsToHighlight(((IMembers)item).Members, line));
+                    itemsToHighlight.AddRange(GetItemsToHighlight(hasMembersItem.Members, line));
                 }
             }
 
@@ -158,13 +152,9 @@ namespace CodeNav.Helpers
             {
                 item.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    var hasMembersItem = (IMembers) item;
-                    if (hasMembersItem.Members.Any())
-                    {
-                        SetForeground(hasMembersItem.Members);
-                    }
+                    SetForeground(hasMembersItem.Members);
                 }
             }
         }
@@ -215,16 +205,12 @@ namespace CodeNav.Helpers
                     return item;
                 }
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    var hasMembersItem = (IMembers)item;
-                    if (hasMembersItem.Members.Any())
+                    var found = FindCodeItem(hasMembersItem.Members, id);
+                    if (found != null)
                     {
-                        var found = FindCodeItem(hasMembersItem.Members, id);
-                        if (found != null)
-                        {
-                            return found;
-                        }
+                        return found;
                     }
                 }
             }
@@ -233,18 +219,23 @@ namespace CodeNav.Helpers
 
         public static T FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
         {
-            if (depObj != null)
+            if (depObj == null)
             {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
-                    if (child != null && child is T)
-                    {
-                        return (T)child;
-                    }
+                return null;
+            }
 
-                    T childItem = FindVisualChild<T>(child);
-                    if (childItem != null) return childItem;
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                if (child != null && child is T t)
+                {
+                    return t;
+                }
+
+                T childItem = FindVisualChild<T>(child);
+                if (childItem != null)
+                {
+                    return childItem;
                 }
             }
             return null;

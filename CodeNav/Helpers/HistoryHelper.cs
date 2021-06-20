@@ -38,7 +38,7 @@ namespace CodeNav.Helpers
 
         public static void ApplyHistoryIndicator(CodeDocumentViewModel model)
         {
-            for (int i = 0; i < model.HistoryItems.Count; i++)
+            for (var i = 0; i < model.HistoryItems.Count; i++)
             {
                 CodeItem historyItem = model.HistoryItems[i];
                 var codeItem = model.CodeDocument
@@ -90,9 +90,9 @@ namespace CodeNav.Helpers
                     return item;
                 }
 
-                if (item is IMembers)
+                if (item is IMembers hasMembersItem)
                 {
-                    return FindCodeItem(((IMembers)item).Members, span);
+                    return FindCodeItem(hasMembersItem.Members, span);
                 }
             }
 

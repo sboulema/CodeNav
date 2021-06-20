@@ -18,7 +18,7 @@ namespace CodeNav.Helpers
                 {
                     LogHelper.Log("Error during mapping", e);
                 }
-                return default(T);
+                return default;
             }
         }
     }

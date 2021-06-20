@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -38,11 +36,10 @@ namespace CodeNav.Helpers
             where TChild : DependencyObject
         {
             var count = VisualTreeHelper.GetChildrenCount(obj);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var c = VisualTreeHelper.GetChild(obj, i);
-                var r = c as TChild;
-                if (r != null && (predicate == null || predicate(r)))
+                if (c is TChild r && (predicate == null || predicate(r)))
                 {
                     return r;
                 }
@@ -65,7 +62,7 @@ namespace CodeNav.Helpers
                 }
             }
 
-            return default(T);
+            return default;
         }
     }
 }
