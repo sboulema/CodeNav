@@ -5,7 +5,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Properties;
-using EnvDTE;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
@@ -13,46 +12,40 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
-using Window = EnvDTE.Window;
 using CodeNav.Models;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
+using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace CodeNav
 {
-    public class CodeNavMargin : DockPanel, IWpfTextViewMargin
+    public class CodeNavMargin : DockPanel, IWpfTextViewMargin,
+        IVsRunningDocTableEvents
     {
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
         public ICodeViewUserControl _control;
-        private readonly _DTE _dte;
         public readonly IWpfTextView _textView;
-        private readonly Window _window;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
-        private WindowEvents _windowEvents;
-        private DocumentEvents _documentEvents;
         private readonly IOutliningManagerService _outliningManagerService;
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
+        private RunningDocumentTable rdt;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, _DTE dte, IOutliningManagerService outliningManagerService,
+        public CodeNavMargin(IWpfTextViewHost textViewHost, IOutliningManagerService outliningManagerService,
             VisualStudioWorkspace workspace, MarginSideEnum side)
         {
             // Wire up references for the event handlers in RegisterEvents
-            _dte = dte;
             _textView = textViewHost.TextView;
-            _window = GetWindow(textViewHost, dte);
             _outliningManagerService = outliningManagerService;
             _outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, _textView);
             _workspace = workspace;
             MarginSide = side;
-
-            // If we can not find the window we belong to we can not do anything
-            if (_window == null) return;
 
             // Add the view/content to the margin area
             if (side == MarginSideEnum.Top)
@@ -67,63 +60,9 @@ namespace CodeNav
 
             Children.Add(_codeNavGrid);
 
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            RegisterEvents();
+            _ = RegisterEvents();
 
             UpdateSettings();
-        }
-
-        /// <summary>
-        /// Get window belonging to textViewHost
-        /// </summary>
-        /// <param name="textViewHost"></param>
-        /// <param name="dte"></param>
-        /// <returns></returns>
-        private static Window GetWindow(IWpfTextViewHost textViewHost, _DTE dte)
-        {
-            if (textViewHost == null || dte == null)
-            {
-                return null;
-            }
-
-            textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
-
-            return GetWindows(dte).FirstOrDefault(w =>
-            {
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-                return w?.Document?.FullName?.Equals(document.FilePath, StringComparison.InvariantCultureIgnoreCase) == true;
-            });
-        }
-
-        /// <summary>
-        /// Get all open windows as list
-        /// </summary>
-        /// <param name="dte"></param>
-        /// <returns></returns>
-        private static List<Window> GetWindows(_DTE dte)
-        {
-            var windowsList = new List<Window>();
-
-            try
-            {
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-                for (var i = 1; i < dte.Windows.Count + 1; i++)
-                {
-                    windowsList.Add(dte.Windows.Item(i));
-                }
-            }
-            catch (COMException)
-            {
-                // Unspecified error (Exception from HRESULT: 0x80004005 (E_FAIL)) 
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log("Exception getting parent window", e);
-            }
-
-            return windowsList;
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost)
@@ -166,8 +105,8 @@ namespace CodeNav
 
             var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
-            _control = new CodeViewUserControl(_window, grid.ColumnDefinitions[columnIndex],
-                textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
+            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex],
+                textViewHost.TextView, _outliningManagerService, _workspace, this);
 
             grid.Children.Add(_control as UIElement);
 
@@ -198,8 +137,8 @@ namespace CodeNav
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 
-            _control = new CodeViewUserControlTop(_window, grid.RowDefinitions[0],
-                textViewHost.TextView, _outliningManagerService, _workspace, this, _dte);
+            _control = new CodeViewUserControlTop(grid.RowDefinitions[0],
+                textViewHost.TextView, _outliningManagerService, _workspace, this);
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
@@ -259,9 +198,9 @@ namespace CodeNav
             }
         }
 
-        public void RegisterEvents()
+        public async Task RegisterEvents()
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             // Subscribe to Cursor move event
             if (_textView?.Caret != null)
@@ -278,19 +217,16 @@ namespace CodeNav
             }
 
             // Subscribe to Document Save event
-            if (_window != null)
-            {  
-                _documentEvents = _dte.Events.DocumentEvents[_window.Document];
-                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-                _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            }     
-
-            // Subscribe to Code window activated event
-            if (_window != null)
+            if (Package.GetGlobalService(typeof(IOleServiceProvider)) is IOleServiceProvider sp)
             {
-                _windowEvents = _dte.Events.WindowEvents[_window];
-                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-                _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+                rdt = new RunningDocumentTable(new ServiceProvider(sp));
+
+                if (rdt == null)
+                {
+                    return;
+                }
+
+                _ = rdt.Advise(this);
             }
 
             // Subscribe to Outlining events
@@ -309,7 +245,7 @@ namespace CodeNav
 
             foreach (var span in changedSpans)
             {
-                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+                _ = HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
             }
         }
 
@@ -322,54 +258,12 @@ namespace CodeNav
         public void UnRegisterEvents()
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
-            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
-
-            if (_documentEvents != null)
-            {
-                _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            }
-
-            if (_windowEvents != null)
-            {
-                _windowEvents.WindowActivated -= WindowEvents_WindowActivated;
-            }        
+            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;      
         }
 
-        #pragma warning disable VSTHRD100
-        private async void DocumentEvents_DocumentSaved(Document document)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _ = CaretPositionChanged();
 
-            if (!_control.IsLargeDocument())
-            {
-                await _control.UpdateDocumentAsync();
-            }
-            else
-            {
-                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
-            }
-        }
-
-        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            if (!_control.IsLargeDocument())
-            {
-                await _control.UpdateDocumentAsync();
-            }
-            else
-            {
-                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
-            }
-        }
-#pragma warning restore VSTHRD100
-
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            _control.HighlightCurrentItem();
-        }
+        private async Task CaretPositionChanged() => await _control.HighlightCurrentItem();
 
         #endregion
 
@@ -468,6 +362,50 @@ namespace CodeNav
             {
                 throw new ObjectDisposedException(MarginName);
             }
+        }
+
+        private async Task UpdateDocument()
+        {
+            if (!await _control.IsLargeDocument())
+            {
+                await _control.UpdateDocument();
+            }
+            else
+            {
+                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
+            }
+        }
+
+        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterSave(uint docCookie)
+        {
+            _ = UpdateDocument();
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
+        {
+            return VSConstants.S_OK;
+        }
+
+        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
+        {
+            _ = UpdateDocument();
+            return VSConstants.S_OK;
+        }
+
+        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
+        {
+            return VSConstants.S_OK;
         }
 
         #endregion

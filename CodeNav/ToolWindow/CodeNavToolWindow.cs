@@ -38,27 +38,32 @@ namespace CodeNav.ToolWindow
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
             _workspace = codeNavToolWindowPackage.ComponentModel.GetService<VisualStudioWorkspace>();
 
-            if (_control.Dte == null && codeNavToolWindowPackage.DTE != null)
-            {
-                _control.Dte = codeNavToolWindowPackage.DTE;
-            }
-
-            // Wire up references for the event handlers
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            _documentEvents = codeNavToolWindowPackage.DTE.Events.DocumentEvents;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
-
-            _windowEvents = codeNavToolWindowPackage.DTE.Events.WindowEvents;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            _ = RegisterEvents();
 
             _control.ShowWaitingForDocument();
         }
 
+        private async AsyncTask RegisterEvents()
+        {
+            // Wire up references for the event handlers
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            _documentEvents = ProjectHelper.DTE.Events.DocumentEvents;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
+
+            _windowEvents = ProjectHelper.DTE.Events.WindowEvents;
+            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+        }
+
         private void DocumentEvents_DocumentOpened(Document document)
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            _ = DocumentOpenedEvents(document);
+        }
+
+        private async AsyncTask DocumentOpenedEvents(Document document)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
         }
@@ -115,15 +120,13 @@ namespace CodeNav.ToolWindow
 
             foreach (var span in changedSpans)
             {
-                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+                _ = HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
             }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            _control.HighlightCurrentItem();
-        }
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _ = CaretPositionChanged();
+
+        private async AsyncTask CaretPositionChanged() => await _control.HighlightCurrentItem();
 
         private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
         {
@@ -134,9 +137,8 @@ namespace CodeNav.ToolWindow
 
                 if (window == null || window.Document == null) return;
 
-                _control.SetWindow(window);
                 _control.SetWorkspace(_workspace);
-                await _control.UpdateDocumentAsync(forceUpdate);
+                await _control.UpdateDocument(forceUpdate);
             }
             catch (Exception e)
             {
@@ -148,24 +150,22 @@ namespace CodeNav.ToolWindow
         {
             // code to get access to the editor's currently selected text cribbed from
             // http://msdn.microsoft.com/en-us/library/dd884850.aspx
-            IVsTextManager txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
-            IVsTextView vTextView = null;
-            int mustHaveFocus = 1;
-            txtMgr.GetActiveView(mustHaveFocus, null, out vTextView);
-            IVsUserData userData = vTextView as IVsUserData;
-            if (userData == null)
+
+            var txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
+            var mustHaveFocus = 1;
+            txtMgr.GetActiveView(mustHaveFocus, null, out IVsTextView vTextView);
+
+            if (!(vTextView is IVsUserData userData))
             {
                 return null;
             }
-            else
-            {
-                IWpfTextViewHost viewHost;
-                object holder;
-                Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
-                userData.GetData(ref guidViewHost, out holder);
-                viewHost = (IWpfTextViewHost)holder;
-                return viewHost;
-            }
+
+            IWpfTextViewHost viewHost;
+            Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
+            userData.GetData(ref guidViewHost, out var holder);
+            viewHost = (IWpfTextViewHost)holder;
+
+            return viewHost;
         }
     }
 }

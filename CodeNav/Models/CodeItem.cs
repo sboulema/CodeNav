@@ -12,6 +12,8 @@ using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.Shell;
+using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Models
 {
@@ -111,7 +113,7 @@ namespace CodeNav.Models
         #endregion
 
         public List<BookmarkStyle> BookmarkStyles
-            => BookmarkHelper.GetBookmarkStyles(Control.CodeDocumentViewModel, Control.Dte?.Solution?.FileName);
+            => ThreadHelper.JoinableTaskFactory.Run(() => BookmarkHelper.GetBookmarkStyles(Control.CodeDocumentViewModel));
 
         public bool FilterOnBookmarks
         {
@@ -301,40 +303,27 @@ namespace CodeNav.Models
         public ICommand ClickItemCommand => _clickItemCommand;
         public void ClickItem(object startLinePosition)
         {
-            HistoryHelper.AddItemToHistory(this);
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            Control.SelectLine(startLinePosition);
+            _ = HistoryHelper.AddItemToHistory(this);
+            _ = Control.SelectLine(startLinePosition);
         }
 
         private readonly DelegateCommand _goToDefinitionCommand;
         public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
-        public void GoToDefinition(object args)
-        {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            Control.SelectLine(StartLinePosition);
-        }
+        public void GoToDefinition(object args) => _ = Control.SelectLine(StartLinePosition);
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
         #pragma warning disable VSTHRD100
-        public async void ClearHistory(object args) => await HistoryHelper.ClearHistoryAsync(this);
+        public async void ClearHistory(object args) => await HistoryHelper.ClearHistory(this);
         #pragma warning restore VSTHRD100
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
-        public void GoToEnd(object args)
-        {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            Control.SelectLine(EndLinePosition);
-        }
+        public void GoToEnd(object args) => _ = Control.SelectLine(EndLinePosition);
 
         private readonly DelegateCommand _selectInCodeCommand;
         public ICommand SelectInCodeCommand => _selectInCodeCommand;
-        public void SelectInCode(object args)
-        {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            Control.Select(StartLinePosition, EndLinePosition);
-        }
+        public void SelectInCode(object args) => _ = Control.Select(StartLinePosition, EndLinePosition);
 
         private readonly DelegateCommand _copyNameCommand;
         public ICommand CopyNameCommand => _copyNameCommand;
@@ -342,9 +331,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        #pragma warning disable VSTHRD100
-        public async void Refresh(object args) => await Control.UpdateDocumentAsync(true);
-        #pragma warning restore VSTHRD100
+        public void Refresh(object args) => _ = Control.UpdateDocument(true);
 
         private readonly DelegateCommand _expandAllCommand;
         public ICommand ExpandAllCommand => _expandAllCommand;
@@ -370,9 +357,7 @@ namespace CodeNav.Models
                 Control.CodeDocumentViewModel.AddBookmark(Id, 
                     BookmarkHelper.GetIndex(BookmarkStyles, bookmarkStyle));
 
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-                SaveToSolutionStorage();
+                _ = SaveToSolutionStorage();
 
                 ContextMenuIsOpen = false;
 
@@ -397,9 +382,7 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.RemoveBookmark(Id);
 
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-                SaveToSolutionStorage();
+                _ = SaveToSolutionStorage();
 
                 NotifyOfPropertyChange("BookmarksAvailable");
             }
@@ -420,9 +403,7 @@ namespace CodeNav.Models
             {
                 Control.CodeDocumentViewModel.ClearBookmarks();
 
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-                SaveToSolutionStorage();
+                _ = SaveToSolutionStorage();
 
                 NotifyOfPropertyChange("BookmarksAvailable");
             }
@@ -440,22 +421,14 @@ namespace CodeNav.Models
         public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
         public void CustomizeBookmarkStyles(object args)
         {
-            var solutionFilePath = Control.Dte?.Solution?.FileName;
-            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel, solutionFilePath).ShowDialog();
-            BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel, solutionFilePath);
+            _ = new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
+            _ = BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel);
         }
         #endregion
 
-        private void SaveToSolutionStorage()
+        private async Task SaveToSolutionStorage()
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            if (string.IsNullOrEmpty(Control?.Dte?.Solution?.FileName))
-            {
-                return;
-            }
-
-            var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(Control.Dte.Solution.FileName);
+            var solutionStorageModel = await SolutionStorageHelper.Load<SolutionStorageModel>();
 
             if (solutionStorageModel.Documents == null)
             {
@@ -468,7 +441,7 @@ namespace CodeNav.Models
 
             solutionStorageModel.Documents.Add(Control.CodeDocumentViewModel);
 
-            SolutionStorageHelper.Save<SolutionStorageModel>(Control.Dte.Solution.FileName, solutionStorageModel);
+            await SolutionStorageHelper.Save(solutionStorageModel);
         }
     }
 

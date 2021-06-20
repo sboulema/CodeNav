@@ -1,49 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Models;
 using CodeNav.Properties;
-using EnvDTE;
 using Microsoft.VisualStudio.PlatformUI;
-using Window = EnvDTE.Window;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static void HighlightCurrentItem(Window window, CodeDocumentViewModel codeDocumentViewModel)
+        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel)
         {
-            if (Settings.Default.DisableHighlight) return;
-
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            try
-            {
-                if (!(window?.Selection is TextSelection)) return;
-            }
-            catch (Exception)
+            if (Settings.Default.DisableHighlight ||
+                codeDocumentViewModel == null)
             {
                 return;
             }
 
-            HighlightCurrentItem(codeDocumentViewModel, ((TextSelection)window.Selection).CurrentLine,
+            var currentLine = await DocumentHelper.GetActiveDocumentTextCurrentLine();
+
+            if (currentLine == null)
+            {
+                return;
+            }
+
+            await HighlightCurrentItem(codeDocumentViewModel, currentLine.Value,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
                 GetBackgroundBrush().Color,
                 ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
 
-        public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
+        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
             Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
         {
-            if (codeDocumentViewModel == null) return;
-
             UnHighlight(codeDocumentViewModel, regularForegroundColor);
             var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, currentLine);
-            Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
+            await Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
         }
 
         private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, Color foregroundColor) =>
@@ -52,10 +51,13 @@ namespace CodeNav.Helpers
         private static void UnHighlight(List<CodeItem> codeItems, Color foregroundColor, 
             Dictionary<string, int> bookmarks)
         {
-            foreach (var item in codeItems)
+            Parallel.ForEach(codeItems, item =>
             {
-                if (item == null) continue;
-               
+                if (item == null)
+                {
+                    return;
+                }
+
                 item.FontWeight = FontWeights.Regular;
                 item.NameBackgroundColor = Brushes.Transparent.Color;
                 item.IsHighlighted = false;
@@ -63,7 +65,8 @@ namespace CodeNav.Helpers
                 if (!BookmarkHelper.IsBookmark(bookmarks, item))
                 {
                     item.ForegroundColor = foregroundColor;
-                } else
+                }
+                else
                 {
                     item.ForegroundColor = item.BookmarkStyles[bookmarks[item.Id]].ForegroundColor;
                 }
@@ -77,7 +80,7 @@ namespace CodeNav.Helpers
                 {
                     classItem.BorderColor = Colors.DarkGray;
                 }
-            }
+            });
         }
 
         /// <summary>
@@ -86,15 +89,18 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
-        private static void Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
+        private static async Task Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
             Color foregroundColor, Color backgroundColor, Color borderColor)
         {
             FrameworkElement element = null;
 
-            foreach (var id in ids)
-            {
+            var tasks = ids.Select(async id => {
                 var item = FindCodeItem(codeDocumentViewModel.CodeDocument, id);
-                if (item == null) return;
+
+                if (item == null)
+                {
+                    return;
+                }
 
                 item.ForegroundColor = foregroundColor;
                 item.FontWeight = FontWeights.Bold;
@@ -106,7 +112,7 @@ namespace CodeNav.Helpers
                     element = GetCodeItemsControl(item.Control);
                 }
 
-                var found = FindItemContainer(element as ItemsControl, item);
+                var found = await FindItemContainer(element as ItemsControl, item);
                 if (found != null)
                 {
                     element = found;
@@ -121,14 +127,16 @@ namespace CodeNav.Helpers
                 {
                     (item as CodeClassItem).BorderColor = borderColor;
                 }
-            }           
+            });
+
+            await Task.WhenAll(tasks);
         }
 
         private static IEnumerable<CodeItem> GetItemsToHighlight(IEnumerable<CodeItem> items, int line)
         {
             var itemsToHighlight = new List<CodeItem>();
 
-            foreach (var item in items)
+            Parallel.ForEach(items, item => 
             {
                 if (item.StartLine <= line && item.EndLine >= line)
                 {
@@ -139,16 +147,19 @@ namespace CodeNav.Helpers
                 {
                     itemsToHighlight.AddRange(GetItemsToHighlight(hasMembersItem.Members, line));
                 }
-            }
+            });
 
             return itemsToHighlight;
         }
             
         public static void SetForeground(IEnumerable<CodeItem> items)
         {
-            if (items == null) return;
+            if (items == null)
+            {
+                return;
+            }
 
-            foreach (var item in items)
+            Parallel.ForEach(items, item => 
             {
                 item.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
 
@@ -156,7 +167,7 @@ namespace CodeNav.Helpers
                 {
                     SetForeground(hasMembersItem.Members);
                 }
-            }
+            });
         }
 
         private static SolidColorBrush GetBackgroundBrush()
@@ -176,12 +187,12 @@ namespace CodeNav.Helpers
         /// <param name="itemsControl">itemsControl to search in</param>
         /// <param name="item">item to find</param>
         /// <returns></returns>
-        private static FrameworkElement FindItemContainer(ItemsControl itemsControl, CodeItem item)
+        private static async Task<FrameworkElement> FindItemContainer(ItemsControl itemsControl, CodeItem item)
         {
             if (itemsControl == null) return null;
 
             var itemContainer = itemsControl.ItemContainerGenerator.ContainerFromItem(item);
-            var itemContainerSubItemsControl = FindVisualChild<ItemsControl>(itemContainer);
+            var itemContainerSubItemsControl = await FindVisualChild<ItemsControl>(itemContainer);
 
             if (itemContainerSubItemsControl != null)
             {
@@ -217,12 +228,14 @@ namespace CodeNav.Helpers
             return null;
         }
 
-        public static T FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
+        public static async Task<T> FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj == null)
             {
                 return null;
             }
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
             {
@@ -232,12 +245,13 @@ namespace CodeNav.Helpers
                     return t;
                 }
 
-                T childItem = FindVisualChild<T>(child);
+                var childItem = await FindVisualChild<T>(child);
                 if (childItem != null)
                 {
                     return childItem;
                 }
             }
+
             return null;
         }
 
@@ -253,11 +267,12 @@ namespace CodeNav.Helpers
 
         public static void SetSelectedIndex(List<CodeItem> items)
         {
-            foreach (CodeDepthGroupItem groupItem in items)
+            Parallel.ForEach(items, item => 
             {
+                var groupItem = item as CodeDepthGroupItem;
                 var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
                 groupItem.SelectedIndex = selectedItem != null ? groupItem.Members.IndexOf(selectedItem) : 0;
-            }
+            });
         }
     }
 

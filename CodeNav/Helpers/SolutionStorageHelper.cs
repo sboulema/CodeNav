@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CodeNav.Helpers
 {
@@ -11,11 +12,16 @@ namespace CodeNav.Helpers
     {
         private const string ApplicationName = "CodeNav";
 
-        public static T Load<T>(string solutionFilePath)
+        public static async Task<T> Load<T>()
         {
             try
             {
-                if (!File.Exists(solutionFilePath)) return (T)Activator.CreateInstance(typeof(T));
+                var solutionFilePath = await ProjectHelper.GetSolutionFileName();
+
+                if (!File.Exists(solutionFilePath))
+                {
+                    return (T)Activator.CreateInstance(typeof(T));
+                }
 
                 var solutionFolder = Path.GetDirectoryName(solutionFilePath);
                 var settingFilePath = Path.Combine(solutionFolder, ".vs", $"{ApplicationName}.json");
@@ -42,9 +48,14 @@ namespace CodeNav.Helpers
             return (T)Activator.CreateInstance(typeof(T));
         }
 
-        public static void Save<T>(string solutionFilePath, T storage)
+        public static async Task Save<T>(T storage)
         {
-            if (!File.Exists(solutionFilePath)) return;
+            var solutionFilePath = await ProjectHelper.GetSolutionFileName();
+
+            if (!File.Exists(solutionFilePath))
+            {
+                return;
+            }
 
             var json = JsonConvert.SerializeObject(storage);
 
@@ -52,11 +63,9 @@ namespace CodeNav.Helpers
             File.WriteAllText(Path.Combine(solutionFolder, ".vs", $"{ApplicationName}.json"), json);
         }
 
-        public static void SaveToSolutionStorage(string solutionFilePath, CodeDocumentViewModel codeDocumentViewModel)
+        public static async Task SaveToSolutionStorage(CodeDocumentViewModel codeDocumentViewModel)
         {
-            if (string.IsNullOrEmpty(solutionFilePath)) return;
-
-            var solutionStorageModel = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
+            var solutionStorageModel = await Load<SolutionStorageModel>();
 
             if (solutionStorageModel.Documents == null)
             {
@@ -69,13 +78,7 @@ namespace CodeNav.Helpers
 
             solutionStorageModel.Documents.Add(codeDocumentViewModel);
 
-            SolutionStorageHelper.Save<SolutionStorageModel>(solutionFilePath, solutionStorageModel);
-        }
-
-        public static void SaveToSolutionStorage(ICodeViewUserControl control, CodeDocumentViewModel model)
-        {
-            if (string.IsNullOrEmpty(control?.Dte?.Solution?.FileName)) return;
-            SaveToSolutionStorage(control?.Dte?.Solution?.FileName, model);
+            await Save(solutionStorageModel);
         }
     }
 }

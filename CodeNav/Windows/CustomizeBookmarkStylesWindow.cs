@@ -1,34 +1,29 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Media;
-using Color = System.Drawing.Color;
 
 namespace CodeNav.Windows
 {
     public partial class CustomizeBookmarkStylesWindow : Form
     {
         private Label _selectedLabel;
-        private CodeDocumentViewModel _codeDocumentViewModel;
-        private string _solutionFilePath;
+        private readonly CodeDocumentViewModel _codeDocumentViewModel;
 
-        public CustomizeBookmarkStylesWindow(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
+        public CustomizeBookmarkStylesWindow(CodeDocumentViewModel codeDocumentViewModel)
         {
             _codeDocumentViewModel = codeDocumentViewModel;
-            _solutionFilePath = solutionFilePath;
 
             InitializeComponent();
         }
 
         private void CustomizeBookmarkStylesWindow_Load(object sender, EventArgs e)
-        {
-            LoadBookmarkStyles();
-        }
+            => _ = LoadBookmarkStyles();
 
-        private void LoadBookmarkStyles()
+        private async Task LoadBookmarkStyles()
         {
-            foreach (var style in BookmarkHelper.GetBookmarkStyles(_codeDocumentViewModel, _solutionFilePath))
+            foreach (var style in await BookmarkHelper.GetBookmarkStyles(_codeDocumentViewModel))
             {
                 var item = new Label
                 {
@@ -76,7 +71,7 @@ namespace CodeNav.Windows
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, bookmarkStylesFlowLayoutPanel.Controls, _solutionFilePath);
+            _ = BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, bookmarkStylesFlowLayoutPanel.Controls);
             Close();
         }
     }

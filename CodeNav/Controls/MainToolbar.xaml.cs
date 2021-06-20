@@ -30,7 +30,7 @@ namespace CodeNav.Controls
         private async Task RefreshDocument()
         {
             var control = FindParent(this);
-            await control.UpdateDocumentAsync(true);
+            await control.UpdateDocument(true);
         }
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
@@ -46,7 +46,7 @@ namespace CodeNav.Controls
         {
             var control = FindParent(this);
             new OptionsWindow().ShowDialog();
-            await control.UpdateDocumentAsync(true);
+            await control.UpdateDocument(true);
         }
 
         private static ICodeViewUserControl FindParent(DependencyObject child)

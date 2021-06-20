@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
 using static System.Windows.Forms.Control;
@@ -15,13 +16,16 @@ namespace CodeNav.Helpers
         /// Apply bookmark style to all code items that are bookmarked
         /// </summary>
         /// <param name="codeDocumentViewModel"></param>
-        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
+        public static async Task ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
             try
             {
-                if (!codeDocumentViewModel.CodeDocument.Any()) return;
+                if (!codeDocumentViewModel.CodeDocument.Any())
+                {
+                    return;
+                }
 
-                _ = GetBookmarkStyles(codeDocumentViewModel, solutionFilePath);
+                await GetBookmarkStyles(codeDocumentViewModel);
 
                 foreach (var bookmark in codeDocumentViewModel.Bookmarks)
                 {
@@ -107,11 +111,9 @@ namespace CodeNav.Helpers
         /// Default available bookmark styles
         /// </summary>
         /// <returns>List of bookmark styles</returns>
-        public static List<BookmarkStyle> GetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, string solutionFilePath)
+        public static async Task<List<BookmarkStyle>> GetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel)
         {
-            if (string.IsNullOrEmpty(solutionFilePath)) return GetDefaultBookmarkStyles();
-
-            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(solutionFilePath);
+            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>();
 
             if (solutionStorage?.Documents == null) return GetDefaultBookmarkStyles();
 
@@ -131,7 +133,7 @@ namespace CodeNav.Helpers
             return codeDocumentViewModel.BookmarkStyles;
         }
 
-        public static void SetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, ControlCollection controls, string solutionFilePath)
+        public static async Task SetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, ControlCollection controls)
         {
             var styles = new List<BookmarkStyle>();
 
@@ -143,7 +145,7 @@ namespace CodeNav.Helpers
 
             codeDocumentViewModel.BookmarkStyles = styles;   
 
-            SolutionStorageHelper.SaveToSolutionStorage(solutionFilePath, codeDocumentViewModel);
+            await SolutionStorageHelper.SaveToSolutionStorage(codeDocumentViewModel);
         }
 
         public static int GetIndex(List<BookmarkStyle> bookmarkStyles, BookmarkStyle bookmarkStyle)

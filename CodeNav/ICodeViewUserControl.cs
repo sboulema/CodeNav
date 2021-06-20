@@ -1,9 +1,7 @@
 ﻿using CodeNav.Models;
-using EnvDTE;
 using Microsoft.VisualStudio.Text.Outlining;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace CodeNav
 {
@@ -11,23 +9,21 @@ namespace CodeNav
     {
         CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
-        _DTE Dte { get; set; }
-
         void RegionsCollapsed(RegionsCollapsedEventArgs e);
 
         void RegionsExpanded(RegionsExpandedEventArgs e);
 
-        Task UpdateDocumentAsync(bool forceUpdate = false);
+        Task UpdateDocument(bool forceUpdate = false);
 
         List<CodeItem> CreateLineThresholdPassedItem();
 
-        void HighlightCurrentItem();
+        Task HighlightCurrentItem();
 
-        bool IsLargeDocument();
+        Task<bool> IsLargeDocument();
 
-        void SelectLine(object startLinePosition, bool extend = false);
+        Task SelectLine(object startLinePosition, bool extend = false);
 
-        void Select(object startLinePosition, object endLinePosition);
+        Task Select(object startLinePosition, object endLinePosition);
 
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);
 

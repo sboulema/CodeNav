@@ -1,8 +1,10 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace CodeNav.Helpers
 {
@@ -13,13 +15,12 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="window">The window containing a document</param>
         /// <returns></returns>
-        public static string GetName(Window window)
+        public static async Task<string> GetName(Window window)
         {
-            var name = string.Empty;
             try
             {
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-                name = window.Document.Name;
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return window.Document.Name;
             }
             catch (ObjectDisposedException)
             {
@@ -29,7 +30,8 @@ namespace CodeNav.Helpers
             {
                 LogHelper.Log("Error getting Name for document", e);
             }
-            return name;
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -37,16 +39,12 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">the document</param>
         /// <returns></returns>
-        public static string GetFullName(Document document)
+        public static async Task<string> GetFullName(Document document)
         {
-            var name = string.Empty;
-
-            if (document == null) return name;
-
             try
             {
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-                name = document.FullName;
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return document?.FullName;
             }
             catch (COMException)
             {
@@ -62,7 +60,8 @@ namespace CodeNav.Helpers
             {
                 LogHelper.Log("Error getting FullName for document", e);
             }
-            return name;
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -70,12 +69,12 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">the document</param>
         /// <returns></returns>
-        public static string GetText(Document document)
+        public static async Task<string> GetText(Document document)
         {
-            var text = string.Empty;
             try
             {
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 var textDocument = (TextDocument)document.Object("TextDocument");
                 var startPoint = textDocument?.StartPoint?.CreateEditPoint();
 
@@ -85,7 +84,7 @@ namespace CodeNav.Helpers
                     return null;
                 };
 
-                text = startPoint.GetText(textDocument.EndPoint);
+                return startPoint.GetText(textDocument.EndPoint);
             }
             catch (COMException)
             {
@@ -97,21 +96,29 @@ namespace CodeNav.Helpers
             {
                 LogHelper.Log("Error getting Text for document", e);
             }
-            return text;
+
+            return string.Empty;
         }
 
-        public static int GetNumberOfLines(Document document)
+        public static async Task<int> GetNumberOfLines()
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            var document = GetActiveDocument();
 
-            if (document == null) return 0;
-
-            if (File.Exists(document.FullName))
+            if (document == null)
             {
-                return File.ReadLines(document.FullName).Count();
+                return 0;
             }
 
-            return 0;
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var fullName = document.FullName;
+
+            if (!File.Exists(fullName))
+            {
+                return 0;
+            }
+
+            return File.ReadLines(fullName).Count();
         }
 
         /// <summary>
@@ -119,11 +126,11 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="dte"></param>
         /// <returns></returns>
-        public static Document GetActiveDocument(_DTE dte)
+        public static Document GetActiveDocument()
         {
             try
             {
-                return dte?.ActiveDocument;
+                return ProjectHelper.DTE.ActiveDocument;
             }
             catch (ArgumentException)
             {
@@ -140,6 +147,29 @@ namespace CodeNav.Helpers
                 LogHelper.Log("Error starting UpdateDocument", e);
                 return null;
             }
+        }
+
+        public static async Task<TextSelection> GetActiveDocumentTextSelection()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var document = GetActiveDocument();
+
+            try
+            {
+                return document?.Selection as TextSelection;
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
+        public static async Task<int?> GetActiveDocumentTextCurrentLine()
+        {
+            var textSelection = await GetActiveDocumentTextSelection();
+            return textSelection?.CurrentLine;
         }
     }
 }

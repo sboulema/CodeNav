@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -17,8 +16,10 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Threading;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
+using System.Threading.Tasks;
 
 namespace CodeNav
 {
@@ -27,19 +28,17 @@ namespace CodeNav
     /// </summary>
     public partial class CodeViewUserControl : ICodeViewUserControl
     {
-        private Window _window;
         private readonly ColumnDefinition _column;
         private List<CodeItem> _cache;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         internal IWpfTextView TextView;
         internal IOutliningManagerService OutliningManagerService;
         private VisualStudioWorkspace _workspace;
-        private CodeNavMargin _margin;
-        public _DTE Dte { get; set; }
+        private readonly CodeNavMargin _margin;
 
-        public CodeViewUserControl(Window window, ColumnDefinition column = null, 
+        public CodeViewUserControl(ColumnDefinition column = null, 
             IWpfTextView textView = null, IOutliningManagerService outliningManagerService = null, 
-            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null, _DTE dte = null)
+            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null)
         {
             InitializeComponent();
 
@@ -47,27 +46,20 @@ namespace CodeNav
             CodeDocumentViewModel = new CodeDocumentViewModel();
             DataContext = CodeDocumentViewModel;
 
-            _window = window;
             _column = column;
             TextView = textView;
             OutliningManagerService = outliningManagerService;
             _workspace = workspace;
             _margin = margin;
-            Dte = dte;
-
-            LogHelper.Dte = dte;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
 
-        public void SetWindow(Window window) => _window = window;
         public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
 
-        #pragma warning disable VSTHRD100
-        private async void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => await UpdateDocumentAsync(true);
-        #pragma warning restore VSTHRD100
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => _ = UpdateDocument(true);
 
-        public void SelectLine(object startLinePosition, bool extend = false)
+        public async Task SelectLine(object startLinePosition, bool extend = false)
         {
             int line;
             int offset;
@@ -84,17 +76,17 @@ namespace CodeNav
                 return;
             }
 
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
+            var textSelection = await DocumentHelper.GetActiveDocumentTextSelection();
 
-            var textSelection = _window.Document.Selection as TextSelection;
             if (textSelection == null)
             {
-                // TextSelection is null for document
                 return;
             }
 
             try
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 textSelection.MoveToLineAndOffset(line, offset, extend);
 
                 var tp = (TextPoint)textSelection.TopPoint;
@@ -107,12 +99,10 @@ namespace CodeNav
             }   
         }
 
-        public void Select(object startLinePosition, object endLinePosition)
+        public async Task Select(object startLinePosition, object endLinePosition)
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            SelectLine(startLinePosition);
-            SelectLine(endLinePosition, true);
+            await SelectLine(startLinePosition);
+            await SelectLine(endLinePosition, true);
         }
 
         public void FilterBookmarks() 
@@ -129,11 +119,11 @@ namespace CodeNav
             OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
         }
 
-        public async Task UpdateDocumentAsync(bool forceUpdate = false)
+        public async Task UpdateDocument(bool forceUpdate = false)
         {
-            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var activeDocument = DocumentHelper.GetActiveDocument(Dte);
+            var activeDocument = DocumentHelper.GetActiveDocument();
 
             if (activeDocument == null) return;
 
@@ -141,12 +131,11 @@ namespace CodeNav
 
             // Do we need to change the side where the margin is displayed
             if (_margin?.MarginSide != null &&
-                _margin?.MarginSide != Settings.Default.MarginSide &&
-                Dte != null)
+                _margin?.MarginSide != Settings.Default.MarginSide)
             {
                 var filename = activeDocument.FullName;
-                Dte.ExecuteCommand("File.Close");
-                Dte.ExecuteCommand("File.OpenFile", filename);
+                ProjectHelper.DTE?.ExecuteCommand("File.Close");
+                ProjectHelper.DTE?.ExecuteCommand("File.OpenFile", filename);
             }
 
             try
@@ -195,11 +184,11 @@ namespace CodeNav
                 VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
                 // Apply bookmarks
-                LoadBookmarksFromStorage();
-                BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel, Dte?.Solution?.FileName);
+                await LoadBookmarksFromStorage();
+                await BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel);
 
                 // Apply history items
-                LoadHistoryItemsFromStorage();
+                await LoadHistoryItemsFromStorage();
                 HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
             }
             catch (Exception e)
@@ -221,11 +210,9 @@ namespace CodeNav
             }
         }
 
-        public bool IsLargeDocument()
+        public async Task<bool> IsLargeDocument()
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            return DocumentHelper.GetNumberOfLines(Dte.ActiveDocument) > Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
+            return await DocumentHelper.GetNumberOfLines() > Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
         }
 
         #region Custom Items
@@ -267,52 +254,46 @@ namespace CodeNav
 
         #endregion
 
-        public void HighlightCurrentItem()
+        public async Task HighlightCurrentItem() => await HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
+
+        private async Task LoadBookmarksFromStorage()
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-            HighlightHelper.HighlightCurrentItem(_window, CodeDocumentViewModel);
-        }
+            var solutionStorage = await SolutionStorageHelper .Load<SolutionStorageModel>();
 
-        private static bool AreDocumentsEqual(List<CodeItem> existingItems, List<CodeItem> newItems)
-        {
-            if (existingItems == null || newItems == null) return false;
-            return existingItems.SequenceEqual(newItems, new CodeItemComparer());
-        }
-
-        private void LoadBookmarksFromStorage()
-        {
-            if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
-
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
-
-            if (solutionStorage?.Documents == null) return;
+            if (solutionStorage?.Documents == null)
+            {
+                return;
+            }
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(CodeDocumentViewModel.FilePath));
-            if (storageItem != null)
+
+            if (storageItem == null)
             {
-                CodeDocumentViewModel.Bookmarks = storageItem.Bookmarks;
+                return;
             }
+
+            CodeDocumentViewModel.Bookmarks = storageItem.Bookmarks;
         }
 
-        private void LoadHistoryItemsFromStorage()
+        private async Task LoadHistoryItemsFromStorage()
         {
-            if (string.IsNullOrEmpty(Dte?.Solution?.FileName)) return;
+            var solutionStorage = await SolutionStorageHelper .Load<SolutionStorageModel>();
 
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            var solutionStorage = SolutionStorageHelper.Load<SolutionStorageModel>(Dte.Solution.FileName);
-
-            if (solutionStorage?.Documents == null) return;
+            if (solutionStorage?.Documents == null)
+            {
+                return;
+            }
 
             var storageItem = solutionStorage.Documents
                 .FirstOrDefault(s => s.FilePath.Equals(CodeDocumentViewModel.FilePath));
-            if (storageItem != null)
+
+            if (storageItem == null)
             {
-                CodeDocumentViewModel.HistoryItems = storageItem.HistoryItems;
+                return;
             }
+
+            CodeDocumentViewModel.HistoryItems = storageItem.HistoryItems;
         }
     }
 }

@@ -12,13 +12,13 @@ namespace CodeNav.Helpers
     {
         private const int MaxHistoryItems = 5;
 
-        public static void AddItemToHistory(CodeDocumentViewModel model, Span span)
+        public static async Task AddItemToHistory(CodeDocumentViewModel model, Span span)
         {
             var item = FindCodeItem(model.CodeDocument, span);
-            AddItemToHistory(item);
+            await AddItemToHistory(item);
         }
 
-        public static void AddItemToHistory(CodeItem item)
+        public static async Task AddItemToHistory(CodeItem item)
         {
             if (item == null) return;
 
@@ -32,7 +32,7 @@ namespace CodeNav.Helpers
             model.HistoryItems.Insert(0, item);
             model.HistoryItems = model.HistoryItems.Take(MaxHistoryItems).ToList();
 
-            SolutionStorageHelper.SaveToSolutionStorage(item.Control, model);
+            await SolutionStorageHelper.SaveToSolutionStorage(model);
             ApplyHistoryIndicator(model);
         }
 
@@ -74,11 +74,11 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task ClearHistoryAsync(CodeItem item)
+        public static async Task ClearHistory(CodeItem item)
         {
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
-            SolutionStorageHelper.SaveToSolutionStorage(item.Control, item.Control.CodeDocumentViewModel);
-            await item.Control.UpdateDocumentAsync(true);
+            await SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel);
+            await item.Control.UpdateDocument(true);
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)

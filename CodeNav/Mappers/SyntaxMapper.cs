@@ -79,11 +79,11 @@ namespace CodeNav.Mappers
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                var filePath = DocumentHelper.GetFullName(activeDocument);
+                var filePath = await DocumentHelper.GetFullName(activeDocument);
 
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    return MapDocument(activeDocument);
+                    return await MapDocument(activeDocument);
                 }
 
                 var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(filePath).FirstOrDefault();
@@ -92,7 +92,7 @@ namespace CodeNav.Mappers
                 // Try and map it in a different way
                 if (id == null)
                 {
-                    return MapDocument(activeDocument);
+                    return await MapDocument(activeDocument);
                 }
 
                 var document = workspace.CurrentSolution.GetDocument(id);
@@ -149,18 +149,18 @@ namespace CodeNav.Mappers
         /// </summary>
         /// <param name="document">An EnvDTE.Document</param>
         /// <returns>List of found code items</returns>
-        public static List<CodeItem> MapDocument(EnvDTE.Document document)
+        public static async Task<List<CodeItem>> MapDocument(EnvDTE.Document document)
         {
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
-
-            var text = DocumentHelper.GetText(document);
+            var text = await DocumentHelper.GetText(document);
 
             if (string.IsNullOrEmpty(text)) return new List<CodeItem>();
 
-            if (Path.GetExtension(document.FullName).Equals(".js"))
+            if (Path.GetExtension(await DocumentHelper.GetFullName(document)).Equals(".js"))
             {
-                return SyntaxMapperJS.Map(document, _control);
+                return await SyntaxMapperJS.Map(document, _control);
             }
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             switch (LanguageHelper.GetLanguage(document.Language))
             {
@@ -178,7 +178,7 @@ namespace CodeNav.Mappers
                         return new List<CodeItem>();
                     }
 
-                    var root = (CompilationUnitSyntax)_tree.GetRoot();
+                    var root = (CompilationUnitSyntax)await _tree.GetRootAsync();
 
                     return root.Members.Select(MapMember).ToList();
                 case LanguageEnum.VisualBasic:
@@ -195,7 +195,7 @@ namespace CodeNav.Mappers
                         return new List<CodeItem>();
                     }
 
-                    var rootVB = (VisualBasicSyntax.CompilationUnitSyntax)_tree.GetRoot();
+                    var rootVB = (VisualBasicSyntax.CompilationUnitSyntax)await _tree.GetRootAsync();
 
                     return rootVB.Members.Select(MapMember).ToList();
                 default:
