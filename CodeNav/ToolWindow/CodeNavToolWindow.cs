@@ -124,9 +124,7 @@ namespace CodeNav.ToolWindow
             }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _ = CaretPositionChanged();
-
-        private async AsyncTask CaretPositionChanged() => await _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
         private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
         {
