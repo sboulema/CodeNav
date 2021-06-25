@@ -135,10 +135,13 @@ namespace CodeNav.ToolWindow
                 // If the activated window does not have code we are not interested
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                if (window == null || window.Document == null) return;
+                if (window == null || window.Document == null)
+                {
+                    return;
+                }
 
                 _control.SetWorkspace(_workspace);
-                await _control.UpdateDocument(forceUpdate);
+                _ = _control.UpdateDocument(forceUpdate);
             }
             catch (Exception e)
             {

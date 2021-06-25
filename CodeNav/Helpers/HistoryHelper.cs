@@ -74,11 +74,11 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task ClearHistory(CodeItem item)
+        public static void ClearHistory(CodeItem item)
         {
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
-            await SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel);
-            await item.Control.UpdateDocument(true);
+            _ = SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel);
+            _ = item.Control.UpdateDocument(true);
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)

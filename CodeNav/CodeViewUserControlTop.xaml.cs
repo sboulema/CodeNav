@@ -253,9 +253,9 @@ namespace CodeNav
 
         #endregion
 
-        public async Task HighlightCurrentItem()
+        public void HighlightCurrentItem()
         {
-            await HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
+            _ = HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
 
             // Force NotifyPropertyChanged
             CodeDocumentViewModel.CodeDocumentTop = null;

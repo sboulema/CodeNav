@@ -17,7 +17,7 @@ namespace CodeNav
 
         List<CodeItem> CreateLineThresholdPassedItem();
 
-        Task HighlightCurrentItem();
+        void HighlightCurrentItem();
 
         Task<bool> IsLargeDocument();
 

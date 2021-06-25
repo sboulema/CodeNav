@@ -13,10 +13,8 @@ using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-using Window = EnvDTE.Window;
 using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using System.Threading.Tasks;
@@ -36,8 +34,8 @@ namespace CodeNav
         private VisualStudioWorkspace _workspace;
         private readonly CodeNavMargin _margin;
 
-        public CodeViewUserControl(ColumnDefinition column = null, 
-            IWpfTextView textView = null, IOutliningManagerService outliningManagerService = null, 
+        public CodeViewUserControl(ColumnDefinition column = null,
+            IWpfTextView textView = null, IOutliningManagerService outliningManagerService = null,
             VisualStudioWorkspace workspace = null, CodeNavMargin margin = null)
         {
             InitializeComponent();
@@ -45,6 +43,9 @@ namespace CodeNav
             // Setup viewmodel as datacontext
             CodeDocumentViewModel = new CodeDocumentViewModel();
             DataContext = CodeDocumentViewModel;
+
+            CodeDocumentViewModel.Document = DocumentHelper.GetActiveDocument();
+            CodeDocumentViewModel.FilePath = CodeDocumentViewModel.Document?.FullName;
 
             _column = column;
             TextView = textView;
@@ -76,7 +77,7 @@ namespace CodeNav
                 return;
             }
 
-            var textSelection = await DocumentHelper.GetActiveDocumentTextSelection();
+            var textSelection = await DocumentHelper.GetActiveDocumentTextSelection().ConfigureAwait(false);
 
             if (textSelection == null)
             {
@@ -90,25 +91,25 @@ namespace CodeNav
                 textSelection.MoveToLineAndOffset(line, offset, extend);
 
                 var tp = (TextPoint)textSelection.TopPoint;
-                tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
+                _ = tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
             }
             catch (Exception)
             {
                 // GotoLine failed
                 return;
-            }   
+            }
         }
 
         public async Task Select(object startLinePosition, object endLinePosition)
         {
-            await SelectLine(startLinePosition);
-            await SelectLine(endLinePosition, true);
+            await SelectLine(startLinePosition).ConfigureAwait(false);
+            await SelectLine(endLinePosition, true).ConfigureAwait(false);
         }
 
-        public void FilterBookmarks() 
+        public void FilterBookmarks()
             => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
-        public void RegionsCollapsed(RegionsCollapsedEventArgs e) => 
+        public void RegionsCollapsed(RegionsCollapsedEventArgs e) =>
             OutliningHelper.RegionsCollapsed(e, CodeDocumentViewModel.CodeDocument);
 
         public void RegionsExpanded(RegionsExpandedEventArgs e) =>
@@ -121,22 +122,7 @@ namespace CodeNav
 
         public async Task UpdateDocument(bool forceUpdate = false)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            var activeDocument = DocumentHelper.GetActiveDocument();
-
-            if (activeDocument == null) return;
-
-            CodeDocumentViewModel.FilePath = activeDocument.FullName;
-
-            // Do we need to change the side where the margin is displayed
-            if (_margin?.MarginSide != null &&
-                _margin?.MarginSide != Settings.Default.MarginSide)
-            {
-                var filename = activeDocument.FullName;
-                ProjectHelper.DTE?.ExecuteCommand("File.Close");
-                ProjectHelper.DTE?.ExecuteCommand("File.OpenFile", filename);
-            }
+            SwitchMarginSides();
 
             try
             {
@@ -158,7 +144,7 @@ namespace CodeNav
                     CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocumentAsync(activeDocument, this, _workspace);
+                var codeItems = await SyntaxMapper.MapDocumentAsync(CodeDocumentViewModel.Document, this, _workspace).ConfigureAwait(false);
 
                 if (codeItems == null)
                 {
@@ -171,7 +157,7 @@ namespace CodeNav
 
                 // Sort items
                 CodeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+                _ = SortHelper.Sort(codeItems, Settings.Default.SortOrder);
 
                 // Set currently active codeitem
                 HighlightHelper.SetForeground(codeItems);
@@ -181,14 +167,14 @@ namespace CodeNav
                 _cache = codeItems;
 
                 // Apply current visibility settings to the document
-                VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
+                _ = VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
                 // Apply bookmarks
-                await LoadBookmarksFromStorage();
-                await BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel);
+                await LoadBookmarksFromStorage().ConfigureAwait(false);
+                await BookmarkHelper.ApplyBookmarks(CodeDocumentViewModel).ConfigureAwait(false);
 
                 // Apply history items
-                await LoadHistoryItemsFromStorage();
+                await LoadHistoryItemsFromStorage().ConfigureAwait(false);
                 HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
             }
             catch (Exception e)
@@ -212,7 +198,8 @@ namespace CodeNav
 
         public async Task<bool> IsLargeDocument()
         {
-            return await DocumentHelper.GetNumberOfLines() > Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
+            return await DocumentHelper.GetNumberOfLines().ConfigureAwait(false) >
+                Settings.Default.AutoLoadLineThreshold && Settings.Default.AutoLoadLineThreshold > 0;
         }
 
         #region Custom Items
@@ -254,11 +241,12 @@ namespace CodeNav
 
         #endregion
 
-        public async Task HighlightCurrentItem() => await HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
+        public void HighlightCurrentItem()
+            => _ = HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
 
         private async Task LoadBookmarksFromStorage()
         {
-            var solutionStorage = await SolutionStorageHelper .Load<SolutionStorageModel>();
+            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
 
             if (solutionStorage?.Documents == null)
             {
@@ -278,7 +266,7 @@ namespace CodeNav
 
         private async Task LoadHistoryItemsFromStorage()
         {
-            var solutionStorage = await SolutionStorageHelper .Load<SolutionStorageModel>();
+            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
 
             if (solutionStorage?.Documents == null)
             {
@@ -294,6 +282,17 @@ namespace CodeNav
             }
 
             CodeDocumentViewModel.HistoryItems = storageItem.HistoryItems;
+        }
+
+        private void SwitchMarginSides()
+        {
+            // Do we need to change the side where the margin is displayed
+            if (_margin?.MarginSide != null &&
+                _margin?.MarginSide != Settings.Default.MarginSide)
+            {
+                ProjectHelper.DTE?.ExecuteCommand("File.Close");
+                ProjectHelper.DTE?.ExecuteCommand("File.OpenFile", CodeDocumentViewModel.FilePath);
+            }
         }
     }
 }

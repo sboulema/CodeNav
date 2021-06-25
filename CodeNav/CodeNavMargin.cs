@@ -58,7 +58,7 @@ namespace CodeNav
                 _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
             }
 
-            Children.Add(_codeNavGrid);
+            _ = Children.Add(_codeNavGrid);
 
             _ = RegisterEvents();
 
@@ -258,12 +258,10 @@ namespace CodeNav
         public void UnRegisterEvents()
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
-            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;      
+            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _ = CaretPositionChanged();
-
-        private async Task CaretPositionChanged() => await _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
         #endregion
 
@@ -345,7 +343,10 @@ namespace CodeNav
         /// </summary>
         public void Dispose()
         {
-            if (_isDisposed) return;
+            if (_isDisposed)
+            {
+                return;
+            }
 
             UnRegisterEvents();
 
@@ -366,9 +367,9 @@ namespace CodeNav
 
         private async Task UpdateDocument()
         {
-            if (!await _control.IsLargeDocument())
+            if (!await _control.IsLargeDocument().ConfigureAwait(false))
             {
-                await _control.UpdateDocument();
+                _ = _control.UpdateDocument();
             }
             else
             {

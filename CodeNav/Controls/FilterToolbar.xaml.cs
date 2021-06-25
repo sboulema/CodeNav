@@ -45,15 +45,10 @@ namespace CodeNav.Controls
 
         private void ButtonFilter_OnClick(object sender, RoutedEventArgs e)
         {
-            _ = OpenFilterDialog();
-        }
-
-        private async Task OpenFilterDialog()
-        {
             new FilterWindow().ShowDialog();
 
             var control = FindParent<CodeViewUserControl>(this);
-            await control.UpdateDocument(true);
+            _ = control.UpdateDocument(true);
         }
 
         private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)

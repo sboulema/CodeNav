@@ -313,9 +313,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
-        #pragma warning disable VSTHRD100
-        public async void ClearHistory(object args) => await HistoryHelper.ClearHistory(this);
-        #pragma warning restore VSTHRD100
+        public void ClearHistory(object args) => HistoryHelper.ClearHistory(this);
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
@@ -354,14 +352,14 @@ namespace CodeNav.Models
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
-                Control.CodeDocumentViewModel.AddBookmark(Id, 
+                Control.CodeDocumentViewModel.AddBookmark(Id,
                     BookmarkHelper.GetIndex(BookmarkStyles, bookmarkStyle));
 
                 _ = SaveToSolutionStorage();
 
                 ContextMenuIsOpen = false;
 
-                NotifyOfPropertyChange("BookmarksAvailable");              
+                NotifyOfPropertyChange("BookmarksAvailable");
             }
             catch (Exception e)
             {
@@ -428,7 +426,7 @@ namespace CodeNav.Models
 
         private async Task SaveToSolutionStorage()
         {
-            var solutionStorageModel = await SolutionStorageHelper.Load<SolutionStorageModel>();
+            var solutionStorageModel = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
 
             if (solutionStorageModel.Documents == null)
             {
@@ -437,11 +435,11 @@ namespace CodeNav.Models
 
             var storageItem = solutionStorageModel.Documents
                 .FirstOrDefault(d => d.FilePath.Equals(Control.CodeDocumentViewModel.FilePath));
-            solutionStorageModel.Documents.Remove(storageItem);
+            _ = solutionStorageModel.Documents.Remove(storageItem);
 
             solutionStorageModel.Documents.Add(Control.CodeDocumentViewModel);
 
-            await SolutionStorageHelper.Save(solutionStorageModel);
+            await SolutionStorageHelper.Save(solutionStorageModel).ConfigureAwait(false);
         }
     }
 
@@ -450,7 +448,10 @@ namespace CodeNav.Models
         public bool Equals(CodeItem x, CodeItem y)
         {
             //Check whether the objects are the same object. 
-            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
 
             //Check whether the products' properties are equal. 
             var membersAreEqual = true;

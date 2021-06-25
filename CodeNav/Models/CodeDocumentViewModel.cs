@@ -5,6 +5,7 @@ using System.Windows;
 using Caliburn.Micro;
 using CodeNav.Helpers;
 using CodeNav.Properties;
+using EnvDTE;
 
 namespace CodeNav.Models
 {
@@ -157,5 +158,7 @@ namespace CodeNav.Models
 
         [DataMember]
         public List<CodeItem> HistoryItems;
+
+        public Document Document;
     }
 }

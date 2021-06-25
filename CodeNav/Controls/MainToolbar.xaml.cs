@@ -22,16 +22,7 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
-        {
-            _ = RefreshDocument();
-        }
-
-        private async Task RefreshDocument()
-        {
-            var control = FindParent(this);
-            await control.UpdateDocument(true);
-        }
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => _ = FindParent(this).UpdateDocument(true);
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
 
@@ -39,24 +30,14 @@ namespace CodeNav.Controls
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
-            _ = OpenOptionsDialog();
-        }
-
-        private async Task OpenOptionsDialog()
-        {
             var control = FindParent(this);
-            new OptionsWindow().ShowDialog();
-            await control.UpdateDocument(true);
+            _ = new OptionsWindow().ShowDialog();
+            _ = control.UpdateDocument(true);
         }
 
         private static ICodeViewUserControl FindParent(DependencyObject child)
-        {
-            var control = FindParent<CodeViewUserControl>(child);
-
-            if (control != null) return control;
-
-            return FindParent<CodeViewUserControlTop>(child);
-        }
+            => FindParent<CodeViewUserControl>(child) ??
+                (ICodeViewUserControl)FindParent<CodeViewUserControlTop>(child);
 
         private static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {
@@ -70,14 +51,7 @@ namespace CodeNav.Controls
             }
 
             // Check if the parent matches the type we’re looking for
-            if (parentObject is T parent)
-            {
-                return parent;
-            }
-            else
-            {
-                return FindParent<T>(parentObject);
-            }
+            return parentObject is T parent ? parent : FindParent<T>(parentObject);
         }
 
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)
