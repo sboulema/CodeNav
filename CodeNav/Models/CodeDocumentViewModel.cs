@@ -158,7 +158,5 @@ namespace CodeNav.Models
 
         [DataMember]
         public List<CodeItem> HistoryItems;
-
-        public Document Document;
     }
 }

@@ -44,9 +44,6 @@ namespace CodeNav
             CodeDocumentViewModel = new CodeDocumentViewModel();
             DataContext = CodeDocumentViewModel;
 
-            CodeDocumentViewModel.Document = DocumentHelper.GetActiveDocument();
-            CodeDocumentViewModel.FilePath = CodeDocumentViewModel.Document?.FullName;
-
             _column = column;
             TextView = textView;
             OutliningManagerService = outliningManagerService;
@@ -122,6 +119,9 @@ namespace CodeNav
 
         public async Task UpdateDocument(bool forceUpdate = false)
         {
+            var document = DocumentHelper.GetActiveDocument();
+            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFullName(document);
+
             SwitchMarginSides();
 
             try
@@ -144,7 +144,7 @@ namespace CodeNav
                     CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocumentAsync(CodeDocumentViewModel.Document, this, _workspace).ConfigureAwait(false);
+                var codeItems = await SyntaxMapper.MapDocumentAsync(document, this, _workspace).ConfigureAwait(false);
 
                 if (codeItems == null)
                 {
