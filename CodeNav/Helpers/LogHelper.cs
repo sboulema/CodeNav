@@ -1,5 +1,5 @@
 ﻿using EnvDTE;
-using Microsoft.VisualStudio.ApplicationInsights;
+using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

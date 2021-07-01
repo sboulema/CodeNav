@@ -22,20 +22,20 @@ namespace CodeNav.Models
     {
         public CodeItem()
         {
-            _clickItemCommand = new DelegateCommand(ClickItem, null, ThreadHelper.JoinableTaskFactory);
-            _goToDefinitionCommand = new DelegateCommand(GoToDefinition, null, ThreadHelper.JoinableTaskFactory);
-            _goToEndCommand = new DelegateCommand(GoToEnd, null, ThreadHelper.JoinableTaskFactory);
-            _selectInCodeCommand = new DelegateCommand(SelectInCode, null, ThreadHelper.JoinableTaskFactory);
-            _copyNameCommand = new DelegateCommand(CopyName, null, ThreadHelper.JoinableTaskFactory);
-            _refreshCommand = new DelegateCommand(() => { Refresh(); }, null, ThreadHelper.JoinableTaskFactory);
-            _expandAllCommand = new DelegateCommand(ExpandAll, null, ThreadHelper.JoinableTaskFactory);
-            _collapseAllCommand = new DelegateCommand(CollapseAll, null, ThreadHelper.JoinableTaskFactory);
-            _bookmarkCommand = new DelegateCommand(Bookmark, null, ThreadHelper.JoinableTaskFactory);
-            _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark, null, ThreadHelper.JoinableTaskFactory);
-            _clearBookmarksCommand = new DelegateCommand(ClearBookmarks, null, ThreadHelper.JoinableTaskFactory);
-            _filterBookmarksCommand = new DelegateCommand(FilterBookmarks, null, ThreadHelper.JoinableTaskFactory);
-            _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles, null, ThreadHelper.JoinableTaskFactory);
-            _clearHistoryCommand = new DelegateCommand(ClearHistory, null, ThreadHelper.JoinableTaskFactory);
+            _clickItemCommand = new DelegateCommand(ClickItem, null);
+            _goToDefinitionCommand = new DelegateCommand(GoToDefinition, null);
+            _goToEndCommand = new DelegateCommand(GoToEnd, null);
+            _selectInCodeCommand = new DelegateCommand(SelectInCode, null);
+            _copyNameCommand = new DelegateCommand(CopyName, null);
+            _refreshCommand = new DelegateCommand(Refresh, null);
+            _expandAllCommand = new DelegateCommand(ExpandAll, null);
+            _collapseAllCommand = new DelegateCommand(CollapseAll, null);
+            _bookmarkCommand = new DelegateCommand(Bookmark, null);
+            _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark, null);
+            _clearBookmarksCommand = new DelegateCommand(ClearBookmarks, null);
+            _filterBookmarksCommand = new DelegateCommand(FilterBookmarks, null);
+            _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles, null);
+            _clearHistoryCommand = new DelegateCommand(ClearHistory, null);
         }
 
         public string Name { get; set; }
