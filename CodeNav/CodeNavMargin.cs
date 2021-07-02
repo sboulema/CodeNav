@@ -15,6 +15,7 @@ using System.Linq;
 using Task = System.Threading.Tasks.Task;
 using Community.VisualStudio.Toolkit;
 using Settings = CodeNav.Properties.Settings;
+using EnvDTE;
 
 namespace CodeNav
 {
@@ -31,6 +32,7 @@ namespace CodeNav
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
+        private DocumentEvents _documentEvents;
 
         public CodeNavMargin(IWpfTextViewHost textViewHost, IOutliningManagerService outliningManagerService,
             VisualStudioWorkspace workspace, MarginSideEnum side)
@@ -40,6 +42,7 @@ namespace CodeNav
             _outliningManagerService = outliningManagerService;
             _outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, _textView);
             _workspace = workspace;
+            _documentEvents = VS.Events.DocumentEvents;
             MarginSide = side;
 
             // Add the view/content to the margin area
@@ -210,11 +213,11 @@ namespace CodeNav
             }
 
             // Subscribe to Document events
-            VS.Events.DocumentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            VS.Events.DocumentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
-            VS.Events.DocumentEvents.DocumentOpened -= DocumentEvents_DocumentOpened;
-            VS.Events.DocumentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
+            _documentEvents.DocumentOpened -= DocumentEvents_DocumentOpened;
+            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             // Subscribe to Outlining events
             if (_outliningManager != null)
