@@ -1,8 +1,9 @@
-﻿using EnvDTE;
+﻿using CodeNav.Models;
+using Community.VisualStudio.Toolkit;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
 using System;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -11,40 +12,15 @@ namespace CodeNav.Helpers
     public static class DocumentHelper
     {
         /// <summary>
-        /// Get the Name of the document presented in the given window
+        /// Get the file name/path of the active document
         /// </summary>
-        /// <param name="window">The window containing a document</param>
-        /// <returns></returns>
-        public static async Task<string> GetName(Window window)
+        /// <returns>file name/path of the active document</returns>
+        public static async Task<string> GetFileName()
         {
             try
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                return window.Document.Name;
-            }
-            catch (ObjectDisposedException)
-            {
-                // Ignore exception we only got it trying to log
-            }
-            catch (Exception e)
-            {
-                LogHelper.Log("Error getting Name for document", e);
-            }
-
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Get the FullName/FilePath for the given document
-        /// </summary>
-        /// <param name="document">the document</param>
-        /// <returns></returns>
-        public static async Task<string> GetFullName(Document document)
-        {
-            try
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                return document?.FullName;
+                var wpfTextView = await VS.Editor.GetCurrentWpfTextViewAsync();
+                return wpfTextView?.TextBuffer?.GetFileName();
             }
             catch (COMException)
             {
@@ -58,33 +34,22 @@ namespace CodeNav.Helpers
             }
             catch (Exception e)
             {
-                LogHelper.Log("Error getting FullName for document", e);
+                LogHelper.Log("Error getting file name for document", e);
             }
 
             return string.Empty;
         }
 
         /// <summary>
-        /// Get the Text for the given document
+        /// Get the text of the active document
         /// </summary>
-        /// <param name="document">the document</param>
         /// <returns></returns>
-        public static async Task<string> GetText(Document document)
+        public static async Task<string> GetText()
         {
             try
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                var textDocument = (TextDocument)document.Object("TextDocument");
-                var startPoint = textDocument?.StartPoint?.CreateEditPoint();
-
-                if (startPoint == null)
-                {
-                    // Error during mapping: Unable to find TextDocument StartPoint
-                    return null;
-                };
-
-                return startPoint.GetText(textDocument.EndPoint);
+                var wpfTextView = await VS.Editor.GetCurrentWpfTextViewAsync();
+                return wpfTextView?.TextBuffer?.CurrentSnapshot?.GetText();
             }
             catch (COMException)
             {
@@ -102,35 +67,20 @@ namespace CodeNav.Helpers
 
         public static async Task<int> GetNumberOfLines()
         {
-            var document = GetActiveDocument();
-
-            if (document == null)
-            {
-                return 0;
-            }
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            var fullName = document.FullName;
-
-            if (!File.Exists(fullName))
-            {
-                return 0;
-            }
-
-            return File.ReadLines(fullName).Count();
+            var wpfTextView = await VS.Editor.GetCurrentWpfTextViewAsync();
+            return wpfTextView?.TextViewLines?.Count ?? 0;
         }
 
         /// <summary>
         /// Get the active document
         /// </summary>
-        /// <param name="dte"></param>
         /// <returns></returns>
-        public static Document GetActiveDocument()
+        public static async Task<Document> GetActiveDocument()
         {
             try
             {
-                return ProjectHelper.DTE.ActiveDocument;
+                var dte = await VS.GetDTEAsync();
+                return dte.ActiveDocument;
             }
             catch (ArgumentException)
             {
@@ -151,19 +101,8 @@ namespace CodeNav.Helpers
 
         public static async Task<TextSelection> GetActiveDocumentTextSelection()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            var document = GetActiveDocument();
-
-            try
-            {
-                return document?.Selection as TextSelection;
-            }
-            catch
-            {
-            }
-
-            return null;
+            var textDocument = await VS.Editor.GetActiveTextDocumentAsync();
+            return textDocument?.Selection;
         }
 
         public static async Task<int?> GetActiveDocumentTextCurrentLine()

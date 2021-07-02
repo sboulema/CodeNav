@@ -12,7 +12,6 @@ using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using CodeNav.Mappers.JavaScript;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.Mappers
 {
@@ -61,11 +60,10 @@ namespace CodeNav.Mappers
         /// <summary>
         /// Map the active document in the workspace
         /// </summary>
-        /// <param name="activeDocument">active EnvDTE.document</param>
         /// <param name="control">CodeNav control that will show the result</param>
         /// <param name="workspace">Current Visual Studio workspace</param>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocumentAsync(EnvDTE.Document activeDocument, ICodeViewUserControl control, 
+        public static async Task<List<CodeItem>> MapDocument(ICodeViewUserControl control, 
             VisualStudioWorkspace workspace)
         {
             _control = control;
@@ -77,31 +75,30 @@ namespace CodeNav.Mappers
 
             try
             {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var fileName = await DocumentHelper.GetFileName();
 
-                var filePath = await DocumentHelper.GetFullName(activeDocument);
-
-                if (string.IsNullOrEmpty(filePath))
+                if (string.IsNullOrEmpty(fileName))
                 {
-                    return await MapDocument(activeDocument);
+                    return await MapDocument();
                 }
 
-                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(filePath).FirstOrDefault();
+                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(fileName).FirstOrDefault();
 
                 // We can not find the requested document in the current solution,
                 // Try and map it in a different way
                 if (id == null)
                 {
-                    return await MapDocument(activeDocument);
+                    return await MapDocument();
                 }
 
-                var document = workspace.CurrentSolution.GetDocument(id);
+                var codeAnalysisDocument = workspace.CurrentSolution.GetDocument(id);
 
-                return await MapDocumentAsync(document);
+                return await MapDocument(codeAnalysisDocument);
             }
             catch (Exception e)
             {
-                LogHelper.Log("Error during mapping", e, null, activeDocument.Language);
+                var language = await LanguageHelper.GetActiveDocumentLanguage();
+                LogHelper.Log("Error during mapping", e, null, language.ToString());
                 return null;
             }
         }
@@ -111,26 +108,26 @@ namespace CodeNav.Mappers
         /// </summary>
         /// <param name="document">a CodeAnalysis document</param>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocumentAsync(Document document)
+        public static async Task<List<CodeItem>> MapDocument(Document codeAnalysisDocument)
         {
-            if (document == null)
+            if (codeAnalysisDocument == null)
             {
                 return null;
             }
 
-            if (Path.GetExtension(document.FilePath).Equals(".js"))
+            if (Path.GetExtension(codeAnalysisDocument.FilePath).Equals(".js"))
             {
-                return SyntaxMapperJS.Map(document, _control);
+                return SyntaxMapperJS.Map(codeAnalysisDocument, _control);
             }
 
-            _tree = await document.GetSyntaxTreeAsync();
+            _tree = await codeAnalysisDocument.GetSyntaxTreeAsync();
 
             if (_tree == null)
             {
                 return null;
             }
 
-            _semanticModel = await document.GetSemanticModelAsync();
+            _semanticModel = await codeAnalysisDocument.GetSemanticModelAsync();
             var root = await _tree.GetRootAsync();
 
             switch (LanguageHelper.GetLanguage(root.Language))
@@ -145,24 +142,26 @@ namespace CodeNav.Mappers
         }
 
         /// <summary>
-        /// Map an EnvDTE.Document, used for files outside of the current solution eg. [from metadata]
+        /// Map the active document, used for files outside of the current solution eg. [from metadata]
         /// </summary>
-        /// <param name="document">An EnvDTE.Document</param>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocument(EnvDTE.Document document)
+        public static async Task<List<CodeItem>> MapDocument()
         {
-            var text = await DocumentHelper.GetText(document);
+            var text = await DocumentHelper.GetText();
 
-            if (string.IsNullOrEmpty(text)) return new List<CodeItem>();
-
-            if (Path.GetExtension(await DocumentHelper.GetFullName(document)).Equals(".js"))
+            if (string.IsNullOrEmpty(text))
             {
-                return await SyntaxMapperJS.Map(document, _control);
+                return new List<CodeItem>();
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            if (Path.GetExtension(await DocumentHelper.GetFileName()).Equals(".js"))
+            {
+                return SyntaxMapperJS.Map(await DocumentHelper.GetFileName(), _control);
+            }
 
-            switch (LanguageHelper.GetLanguage(document.Language))
+            var language = await LanguageHelper.GetActiveDocumentLanguage();
+
+            switch (language)
             {
                 case LanguageEnum.CSharp:
                     _tree = CSharpSyntaxTree.ParseText(text);

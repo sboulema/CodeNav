@@ -1,10 +1,8 @@
-﻿using CodeNav.Helpers;
-using CodeNav.Models;
+﻿using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using Zu.TypeScript;
 using Zu.TypeScript.TsTypes;
@@ -14,11 +12,6 @@ namespace CodeNav.Mappers.JavaScript
     public static class SyntaxMapperJS
     {
         private static ICodeViewUserControl _control;
-
-        public static async Task<List<CodeItem>> Map(EnvDTE.Document document, ICodeViewUserControl control)
-        {
-            return Map(await DocumentHelper.GetFullName(document), control);
-        }
 
         public static List<CodeItem> Map(Document document, ICodeViewUserControl control)
             => Map(document.FilePath, control);

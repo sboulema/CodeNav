@@ -7,14 +7,13 @@ using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
 using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
 using AsyncTask = System.Threading.Tasks.Task;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Community.VisualStudio.Toolkit;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.ToolWindow
 {
-    using System.Linq;
-    using System.Runtime.InteropServices;
-    using CodeNav.Properties;
-    using Microsoft.VisualStudio.Shell;
-
     [Guid("88d7674e-67d3-4835-9e0e-aa893dfc985a")]
     public class CodeNavToolWindow : ToolWindowPane
     {
@@ -38,21 +37,18 @@ namespace CodeNav.ToolWindow
             var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
             _workspace = codeNavToolWindowPackage.ComponentModel.GetService<VisualStudioWorkspace>();
 
-            _ = RegisterEvents();
+            RegisterEvents();
 
             _control.ShowWaitingForDocument();
         }
 
-        private async AsyncTask RegisterEvents()
+        private void RegisterEvents()
         {
-            // Wire up references for the event handlers
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            _documentEvents = ProjectHelper.DTE.Events.DocumentEvents;
+            _documentEvents = VS.Events.DocumentEvents;
             _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
             _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
-            _windowEvents = ProjectHelper.DTE.Events.WindowEvents;
+            _windowEvents = VS.Events.WindowEvents;
             _windowEvents.WindowActivated += WindowEvents_WindowActivated;
         }
 
@@ -91,7 +87,7 @@ namespace CodeNav.ToolWindow
                 _control.TextView = textViewHost.TextView;
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
-                if (Settings.Default.ShowHistoryIndicators)
+                if (Properties.Settings.Default.ShowHistoryIndicators)
                 {
                     textViewHost.TextView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
                 }

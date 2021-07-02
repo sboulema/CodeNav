@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using System.Threading.Tasks;
+using Community.VisualStudio.Toolkit;
+using Settings = CodeNav.Properties.Settings;
 
 namespace CodeNav
 {
@@ -120,21 +122,15 @@ namespace CodeNav
 
         public async Task UpdateDocument(bool forceUpdate = false)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            var activeDocument = DocumentHelper.GetActiveDocument();
-
-            if (activeDocument == null) return;
-
-            CodeDocumentViewModel.FilePath = activeDocument.FullName;
+            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFileName();
 
             // Do we need to change the side where the margin is displayed
             if (_margin?.MarginSide != null &&
                 _margin?.MarginSide != Settings.Default.MarginSide)
             {
-                var filename = activeDocument.FullName;
-                ProjectHelper.DTE?.ExecuteCommand("File.Close");
-                ProjectHelper.DTE?.ExecuteCommand("File.OpenFile", filename);
+                var dte = await VS.GetDTEAsync();
+                dte?.ExecuteCommand("File.Close");
+                await VS.Shell.OpenDocumentViaProjectAsync(CodeDocumentViewModel.FilePath);
             }
 
             try
@@ -157,7 +153,7 @@ namespace CodeNav
                     CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocumentAsync(activeDocument, this, _workspace);
+                var codeItems = await SyntaxMapper.MapDocument(this, _workspace);
 
                 if (codeItems == null)
                 {

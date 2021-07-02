@@ -1,4 +1,5 @@
 ﻿using CodeNav.Models;
+using Community.VisualStudio.Toolkit;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var solutionFilePath = await ProjectHelper.GetSolutionFileName();
+                var solutionFilePath = await VS.Solution.GetSolutionFilePathAsync();
 
                 if (!File.Exists(solutionFilePath))
                 {
@@ -50,7 +51,7 @@ namespace CodeNav.Helpers
 
         public static async Task Save<T>(T storage)
         {
-            var solutionFilePath = await ProjectHelper.GetSolutionFileName();
+            var solutionFilePath = await VS.Solution.GetSolutionFilePathAsync();
 
             if (!File.Exists(solutionFilePath))
             {

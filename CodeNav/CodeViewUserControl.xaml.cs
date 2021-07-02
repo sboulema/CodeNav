@@ -13,11 +13,12 @@ using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using System.Threading.Tasks;
+using Community.VisualStudio.Toolkit;
+using Settings = CodeNav.Properties.Settings;
 
 namespace CodeNav
 {
@@ -119,10 +120,9 @@ namespace CodeNav
 
         public async Task UpdateDocument(bool forceUpdate = false)
         {
-            var document = DocumentHelper.GetActiveDocument();
-            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFullName(document);
+            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFileName();
 
-            SwitchMarginSides();
+            _ = SwitchMarginSides();
 
             try
             {
@@ -144,7 +144,7 @@ namespace CodeNav
                     CodeDocumentViewModel.CodeDocument = CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocumentAsync(document, this, _workspace).ConfigureAwait(false);
+                var codeItems = await SyntaxMapper.MapDocument(this, _workspace).ConfigureAwait(false);
 
                 if (codeItems == null)
                 {
@@ -284,14 +284,15 @@ namespace CodeNav
             CodeDocumentViewModel.HistoryItems = storageItem.HistoryItems;
         }
 
-        private void SwitchMarginSides()
+        private async Task SwitchMarginSides()
         {
             // Do we need to change the side where the margin is displayed
             if (_margin?.MarginSide != null &&
                 _margin?.MarginSide != Settings.Default.MarginSide)
             {
-                ProjectHelper.DTE?.ExecuteCommand("File.Close");
-                ProjectHelper.DTE?.ExecuteCommand("File.OpenFile", CodeDocumentViewModel.FilePath);
+                var dte = await VS.GetDTEAsync();
+                dte?.ExecuteCommand("File.Close");
+                await VS.Shell.OpenDocumentViaProjectAsync(CodeDocumentViewModel.FilePath);
             }
         }
     }

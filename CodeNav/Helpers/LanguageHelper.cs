@@ -1,4 +1,6 @@
 ﻿using CodeNav.Models;
+using Community.VisualStudio.Toolkit;
+using System.Threading.Tasks;
 
 namespace CodeNav.Helpers
 {
@@ -22,6 +24,12 @@ namespace CodeNav.Helpers
                 default:
                     return LanguageEnum.Unknown;
             }
+        }
+
+        public static async Task<LanguageEnum> GetActiveDocumentLanguage()
+        {
+            var textDocument = await VS.Editor.GetActiveTextDocumentAsync();
+            return GetLanguage(textDocument?.Language);
         }
     }
 }
