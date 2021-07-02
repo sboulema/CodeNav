@@ -4,10 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
-using CodeNav.Properties;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -15,14 +13,12 @@ using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using CodeNav.Models;
 using System.Linq;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using Community.VisualStudio.Toolkit;
+using Settings = CodeNav.Properties.Settings;
 
 namespace CodeNav
 {
-    public class CodeNavMargin : DockPanel, IWpfTextViewMargin,
-        IVsRunningDocTableEvents
+    public class CodeNavMargin : DockPanel, IWpfTextViewMargin
     {
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
@@ -35,7 +31,6 @@ namespace CodeNav
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
-        private RunningDocumentTable rdt;
 
         public CodeNavMargin(IWpfTextViewHost textViewHost, IOutliningManagerService outliningManagerService,
             VisualStudioWorkspace workspace, MarginSideEnum side)
@@ -60,7 +55,7 @@ namespace CodeNav
 
             _ = Children.Add(_codeNavGrid);
 
-            _ = RegisterEvents();
+            RegisterEvents();
 
             UpdateSettings();
         }
@@ -198,10 +193,8 @@ namespace CodeNav
             }
         }
 
-        public async Task RegisterEvents()
+        public void RegisterEvents()
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
             // Subscribe to Cursor move event
             if (_textView?.Caret != null)
             {
@@ -216,18 +209,12 @@ namespace CodeNav
                 _textView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
             }
 
-            // Subscribe to Document Save event
-            if (Package.GetGlobalService(typeof(IOleServiceProvider)) is IOleServiceProvider sp)
-            {
-                rdt = new RunningDocumentTable(new ServiceProvider(sp));
+            // Subscribe to Document events
+            VS.Events.DocumentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            VS.Events.DocumentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
-                if (rdt == null)
-                {
-                    return;
-                }
-
-                _ = rdt.Advise(this);
-            }
+            VS.Events.DocumentEvents.DocumentOpened -= DocumentEvents_DocumentOpened;
+            VS.Events.DocumentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
 
             // Subscribe to Outlining events
             if (_outliningManager != null)
@@ -237,6 +224,16 @@ namespace CodeNav
                 _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
                 _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
             }
+        }
+
+        private void DocumentEvents_DocumentOpened(EnvDTE.Document Document)
+        {
+            _ = UpdateDocument();
+        }
+
+        private void DocumentEvents_DocumentSaved(EnvDTE.Document Document)
+        {
+            _ = UpdateDocument();
         }
 
         private void TextBuffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
@@ -375,38 +372,6 @@ namespace CodeNav
             {
                 _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
             }
-        }
-
-        public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterSave(uint docCookie)
-        {
-            _ = UpdateDocument();
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
-        {
-            _ = UpdateDocument();
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
-        {
-            return VSConstants.S_OK;
         }
 
         #endregion
