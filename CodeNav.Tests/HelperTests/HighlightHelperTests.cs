@@ -22,7 +22,7 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
+            _ = HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
             var highlightedClass = (document.CodeDocument.First() as IMembers).Members.First() as CodeClassItem;
             var highlightedItem = highlightedClass.Members[2];
@@ -41,9 +41,9 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
             };
 
-            HighlightHelper.HighlightCurrentItem(document, 15, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
+            _ = HighlightHelper.HighlightCurrentItem(document, 15, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
-            HighlightHelper.HighlightCurrentItem(document, 20, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
+            _ = HighlightHelper.HighlightCurrentItem(document, 20, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
 
 
             var highlightedItems = new List<CodeItem>();
