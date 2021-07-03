@@ -76,7 +76,6 @@ namespace CodeNav.ToolWindow
             var textViewHost = GetCurrentViewHost();
             if (textViewHost != null)
             {
-                _control.TextView = textViewHost.TextView;
                 textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
 
                 if (Properties.Settings.Default.ShowHistoryIndicators)
