@@ -48,7 +48,7 @@ namespace CodeNav.Controls
             new FilterWindow().ShowDialog();
 
             var control = FindParent<CodeViewUserControl>(this);
-            _ = control.UpdateDocument(true);
+            _ = control.UpdateDocument(forceUpdate: true);
         }
 
         private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)

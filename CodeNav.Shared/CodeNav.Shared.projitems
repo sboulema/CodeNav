@@ -88,12 +88,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\NavBarOverrider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\OutliningHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PlaceholderHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SettingsHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SolutionStorageHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SortHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SymbolHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\VisibilityHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WindowHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WpfHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeViewUserControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\BaseMapper.cs" />

@@ -13,15 +13,9 @@ namespace CodeNav
 
         void RegionsExpanded(RegionsExpandedEventArgs e);
 
-        Task UpdateDocument(bool forceUpdate = false);
-
-        List<CodeItem> CreateLineThresholdPassedItem();
+        Task UpdateDocument(string filePath = "", bool forceUpdate = false);
 
         void HighlightCurrentItem();
-
-        Task<bool> IsLargeDocument();
-
-        Task Select(object startLinePosition, object endLinePosition);
 
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);
 

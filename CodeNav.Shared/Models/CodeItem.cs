@@ -300,10 +300,10 @@ namespace CodeNav.Models
         #region Commands
         private readonly DelegateCommand _clickItemCommand;
         public ICommand ClickItemCommand => _clickItemCommand;
-        public void ClickItem(object startLinePosition)
+        public void ClickItem(object args)
         {
             _ = HistoryHelper.AddItemToHistory(this);
-            _ = DocumentHelper.ScrollToLine((LinePosition)startLinePosition);
+            _ = DocumentHelper.ScrollToLine(StartLinePosition);
         }
 
         private readonly DelegateCommand _goToDefinitionCommand;
@@ -320,7 +320,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _selectInCodeCommand;
         public ICommand SelectInCodeCommand => _selectInCodeCommand;
-        public void SelectInCode(object args) => _ = Control.Select(StartLinePosition, EndLinePosition);
+        public void SelectInCode(object args) => _ = DocumentHelper.SelectLines(Span);
 
         private readonly DelegateCommand _copyNameCommand;
         public ICommand CopyNameCommand => _copyNameCommand;
@@ -328,7 +328,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        public void RefreshCodeNav(object args) => _ = Control.UpdateDocument(true);
+        public void RefreshCodeNav(object args) => _ = Control.UpdateDocument(forceUpdate: true);
 
         private readonly DelegateCommand _expandAllCommand;
         public ICommand ExpandAllCommand => _expandAllCommand;

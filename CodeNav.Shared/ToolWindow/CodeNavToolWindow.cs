@@ -118,7 +118,7 @@ namespace CodeNav.ToolWindow
             try
             {
                 _control.SetWorkspace(_workspace);
-                _ = _control.UpdateDocument(forceUpdate);
+                _ = _control.UpdateDocument(forceUpdate: forceUpdate);
             }
             catch (Exception e)
             {

@@ -164,5 +164,15 @@ namespace CodeNav.Helpers
                 new BookmarkStyle(Brushes.MediumPurple.Color, Brushes.White.Color),
                 new BookmarkStyle(Brushes.LightGray.Color, Brushes.Black.Color),
             };
+
+        public static async Task<Dictionary<string, int>> LoadBookmarksFromStorage(string filePath)
+        {
+            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
+
+            var storageItem = solutionStorage?.Documents?
+                .FirstOrDefault(item => item.FilePath.Equals(filePath));
+
+            return storageItem?.Bookmarks ?? new Dictionary<string, int>();
+        }
     }
 }

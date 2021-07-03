@@ -25,7 +25,11 @@ namespace CodeNav.Helpers
 
         public static IOutliningManager GetOutliningManager(IOutliningManagerService outliningManagerService, ITextView textView)
         {
-            if (outliningManagerService == null) return null;
+            if (outliningManagerService == null)
+            {
+                return null;
+            }
+
             return outliningManagerService.GetOutliningManager(textView);
         }
 
@@ -116,13 +120,24 @@ namespace CodeNav.Helpers
         private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, 
             IOutliningManagerService outliningManagerService, IWpfTextView textView)
         {
-            if (item.Kind == CodeItemKindEnum.ImplementedInterface) return null;
-            if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount) return null;
+            if (item.Kind == CodeItemKindEnum.ImplementedInterface)
+            {
+                return null;
+            }
+
+            if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount)
+            {
+                return null;
+            }
 
             try
             {
                 var outliningManager = GetOutliningManager(outliningManagerService, textView);
-                if (outliningManager == null) return null;
+
+                if (outliningManager == null)
+                {
+                    return null;
+                }
 
                 var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
 
@@ -148,16 +163,16 @@ namespace CodeNav.Helpers
         /// </summary>
         private static SnapshotSpan ToSnapshotSpan(IWpfTextView textView, TextSpan textSpan)
         {
+            var currentSnapshot = textView.TextBuffer.CurrentSnapshot;
+            var snapshotSpan = new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, 0, currentSnapshot.Length);
             var span = new Span(textSpan.Start, textSpan.Length);
 
-            try
-            {
-                return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, span);
-            }
-            catch (ArgumentOutOfRangeException)
+            if (!snapshotSpan.Contains(span))
             {
                 return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, 0, 0);
             }
+
+            return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, span);
         }
 
         /// <summary>

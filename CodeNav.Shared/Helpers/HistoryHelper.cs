@@ -78,7 +78,7 @@ namespace CodeNav.Helpers
         {
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
             _ = SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel);
-            _ = item.Control.UpdateDocument(true);
+            _ = item.Control.UpdateDocument(forceUpdate: true);
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)
@@ -97,6 +97,16 @@ namespace CodeNav.Helpers
             }
 
             return null;
+        }
+
+        public static async Task<List<CodeItem>> LoadHistoryItemsFromStorage(string filePath)
+        {
+            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
+
+            var storageItem = solutionStorage?.Documents?
+                .FirstOrDefault(item => item.FilePath.Equals(filePath));
+
+            return storageItem?.HistoryItems ?? new List<CodeItem>();
         }
     }
 }

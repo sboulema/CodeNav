@@ -64,7 +64,7 @@ namespace CodeNav.Mappers
         /// <param name="workspace">Current Visual Studio workspace</param>
         /// <returns>List of found code items</returns>
         public static async Task<List<CodeItem>> MapDocument(ICodeViewUserControl control, 
-            VisualStudioWorkspace workspace)
+            VisualStudioWorkspace workspace, string filePath = "")
         {
             _control = control;
 
@@ -77,7 +77,7 @@ namespace CodeNav.Mappers
 
             try
             {
-                codeAnalysisDocument = await DocumentHelper.GetCodeAnalysisDocument(workspace);
+                codeAnalysisDocument = await DocumentHelper.GetCodeAnalysisDocument(workspace, filePath);
 
                 if (codeAnalysisDocument != null)
                 {

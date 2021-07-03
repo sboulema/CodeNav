@@ -22,7 +22,7 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => _ = FindParent(this).UpdateDocument(true);
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => _ = FindParent(this).UpdateDocument(forceUpdate: true);
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
 
@@ -32,7 +32,7 @@ namespace CodeNav.Controls
         {
             var control = FindParent(this);
             _ = new OptionsWindow().ShowDialog();
-            _ = control.UpdateDocument(true);
+            _ = control.UpdateDocument(forceUpdate: true);
         }
 
         private static ICodeViewUserControl FindParent(DependencyObject child)

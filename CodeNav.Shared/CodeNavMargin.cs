@@ -100,8 +100,7 @@ namespace CodeNav
 
             var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
-            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex],
-                textViewHost.TextView, _outliningManagerService, _workspace, this);
+            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex], _outliningManagerService, _workspace, this);
 
             grid.Children.Add(_control as UIElement);
 
@@ -132,8 +131,7 @@ namespace CodeNav
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 
-            _control = new CodeViewUserControlTop(grid.RowDefinitions[0],
-                textViewHost.TextView, _outliningManagerService, _workspace, this);
+            _control = new CodeViewUserControlTop(grid.RowDefinitions[0], _outliningManagerService, _workspace, this);
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
@@ -225,10 +223,29 @@ namespace CodeNav
         }
 
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
-            => _ = UpdateDocument();
+            => _ = WindowChangedEvent(obj);
 
         private void DocumentEvents_Saved(object sender, string e)
             => _ = UpdateDocument();
+
+        private async Task WindowChangedEvent(ActiveFrameChangeEventArgs obj)
+        {
+            if (obj.OldFrame == obj.NewFrame)
+            {
+                return;
+            }
+
+            var documentView = await obj.NewFrame.GetDocumentViewAsync();
+
+            var filePath = documentView?.Document?.FilePath;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            _ = UpdateDocument(filePath);
+        }
 
         private void TextBuffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
         {
@@ -356,15 +373,15 @@ namespace CodeNav
             }
         }
 
-        private async Task UpdateDocument()
+        private async Task UpdateDocument(string filePath = "")
         {
-            if (!await _control.IsLargeDocument().ConfigureAwait(false))
+            if (!await DocumentHelper.IsLargeDocument().ConfigureAwait(false))
             {
-                _ = _control.UpdateDocument();
+                _ = _control.UpdateDocument(filePath);
             }
             else
             {
-                _control.CodeDocumentViewModel.CodeDocument = _control.CreateLineThresholdPassedItem();
+                _control.CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();
             }
         }
 
