@@ -7,13 +7,7 @@ trigger:
     - main
     - feature/*
 
-variables:
-  patch: $[counter('versioncounter', 211)]
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
-name: 8.0.$(patch)
+name: 8.0.$(Build.BuildId)
 
 steps:
 - task: NuGetCommand@2
@@ -46,9 +40,9 @@ steps:
 - task: VSBuild@1
   displayName: 'Build Vsix'
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    solution: '**/*.sln'
+    platform: 'Any CPU'
+    configuration: 'Release'
 
 #- task: VSTest@2
 #  displayName: 'Run Tests'
