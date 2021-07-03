@@ -225,9 +225,7 @@ namespace CodeNav
         }
 
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
-        {
             => _ = UpdateDocument();
-        }
 
         private void DocumentEvents_Saved(object sender, string e)
             => _ = UpdateDocument();

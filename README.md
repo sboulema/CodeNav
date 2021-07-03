@@ -1,7 +1,7 @@
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
 
-[![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/sboulema.CodeNav)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=1)
+[![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/CodeNav?branchName=main)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=26&branchName=main)
 [![Sponsor](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/sboulema)
 
 ## Features
@@ -34,7 +34,7 @@ Visual Studio extension to show the code structure of your current document
 [Open VSIX Gallery](http://vsixgallery.com/extension/CodeNav.Samir%20Boulema.19687465-dc94-413d-ad72-6141e90c94d4/)
 
 ## Screenshots
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/Preview-dark.png)
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview-dark.png)
 
 ![Top Margin](https://i.imgur.com/5ymPOxe.jpg)
 
@@ -42,15 +42,10 @@ Visual Studio extension to show the code structure of your current document
 ![Filter window](https://i.imgur.com/MVI8ddx.png) 
 
 #### Options window
-![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/OptionsWindow.png) 
+![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/OptionsWindow.png) 
 
 #### Tool window
-![Tool window](https://raw.githubusercontent.com/sboulema/CodeNav/master/CodeNav/Resources/ToolWindow.png) 
+![Tool window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/ToolWindow.png) 
 
 #### Bookmarks
 ![Bookmarks](https://i.imgur.com/SqLgsXw.png) 
-
----
-
-![VS2017 Partner](http://i.imgur.com/wlgwRF1.png)
-
