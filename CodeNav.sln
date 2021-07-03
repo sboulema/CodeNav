@@ -11,11 +11,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav", "CodeNav\CodeNav.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.VS2022", "CodeNav.VS2022\CodeNav.VS2022.csproj", "{5F314B23-2D45-4748-90BE-362411F06EF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.Tests", "CodeNav.Tests\CodeNav.Tests.csproj", "{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeNav.Shared", "CodeNav.Shared\CodeNav.Shared.shproj", "{FDB3D737-BCD7-42B1-A560-CA869DE9BCE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.VS2019", "CodeNav.VS2019\CodeNav.VS2019.csproj", "{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CodeNav.Shared\CodeNav.Shared.projitems*{5f314b23-2d45-4748-90be-362411f06ef0}*SharedItemsImports = 4
+		CodeNav.Shared\CodeNav.Shared.projitems*{b5b2d0bd-ccdf-4e89-af10-c8c60b087ece}*SharedItemsImports = 4
+		CodeNav.Shared\CodeNav.Shared.projitems*{fdb3d737-bcd7-42b1-a560-ca869de9bce3}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -49,6 +58,18 @@ Global
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x64.Build.0 = Release|Any CPU
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x86.ActiveCfg = Release|Any CPU
 		{3FF290DC-DCE3-4B6C-B3B9-0CE6B995E908}.Release|x86.Build.0 = Release|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|x64.Build.0 = Debug|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|x86.ActiveCfg = Debug|x86
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Debug|x86.Build.0 = Debug|x86
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|x64.ActiveCfg = Release|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|x64.Build.0 = Release|Any CPU
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|x86.ActiveCfg = Release|x86
+		{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

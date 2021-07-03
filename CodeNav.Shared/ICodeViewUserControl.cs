@@ -21,8 +21,6 @@ namespace CodeNav
 
         Task<bool> IsLargeDocument();
 
-        Task SelectLine(object startLinePosition, bool extend = false);
-
         Task Select(object startLinePosition, object endLinePosition);
 
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);

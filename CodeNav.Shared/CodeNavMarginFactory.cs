@@ -7,6 +7,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using CodeNav.Models;
+using EnvDTE;
+using System.Threading.Tasks;
 
 namespace CodeNav
 {

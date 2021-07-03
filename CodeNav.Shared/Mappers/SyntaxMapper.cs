@@ -73,31 +73,22 @@ namespace CodeNav.Mappers
                 return null;
             }
 
+            Document codeAnalysisDocument;
+
             try
             {
-                var fileName = await DocumentHelper.GetFileName();
+                codeAnalysisDocument = await DocumentHelper.GetCodeAnalysisDocument(workspace);
 
-                if (string.IsNullOrEmpty(fileName))
+                if (codeAnalysisDocument != null)
                 {
-                    return await MapDocument();
+                    return await MapDocument(codeAnalysisDocument);
                 }
 
-                var id = workspace.CurrentSolution.GetDocumentIdsWithFilePath(fileName).FirstOrDefault();
-
-                // We can not find the requested document in the current solution,
-                // Try and map it in a different way
-                if (id == null)
-                {
-                    return await MapDocument();
-                }
-
-                var codeAnalysisDocument = workspace.CurrentSolution.GetDocument(id);
-
-                return await MapDocument(codeAnalysisDocument);
+                return await MapDocument(workspace);
             }
             catch (Exception e)
             {
-                var language = await LanguageHelper.GetActiveDocumentLanguage();
+                var language = await LanguageHelper.GetActiveDocumentLanguage(workspace);
                 LogHelper.Log("Error during mapping", e, null, language.ToString());
                 return null;
             }
@@ -145,7 +136,7 @@ namespace CodeNav.Mappers
         /// Map the active document, used for files outside of the current solution eg. [from metadata]
         /// </summary>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocument()
+        public static async Task<List<CodeItem>> MapDocument(VisualStudioWorkspace workspace)
         {
             var text = await DocumentHelper.GetText();
 
@@ -154,12 +145,12 @@ namespace CodeNav.Mappers
                 return new List<CodeItem>();
             }
 
-            if (Path.GetExtension(await DocumentHelper.GetFileName()).Equals(".js"))
+            if (Path.GetExtension(await DocumentHelper.GetFilePath()).Equals(".js"))
             {
-                return SyntaxMapperJS.Map(await DocumentHelper.GetFileName(), _control);
+                return SyntaxMapperJS.Map(await DocumentHelper.GetFilePath(), _control);
             }
 
-            var language = await LanguageHelper.GetActiveDocumentLanguage();
+            var language = await LanguageHelper.GetActiveDocumentLanguage(workspace);
 
             switch (language)
             {

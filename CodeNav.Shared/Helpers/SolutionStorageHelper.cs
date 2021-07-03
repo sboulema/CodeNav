@@ -17,7 +17,8 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var solutionFilePath = await VS.Solution.GetSolutionFilePathAsync();
+                var solution = await VS.Solution.GetCurrentSolutionAsync();
+                var solutionFilePath = solution.FileName;
 
                 if (!File.Exists(solutionFilePath))
                 {
@@ -51,7 +52,8 @@ namespace CodeNav.Helpers
 
         public static async Task Save<T>(T storage)
         {
-            var solutionFilePath = await VS.Solution.GetSolutionFilePathAsync();
+            var solution = await VS.Solution.GetCurrentSolutionAsync();
+            var solutionFilePath = solution.FileName;
 
             if (!File.Exists(solutionFilePath))
             {

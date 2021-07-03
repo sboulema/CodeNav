@@ -1,5 +1,5 @@
 ﻿using CodeNav.Models;
-using Community.VisualStudio.Toolkit;
+using Microsoft.VisualStudio.LanguageServices;
 using System.Threading.Tasks;
 
 namespace CodeNav.Helpers
@@ -26,10 +26,30 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task<LanguageEnum> GetActiveDocumentLanguage()
+        public static async Task<LanguageEnum> GetActiveDocumentLanguage(VisualStudioWorkspace workspace)
         {
-            var textDocument = await VS.Editor.GetActiveTextDocumentAsync();
-            return GetLanguage(textDocument?.Language);
+            var document = await DocumentHelper.GetCodeAnalysisDocument(workspace);
+
+            if (document == null)
+            {
+                return LanguageEnum.Unknown;
+            }
+
+            var tree = await document.GetSyntaxTreeAsync();
+
+            if (tree == null)
+            {
+                return LanguageEnum.Unknown;
+            }
+
+            var root = await tree.GetRootAsync();
+
+            if (root == null)
+            {
+                return LanguageEnum.Unknown;
+            }
+
+            return GetLanguage(root.Language);
         }
     }
 }

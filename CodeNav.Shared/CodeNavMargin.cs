@@ -15,7 +15,6 @@ using System.Linq;
 using Task = System.Threading.Tasks.Task;
 using Community.VisualStudio.Toolkit;
 using Settings = CodeNav.Properties.Settings;
-using EnvDTE;
 
 namespace CodeNav
 {
@@ -32,7 +31,6 @@ namespace CodeNav
         private readonly IOutliningManager _outliningManager;
         private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
-        private DocumentEvents _documentEvents;
 
         public CodeNavMargin(IWpfTextViewHost textViewHost, IOutliningManagerService outliningManagerService,
             VisualStudioWorkspace workspace, MarginSideEnum side)
@@ -42,7 +40,6 @@ namespace CodeNav
             _outliningManagerService = outliningManagerService;
             _outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, _textView);
             _workspace = workspace;
-            _documentEvents = VS.Events.DocumentEvents;
             MarginSide = side;
 
             // Add the view/content to the margin area
@@ -213,11 +210,7 @@ namespace CodeNav
             }
 
             // Subscribe to Document events
-            _documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-
-            _documentEvents.DocumentOpened -= DocumentEvents_DocumentOpened;
-            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
+            VS.Events.DocumentEvents.Saved += DocumentEvents_Saved;
 
             // Subscribe to Outlining events
             if (_outliningManager != null)
@@ -227,17 +220,17 @@ namespace CodeNav
                 _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
                 _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
             }
+
+            VS.Events.WindowEvents.ActiveFrameChanged += WindowEvents_ActiveFrameChanged;
         }
 
-        private void DocumentEvents_DocumentOpened(EnvDTE.Document Document)
+        private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
         {
-            _ = UpdateDocument();
+            => _ = UpdateDocument();
         }
 
-        private void DocumentEvents_DocumentSaved(EnvDTE.Document Document)
-        {
-            _ = UpdateDocument();
-        }
+        private void DocumentEvents_Saved(object sender, string e)
+            => _ = UpdateDocument();
 
         private void TextBuffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
         {

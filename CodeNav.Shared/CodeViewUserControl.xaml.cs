@@ -58,51 +58,8 @@ namespace CodeNav
 
         private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => _ = UpdateDocument(true);
 
-        public async Task SelectLine(object startLinePosition, bool extend = false)
-        {
-            int line;
-            int offset;
-
-            try
-            {
-                var linePosition = (LinePosition)startLinePosition;
-                line = linePosition.Line + 1;
-                offset = linePosition.Character + 1;
-            }
-            catch (Exception)
-            {
-                // StartLine is not a valid int for document
-                return;
-            }
-
-            var textSelection = await DocumentHelper.GetActiveDocumentTextSelection().ConfigureAwait(false);
-
-            if (textSelection == null)
-            {
-                return;
-            }
-
-            try
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                textSelection.MoveToLineAndOffset(line, offset, extend);
-
-                var tp = (TextPoint)textSelection.TopPoint;
-                _ = tp.TryToShow(vsPaneShowHow.vsPaneShowCentered, null);
-            }
-            catch (Exception)
-            {
-                // GotoLine failed
-                return;
-            }
-        }
-
         public async Task Select(object startLinePosition, object endLinePosition)
-        {
-            await SelectLine(startLinePosition).ConfigureAwait(false);
-            await SelectLine(endLinePosition, true).ConfigureAwait(false);
-        }
+            => await DocumentHelper.SelectLines((LinePosition)startLinePosition, (LinePosition)endLinePosition).ConfigureAwait(false);
 
         public void FilterBookmarks()
             => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
@@ -120,7 +77,7 @@ namespace CodeNav
 
         public async Task UpdateDocument(bool forceUpdate = false)
         {
-            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFileName();
+            CodeDocumentViewModel.FilePath = await DocumentHelper.GetFilePath();
 
             _ = SwitchMarginSides();
 
@@ -290,9 +247,8 @@ namespace CodeNav
             if (_margin?.MarginSide != null &&
                 _margin?.MarginSide != Settings.Default.MarginSide)
             {
-                var dte = await VS.GetDTEAsync();
-                dte?.ExecuteCommand("File.Close");
-                await VS.Shell.OpenDocumentViaProjectAsync(CodeDocumentViewModel.FilePath);
+                await VS.Commands.ExecuteAsync("File.Close");
+                await VS.Commands.ExecuteAsync("File.Open", CodeDocumentViewModel.FilePath);
             }
         }
     }

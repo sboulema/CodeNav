@@ -12,7 +12,6 @@ using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
 using Microsoft.VisualStudio.Shell;
-using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Models
@@ -27,7 +26,7 @@ namespace CodeNav.Models
             _goToEndCommand = new DelegateCommand(GoToEnd, null);
             _selectInCodeCommand = new DelegateCommand(SelectInCode, null);
             _copyNameCommand = new DelegateCommand(CopyName, null);
-            _refreshCommand = new DelegateCommand(Refresh, null);
+            _refreshCommand = new DelegateCommand(RefreshCodeNav, null);
             _expandAllCommand = new DelegateCommand(ExpandAll, null);
             _collapseAllCommand = new DelegateCommand(CollapseAll, null);
             _bookmarkCommand = new DelegateCommand(Bookmark, null);
@@ -304,12 +303,12 @@ namespace CodeNav.Models
         public void ClickItem(object startLinePosition)
         {
             _ = HistoryHelper.AddItemToHistory(this);
-            _ = Control.SelectLine(startLinePosition);
+            _ = DocumentHelper.ScrollToLine((LinePosition)startLinePosition);
         }
 
         private readonly DelegateCommand _goToDefinitionCommand;
         public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
-        public void GoToDefinition(object args) => _ = Control.SelectLine(StartLinePosition);
+        public void GoToDefinition(object args) => _ = DocumentHelper.ScrollToLine(StartLinePosition);
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
@@ -317,7 +316,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
-        public void GoToEnd(object args) => _ = Control.SelectLine(EndLinePosition);
+        public void GoToEnd(object args) => _ = DocumentHelper.ScrollToLine(EndLinePosition);
 
         private readonly DelegateCommand _selectInCodeCommand;
         public ICommand SelectInCodeCommand => _selectInCodeCommand;
@@ -329,7 +328,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        public void Refresh(object args) => _ = Control.UpdateDocument(true);
+        public void RefreshCodeNav(object args) => _ = Control.UpdateDocument(true);
 
         private readonly DelegateCommand _expandAllCommand;
         public ICommand ExpandAllCommand => _expandAllCommand;

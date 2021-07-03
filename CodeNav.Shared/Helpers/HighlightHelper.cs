@@ -23,14 +23,14 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            var currentLine = await DocumentHelper.GetActiveDocumentTextCurrentLine();
+            var lineNumber = await DocumentHelper.GetCurrentLineNumber();
 
-            if (currentLine == null)
+            if (lineNumber == null)
             {
                 return;
             }
 
-            await HighlightCurrentItem(codeDocumentViewModel, currentLine.Value,
+            await HighlightCurrentItem(codeDocumentViewModel, lineNumber.Value,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
                 GetBackgroundBrush().Color,
                 ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),

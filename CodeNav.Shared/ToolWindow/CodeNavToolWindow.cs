@@ -11,6 +11,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
+using WindowEvents = Community.VisualStudio.Toolkit.WindowEvents;
+using DocumentEvents = Community.VisualStudio.Toolkit.DocumentEvents;
 
 namespace CodeNav.ToolWindow
 {
@@ -45,40 +47,30 @@ namespace CodeNav.ToolWindow
         private void RegisterEvents()
         {
             _documentEvents = VS.Events.DocumentEvents;
-            _documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-            _documentEvents.DocumentOpened += DocumentEvents_DocumentOpened;
+            _documentEvents.Saved += DocumentEvents_Saved;
+            _documentEvents.Opened += DocumentEvents_Opened;
 
             _windowEvents = VS.Events.WindowEvents;
-            _windowEvents.WindowActivated += WindowEvents_WindowActivated;
+            _windowEvents.FrameIsVisibleChanged += WindowEvents_FrameIsVisibleChanged;
         }
 
-        private void DocumentEvents_DocumentOpened(Document document)
-        {
-            _ = DocumentOpenedEvents(document);
-        }
+        private void WindowEvents_FrameIsVisibleChanged(FrameVisibilityEventArgs obj)
+            => WindowEvents_WindowActivated();
 
-        private async AsyncTask DocumentOpenedEvents(Document document)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            WindowEvents_WindowActivated(document.ActiveWindow, document.ActiveWindow);
-        }
+        private void DocumentEvents_Opened(object sender, string e)
+            => UpdateDocument();
 
-        private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
-            _control.RegionsCollapsed(e);
+        private void DocumentEvents_Saved(object sender, string e)
+            => UpdateDocument();
 
-        private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
-            _control.RegionsExpanded(e);
+        private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)
+            => _control.RegionsCollapsed(e);
 
-        #pragma warning disable VSTHRD100
-        private async void DocumentEvents_DocumentSaved(Document document)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e)
+            => _control.RegionsExpanded(e);
 
-            await UpdateDocumentAsync(document.ActiveWindow);
-        }
-
-        private async void WindowEvents_WindowActivated(Window gotFocus, Window lostFocus)
+        private void WindowEvents_WindowActivated()
         {
             // Wire up reference for Caret events
             var textViewHost = GetCurrentViewHost();
@@ -106,9 +98,8 @@ namespace CodeNav.ToolWindow
                 }
             }
 
-            await UpdateDocumentAsync(gotFocus, gotFocus != lostFocus);
+            UpdateDocument();
         }
-        #pragma warning restore VSTHRD100
 
         private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
         {
@@ -122,18 +113,10 @@ namespace CodeNav.ToolWindow
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
-        private async AsyncTask UpdateDocumentAsync(Window window, bool forceUpdate = false)
+        private void UpdateDocument(bool forceUpdate = false)
         {
             try
             {
-                // If the activated window does not have code we are not interested
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                if (window == null || window.Document == null)
-                {
-                    return;
-                }
-
                 _control.SetWorkspace(_workspace);
                 _ = _control.UpdateDocument(forceUpdate);
             }
