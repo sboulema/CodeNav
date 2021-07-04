@@ -64,27 +64,20 @@ namespace CodeNav.Mappers
         /// <param name="workspace">Current Visual Studio workspace</param>
         /// <returns>List of found code items</returns>
         public static async Task<List<CodeItem>> MapDocument(ICodeViewUserControl control, 
-            VisualStudioWorkspace workspace, string filePath = "")
+            VisualStudioWorkspace workspace = null, string filePath = "")
         {
             _control = control;
 
-            if (workspace == null)
-            {
-                return null;
-            }
-
-            Document codeAnalysisDocument;
-
             try
             {
-                codeAnalysisDocument = await DocumentHelper.GetCodeAnalysisDocument(workspace, filePath);
+                var codeAnalysisDocument = await DocumentHelper.GetCodeAnalysisDocument(workspace, filePath);
 
                 if (codeAnalysisDocument != null)
                 {
                     return await MapDocument(codeAnalysisDocument);
                 }
 
-                return await MapDocument(workspace);
+                return await MapDocument();
             }
             catch (Exception e)
             {
@@ -133,11 +126,20 @@ namespace CodeNav.Mappers
         }
 
         /// <summary>
-        /// Map the active document, used for files outside of the current solution eg. [from metadata]
+        /// Map the active document without workspace
         /// </summary>
         /// <returns>List of found code items</returns>
-        public static async Task<List<CodeItem>> MapDocument(VisualStudioWorkspace workspace)
+        public static async Task<List<CodeItem>> MapDocument()
         {
+            var filePath = await DocumentHelper.GetFilePath();
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return new List<CodeItem>();
+            }
+
+            var fileExtension = Path.GetExtension(filePath);
+
             var text = await DocumentHelper.GetText();
 
             if (string.IsNullOrEmpty(text))
@@ -145,16 +147,11 @@ namespace CodeNav.Mappers
                 return new List<CodeItem>();
             }
 
-            if (Path.GetExtension(await DocumentHelper.GetFilePath()).Equals(".js"))
+            switch (fileExtension)
             {
-                return SyntaxMapperJS.Map(await DocumentHelper.GetFilePath(), _control);
-            }
-
-            var language = await LanguageHelper.GetActiveDocumentLanguage(workspace);
-
-            switch (language)
-            {
-                case LanguageEnum.CSharp:
+                case ".js":
+                    return SyntaxMapperJS.Map(filePath, _control);
+                case ".cs":
                     _tree = CSharpSyntaxTree.ParseText(text);
 
                     try
@@ -171,7 +168,7 @@ namespace CodeNav.Mappers
                     var root = (CompilationUnitSyntax)await _tree.GetRootAsync();
 
                     return root.Members.Select(MapMember).ToList();
-                case LanguageEnum.VisualBasic:
+                case ".vb":
                     _tree = VisualBasic.VisualBasicSyntaxTree.ParseText(text);
 
                     try
@@ -190,7 +187,7 @@ namespace CodeNav.Mappers
                     return rootVB.Members.Select(MapMember).ToList();
                 default:
                     return new List<CodeItem>();
-            }           
+            }        
         }
 
         public static CodeItem MapMember(MemberDeclarationSyntax member)

@@ -80,6 +80,11 @@
     <DeployExtension Condition=" '$(AppVeyor)' != '' Or '$(TF_BUILD)' != '' ">False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CodeNavToolWindowCommandTable.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CodeNavToolWindowCommandTable.vsct</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -100,6 +105,11 @@
       <Link>Resources\Preview-small.png</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+	<VSCTCompile Include="CodeNavToolWindowCommandTable.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>CodeNavToolWindowCommandTable.cs</LastGenOutput>
+    </VSCTCompile>
     <None Include="Properties\DataSources\CodeNav.Models.FilterRule.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -147,6 +157,11 @@
     </PackageReference>
     <PackageReference Include="Community.VisualStudio.Toolkit">
       <Version>17.0.75.165-pre</Version>
+    </PackageReference>
+    <PackageReference Include="Community.VisualStudio.VSCT">
+      <Version>16.0.29.6</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.ApplicationInsights">
       <Version>2.17.0</Version>

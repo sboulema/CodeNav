@@ -113,6 +113,11 @@ namespace CodeNav.Helpers
 
         public static async Task<Document> GetCodeAnalysisDocument(VisualStudioWorkspace workspace, string filePath = "")
         {
+            if (workspace == null)
+            {
+                return null;
+            }
+
             if (string.IsNullOrEmpty(filePath))
             {
                 filePath = await GetFilePath().ConfigureAwait(false);

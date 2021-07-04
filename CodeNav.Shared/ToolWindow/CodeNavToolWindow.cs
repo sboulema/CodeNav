@@ -1,62 +1,58 @@
 ﻿using System;
 using CodeNav.Helpers;
-using EnvDTE;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-using Microsoft.VisualStudio.TextManager.Interop;
-using DefGuidList = Microsoft.VisualStudio.Editor.DefGuidList;
-using AsyncTask = System.Threading.Tasks.Task;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
-using WindowEvents = Community.VisualStudio.Toolkit.WindowEvents;
-using DocumentEvents = Community.VisualStudio.Toolkit.DocumentEvents;
+using Microsoft.VisualStudio.Imaging;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Threading;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.ToolWindow
 {
-    [Guid("88d7674e-67d3-4835-9e0e-aa893dfc985a")]
-    public class CodeNavToolWindow : ToolWindowPane
+    public class CodeNavToolWindow : BaseToolWindow<CodeNavToolWindow>
     {
-        private readonly CodeViewUserControl _control;
-        private WindowEvents _windowEvents;
-        private DocumentEvents _documentEvents;
-        private VisualStudioWorkspace _workspace;
+        private CodeViewUserControl _control;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CodeNavToolWindow"/> class.
-        /// </summary>
-        public CodeNavToolWindow() : base(null)
+        public override string GetTitle(int toolWindowId) => "CodeNav";
+
+        public override Type PaneType => typeof(Pane);
+
+        public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
         {
-            Caption = "CodeNav";
-            _control = new CodeViewUserControl(null);
-            Content = _control;
-        }
-
-        public override void OnToolWindowCreated()
-        {
-            var codeNavToolWindowPackage = Package as CodeNavToolWindowPackage;
-            _workspace = codeNavToolWindowPackage.ComponentModel.GetService<VisualStudioWorkspace>();
-
             RegisterEvents();
 
-            _control.ShowWaitingForDocument();
+            await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            _control = new CodeViewUserControl();
+
+            _control.CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateSelectDocumentItem();
+
+            return _control;
+        }
+
+        [Guid("88d7674e-67d3-4835-9e0e-aa893dfc985a")]
+        public class Pane : ToolWindowPane
+        {
+            public Pane()
+            {
+                BitmapImageMoniker = KnownMonikers.DocumentOutline;
+            }
         }
 
         private void RegisterEvents()
         {
-            _documentEvents = VS.Events.DocumentEvents;
-            _documentEvents.Saved += DocumentEvents_Saved;
-            _documentEvents.Opened += DocumentEvents_Opened;
-
-            _windowEvents = VS.Events.WindowEvents;
-            _windowEvents.FrameIsVisibleChanged += WindowEvents_FrameIsVisibleChanged;
+            VS.Events.DocumentEvents.Saved += DocumentEvents_Saved;
+            VS.Events.DocumentEvents.Opened += DocumentEvents_Opened;
+            VS.Events.WindowEvents.ActiveFrameChanged += WindowEvents_ActiveFrameChanged;
         }
 
-        private void WindowEvents_FrameIsVisibleChanged(FrameVisibilityEventArgs obj)
-            => WindowEvents_WindowActivated();
-
+        private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
+            => _ = WindowEvents_WindowActivated(obj);
 
         private void DocumentEvents_Opened(object sender, string e)
             => UpdateDocument();
@@ -70,34 +66,50 @@ namespace CodeNav.ToolWindow
         private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e)
             => _control.RegionsExpanded(e);
 
-        private void WindowEvents_WindowActivated()
+        private async Task WindowEvents_WindowActivated(ActiveFrameChangeEventArgs obj)
         {
-            // Wire up reference for Caret events
-            var textViewHost = GetCurrentViewHost();
-            if (textViewHost != null)
+            if (obj.OldFrame == obj.NewFrame)
             {
-                textViewHost.TextView.Caret.PositionChanged += Caret_PositionChanged;
-
-                if (Properties.Settings.Default.ShowHistoryIndicators)
-                {
-                    textViewHost.TextView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
-                }
-
-                // Subscribe to Outlining events
-                var outliningManagerService = OutliningHelper.GetOutliningManagerService(Package as IServiceProvider);
-                var outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, GetCurrentViewHost().TextView);
-
-                if (outliningManager != null && outliningManagerService != null)
-                {
-                    _control.OutliningManagerService = outliningManagerService;
-                    outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-                    outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-                    outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-                    outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
-                }
+                return;
             }
 
-            UpdateDocument();
+            var documentView = await obj.NewFrame.GetDocumentViewAsync();
+
+            var filePath = documentView?.Document?.FilePath;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            var textView = documentView?.TextView;
+
+            if (textView == null)
+            {
+                return;
+            }
+
+            textView.Caret.PositionChanged += Caret_PositionChanged;
+
+            if (Properties.Settings.Default.ShowHistoryIndicators)
+            {
+                textView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+            }
+
+            // Subscribe to Outlining events
+            var outliningManagerService = OutliningHelper.GetOutliningManagerService(Package);
+            var outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, textView);
+
+            if (outliningManager != null && outliningManagerService != null)
+            {
+                _control.OutliningManagerService = outliningManagerService;
+                outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+                outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+                outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+                outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+            }
+
+            UpdateDocument(filePath);
         }
 
         private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
@@ -112,39 +124,16 @@ namespace CodeNav.ToolWindow
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
 
-        private void UpdateDocument(bool forceUpdate = false)
+        private void UpdateDocument(string filePath = "", bool forceUpdate = false)
         {
             try
             {
-                _control.SetWorkspace(_workspace);
-                _ = _control.UpdateDocument(forceUpdate: forceUpdate);
+                _ = _control.UpdateDocument(filePath, forceUpdate);
             }
             catch (Exception e)
             {
                 LogHelper.Log("Error updating document in ToolWindow", e);
             }
-        }
-
-        private IWpfTextViewHost GetCurrentViewHost()
-        {
-            // code to get access to the editor's currently selected text cribbed from
-            // http://msdn.microsoft.com/en-us/library/dd884850.aspx
-
-            var txtMgr = (IVsTextManager)GetService(typeof(SVsTextManager));
-            var mustHaveFocus = 1;
-            txtMgr.GetActiveView(mustHaveFocus, null, out IVsTextView vTextView);
-
-            if (!(vTextView is IVsUserData userData))
-            {
-                return null;
-            }
-
-            IWpfTextViewHost viewHost;
-            Guid guidViewHost = DefGuidList.guidIWpfTextViewHost;
-            userData.GetData(ref guidViewHost, out var holder);
-            viewHost = (IWpfTextViewHost)holder;
-
-            return viewHost;
         }
     }
 }

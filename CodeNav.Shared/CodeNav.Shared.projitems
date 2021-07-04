@@ -162,9 +162,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowPackage.vsct" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)ToolWindow\VSPackage.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>

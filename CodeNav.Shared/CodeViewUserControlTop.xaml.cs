@@ -61,18 +61,6 @@ namespace CodeNav
             => await DocumentHelper.UpdateDocument(this, _workspace, CodeDocumentViewModel, _cache,
                 OutliningManagerService, _margin, null, _row, filePath, forceUpdate).ConfigureAwait(false);
 
-        #region Custom Items
-
-        /// <summary>
-        /// Show an item to indicate that the user has to select an active code document to inspect
-        /// </summary>
-        public void ShowWaitingForDocument()
-        {
-            CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateSelectDocumentItem();
-        }
-
-        #endregion
-
         public void HighlightCurrentItem()
         {
             _ = HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
