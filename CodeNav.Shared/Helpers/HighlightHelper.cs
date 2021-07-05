@@ -37,21 +37,20 @@ namespace CodeNav.Helpers
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
 
-        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int currentLine, 
+        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber, 
             Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
         {
-            UnHighlight(codeDocumentViewModel, regularForegroundColor);
-            var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, currentLine);
+            var bookmarkStyles = await BookmarkHelper.GetBookmarkStyles(codeDocumentViewModel);
+
+            UnHighlight(codeDocumentViewModel.CodeDocument, regularForegroundColor, codeDocumentViewModel.Bookmarks, bookmarkStyles);
+            var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, lineNumber);
             await Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
         }
 
-        private static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel, Color foregroundColor) =>
-            UnHighlight(codeDocumentViewModel.CodeDocument, foregroundColor, codeDocumentViewModel.Bookmarks);
-
         private static void UnHighlight(List<CodeItem> codeItems, Color foregroundColor, 
-            Dictionary<string, int> bookmarks)
+            Dictionary<string, int> bookmarks, List<BookmarkStyle> bookmarkStyles)
         {
-            Parallel.ForEach(codeItems, item =>
+            foreach (var item in codeItems)
             {
                 if (item == null)
                 {
@@ -68,19 +67,19 @@ namespace CodeNav.Helpers
                 }
                 else
                 {
-                    item.ForegroundColor = item.BookmarkStyles[bookmarks[item.Id]].ForegroundColor;
+                    item.ForegroundColor = bookmarkStyles[bookmarks[item.Id]].ForegroundColor;
                 }
 
                 if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks);
+                    UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks, bookmarkStyles);
                 }
 
                 if (item is CodeClassItem classItem)
                 {
                     classItem.BorderColor = Colors.DarkGray;
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -189,7 +188,10 @@ namespace CodeNav.Helpers
         /// <returns></returns>
         private static async Task<FrameworkElement> FindItemContainer(ItemsControl itemsControl, CodeItem item)
         {
-            if (itemsControl == null) return null;
+            if (itemsControl == null)
+            {
+                return null;
+            }
 
             var itemContainer = itemsControl.ItemContainerGenerator.ContainerFromItem(item);
             var itemContainerSubItemsControl = await FindVisualChild<ItemsControl>(itemContainer);
@@ -219,12 +221,14 @@ namespace CodeNav.Helpers
                 if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
                     var found = FindCodeItem(hasMembersItem.Members, id);
+
                     if (found != null)
                     {
                         return found;
                     }
                 }
             }
+
             return null;
         }
 

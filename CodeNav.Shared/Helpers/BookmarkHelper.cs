@@ -32,7 +32,12 @@ namespace CodeNav.Helpers
                     var codeItem = codeDocumentViewModel.CodeDocument
                         .Flatten()
                         .FirstOrDefault(i => i.Id.Equals(bookmark.Key));
-                    if (codeItem == null) continue;
+
+                    if (codeItem == null)
+                    {
+                        continue;
+                    }
+
                     ApplyBookmark(codeItem, codeDocumentViewModel.BookmarkStyles[bookmark.Value]);
                 }
             }
@@ -83,7 +88,10 @@ namespace CodeNav.Helpers
         /// <param name="codeItem">code item</param>
         public static void ClearBookmark(CodeItem codeItem)
         {
-            if (codeItem == null) return;
+            if (codeItem == null)
+            {
+                return;
+            }
 
             codeItem.BackgroundColor = Brushes.Transparent.Color;
             codeItem.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
@@ -115,12 +123,15 @@ namespace CodeNav.Helpers
         {
             var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>();
 
-            if (solutionStorage?.Documents == null) return GetDefaultBookmarkStyles();
+            if (solutionStorage?.Documents == null)
+            {
+                return GetDefaultBookmarkStyles();
+            }
 
             var storageItem = solutionStorage.Documents
-                .FirstOrDefault(s => s.FilePath.Equals(codeDocumentViewModel.FilePath));
-            if (storageItem != null && storageItem.BookmarkStyles != null && 
-                storageItem.BookmarkStyles.Any(bs => bs.BackgroundColor.A != 0))
+                .FirstOrDefault(item => item.FilePath.Equals(codeDocumentViewModel.FilePath));
+
+            if (storageItem?.BookmarkStyles?.Any(style => style.BackgroundColor.A != 0) == true)
             {
                 codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }
@@ -148,10 +159,13 @@ namespace CodeNav.Helpers
             await SolutionStorageHelper.SaveToSolutionStorage(codeDocumentViewModel);
         }
 
-        public static int GetIndex(List<BookmarkStyle> bookmarkStyles, BookmarkStyle bookmarkStyle)
+        public static async Task<int> GetIndex(CodeDocumentViewModel codeDocumentViewModel, BookmarkStyle bookmarkStyle)
         {
-            return bookmarkStyles.FindIndex(b => b.BackgroundColor == bookmarkStyle.BackgroundColor && 
-            b.ForegroundColor == bookmarkStyle.ForegroundColor);
+            var bookmarkStyles = await GetBookmarkStyles(codeDocumentViewModel);
+
+            return bookmarkStyles.FindIndex(b =>
+                b.BackgroundColor == bookmarkStyle.BackgroundColor &&
+                b.ForegroundColor == bookmarkStyle.ForegroundColor);
         }
 
         private static List<BookmarkStyle> GetDefaultBookmarkStyles()

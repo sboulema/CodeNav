@@ -11,7 +11,6 @@ using CodeNav.Helpers;
 using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
-using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Models
@@ -112,7 +111,7 @@ namespace CodeNav.Models
         #endregion
 
         public List<BookmarkStyle> BookmarkStyles
-            => ThreadHelper.JoinableTaskFactory.Run(() => BookmarkHelper.GetBookmarkStyles(Control.CodeDocumentViewModel));
+            => Control.CodeDocumentViewModel.BookmarkStyles;
 
         public bool FilterOnBookmarks
         {
@@ -345,16 +344,22 @@ namespace CodeNav.Models
         public ICommand BookmarkCommand => _bookmarkCommand;
         public void Bookmark(object args)
         {
+            _ = BookmarkAsync(args);
+        }
+
+        public async Task BookmarkAsync(object args)
+        {
             try
             {
                 var bookmarkStyle = args as BookmarkStyle;
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
-                Control.CodeDocumentViewModel.AddBookmark(Id,
-                    BookmarkHelper.GetIndex(BookmarkStyles, bookmarkStyle));
+                var bookmarkStyleIndex = await BookmarkHelper.GetIndex(Control.CodeDocumentViewModel, bookmarkStyle);
 
-                _ = SaveToSolutionStorage();
+                Control.CodeDocumentViewModel.AddBookmark(Id, bookmarkStyleIndex);
+
+                await SaveToSolutionStorage();
 
                 ContextMenuIsOpen = false;
 
