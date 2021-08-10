@@ -2,7 +2,6 @@
 {
     public enum MarginSideEnum
     {
-        Unknown,
         Left,
         Right,
         None,

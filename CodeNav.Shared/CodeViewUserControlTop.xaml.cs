@@ -4,8 +4,8 @@ using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Outlining;
-using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav
 {
@@ -15,7 +15,6 @@ namespace CodeNav
     public partial class CodeViewUserControlTop : ICodeViewUserControl
     {
         private readonly RowDefinition _row;
-        private List<CodeItem> _cache;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         internal IOutliningManagerService OutliningManagerService;
         private VisualStudioWorkspace _workspace;
@@ -41,7 +40,7 @@ namespace CodeNav
 
         public void SetWorkspace(VisualStudioWorkspace workspace) => _workspace = workspace;
 
-        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => _ = UpdateDocument(forceUpdate: true);
+        private void VSColorTheme_ThemeChanged(ThemeChangedEventArgs e) => UpdateDocument();
 
         public void FilterBookmarks()
             => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
@@ -57,13 +56,13 @@ namespace CodeNav
             OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
         }
 
-        public async Task UpdateDocument(string filePath = "", bool forceUpdate = false)
-            => await DocumentHelper.UpdateDocument(this, _workspace, CodeDocumentViewModel, _cache,
-                OutliningManagerService, _margin, null, _row, filePath, forceUpdate).ConfigureAwait(false);
+        public void UpdateDocument(string filePath = "")
+            => DocumentHelper.UpdateDocument(this, _workspace, CodeDocumentViewModel,
+                OutliningManagerService, _margin, null, _row, filePath).FireAndForget();
 
-        public void HighlightCurrentItem()
+        public void HighlightCurrentItem(int lineNumber)
         {
-            _ = HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel);
+            HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel, lineNumber).FireAndForget();
 
             // Force NotifyPropertyChanged
             CodeDocumentViewModel.CodeDocumentTop = null;

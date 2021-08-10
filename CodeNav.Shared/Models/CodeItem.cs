@@ -12,6 +12,7 @@ using CodeNav.Windows;
 using System;
 using System.Runtime.Serialization;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav.Models
 {
@@ -115,31 +116,16 @@ namespace CodeNav.Models
 
         public bool FilterOnBookmarks
         {
-            get
-            {
-                return Control.CodeDocumentViewModel.FilterOnBookmarks;
-            }
-            set
-            {
-                Control.CodeDocumentViewModel.FilterOnBookmarks = value;
-            }
+            get => Control.CodeDocumentViewModel.FilterOnBookmarks;
+            set => Control.CodeDocumentViewModel.FilterOnBookmarks = value;
         }
 
-        public bool BookmarksAvailable
-        {
-            get
-            {
-                return Control.CodeDocumentViewModel.Bookmarks.Any();
-            }
-        }
+        public bool BookmarksAvailable => Control.CodeDocumentViewModel.Bookmarks.Any();
 
         private bool _contextMenuIsOpen;
         public bool ContextMenuIsOpen
         {
-            get
-            {
-                return _contextMenuIsOpen;
-            }
+            get => _contextMenuIsOpen;
             set
             {
                 _contextMenuIsOpen = value;
@@ -151,10 +137,7 @@ namespace CodeNav.Models
         private float _fontSize;
         public float FontSize
         {
-            get
-            {
-                return _fontSize;
-            }
+            get => _fontSize;
             set
             {
                 _fontSize = value;
@@ -165,10 +148,7 @@ namespace CodeNav.Models
         private float _parameterFontSize;
         public float ParameterFontSize
         {
-            get
-            {
-                return _parameterFontSize;
-            }
+            get => _parameterFontSize;
             set
             {
                 _parameterFontSize = value;
@@ -179,10 +159,7 @@ namespace CodeNav.Models
         private FontFamily _fontFamily;
         public FontFamily FontFamily
         {
-            get
-            {
-                return _fontFamily;
-            }
+            get => _fontFamily;
             set
             {
                 _fontFamily = value;
@@ -193,10 +170,7 @@ namespace CodeNav.Models
         private FontStyle _fontStyle;
         public FontStyle FontStyle
         {
-            get
-            {
-                return _fontStyle;
-            }
+            get => _fontStyle;
             set
             {
                 _fontStyle = value;
@@ -207,10 +181,7 @@ namespace CodeNav.Models
         private FontWeight _fontWeight;
         public FontWeight FontWeight
         {
-            get
-            {
-                return _fontWeight;
-            }
+            get => _fontWeight;
             set
             {
                 _fontWeight = value;
@@ -223,10 +194,7 @@ namespace CodeNav.Models
         private Visibility _visibility;
         public Visibility IsVisible
         {
-            get
-            {
-                return _visibility;
-            }
+            get => _visibility;
             set
             {
                 _visibility = value;
@@ -239,10 +207,7 @@ namespace CodeNav.Models
         private Color _foregroundColor;
         public Color ForegroundColor
         {
-            get
-            {
-                return _foregroundColor;
-            }
+            get => _foregroundColor;
             set
             {
                 _foregroundColor = value;
@@ -250,23 +215,14 @@ namespace CodeNav.Models
             }
         }
 
-        public SolidColorBrush ForegroundBrush
-        {
-            get
-            {
-                return ColorHelper.ToBrush(_foregroundColor);
-            }
-        }
+        public SolidColorBrush ForegroundBrush => ColorHelper.ToBrush(_foregroundColor);
         #endregion
 
         #region Background
         private Color _backgroundColor;
         public Color BackgroundColor
         {
-            get
-            {
-                return _backgroundColor;
-            }
+            get => _backgroundColor;
             set
             {
                 _backgroundColor = value;
@@ -274,13 +230,7 @@ namespace CodeNav.Models
             }
         }
 
-        public SolidColorBrush BackgroundBrush
-        {
-            get
-            {
-                return ColorHelper.ToBrush(_backgroundColor);
-            }
-        }
+        public SolidColorBrush BackgroundBrush => ColorHelper.ToBrush(_backgroundColor);
 
         private Color _nameBackgroundColor;
         public Color NameBackgroundColor
@@ -301,13 +251,13 @@ namespace CodeNav.Models
         public ICommand ClickItemCommand => _clickItemCommand;
         public void ClickItem(object args)
         {
-            _ = HistoryHelper.AddItemToHistory(this);
-            _ = DocumentHelper.ScrollToLine(StartLinePosition);
+            HistoryHelper.AddItemToHistory(this);
+            DocumentHelper.ScrollToLine(StartLinePosition).FireAndForget();
         }
 
         private readonly DelegateCommand _goToDefinitionCommand;
         public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
-        public void GoToDefinition(object args) => _ = DocumentHelper.ScrollToLine(StartLinePosition);
+        public void GoToDefinition(object args) => DocumentHelper.ScrollToLine(StartLinePosition).FireAndForget();
 
         private readonly DelegateCommand _clearHistoryCommand;
         public ICommand ClearHistoryCommand => _clearHistoryCommand;
@@ -315,11 +265,11 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _goToEndCommand;
         public ICommand GoToEndCommand => _goToEndCommand;
-        public void GoToEnd(object args) => _ = DocumentHelper.ScrollToLine(EndLinePosition);
+        public void GoToEnd(object args) => DocumentHelper.ScrollToLine(EndLinePosition).FireAndForget();
 
         private readonly DelegateCommand _selectInCodeCommand;
         public ICommand SelectInCodeCommand => _selectInCodeCommand;
-        public void SelectInCode(object args) => _ = DocumentHelper.SelectLines(Span);
+        public void SelectInCode(object args) => DocumentHelper.SelectLines(Span).FireAndForget();
 
         private readonly DelegateCommand _copyNameCommand;
         public ICommand CopyNameCommand => _copyNameCommand;
@@ -327,7 +277,7 @@ namespace CodeNav.Models
 
         private readonly DelegateCommand _refreshCommand;
         public ICommand RefreshCommand => _refreshCommand;
-        public void RefreshCodeNav(object args) => _ = Control.UpdateDocument(forceUpdate: true);
+        public void RefreshCodeNav(object args) => Control.UpdateDocument();
 
         private readonly DelegateCommand _expandAllCommand;
         public ICommand ExpandAllCommand => _expandAllCommand;
@@ -342,10 +292,7 @@ namespace CodeNav.Models
         /// </summary>
         private readonly DelegateCommand _bookmarkCommand;
         public ICommand BookmarkCommand => _bookmarkCommand;
-        public void Bookmark(object args)
-        {
-            _ = BookmarkAsync(args);
-        }
+        public void Bookmark(object args) => BookmarkAsync(args).FireAndForget();
 
         public async Task BookmarkAsync(object args)
         {
@@ -384,7 +331,7 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.RemoveBookmark(Id);
 
-                _ = SaveToSolutionStorage();
+                SaveToSolutionStorage().FireAndForget();
 
                 NotifyOfPropertyChange("BookmarksAvailable");
             }
@@ -405,7 +352,7 @@ namespace CodeNav.Models
             {
                 Control.CodeDocumentViewModel.ClearBookmarks();
 
-                _ = SaveToSolutionStorage();
+                SaveToSolutionStorage().FireAndForget();
 
                 NotifyOfPropertyChange("BookmarksAvailable");
             }
@@ -423,8 +370,8 @@ namespace CodeNav.Models
         public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
         public void CustomizeBookmarkStyles(object args)
         {
-            _ = new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
-            _ = BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel);
+            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
+            BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel).FireAndForget();
         }
         #endregion
 
@@ -439,7 +386,7 @@ namespace CodeNav.Models
 
             var storageItem = solutionStorageModel.Documents
                 .FirstOrDefault(d => d.FilePath.Equals(Control.CodeDocumentViewModel.FilePath));
-            _ = solutionStorageModel.Documents.Remove(storageItem);
+            solutionStorageModel.Documents.Remove(storageItem);
 
             solutionStorageModel.Documents.Add(Control.CodeDocumentViewModel);
 

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Threading;
 using Task = System.Threading.Tasks.Task;
+using Microsoft.VisualStudio.Text;
 
 namespace CodeNav.ToolWindow
 {
@@ -52,7 +53,7 @@ namespace CodeNav.ToolWindow
         }
 
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
-            => _ = WindowEvents_WindowActivated(obj);
+            => WindowEvents_WindowActivated(obj).FireAndForget();
 
         private void DocumentEvents_Opened(object sender, string e)
             => UpdateDocument();
@@ -89,11 +90,18 @@ namespace CodeNav.ToolWindow
                 return;
             }
 
-            textView.Caret.PositionChanged += Caret_PositionChanged;
-
-            if (Properties.Settings.Default.ShowHistoryIndicators)
+            if (!Properties.Settings.Default.DisableHighlight)
             {
-                textView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+                textView.Caret.PositionChanged += Caret_PositionChanged;
+            }
+
+            // Subscribe to TextBuffer changes
+            if ((textView.TextBuffer as ITextBuffer2) != null &&
+                Properties.Settings.Default.ShowHistoryIndicators)
+            {
+                var textBuffer2 = textView.TextBuffer as ITextBuffer2;
+
+                textBuffer2.ChangedOnBackground += TextBuffer_ChangedOnBackground;
             }
 
             // Subscribe to Outlining events
@@ -112,23 +120,34 @@ namespace CodeNav.ToolWindow
             UpdateDocument(filePath);
         }
 
-        private void TextBuffer_ChangedLowPriority(object sender, Microsoft.VisualStudio.Text.TextContentChangedEventArgs e)
+        private void TextBuffer_ChangedOnBackground(object sender, TextContentChangedEventArgs e)
         {
             var changedSpans = e.Changes.Select(c => c.OldSpan);
 
             foreach (var span in changedSpans)
             {
-                _ = HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
             }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            var oldLineNumber = e.OldPosition.BufferPosition.GetContainingLine().LineNumber;
+            var newLineNumber = e.OldPosition.BufferPosition.GetContainingLine().LineNumber;
 
-        private void UpdateDocument(string filePath = "", bool forceUpdate = false)
+            if (oldLineNumber == newLineNumber)
+            {
+                return;
+            }
+
+            _control.HighlightCurrentItem(newLineNumber);
+        }
+
+        private void UpdateDocument(string filePath = "")
         {
             try
             {
-                _ = _control.UpdateDocument(filePath, forceUpdate);
+                _control.UpdateDocument(filePath);
             }
             catch (Exception e)
             {

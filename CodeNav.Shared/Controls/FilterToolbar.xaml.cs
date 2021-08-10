@@ -4,13 +4,9 @@ using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using System.Windows.Media;
-using System.Threading.Tasks;
 
 namespace CodeNav.Controls
 {
-    /// <summary>
-    /// Interaction logic for FilterToolbar.xaml
-    /// </summary>
     public partial class FilterToolbar
     {
         public FilterToolbar()
@@ -48,7 +44,7 @@ namespace CodeNav.Controls
             new FilterWindow().ShowDialog();
 
             var control = FindParent<CodeViewUserControl>(this);
-            _ = control.UpdateDocument(forceUpdate: true);
+            control.UpdateDocument();
         }
 
         private void ButtonFilterBookmark_OnClick(object sender, RoutedEventArgs e)

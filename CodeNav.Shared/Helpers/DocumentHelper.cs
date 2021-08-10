@@ -4,16 +4,16 @@ using Community.VisualStudio.Toolkit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.LanguageServices;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Settings = CodeNav.Properties.Settings;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
 {
@@ -23,7 +23,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 return documentView?.Document?.FilePath;
             }
             catch (Exception)
@@ -38,7 +38,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 return documentView?.TextBuffer?.CurrentSnapshot?.GetText();
             }
             catch (Exception)
@@ -53,7 +53,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 return documentView?.TextView?.TextViewLines?.Count ?? 0;
             }
             catch (Exception)
@@ -68,7 +68,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 return documentView?.TextView?.Selection.ActivePoint.Position.GetContainingLine().LineNumber;
             }
             catch (Exception)
@@ -83,7 +83,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 var line = documentView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(linePosition.Line);
                 documentView?.TextView?.ViewScroller.EnsureSpanVisible(line.Extent);
             }
@@ -97,7 +97,7 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
 
                 var span = new Span(textSpan.Start, textSpan.Length);
                 var snapShotSpan = new SnapshotSpan(documentView?.TextBuffer.CurrentSnapshot, span);
@@ -120,7 +120,7 @@ namespace CodeNav.Helpers
 
             if (string.IsNullOrEmpty(filePath))
             {
-                filePath = await GetFilePath().ConfigureAwait(false);
+                filePath = await GetFilePath();
             }
 
             if (string.IsNullOrEmpty(filePath))
@@ -145,49 +145,34 @@ namespace CodeNav.Helpers
                 return false;
             }
 
-            return await GetNumberOfLines().ConfigureAwait(false) > Settings.Default.AutoLoadLineThreshold;
+            return await GetNumberOfLines() > Settings.Default.AutoLoadLineThreshold;
         }
 
         public static async Task UpdateDocument(ICodeViewUserControl control,
             VisualStudioWorkspace workspace,
             CodeDocumentViewModel codeDocumentViewModel,
-            List<CodeItem> cache,
             IOutliningManagerService outliningManagerService,
             CodeNavMargin margin,
             ColumnDefinition column = null,
             RowDefinition row = null,
-            string filePath = "", bool forceUpdate = false)
+            string filePath = "")
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                filePath = await GetFilePath().ConfigureAwait(false);
+                filePath = await GetFilePath();
             }
 
             codeDocumentViewModel.FilePath = filePath;
 
-            _ = VisibilityHelper.SwitchMarginSides(margin, codeDocumentViewModel.FilePath);
-
             try
             {
-                if (forceUpdate)
-                {
-                    cache = null;
-                    codeDocumentViewModel.CodeDocument.Clear();
-                }
-
-                // Do we have a cached version of this document
-                if (cache != null)
-                {
-                    codeDocumentViewModel.CodeDocument = cache;
-                }
-
                 // If not show a loading item
                 if (!codeDocumentViewModel.CodeDocument.Any())
                 {
                     codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocument(control, workspace, filePath).ConfigureAwait(false);
+                var codeItems = await SyntaxMapper.MapDocument(control, workspace, filePath);
 
                 if (codeItems == null)
                 {
@@ -200,24 +185,23 @@ namespace CodeNav.Helpers
 
                 // Sort items
                 codeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                _ = SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
 
                 // Set currently active codeitem
                 HighlightHelper.SetForeground(codeItems);
 
                 // Set the new list of codeitems as DataContext
                 codeDocumentViewModel.CodeDocument = codeItems;
-                cache = codeItems;
 
                 // Apply current visibility settings to the document
-                _ = VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel);
+                VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel);
 
                 // Apply bookmarks
-                codeDocumentViewModel.Bookmarks = await BookmarkHelper.LoadBookmarksFromStorage(codeDocumentViewModel.FilePath).ConfigureAwait(false);
-                await BookmarkHelper.ApplyBookmarks(codeDocumentViewModel).ConfigureAwait(false);
+                codeDocumentViewModel.Bookmarks = await BookmarkHelper.LoadBookmarksFromStorage(codeDocumentViewModel.FilePath);
+                BookmarkHelper.ApplyBookmarks(codeDocumentViewModel).FireAndForget();
 
                 // Apply history items
-                codeDocumentViewModel.HistoryItems = await HistoryHelper.LoadHistoryItemsFromStorage(codeDocumentViewModel.FilePath).ConfigureAwait(false);
+                codeDocumentViewModel.HistoryItems = await HistoryHelper.LoadHistoryItemsFromStorage(codeDocumentViewModel.FilePath);
                 HistoryHelper.ApplyHistoryIndicator(codeDocumentViewModel);
             }
             catch (Exception e)
@@ -228,17 +212,17 @@ namespace CodeNav.Helpers
             try
             {
                 // Sync all regions
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync().ConfigureAwait(false);
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 OutliningHelper.SyncAllRegions(outliningManagerService, documentView?.TextView, codeDocumentViewModel.CodeDocument);
 
                 // Should the margin be shown and are there any items to show, if not hide the margin
                 if (column != null)
                 {
-                    _ = VisibilityHelper.SetMarginWidth(column, codeDocumentViewModel.CodeDocument);
+                    VisibilityHelper.SetMarginWidth(column, codeDocumentViewModel.CodeDocument).FireAndForget();
                 }
                 else if (row != null)
                 {
-                    _ = VisibilityHelper.SetMarginHeight(row, codeDocumentViewModel.CodeDocument);
+                    VisibilityHelper.SetMarginHeight(row, codeDocumentViewModel.CodeDocument).FireAndForget();
                 }
             }
             catch (Exception e)

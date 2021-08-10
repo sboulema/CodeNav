@@ -15,6 +15,7 @@ using System.Linq;
 using Task = System.Threading.Tasks.Task;
 using Community.VisualStudio.Toolkit;
 using Settings = CodeNav.Properties.Settings;
+using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav
 {
@@ -53,7 +54,7 @@ namespace CodeNav
                 _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
             }
 
-            _ = Children.Add(_codeNavGrid);
+            Children.Add(_codeNavGrid);
 
             RegisterEvents();
 
@@ -180,7 +181,7 @@ namespace CodeNav
             VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
             Settings.Default.ShowMargin = !Settings.Default.ShowMargin;
             Settings.Default.Save();
-        }   
+        }
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
@@ -194,17 +195,21 @@ namespace CodeNav
         public void RegisterEvents()
         {
             // Subscribe to Cursor move event
-            if (_textView?.Caret != null)
+            if (_textView?.Caret != null &&
+                !Settings.Default.DisableHighlight)
             {
                 _textView.Caret.PositionChanged -= Caret_PositionChanged;
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
             }
 
             // Subscribe to TextBuffer changes
-            if (_textView.TextBuffer != null && Settings.Default.ShowHistoryIndicators)
+            if ((_textView.TextBuffer as ITextBuffer2) != null &&
+                Settings.Default.ShowHistoryIndicators)
             {
-                _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
-                _textView.TextBuffer.ChangedLowPriority += TextBuffer_ChangedLowPriority;
+                var textBuffer2 = _textView.TextBuffer as ITextBuffer2;
+
+                textBuffer2.ChangedOnBackground -= TextBuffer_ChangedOnBackground;
+                textBuffer2.ChangedOnBackground += TextBuffer_ChangedOnBackground;
             }
 
             // Subscribe to Document events
@@ -219,14 +224,15 @@ namespace CodeNav
                 _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
             }
 
+            VS.Events.WindowEvents.ActiveFrameChanged -= WindowEvents_ActiveFrameChanged;
             VS.Events.WindowEvents.ActiveFrameChanged += WindowEvents_ActiveFrameChanged;
         }
 
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
-            => _ = WindowChangedEvent(obj);
+            => WindowChangedEvent(obj).FireAndForget();
 
         private void DocumentEvents_Saved(object sender, string e)
-            => _ = UpdateDocument();
+            => UpdateDocument().FireAndForget();
 
         private async Task WindowChangedEvent(ActiveFrameChangeEventArgs obj)
         {
@@ -244,16 +250,16 @@ namespace CodeNav
                 return;
             }
 
-            _ = UpdateDocument(filePath);
+            UpdateDocument(filePath).FireAndForget();
         }
 
-        private void TextBuffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
+        private void TextBuffer_ChangedOnBackground(object sender, TextContentChangedEventArgs e)
         {
             var changedSpans = e.Changes.Select(c => c.OldSpan);
 
             foreach (var span in changedSpans)
             {
-                _ = HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
+                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
             }
         }
 
@@ -266,10 +272,25 @@ namespace CodeNav
         public void UnRegisterEvents()
         {
             _textView.Caret.PositionChanged -= Caret_PositionChanged;
-            _textView.TextBuffer.ChangedLowPriority -= TextBuffer_ChangedLowPriority;
+
+            if ((_textView.TextBuffer as ITextBuffer2) != null)
+            {
+                (_textView.TextBuffer as ITextBuffer2).ChangedOnBackground -= TextBuffer_ChangedOnBackground;
+            }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e) => _control.HighlightCurrentItem();
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            var oldLineNumber = e.OldPosition.BufferPosition.GetContainingLine().LineNumber;
+            var newLineNumber = e.NewPosition.BufferPosition.GetContainingLine().LineNumber;
+
+            if (oldLineNumber == newLineNumber)
+            {
+                return;
+            }
+
+            _control.HighlightCurrentItem(newLineNumber);
+        }
 
         #endregion
 
@@ -377,7 +398,7 @@ namespace CodeNav
         {
             if (!await DocumentHelper.IsLargeDocument().ConfigureAwait(false))
             {
-                _ = _control.UpdateDocument(filePath);
+                _control.UpdateDocument(filePath);
             }
             else
             {

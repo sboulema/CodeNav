@@ -80,7 +80,7 @@ namespace CodeNav
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             var margin = CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Top);
-            _ = new NavBarOverrider(margin as CodeNavMargin);
+            new NavBarOverrider(margin as CodeNavMargin);
 
             return margin;
         }
@@ -88,7 +88,7 @@ namespace CodeNav
 
     internal static class CodeNavFactory
     {
-        public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, 
+        public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost,
             VisualStudioWorkspace visualStudioWorkspace, IServiceProvider serviceProvider, MarginSideEnum side)
         {
             if (Settings.Default.MarginSide != side)

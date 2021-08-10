@@ -61,6 +61,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CodeNavMargin.cs" />
@@ -142,6 +146,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\OptionsWindowViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.xaml.cs">
+      <DependentUpon>OptionsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CustomizeBookmarkStylesWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -153,12 +161,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.Designer.cs">
       <DependentUpon>FilterWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.Designer.cs">
-      <DependentUpon>OptionsWindow.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +175,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.resx">
       <DependentUpon>FilterWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\OptionsWindow.resx">
-      <DependentUpon>OptionsWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

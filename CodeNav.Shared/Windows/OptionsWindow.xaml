@@ -1,0 +1,139 @@
+﻿<platform:DialogWindow
+    x:Class="CodeNav.OptionsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:platform="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:CodeNav.Models"
+    mc:Ignorable="d"
+    Title="CodeNav - Options"
+    MinHeight="300"
+    MinWidth="370"
+    SizeToContent="WidthAndHeight"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    toolkit:Themes.UseVsTheme="True"
+    >
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="marginSidesFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:MarginSideEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl>
+            <TabItem Header="General">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">
+                        Show CodeNav on this side of the code editor:
+                            </TextBlock>
+                            <ComboBox ItemsSource="{Binding Source={StaticResource marginSidesFromEnum}}" SelectedItem="{Binding MarginSide, Mode=TwoWay}" />
+                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
+                        *
+                            </TextBlock>
+                        </StackPanel>
+
+                        <CheckBox IsChecked="{Binding ShowFilterToolbar, Mode=TwoWay}" Margin="0,5">
+                            Show the filter toolbar
+                        </CheckBox>
+
+                        <CheckBox IsChecked="{Binding UseXMLComments, Mode=TwoWay}" Margin="0,5">
+                            Use XML comments for method tooltips
+                        </CheckBox>
+
+                        <CheckBox IsChecked="{Binding ShowHistoryIndicators, Mode=TwoWay}" Margin="0,5">
+                            Show history/edit indicators *
+                        </CheckBox>
+
+                        <CheckBox IsChecked="{Binding DisableHighlight, Mode=TwoWay}" Margin="0,5">
+                            Disable auto-highlight *
+                        </CheckBox>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">
+                        Do not auto load CodeNav for files with more than X lines:
+                            </TextBlock>
+                            <TextBox Text="{Binding AutoLoadLineThreshold, Mode=TwoWay}"></TextBox>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Margin="0,5">
+                        * Requires re-opening the editor tab to apply
+                    </TextBlock>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Fonts &amp; Colors">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Margin="0,0,5,0">
+                        Font:
+                        </TextBlock>
+                        <Button Click="ShowFontDialog">
+                            Choose font...
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Margin="0,0,5,0">
+                        Highlight background:
+                        </TextBlock>
+                        <Button Click="ShowHighlightColorDialog" Background="{Binding HighlightBrush}">
+                            Choose color...
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <TextBlock Margin="0,0,5,0">
+                        Window background:
+                        </TextBlock>
+                        <Button Click="ShowBackgroundColorDialog" Background="{Binding BackgroundBrush}">
+                            Choose color...
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <Grid Grid.Row="1" Margin="0,5,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Click="ResetClick">
+                    Reset
+                </Button>
+
+                <Button Grid.Column="2" Click="OkClick" Margin="0,0,5,0">
+                    Ok
+                </Button>
+
+                <Button Grid.Column="3" Click="CancelClick">
+                    Cancel
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+    
+</platform:DialogWindow>

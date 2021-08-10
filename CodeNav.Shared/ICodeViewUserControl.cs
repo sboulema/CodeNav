@@ -1,7 +1,6 @@
 ﻿using CodeNav.Models;
 using Microsoft.VisualStudio.Text.Outlining;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace CodeNav
 {
@@ -13,9 +12,9 @@ namespace CodeNav
 
         void RegionsExpanded(RegionsExpandedEventArgs e);
 
-        Task UpdateDocument(string filePath = "", bool forceUpdate = false);
+        void UpdateDocument(string filePath = "");
 
-        void HighlightCurrentItem();
+        void HighlightCurrentItem(int lineNumber);
 
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);
 

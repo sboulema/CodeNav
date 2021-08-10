@@ -8,6 +8,9 @@ using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 using Settings = CodeNav.Properties.Settings;
+using Microsoft.VisualStudio.LanguageServices;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Outlining;
 
 namespace CodeNav.Helpers
 {
@@ -38,7 +41,7 @@ namespace CodeNav.Helpers
                 {
                     if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                     {
-                        _ = SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
+                        SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                     }
 
                     item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
@@ -128,17 +131,6 @@ namespace CodeNav.Helpers
             else
             {
                 column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
-            }
-        }
-
-        public static async Task SwitchMarginSides(CodeNavMargin margin, string filePath)
-        {
-            // Do we need to change the side where the margin is displayed
-            if (margin?.MarginSide != null &&
-                margin?.MarginSide != Settings.Default.MarginSide)
-            {
-                await VS.Commands.ExecuteAsync("File.Close");
-                await VS.Commands.ExecuteAsync("File.Open", filePath);
             }
         }
 

@@ -1,17 +1,12 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using CodeNav.Properties;
-using CodeNav.Windows;
 
 namespace CodeNav.Controls
 {
-    /// <summary>
-    /// Interaction logic for MainToolbar.xaml
-    /// </summary>
     public partial class MainToolbar
     {
         public MainToolbar()
@@ -22,7 +17,7 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => _ = FindParent(this).UpdateDocument(forceUpdate: true);
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => FindParent(this).UpdateDocument();
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
 
@@ -30,9 +25,10 @@ namespace CodeNav.Controls
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
+            new OptionsWindow().ShowDialog();
+
             var control = FindParent(this);
-            _ = new OptionsWindow().ShowDialog();
-            _ = control.UpdateDocument(forceUpdate: true);
+            control.UpdateDocument();
         }
 
         private static ICodeViewUserControl FindParent(DependencyObject child)

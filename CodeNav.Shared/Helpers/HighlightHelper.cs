@@ -15,7 +15,7 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel)
+        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber)
         {
             if (Settings.Default.DisableHighlight ||
                 codeDocumentViewModel == null)
@@ -23,21 +23,14 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            var lineNumber = await DocumentHelper.GetCurrentLineNumber();
-
-            if (lineNumber == null)
-            {
-                return;
-            }
-
-            await HighlightCurrentItem(codeDocumentViewModel, lineNumber.Value,
+            await HighlightCurrentItem(codeDocumentViewModel, lineNumber,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
                 GetBackgroundBrush().Color,
                 ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
 
-        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber, 
+        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber,
             Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
         {
             var bookmarkStyles = await BookmarkHelper.GetBookmarkStyles(codeDocumentViewModel);

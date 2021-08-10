@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using CodeNav.Properties;
 using CodeNav.Models;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace CodeNav
 {

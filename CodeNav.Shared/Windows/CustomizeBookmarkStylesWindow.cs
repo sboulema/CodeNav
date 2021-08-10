@@ -1,8 +1,9 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
+using Microsoft.VisualStudio.Shell;
 using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Windows
 {
@@ -19,7 +20,7 @@ namespace CodeNav.Windows
         }
 
         private void CustomizeBookmarkStylesWindow_Load(object sender, EventArgs e)
-            => _ = LoadBookmarkStyles();
+            => LoadBookmarkStyles().FireAndForget();
 
         private async Task LoadBookmarkStyles()
         {
@@ -71,7 +72,7 @@ namespace CodeNav.Windows
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            _ = BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, bookmarkStylesFlowLayoutPanel.Controls);
+            BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, bookmarkStylesFlowLayoutPanel.Controls).FireAndForget();
             Close();
         }
     }

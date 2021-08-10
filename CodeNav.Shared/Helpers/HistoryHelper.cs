@@ -1,5 +1,6 @@
 ﻿using CodeNav.Models;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,18 @@ namespace CodeNav.Helpers
     {
         private const int MaxHistoryItems = 5;
 
-        public static async Task AddItemToHistory(CodeDocumentViewModel model, Span span)
+        public static void AddItemToHistory(CodeDocumentViewModel model, Span span)
         {
             var item = FindCodeItem(model.CodeDocument, span);
-            await AddItemToHistory(item);
+            AddItemToHistory(item);
         }
 
-        public static async Task AddItemToHistory(CodeItem item)
+        public static void AddItemToHistory(CodeItem item)
         {
-            if (item == null) return;
+            if (item == null)
+            {
+                return;
+            }
 
             var model = item.Control.CodeDocumentViewModel;
 
@@ -32,7 +36,7 @@ namespace CodeNav.Helpers
             model.HistoryItems.Insert(0, item);
             model.HistoryItems = model.HistoryItems.Take(MaxHistoryItems).ToList();
 
-            await SolutionStorageHelper.SaveToSolutionStorage(model);
+            SolutionStorageHelper.SaveToSolutionStorage(model).FireAndForget();
             ApplyHistoryIndicator(model);
         }
 
@@ -41,10 +45,16 @@ namespace CodeNav.Helpers
             for (var i = 0; i < model.HistoryItems.Count; i++)
             {
                 CodeItem historyItem = model.HistoryItems[i];
+
                 var codeItem = model.CodeDocument
                     .Flatten()
                     .FirstOrDefault(item => item.Id.Equals(historyItem.Id));
-                if (codeItem == null) continue;
+
+                if (codeItem == null)
+                {
+                    continue;
+                }
+
                 ApplyHistoryIndicator(codeItem, i);
             }
         }
@@ -77,8 +87,8 @@ namespace CodeNav.Helpers
         public static void ClearHistory(CodeItem item)
         {
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
-            _ = SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel);
-            _ = item.Control.UpdateDocument(forceUpdate: true);
+            SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel).FireAndForget();
+            item.Control.UpdateDocument();
         }
 
         private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)
