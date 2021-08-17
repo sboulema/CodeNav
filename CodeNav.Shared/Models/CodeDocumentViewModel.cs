@@ -4,8 +4,6 @@ using System.Runtime.Serialization;
 using System.Windows;
 using Caliburn.Micro;
 using CodeNav.Helpers;
-using CodeNav.Properties;
-using EnvDTE;
 
 namespace CodeNav.Models
 {
@@ -60,9 +58,9 @@ namespace CodeNav.Models
                     result.Add(new CodeDepthGroupItem());
                 }
 
-                (result[depth] as IMembers).Members.Add(item);             
+                (result[depth] as IMembers).Members.Add(item);
 
-                if (item is IMembers hasMembersItem && 
+                if (item is IMembers hasMembersItem &&
                     hasMembersItem != null &&
                     (hasMembersItem.Members.Any(i => i.IsHighlighted) || item.IsHighlighted))
                 {
@@ -73,9 +71,9 @@ namespace CodeNav.Models
             }
         }
 
-        public bool ShowFilterToolbar => Settings.Default.ShowFilterToolbar;
+        public bool ShowFilterToolbar => General.Instance.ShowFilterToolbar;
 
-        public Visibility ShowFilterToolbarVisibility => Settings.Default.ShowFilterToolbar
+        public Visibility ShowFilterToolbarVisibility => General.Instance.ShowFilterToolbar
             ? Visibility.Visible
             : Visibility.Collapsed;
 

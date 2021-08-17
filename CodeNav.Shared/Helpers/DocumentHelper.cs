@@ -12,7 +12,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Settings = CodeNav.Properties.Settings;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
@@ -140,19 +139,20 @@ namespace CodeNav.Helpers
 
         public static async Task<bool> IsLargeDocument()
         {
-            if (Settings.Default.AutoLoadLineThreshold == 0)
+            var general = await General.GetLiveInstanceAsync();
+
+            if (general.AutoLoadLineThreshold == 0)
             {
                 return false;
             }
 
-            return await GetNumberOfLines() > Settings.Default.AutoLoadLineThreshold;
+            return await GetNumberOfLines() > general.AutoLoadLineThreshold;
         }
 
         public static async Task UpdateDocument(ICodeViewUserControl control,
             VisualStudioWorkspace workspace,
             CodeDocumentViewModel codeDocumentViewModel,
             IOutliningManagerService outliningManagerService,
-            CodeNavMargin margin,
             ColumnDefinition column = null,
             RowDefinition row = null,
             string filePath = "")
@@ -184,8 +184,9 @@ namespace CodeNav.Helpers
                 SyntaxMapper.FilterNullItems(codeItems);
 
                 // Sort items
-                codeDocumentViewModel.SortOrder = Settings.Default.SortOrder;
-                SortHelper.Sort(codeItems, Settings.Default.SortOrder);
+                var general = await General.GetLiveInstanceAsync();
+                codeDocumentViewModel.SortOrder = (SortOrderEnum)general.SortOrder;
+                SortHelper.Sort(codeItems, (SortOrderEnum)general.SortOrder);
 
                 // Set currently active codeitem
                 HighlightHelper.SetForeground(codeItems);

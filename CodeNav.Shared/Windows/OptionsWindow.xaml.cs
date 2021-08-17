@@ -1,13 +1,10 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
-using System;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 
 namespace CodeNav
 {
@@ -24,15 +21,15 @@ namespace CodeNav
         {
             DataContext = new OptionsWindowViewModel
             {
-                MarginSide = Settings.Default.MarginSide,
-                ShowFilterToolbar = Settings.Default.ShowFilterToolbar,
-                UseXMLComments = Settings.Default.UseXMLComments,
-                ShowHistoryIndicators = Settings.Default.ShowHistoryIndicators,
-                DisableHighlight = Settings.Default.DisableHighlight,
-                AutoLoadLineThreshold = Settings.Default.AutoLoadLineThreshold,
-                Font = Settings.Default.Font,
-                BackgroundColor = Settings.Default.WindowBackgroundColor,
-                HighlightColor = Settings.Default.HighlightBackgroundColor
+                MarginSide = (MarginSideEnum)General.Instance.MarginSide,
+                ShowFilterToolbar = General.Instance.ShowFilterToolbar,
+                UseXMLComments = General.Instance.UseXMLComments,
+                ShowHistoryIndicators = General.Instance.ShowHistoryIndicators,
+                DisableHighlight = General.Instance.DisableHighlight,
+                AutoLoadLineThreshold = General.Instance.AutoLoadLineThreshold,
+                Font = General.Instance.Font,
+                BackgroundColor = General.Instance.BackgroundColor,
+                HighlightColor = General.Instance.HighlightColor
             };
         }
 
@@ -67,17 +64,17 @@ namespace CodeNav
 
         private void OkClick(object sender, RoutedEventArgs e)
         {
-            Settings.Default.MarginSide = ViewModel.MarginSide;
-            Settings.Default.Font = ViewModel.Font;
-            Settings.Default.ShowFilterToolbar = ViewModel.ShowFilterToolbar;
-            Settings.Default.UseXMLComments = ViewModel.UseXMLComments;
-            Settings.Default.ShowHistoryIndicators = ViewModel.ShowHistoryIndicators;
-            Settings.Default.DisableHighlight = ViewModel.DisableHighlight;
-            Settings.Default.AutoLoadLineThreshold = ViewModel.AutoLoadLineThreshold;
-            Settings.Default.WindowBackgroundColor = ViewModel.BackgroundColor;
-            Settings.Default.HighlightBackgroundColor = ViewModel.HighlightColor;
+            General.Instance.MarginSide = (int)ViewModel.MarginSide;
+            General.Instance.Font = ViewModel.Font;
+            General.Instance.ShowFilterToolbar = ViewModel.ShowFilterToolbar;
+            General.Instance.UseXMLComments = ViewModel.UseXMLComments;
+            General.Instance.ShowHistoryIndicators = ViewModel.ShowHistoryIndicators;
+            General.Instance.DisableHighlight = ViewModel.DisableHighlight;
+            General.Instance.AutoLoadLineThreshold = ViewModel.AutoLoadLineThreshold;
+            General.Instance.BackgroundColor = ViewModel.BackgroundColor;
+            General.Instance.HighlightColor = ViewModel.HighlightColor;
 
-            Settings.Default.Save();
+            General.Instance.Save();
 
             SettingsHelper.Refresh();
 
@@ -91,25 +88,24 @@ namespace CodeNav
 
         private void ResetClick(object sender, RoutedEventArgs e)
         {
-            Settings.Default.Width = 200;
-            Settings.Default.MarginSide = MarginSideEnum.Left;
-            Settings.Default.Font = new Font("Segoe UI", (float)11.25);
-            Settings.Default.ShowFilterToolbar = true;
-            Settings.Default.ShowMargin = true;
-            Settings.Default.FilterRules = null;
-            Settings.Default.SortOrder = SortOrderEnum.Unknown;
-            Settings.Default.NewVersionInstalled = true;
-            Settings.Default.HighlightBackgroundColor = ColorHelper.Transparent();
-            Settings.Default.UseXMLComments = false;
-            Settings.Default.ShowHistoryIndicators = true;
-            Settings.Default.DisableHighlight = false;
-            Settings.Default.AutoLoadLineThreshold = 0;
-            Settings.Default.FilterWindowHeight = 270;
-            Settings.Default.FilterWindowWidth = 450;
-            Settings.Default.FilterWindowLeft = 0;
-            Settings.Default.FilterWindowTop = 0;
-            Settings.Default.WindowBackgroundColor = ColorHelper.Transparent();
-            Settings.Default.Save();
+            General.Instance.Width = 200;
+            General.Instance.MarginSide = (int)MarginSideEnum.Left;
+            General.Instance.Font = new Font("Segoe UI", (float)11.25);
+            General.Instance.ShowFilterToolbar = true;
+            General.Instance.ShowMargin = true;
+            General.Instance.FilterRules = string.Empty;
+            General.Instance.SortOrder = (int)SortOrderEnum.Unknown;
+            General.Instance.HighlightColor = ColorHelper.Transparent();
+            General.Instance.UseXMLComments = false;
+            General.Instance.ShowHistoryIndicators = true;
+            General.Instance.DisableHighlight = false;
+            General.Instance.AutoLoadLineThreshold = 0;
+            General.Instance.FilterWindowHeight = 270;
+            General.Instance.FilterWindowWidth = 450;
+            General.Instance.FilterWindowLeft = 0;
+            General.Instance.FilterWindowTop = 0;
+            General.Instance.BackgroundColor = ColorHelper.Transparent();
+            General.Instance.Save();
 
             SettingsHelper.Refresh();
             Close();

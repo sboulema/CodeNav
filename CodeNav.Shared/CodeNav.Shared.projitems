@@ -143,6 +143,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\MarginSideEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SolutionStorageModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SortOrderEnum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\General.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\CodeNavToolWindowPackage.cs" />
@@ -176,8 +177,5 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Windows\FilterWindow.resx">
       <DependentUpon>FilterWindow.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)app.config" />
   </ItemGroup>
 </Project>

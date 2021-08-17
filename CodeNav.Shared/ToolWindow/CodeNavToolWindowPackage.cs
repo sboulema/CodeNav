@@ -12,6 +12,7 @@ namespace CodeNav.ToolWindow
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideToolWindow(typeof(CodeNavToolWindow.Pane))]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideProfile(typeof(OptionsProvider.GeneralOptions), "CodeNav", "General", 0, 0, true)]
     public sealed class CodeNavToolWindowPackage : ToolkitPackage
     {
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)

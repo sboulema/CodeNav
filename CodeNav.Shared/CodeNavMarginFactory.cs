@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using CodeNav.Helpers;
-using CodeNav.Properties;
 using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
@@ -91,7 +90,7 @@ namespace CodeNav
         public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost,
             VisualStudioWorkspace visualStudioWorkspace, IServiceProvider serviceProvider, MarginSideEnum side)
         {
-            if (Settings.Default.MarginSide != side)
+            if ((MarginSideEnum)General.Instance.MarginSide != side)
             {
                 return null;
             }

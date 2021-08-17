@@ -1,6 +1,5 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
@@ -75,7 +74,7 @@ namespace CodeNav.Mappers
                 Id = name,
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                FontSize = General.Instance.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.ImplementedInterface,
                 IsExpanded = true,
                 Control = control

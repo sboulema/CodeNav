@@ -3,7 +3,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
+using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Controls
 {
@@ -13,15 +14,15 @@ namespace CodeNav.Controls
         {
             InitializeComponent();
 
-            ButtonSortByName.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByName;
-            ButtonSortByFile.IsChecked = Settings.Default.SortOrder == SortOrderEnum.SortByFile;
+            ButtonSortByName.IsChecked = (SortOrderEnum)General.Instance.SortOrder == SortOrderEnum.SortByName;
+            ButtonSortByFile.IsChecked = (SortOrderEnum)General.Instance.SortOrder == SortOrderEnum.SortByFile;
         }
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => FindParent(this).UpdateDocument();
 
-        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile);
+        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile).FireAndForget();
 
-        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName);
+        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName).FireAndForget();
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
@@ -55,13 +56,15 @@ namespace CodeNav.Controls
             FindParent<CodeViewUserControl>(this).ToggleAll(!(sender as ToggleButton).IsChecked.Value);
         }
 
-        private void Sort(SortOrderEnum sortOrder)
+        private async Task Sort(SortOrderEnum sortOrder)
         {
             var control = FindParent(this);
             control.CodeDocumentViewModel.SortOrder = sortOrder;
             control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
-            Settings.Default.SortOrder = sortOrder;
-            Settings.Default.Save();
+
+            var general = await General.GetLiveInstanceAsync();
+            general.SortOrder = (int)sortOrder;
+            await general.SaveAsync();
         }
     }
 }

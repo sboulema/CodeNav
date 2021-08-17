@@ -1,5 +1,5 @@
 ﻿using CodeNav.Models;
-using CodeNav.Properties;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace CodeNav.Helpers
@@ -13,7 +13,7 @@ namespace CodeNav.Helpers
             {
                 if (_useXmlComments == null)
                 {
-                    _useXmlComments = Settings.Default.UseXMLComments;
+                    _useXmlComments = General.Instance.UseXMLComments;
                 }
                 return _useXmlComments.Value;
             }
@@ -27,11 +27,23 @@ namespace CodeNav.Helpers
             {
                 if (_filterRules == null)
                 {
-                    _filterRules = Settings.Default.FilterRules;
+                    _filterRules = JsonConvert.DeserializeObject<List<FilterRule>>(General.Instance.FilterRules);
                 }
+
+                if (_filterRules == null)
+                {
+                    _filterRules = new List<FilterRule>();
+                }
+
                 return _filterRules;
             }
             set => _filterRules = value;
+        }
+
+        public static void SaveFilterRules()
+        {
+            General.Instance.FilterRules = JsonConvert.SerializeObject(FilterRules);
+            General.Instance.Save();
         }
 
         public static void Refresh()

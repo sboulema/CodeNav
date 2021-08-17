@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using CodeNav.Properties;
 using CodeNav.Models;
-using System.Collections.Generic;
+using CodeNav.Helpers;
 
 namespace CodeNav
 {
@@ -20,28 +19,25 @@ namespace CodeNav
 
         private void FilterToolWindow_Load(object sender, EventArgs e)
         {
-            if (Settings.Default.FilterRules == null)
-            {
-                Settings.Default.FilterRules = new List<FilterRule>();
-            }
-
             accessDataGridViewTextBoxColumn.DataSource = Enum.GetValues(typeof(CodeItemAccessEnum));
             kindDataGridViewTextBoxColumn.DataSource = Enum.GetValues(typeof(CodeItemKindEnum));
-            filterRulesDataGridView.DataSource = new BindingSource { DataSource = Settings.Default.FilterRules };
+            filterRulesDataGridView.DataSource = new BindingSource { DataSource = SettingsHelper.FilterRules };
 
-            Height = Settings.Default.FilterWindowHeight;
-            Width = Settings.Default.FilterWindowWidth;
-            Left = Settings.Default.FilterWindowLeft;
-            Top = Settings.Default.FilterWindowTop;
+            Height = General.Instance.FilterWindowHeight;
+            Width = General.Instance.FilterWindowWidth;
+            Left = General.Instance.FilterWindowLeft;
+            Top = General.Instance.FilterWindowTop;
         }
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.FilterWindowHeight = Height;
-            Settings.Default.FilterWindowWidth = Width;
-            Settings.Default.FilterWindowLeft = Left;
-            Settings.Default.FilterWindowTop = Top;
-            Settings.Default.Save();
+            SettingsHelper.SaveFilterRules();
+
+            General.Instance.FilterWindowHeight = Height;
+            General.Instance.FilterWindowWidth = Width;
+            General.Instance.FilterWindowLeft = Left;
+            General.Instance.FilterWindowTop = Top;
+            General.Instance.Save();
             Close();
         }
     }

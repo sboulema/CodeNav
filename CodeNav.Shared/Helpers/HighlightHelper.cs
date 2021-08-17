@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -17,15 +16,19 @@ namespace CodeNav.Helpers
     {
         public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber)
         {
-            if (Settings.Default.DisableHighlight ||
+            var general = await General.GetLiveInstanceAsync();
+
+            if (general.DisableHighlight ||
                 codeDocumentViewModel == null)
             {
                 return;
             }
 
+            var backgroundBrush = await GetBackgroundBrush();
+
             await HighlightCurrentItem(codeDocumentViewModel, lineNumber,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                GetBackgroundBrush().Color,
+                backgroundBrush.Color,
                 ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
         }
@@ -162,9 +165,11 @@ namespace CodeNav.Helpers
             });
         }
 
-        private static SolidColorBrush GetBackgroundBrush()
+        private static async Task<SolidColorBrush> GetBackgroundBrush()
         {
-            var highlightBackgroundColor = Settings.Default.HighlightBackgroundColor;
+            var general = await General.GetLiveInstanceAsync();
+
+            var highlightBackgroundColor = general.HighlightColor;
             if (highlightBackgroundColor.IsNamedColor && highlightBackgroundColor.Name.Equals("Transparent"))
             {
                 return ColorHelper.ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);

@@ -46,9 +46,6 @@
                         Show CodeNav on this side of the code editor:
                             </TextBlock>
                             <ComboBox ItemsSource="{Binding Source={StaticResource marginSidesFromEnum}}" SelectedItem="{Binding MarginSide, Mode=TwoWay}" />
-                            <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">
-                        *
-                            </TextBlock>
                         </StackPanel>
 
                         <CheckBox IsChecked="{Binding ShowFilterToolbar, Mode=TwoWay}" Margin="0,5">
@@ -60,11 +57,11 @@
                         </CheckBox>
 
                         <CheckBox IsChecked="{Binding ShowHistoryIndicators, Mode=TwoWay}" Margin="0,5">
-                            Show history/edit indicators *
+                            Show history/edit indicators
                         </CheckBox>
 
                         <CheckBox IsChecked="{Binding DisableHighlight, Mode=TwoWay}" Margin="0,5">
-                            Disable auto-highlight *
+                            Disable auto-highlight
                         </CheckBox>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5">
@@ -74,10 +71,6 @@
                             <TextBox Text="{Binding AutoLoadLineThreshold, Mode=TwoWay}"></TextBox>
                         </StackPanel>
                     </StackPanel>
-
-                    <TextBlock Grid.Row="2" Margin="0,5">
-                        * Requires re-opening the editor tab to apply
-                    </TextBlock>
                 </Grid>
             </TabItem>
             <TabItem Header="Fonts &amp; Colors">

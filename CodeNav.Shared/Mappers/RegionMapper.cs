@@ -1,6 +1,5 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -115,7 +114,7 @@ namespace CodeNav.Mappers
                 StartLinePosition = GetStartLinePosition(source),
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
-                FontSize = Settings.Default.Font.SizeInPoints - 2,
+                FontSize = General.Instance.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region,
                 Span = source.Span,
                 Control = control

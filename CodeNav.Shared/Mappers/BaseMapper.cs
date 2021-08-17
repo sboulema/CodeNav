@@ -1,5 +1,4 @@
 ﻿using CodeNav.Models;
-using CodeNav.Properties;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -54,10 +53,10 @@ namespace CodeNav.Mappers
             element.Span = source.Span;
             element.ForegroundColor = Colors.Black;
             element.Access = MapAccess(modifiers, source);
-            element.FontSize = Settings.Default.Font.SizeInPoints;
-            element.ParameterFontSize = Settings.Default.Font.SizeInPoints - 1;
-            element.FontFamily = new FontFamily(Settings.Default.Font.FontFamily.Name);
-            element.FontStyle = FontStyleMapper.Map(Settings.Default.Font.Style);
+            element.FontSize = General.Instance.Font.SizeInPoints;
+            element.ParameterFontSize = General.Instance.Font.SizeInPoints - 1;
+            element.FontFamily = new FontFamily(General.Instance.Font.FontFamily.Name);
+            element.FontStyle = FontStyleMapper.Map(General.Instance.Font.Style);
             element.Control = control;
 
             return element;

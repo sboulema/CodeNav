@@ -18,11 +18,10 @@ namespace CodeNav
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         internal IOutliningManagerService OutliningManagerService;
         private VisualStudioWorkspace _workspace;
-        private readonly CodeNavMargin _margin;
 
         public CodeViewUserControlTop(RowDefinition row = null,
             IOutliningManagerService outliningManagerService = null,
-            VisualStudioWorkspace workspace = null, CodeNavMargin margin = null)
+            VisualStudioWorkspace workspace = null)
         {
             InitializeComponent();
 
@@ -33,7 +32,6 @@ namespace CodeNav
             _row = row;
             OutliningManagerService = outliningManagerService;
             _workspace = workspace;
-            _margin = margin;
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
         }
@@ -58,7 +56,7 @@ namespace CodeNav
 
         public void UpdateDocument(string filePath = "")
             => DocumentHelper.UpdateDocument(this, _workspace, CodeDocumentViewModel,
-                OutliningManagerService, _margin, null, _row, filePath).FireAndForget();
+                OutliningManagerService, null, _row, filePath).FireAndForget();
 
         public void HighlightCurrentItem(int lineNumber)
         {

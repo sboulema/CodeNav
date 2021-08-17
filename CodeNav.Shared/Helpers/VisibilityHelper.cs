@@ -4,13 +4,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Models;
-using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-using Settings = CodeNav.Properties.Settings;
-using Microsoft.VisualStudio.LanguageServices;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
 
 namespace CodeNav.Helpers
 {
@@ -60,21 +55,6 @@ namespace CodeNav.Helpers
         /// Toggle visibility of the CodeNav margin
         /// </summary>
         /// <param name="row">the grid row of which the visibility will be toggled</param>
-        /// <param name="condition">if condition is True visibility will be set to hidden</param>
-        public static void SetMarginHeight(RowDefinition row, bool condition)
-        {
-            if (row == null)
-            {
-                return;
-            }
-
-            row.Height = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
-        }
-
-        /// <summary>
-        /// Toggle visibility of the CodeNav margin
-        /// </summary>
-        /// <param name="row">the grid row of which the visibility will be toggled</param>
         /// <param name="document">the list of codeitems to determine if there is anything to show at all</param>
         public static async Task SetMarginHeight(RowDefinition row, List<CodeItem> document)
         {
@@ -83,9 +63,9 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var general = await General.GetLiveInstanceAsync();
 
-            if (!Settings.Default.ShowMargin)
+            if (!general.ShowMargin)
             {
                 row.Height = new GridLength(0);
             }
@@ -100,14 +80,16 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="column">the grid column of which the visibility will be toggled</param>
         /// <param name="condition">if condition is True visibility will be set to hidden</param>
-        public static void SetMarginWidth(ColumnDefinition column, bool condition)
+        public static async Task SetMarginWidth(ColumnDefinition column, bool condition)
         {
             if (column == null)
             {
                 return;
             }
 
-            column.Width = condition ? new GridLength(0) : new GridLength(Settings.Default.Width);
+            var general = await General.GetLiveInstanceAsync();
+
+            column.Width = condition ? new GridLength(0) : new GridLength(general.Width);
         }
 
         /// <summary>
@@ -122,15 +104,15 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var general = await General.GetLiveInstanceAsync();
 
-            if (!Settings.Default.ShowMargin)
+            if (!general.ShowMargin)
             {
                 column.Width = new GridLength(0);
             }
             else
             {
-                column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(Settings.Default.Width);
+                column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(general.Width);
             }
         }
 

@@ -14,7 +14,6 @@ using CodeNav.Models;
 using System.Linq;
 using Task = System.Threading.Tasks.Task;
 using Community.VisualStudio.Toolkit;
-using Settings = CodeNav.Properties.Settings;
 using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav
@@ -51,28 +50,26 @@ namespace CodeNav
             else
             {
                 _codeNavGrid = CreateGrid(textViewHost);
-                _codeNavColumn = _codeNavGrid.ColumnDefinitions[Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2];
+                _codeNavColumn = _codeNavGrid.ColumnDefinitions[(MarginSideEnum)General.Instance.MarginSide == MarginSideEnum.Left ? 0 : 2];
             }
 
             Children.Add(_codeNavGrid);
 
             RegisterEvents();
-
-            UpdateSettings();
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost)
         {
-            var marginWidth = Settings.Default.ShowMargin ? Settings.Default.Width : 0;
+            var marginWidth = General.Instance.ShowMargin ? General.Instance.Width : 0;
 
             var leftColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
-            if (Settings.Default.MarginSide != MarginSideEnum.Left)
+            if ((MarginSideEnum)General.Instance.MarginSide != MarginSideEnum.Left)
             {
                 leftColumnWidth = new GridLength(0, GridUnitType.Star);
             }
 
             var rightColumnWidth = new GridLength(0, GridUnitType.Star);
-            if (Settings.Default.MarginSide != MarginSideEnum.Left)
+            if ((MarginSideEnum)General.Instance.MarginSide != MarginSideEnum.Left)
             {
                 rightColumnWidth = new GridLength(marginWidth, GridUnitType.Pixel);
             }
@@ -99,23 +96,23 @@ namespace CodeNav
             splitter.MouseDoubleClick += Splitter_MouseDoubleClick;
             grid.Children.Add(splitter);
 
-            var columnIndex = Settings.Default.MarginSide == MarginSideEnum.Left ? 0 : 2;
+            var columnIndex = (MarginSideEnum)General.Instance.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
-            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex], _outliningManagerService, _workspace, this);
+            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex], _outliningManagerService, _workspace);
 
             grid.Children.Add(_control as UIElement);
 
             Grid.SetColumn(_control as UIElement, columnIndex);
             Grid.SetColumn(splitter, 1);
-            Grid.SetColumn(textViewHost.HostControl, Settings.Default.MarginSide == MarginSideEnum.Left ? 2 : 0);
+            Grid.SetColumn(textViewHost.HostControl, (MarginSideEnum)General.Instance.MarginSide == MarginSideEnum.Left ? 2 : 0);
 
-            if (Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent"))
+            if (General.Instance.BackgroundColor.IsNamedColor && General.Instance.BackgroundColor.Name.Equals("Transparent"))
             {
                 grid.GetGridChildByType<CodeViewUserControl>().Background = Brushes.Transparent;
             }
             else
             {
-                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
+                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(General.Instance.BackgroundColor);
             }
 
             return grid;
@@ -126,21 +123,21 @@ namespace CodeNav
             var grid = new Grid();
             grid.RowDefinitions.Add(new RowDefinition
             {
-                Height = new GridLength(0, Settings.Default.ShowMargin ? GridUnitType.Star : GridUnitType.Pixel)
+                Height = new GridLength(0, General.Instance.ShowMargin ? GridUnitType.Star : GridUnitType.Pixel)
             });
             grid.RowDefinitions.Add(new RowDefinition());
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 
-            _control = new CodeViewUserControlTop(grid.RowDefinitions[0], _outliningManagerService, _workspace, this);
+            _control = new CodeViewUserControlTop(grid.RowDefinitions[0], _outliningManagerService, _workspace);
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
 
             // Apply custom background color to CodeNav grid child
-            (_control as CodeViewUserControlTop).Background = 
-                Settings.Default.WindowBackgroundColor.IsNamedColor && Settings.Default.WindowBackgroundColor.Name.Equals("Transparent") 
-                ? Brushes.Transparent : ColorHelper.ToBrush(Settings.Default.WindowBackgroundColor);
+            (_control as CodeViewUserControlTop).Background =
+                General.Instance.BackgroundColor.IsNamedColor && General.Instance.BackgroundColor.Name.Equals("Transparent") 
+                ? Brushes.Transparent : ColorHelper.ToBrush(General.Instance.BackgroundColor);
 
             return grid;
         }
@@ -151,19 +148,6 @@ namespace CodeNav
         public void Remove()
         {
             Children.Remove(_codeNavGrid);
-        }
-
-        /// <summary>
-        /// Copy user settings from previous application version if necessary
-        /// </summary>
-        private void UpdateSettings()
-        {
-            if (Settings.Default.NewVersionInstalled)
-            {
-                Settings.Default.Upgrade();
-                Settings.Default.NewVersionInstalled = false;
-                Settings.Default.Save();
-            }
         }
 
         #region Events
@@ -178,17 +162,17 @@ namespace CodeNav
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0));
-            Settings.Default.ShowMargin = !Settings.Default.ShowMargin;
-            Settings.Default.Save();
+            VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0)).FireAndForget();
+            General.Instance.ShowMargin = !General.Instance.ShowMargin;
+            General.Instance.Save();
         }
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (!double.IsNaN((_control as FrameworkElement).ActualWidth) && (_control as FrameworkElement).ActualWidth != 0)
             {
-                Settings.Default.Width = (_control as FrameworkElement).ActualWidth;
-                Settings.Default.Save();
+                General.Instance.Width = (_control as FrameworkElement).ActualWidth;
+                General.Instance.Save();
             }
         }
 
@@ -196,7 +180,7 @@ namespace CodeNav
         {
             // Subscribe to Cursor move event
             if (_textView?.Caret != null &&
-                !Settings.Default.DisableHighlight)
+                !General.Instance.DisableHighlight)
             {
                 _textView.Caret.PositionChanged -= Caret_PositionChanged;
                 _textView.Caret.PositionChanged += Caret_PositionChanged;
@@ -204,7 +188,7 @@ namespace CodeNav
 
             // Subscribe to TextBuffer changes
             if ((_textView.TextBuffer as ITextBuffer2) != null &&
-                Settings.Default.ShowHistoryIndicators)
+                General.Instance.ShowHistoryIndicators)
             {
                 var textBuffer2 = _textView.TextBuffer as ITextBuffer2;
 

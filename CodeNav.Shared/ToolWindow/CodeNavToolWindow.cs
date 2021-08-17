@@ -90,14 +90,16 @@ namespace CodeNav.ToolWindow
                 return;
             }
 
-            if (!Properties.Settings.Default.DisableHighlight)
+            var general = await General.GetLiveInstanceAsync();
+
+            if (!general.DisableHighlight)
             {
                 textView.Caret.PositionChanged += Caret_PositionChanged;
             }
 
             // Subscribe to TextBuffer changes
             if ((textView.TextBuffer as ITextBuffer2) != null &&
-                Properties.Settings.Default.ShowHistoryIndicators)
+                general.ShowHistoryIndicators)
             {
                 var textBuffer2 = textView.TextBuffer as ITextBuffer2;
 
