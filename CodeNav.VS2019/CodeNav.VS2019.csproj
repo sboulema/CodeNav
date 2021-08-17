@@ -104,7 +104,6 @@
       <Generator>VsctGenerator</Generator>
       <LastGenOutput>CodeNavToolWindowCommandTable.cs</LastGenOutput>
     </VSCTCompile>
-    <None Include="Properties\DataSources\CodeNav.Models.FilterRule.datasource" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

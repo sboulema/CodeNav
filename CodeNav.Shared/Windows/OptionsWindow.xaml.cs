@@ -100,10 +100,6 @@ namespace CodeNav
             General.Instance.ShowHistoryIndicators = true;
             General.Instance.DisableHighlight = false;
             General.Instance.AutoLoadLineThreshold = 0;
-            General.Instance.FilterWindowHeight = 270;
-            General.Instance.FilterWindowWidth = 450;
-            General.Instance.FilterWindowLeft = 0;
-            General.Instance.FilterWindowTop = 0;
             General.Instance.BackgroundColor = ColorHelper.Transparent();
             General.Instance.Save();
 

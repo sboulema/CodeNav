@@ -25,13 +25,13 @@ namespace CodeNav.Controls
             dataContext.FilterText = FilterTextBox.Text;
 
             try
-            {                
+            {
                 VisibilityHelper.SetCodeItemVisibility(dataContext);
             }
             catch (Exception)
             {
                 // Error filtering items
-            }           
+            }
         }
 
         private void ButtonClear_OnClick(object sender, RoutedEventArgs e)

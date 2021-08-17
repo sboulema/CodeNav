@@ -34,12 +34,4 @@ public class General : BaseOptionModel<General>
     public string FilterRules { get; set; } = string.Empty;
 
     public int SortOrder { get; set; } = 0;
-
-    public int FilterWindowHeight { get; set; } = 270;
-
-    public int FilterWindowWidth { get; set; } = 450;
-
-    public int FilterWindowLeft { get; set; } = 0;
-
-    public int FilterWindowTop { get; set; } = 0;
 }

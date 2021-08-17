@@ -1,6 +1,7 @@
 ﻿using CodeNav.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CodeNav.Helpers
 {
@@ -20,19 +21,19 @@ namespace CodeNav.Helpers
             set => _useXmlComments = value;
         }
 
-        private static List<FilterRule> _filterRules;
-        public static List<FilterRule> FilterRules
+        private static ObservableCollection<FilterRule> _filterRules;
+        public static ObservableCollection<FilterRule> FilterRules
         {
             get
             {
                 if (_filterRules == null)
                 {
-                    _filterRules = JsonConvert.DeserializeObject<List<FilterRule>>(General.Instance.FilterRules);
+                    _filterRules = JsonConvert.DeserializeObject<ObservableCollection<FilterRule>>(General.Instance.FilterRules);
                 }
 
                 if (_filterRules == null)
                 {
-                    _filterRules = new List<FilterRule>();
+                    _filterRules = new ObservableCollection<FilterRule>();
                 }
 
                 return _filterRules;
@@ -40,9 +41,9 @@ namespace CodeNav.Helpers
             set => _filterRules = value;
         }
 
-        public static void SaveFilterRules()
+        public static void SaveFilterRules(ObservableCollection<FilterRule> filterRules)
         {
-            General.Instance.FilterRules = JsonConvert.SerializeObject(FilterRules);
+            General.Instance.FilterRules = JsonConvert.SerializeObject(filterRules);
             General.Instance.Save();
         }
 
