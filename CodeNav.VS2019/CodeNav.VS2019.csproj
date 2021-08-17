@@ -142,9 +142,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Caliburn.Micro.Core">
-      <Version>4.0.173</Version>
-    </PackageReference>
     <PackageReference Include="Community.VisualStudio.Toolkit">
       <Version>15.0.75.165-pre</Version>
     </PackageReference>
@@ -160,7 +157,9 @@
       <Version>2.10.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
-      <Version>16.10.1</Version>
+      <Version>16.10.10</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Text.Data">
       <Version>15.4.27004</Version>

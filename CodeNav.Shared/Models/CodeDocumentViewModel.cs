@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
-using Caliburn.Micro;
 using CodeNav.Helpers;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace CodeNav.Models
 {
     [DataContract]
-    public class CodeDocumentViewModel : PropertyChangedBase
+    public class CodeDocumentViewModel : ObservableObject
     {
         public CodeDocumentViewModel()
         {
@@ -25,9 +25,8 @@ namespace CodeNav.Models
             }
             set
             {
-                _codeDocument = value;
-                NotifyOfPropertyChange();
-                NotifyOfPropertyChange("CodeDocumentTop");
+                SetProperty(ref _codeDocument, value);
+                NotifyPropertyChanged("CodeDocumentTop");
             }
         }
 
@@ -45,7 +44,7 @@ namespace CodeNav.Models
             }
             set
             {
-                NotifyOfPropertyChange();
+                NotifyPropertyChanged();
             }
         }
 
@@ -96,21 +95,21 @@ namespace CodeNav.Models
 
             Bookmarks.Add(id, bookmarkStyleIndex);
 
-            NotifyOfPropertyChange("BookmarksAvailable");
+            NotifyPropertyChanged("BookmarksAvailable");
         }
 
         public void RemoveBookmark(string id)
         {
             Bookmarks.Remove(id);
 
-            NotifyOfPropertyChange("BookmarksAvailable");
+            NotifyPropertyChanged("BookmarksAvailable");
         }
 
         public void ClearBookmarks()
         {
             BookmarkHelper.ClearBookmarks(this);
 
-            NotifyOfPropertyChange("BookmarksAvailable");
+            NotifyPropertyChanged("BookmarksAvailable");
         }
 
         public Visibility ClearFilterVisibility =>
@@ -127,7 +126,7 @@ namespace CodeNav.Models
             set
             {
                 _filterText = value;
-                NotifyOfPropertyChange("ClearFilterVisibility");
+                NotifyPropertyChanged("ClearFilterVisibility");
             }
         }
 
@@ -142,7 +141,7 @@ namespace CodeNav.Models
             set
             {
                 _bookmarks = value;
-                NotifyOfPropertyChange("BookmarksAvailable");
+                NotifyPropertyChanged("BookmarksAvailable");
             }
         }
 

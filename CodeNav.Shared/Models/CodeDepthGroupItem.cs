@@ -5,15 +5,8 @@
         private int _selectedIndex;
         public int SelectedIndex
         {
-            get
-            {
-                return _selectedIndex;
-            }
-            set
-            {
-                _selectedIndex = value;
-                NotifyOfPropertyChange();
-            }
+            get => _selectedIndex;
+            set => SetProperty(ref _selectedIndex, value);
         }
     }
 }

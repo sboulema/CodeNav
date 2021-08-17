@@ -26,8 +26,8 @@ namespace CodeNav.Models
             }
             set
             {
-                _borderColor = value;
-                NotifyOfPropertyChange("BorderBrush");
+                SetProperty(ref _borderColor, value);
+                NotifyPropertyChanged("BorderBrush");
             }
         }
         public SolidColorBrush BorderBrush
@@ -47,8 +47,7 @@ namespace CodeNav.Models
             {
                 if (_isExpanded != value)
                 {
-                    _isExpanded = value;
-                    NotifyOfPropertyChange();
+                    SetProperty(ref _isExpanded, value);   
                     IsExpandedChanged?.Invoke(this, EventArgs.Empty);
                 }
             }

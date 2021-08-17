@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using Caliburn.Micro;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.CodeAnalysis.Text;
@@ -17,7 +16,7 @@ using Microsoft.VisualStudio.Shell;
 namespace CodeNav.Models
 {
     [DataContract]
-    public class CodeItem : PropertyChangedBase
+    public class CodeItem : ObservableObject
     {
         public CodeItem()
         {
@@ -58,11 +57,7 @@ namespace CodeNav.Models
         public double Opacity
         {
             get => _opacity;
-            set
-            {
-                _opacity = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _opacity, value);
         }
 
         #region Status Image
@@ -70,44 +65,28 @@ namespace CodeNav.Models
         public ImageMoniker StatusMoniker
         {
             get => _statusMoniker;
-            set
-            {
-                _statusMoniker = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _statusMoniker, value);
         }
 
         private Visibility _statusMonikerVisibility = Visibility.Collapsed;
         public Visibility StatusMonikerVisibility
         {
             get => _statusMonikerVisibility;
-            set
-            {
-                _statusMonikerVisibility = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _statusMonikerVisibility, value);
         }
 
         private bool _statusGrayscale;
         public bool StatusGrayscale
         {
             get => _statusGrayscale;
-            set
-            {
-                _statusGrayscale = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _statusGrayscale, value);
         }
 
         private double _statusOpacity;
         public double StatusOpacity
         {
             get => _statusOpacity;
-            set
-            {
-                _statusOpacity = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _statusOpacity, value);
         }
         #endregion
 
@@ -126,11 +105,7 @@ namespace CodeNav.Models
         public bool ContextMenuIsOpen
         {
             get => _contextMenuIsOpen;
-            set
-            {
-                _contextMenuIsOpen = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _contextMenuIsOpen, value);
         }
 
         #region Fonts
@@ -138,55 +113,35 @@ namespace CodeNav.Models
         public float FontSize
         {
             get => _fontSize;
-            set
-            {
-                _fontSize = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _fontSize, value);
         }
 
         private float _parameterFontSize;
         public float ParameterFontSize
         {
             get => _parameterFontSize;
-            set
-            {
-                _parameterFontSize = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _parameterFontSize, value);
         }
 
         private FontFamily _fontFamily;
         public FontFamily FontFamily
         {
             get => _fontFamily;
-            set
-            {
-                _fontFamily = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _fontFamily, value);
         }
 
         private FontStyle _fontStyle;
         public FontStyle FontStyle
         {
             get => _fontStyle;
-            set
-            {
-                _fontStyle = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _fontStyle, value);
         }
 
         private FontWeight _fontWeight;
         public FontWeight FontWeight
         {
             get => _fontWeight;
-            set
-            {
-                _fontWeight = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _fontWeight, value);
         }
         #endregion
 
@@ -195,11 +150,7 @@ namespace CodeNav.Models
         public Visibility IsVisible
         {
             get => _visibility;
-            set
-            {
-                _visibility = value;
-                NotifyOfPropertyChange();
-            }
+            set => SetProperty(ref _visibility, value);
         }
         #endregion
 
@@ -210,8 +161,8 @@ namespace CodeNav.Models
             get => _foregroundColor;
             set
             {
-                _foregroundColor = value;
-                NotifyOfPropertyChange("ForegroundBrush");
+                SetProperty(ref _foregroundColor, value);
+                NotifyPropertyChanged("ForegroundBrush");
             }
         }
 
@@ -225,8 +176,8 @@ namespace CodeNav.Models
             get => _backgroundColor;
             set
             {
-                _backgroundColor = value;
-                NotifyOfPropertyChange("BackgroundBrush");
+                SetProperty(ref _backgroundColor, value);
+                NotifyPropertyChanged("BackgroundBrush");
             }
         }
 
@@ -238,8 +189,8 @@ namespace CodeNav.Models
             get => _nameBackgroundColor;
             set
             {
-                _nameBackgroundColor = value;
-                NotifyOfPropertyChange("NameBackgroundBrush");
+                SetProperty(ref _nameBackgroundColor, value);
+                NotifyPropertyChanged("NameBackgroundBrush");
             }
         }
 
@@ -310,7 +261,7 @@ namespace CodeNav.Models
 
                 ContextMenuIsOpen = false;
 
-                NotifyOfPropertyChange("BookmarksAvailable");
+                NotifyPropertyChanged("BookmarksAvailable");
             }
             catch (Exception e)
             {
@@ -333,7 +284,7 @@ namespace CodeNav.Models
 
                 SaveToSolutionStorage().FireAndForget();
 
-                NotifyOfPropertyChange("BookmarksAvailable");
+                NotifyPropertyChanged("BookmarksAvailable");
             }
             catch (Exception e)
             {
@@ -354,7 +305,7 @@ namespace CodeNav.Models
 
                 SaveToSolutionStorage().FireAndForget();
 
-                NotifyOfPropertyChange("BookmarksAvailable");
+                NotifyPropertyChanged("BookmarksAvailable");
             }
             catch (Exception e)
             {
