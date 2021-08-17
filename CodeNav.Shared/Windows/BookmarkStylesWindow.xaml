@@ -1,0 +1,80 @@
+﻿<platform:DialogWindow
+    x:Class="CodeNav.Windows.BookmarkStylesWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:platform="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+    xmlns:toolkit="clr-namespace:Community.VisualStudio.Toolkit;assembly=Community.VisualStudio.Toolkit"
+    mc:Ignorable="d"
+    Title="CodeNav - Bookmark styles"
+    MinHeight="300"
+    MinWidth="370"
+    SizeToContent="WidthAndHeight"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    toolkit:Themes.UseVsTheme="True"
+    >
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ListView ItemsSource="{Binding BookmarkStyles}" 
+                      SelectedItem="{Binding SelectedBookmarkStyle}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Label MinHeight="60"
+                               MinWidth="60"
+                               Background="{Binding BackgroundBrush}"
+                               Foreground="{Binding ForegroundBrush}"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               Content="Method" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
+                <Button Click="BackgroundClick" Margin="0,0,5,0">
+                    Background
+                </Button>
+
+                <Button Click="ForegroundClick">
+                    Foreground
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,5,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" Click="OkClick" Margin="0,0,5,0">
+                    Ok
+                </Button>
+
+                <Button Grid.Column="2" Click="CancelClick">
+                    Cancel
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+    
+</platform:DialogWindow>

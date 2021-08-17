@@ -64,5 +64,24 @@ namespace CodeNav.Helpers
 
             return default;
         }
+
+        public static ICodeViewUserControl FindParent(DependencyObject child)
+            => FindParent<CodeViewUserControl>(child) ??
+                (ICodeViewUserControl)FindParent<CodeViewUserControlTop>(child);
+
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            // Get parent item
+            var parentObject = VisualTreeHelper.GetParent(child);
+
+            // We’ve reached the end of the tree
+            if (parentObject == null)
+            {
+                return null;
+            }
+
+            // Check if the parent matches the type we’re looking for
+            return parentObject is T parent ? parent : FindParent<T>(parentObject);
+        }
     }
 }

@@ -154,7 +154,14 @@ namespace CodeNav.Helpers
                 styles.Add(new BookmarkStyle(ColorHelper.ToMediaColor(label.BackColor), ColorHelper.ToMediaColor(label.ForeColor)));
             }
 
-            codeDocumentViewModel.BookmarkStyles = styles;   
+            codeDocumentViewModel.BookmarkStyles = styles;
+
+            await SolutionStorageHelper.SaveToSolutionStorage(codeDocumentViewModel);
+        }
+
+        public static async Task SetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel, List<BookmarkStyle> bookmarkStyles)
+        {
+            codeDocumentViewModel.BookmarkStyles = bookmarkStyles;
 
             await SolutionStorageHelper.SaveToSolutionStorage(codeDocumentViewModel);
         }

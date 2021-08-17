@@ -3,7 +3,7 @@ using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
 using System.Windows;
 
-namespace CodeNav
+namespace CodeNav.Windows
 {
     public partial class FilterWindow : DialogWindow
     {

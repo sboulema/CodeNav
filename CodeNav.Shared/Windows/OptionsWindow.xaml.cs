@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace CodeNav
+namespace CodeNav.Windows
 {
     public partial class OptionsWindow : DialogWindow
     {

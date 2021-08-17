@@ -321,7 +321,7 @@ namespace CodeNav.Models
         public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
         public void CustomizeBookmarkStyles(object args)
         {
-            new CustomizeBookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
+            new BookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
             BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel).FireAndForget();
         }
         #endregion

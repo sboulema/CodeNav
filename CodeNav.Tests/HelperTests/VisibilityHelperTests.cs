@@ -4,6 +4,7 @@ using CodeNav.Models;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -22,7 +23,7 @@ namespace CodeNav.Tests.HelperTests
                 CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestVisibility.cs"))
             };
 
-            SettingsHelper.FilterRules = new List<FilterRule>
+            SettingsHelper.FilterRules = new ObservableCollection<FilterRule>(new List<FilterRule>
             {
                 new FilterRule
                 {
@@ -31,7 +32,7 @@ namespace CodeNav.Tests.HelperTests
                     Visible = true,
                     HideIfEmpty = hideItemsWithoutChildren
                 }
-            };
+            });
 
             VisibilityHelper.SetCodeItemVisibility(document.CodeDocument);
 

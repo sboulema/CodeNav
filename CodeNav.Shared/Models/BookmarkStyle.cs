@@ -1,27 +1,38 @@
 ﻿using CodeNav.Helpers;
+using Microsoft.VisualStudio.PlatformUI;
 using System.Windows.Media;
 
 namespace CodeNav.Models
 {
-    public class BookmarkStyle
+    public class BookmarkStyle : ObservableObject
     {
-        public Color BackgroundColor { get; set; }
-        public Color ForegroundColor { get; set; }
+        private Color _backgroundColor;
 
-        public SolidColorBrush BackgroundBrush {
-            get
-            {
-                return ColorHelper.ToBrush(BackgroundColor);
-            }
-        }
-
-        public SolidColorBrush ForegroundBrush
+        public Color BackgroundColor
         {
-            get
+            get => _backgroundColor;
+            set
             {
-                return ColorHelper.ToBrush(ForegroundColor);
+                SetProperty(ref _backgroundColor, value);
+                NotifyPropertyChanged("BackgroundBrush");
             }
         }
+
+        private Color _foregroundColor;
+
+        public Color ForegroundColor
+        {
+            get => _foregroundColor;
+            set
+            {
+                SetProperty(ref _foregroundColor, value);
+                NotifyPropertyChanged("ForegroundBrush");
+            }
+        }
+
+        public SolidColorBrush BackgroundBrush => ColorHelper.ToBrush(BackgroundColor);
+
+        public SolidColorBrush ForegroundBrush => ColorHelper.ToBrush(ForegroundColor);
 
         public BookmarkStyle()
         {
@@ -31,7 +42,7 @@ namespace CodeNav.Models
         public BookmarkStyle(Color backgroundColor, Color foregroundColor)
         {
             BackgroundColor = backgroundColor;
-            ForegroundColor = foregroundColor;            
+            ForegroundColor = foregroundColor;
         }
     }
 }
