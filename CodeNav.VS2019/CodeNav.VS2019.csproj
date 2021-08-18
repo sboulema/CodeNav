@@ -36,7 +36,7 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>..\Resources\DocumentOutline_256x.ico</ApplicationIcon>
+    <ApplicationIcon>DocumentOutline_256x.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -91,13 +91,13 @@
       <Link>Resources\LICENSE</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\Resources\DocumentOutline_256x.png">
-      <Link>Resources\DocumentOutline_256x.png</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\Resources\Preview-small.png">
       <Link>Resources\Preview-small.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="DocumentOutline_256x.ico" />
+    <Content Include="Resources\DocumentOutline_256x.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <VSCTCompile Include="CodeNavToolWindowCommandTable.vsct">

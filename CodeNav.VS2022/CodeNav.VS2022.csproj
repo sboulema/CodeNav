@@ -91,16 +91,15 @@
       <Link>Resources\LICENSE</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\Resources\DocumentOutline_256x.png">
-      <Link>Resources\DocumentOutline_256x.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="..\Resources\Preview-small.png">
       <Link>Resources\Preview-small.png</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="DocumentOutline_256x.ico" />
+    <Content Include="Resources\DocumentOutline_256x.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="CodeNavToolWindowCommandTable.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <Generator>VsctGenerator</Generator>
