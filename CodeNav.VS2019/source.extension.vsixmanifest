@@ -8,7 +8,7 @@
         <License>Resources\LICENSE</License>
         <GettingStartedGuide>https://github.com/sboulema/CodeNav/blob/master/README.md</GettingStartedGuide>
         <ReleaseNotes>https://github.com/sboulema/CodeNav/releases</ReleaseNotes>
-        <Icon>Resources\DocumentOutline_256x.png</Icon>
+        <Icon>DocumentOutline_256x.png</Icon>
         <PreviewImage>Resources\Preview-small.png</PreviewImage>
         <Tags>code, structure, navigation, map, codemap</Tags>
     </Metadata>
