@@ -39,13 +39,13 @@ Visual Studio extension to show the code structure of your current document
 ![Top Margin](https://i.imgur.com/5ymPOxe.jpg)
 
 #### Filter window
-![Filter window](https://i.imgur.com/MVI8ddx.png) 
+![Filter window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Filters.png) 
 
 #### Options window
-![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/OptionsWindow.png) 
+![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Options%20-%20General.png) ![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Options%20-%20Fonts.png)
 
 #### Tool window
 ![Tool window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/ToolWindow.png) 
 
 #### Bookmarks
-![Bookmarks](https://i.imgur.com/SqLgsXw.png) 
+![Bookmarks](https://i.imgur.com/SqLgsXw.png) ![Bookmark styles](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Bookmark%20styles.png)
