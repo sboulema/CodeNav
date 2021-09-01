@@ -216,8 +216,14 @@ namespace CodeNav.Mappers
                     return DelegateEventMapper.MapEvent(member as EventFieldDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.DelegateDeclaration:
                     return DelegateEventMapper.MapDelegate(member as DelegateDeclarationSyntax, _control, _semanticModel);
+                #if VS2022
+                case SyntaxKind.FileScopedNamespaceDeclaration:
                 case SyntaxKind.NamespaceDeclaration:
-                    return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel, _tree);
+                    return NamespaceMapper.MapNamespace(member as BaseNamespaceDeclarationSyntax, _control, _semanticModel, _tree);
+                #else
+                case SyntaxKind.NamespaceDeclaration:
+                return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, _control, _semanticModel, _tree);
+                #endif
                 case SyntaxKind.ConstructorDeclaration:
                     return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, _control, _semanticModel);
                 case SyntaxKind.IndexerDeclaration:

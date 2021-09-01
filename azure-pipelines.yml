@@ -7,7 +7,7 @@ trigger:
     - main
     - feature/*
 
-name: 8.2.$(Build.BuildId)
+name: 8.3.$(Build.BuildId)
 
 steps:
 - task: NuGetCommand@2
