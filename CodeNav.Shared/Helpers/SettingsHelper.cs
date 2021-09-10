@@ -1,5 +1,6 @@
 ﻿using CodeNav.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -24,20 +25,7 @@ namespace CodeNav.Helpers
         private static ObservableCollection<FilterRule> _filterRules;
         public static ObservableCollection<FilterRule> FilterRules
         {
-            get
-            {
-                if (_filterRules == null)
-                {
-                    _filterRules = JsonConvert.DeserializeObject<ObservableCollection<FilterRule>>(General.Instance.FilterRules);
-                }
-
-                if (_filterRules == null)
-                {
-                    _filterRules = new ObservableCollection<FilterRule>();
-                }
-
-                return _filterRules;
-            }
+            get => LoadFilterRules();
             set => _filterRules = value;
         }
 
@@ -51,6 +39,29 @@ namespace CodeNav.Helpers
         {
             _useXmlComments = null;
             _filterRules = null;
+        }
+
+        private static ObservableCollection<FilterRule> LoadFilterRules()
+        {
+            if (_filterRules != null)
+            {
+                return _filterRules;
+            }
+
+            try
+            {
+                _filterRules = JsonConvert.DeserializeObject<ObservableCollection<FilterRule>>(General.Instance.FilterRules);
+            }
+            catch (Exception)
+            {
+                // Ignore error while loading filter rules 
+            }
+            finally
+            {
+                _filterRules = new ObservableCollection<FilterRule>();
+            }
+
+            return _filterRules;
         }
     }
 }

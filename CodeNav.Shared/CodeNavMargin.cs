@@ -215,7 +215,7 @@ namespace CodeNav
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
             => WindowChangedEvent(obj).FireAndForget();
 
-        private void DocumentEvents_Saved(object sender, string e)
+        private void DocumentEvents_Saved(string e)
             => UpdateDocument().FireAndForget();
 
         private async Task WindowChangedEvent(ActiveFrameChangeEventArgs obj)

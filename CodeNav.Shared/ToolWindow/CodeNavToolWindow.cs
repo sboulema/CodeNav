@@ -55,10 +55,10 @@ namespace CodeNav.ToolWindow
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
             => WindowEvents_WindowActivated(obj).FireAndForget();
 
-        private void DocumentEvents_Opened(object sender, string e)
+        private void DocumentEvents_Opened(string e)
             => UpdateDocument();
 
-        private void DocumentEvents_Saved(object sender, string e)
+        private void DocumentEvents_Saved(string e)
             => UpdateDocument();
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)

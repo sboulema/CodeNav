@@ -84,7 +84,9 @@ namespace CodeNav.Helpers
             {
                 var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 var line = documentView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(linePosition.Line);
-                documentView?.TextView?.ViewScroller.EnsureSpanVisible(line.Extent);
+
+                documentView?.TextView?.Selection.Select(line.Extent, false);
+                documentView?.TextView?.ViewScroller.EnsureSpanVisible(line.Extent, EnsureSpanVisibleOptions.AlwaysCenter);
             }
             catch (Exception)
             {
