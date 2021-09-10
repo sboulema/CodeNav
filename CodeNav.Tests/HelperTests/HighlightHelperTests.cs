@@ -19,7 +19,7 @@ namespace CodeNav.Tests.HelperTests
         {
             var document = new CodeDocumentViewModel
             {
-                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
+                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"), null)
             };
 
             _ = HighlightHelper.HighlightCurrentItem(document, 13, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);
@@ -38,7 +38,7 @@ namespace CodeNav.Tests.HelperTests
         {
             var document = new CodeDocumentViewModel
             {
-                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"))
+                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestProperties.cs"), null)
             };
 
             _ = HighlightHelper.HighlightCurrentItem(document, 15, Brushes.Red.Color, Brushes.Blue.Color, Brushes.Green.Color, Brushes.White.Color);

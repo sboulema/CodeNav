@@ -16,7 +16,7 @@ namespace CodeNav.Tests.MapperTests
         {
             SettingsHelper.UseXMLComments = true;
 
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestMethodsWithComments.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestMethodsWithComments.cs"), null);
 
             Assert.IsTrue(document.Any());
 

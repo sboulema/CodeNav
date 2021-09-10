@@ -30,7 +30,7 @@ namespace CodeNav.Mappers
 
             foreach (var namespaceMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(namespaceMember);
+                var memberItem = SyntaxMapper.MapMember(namespaceMember, tree, semanticModel, control);
                 if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
                 {
                     item.Members.Add(memberItem);
@@ -73,7 +73,7 @@ namespace CodeNav.Mappers
 
             foreach (var namespaceMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(namespaceMember);
+                var memberItem = SyntaxMapper.MapMember(namespaceMember, tree, semanticModel, control);
                 if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
                 {
                     item.Members.Add(memberItem);
@@ -115,7 +115,7 @@ namespace CodeNav.Mappers
 
             foreach (var namespaceMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(namespaceMember);
+                var memberItem = SyntaxMapper.MapMember(namespaceMember, tree, semanticModel, control);
                 if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
                 {
                     item.Members.Add(memberItem);

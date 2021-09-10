@@ -1,8 +1,5 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using CodeNav.Helpers;
-using Microsoft.VisualStudio.LanguageServices;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using CodeNav.Models;
@@ -20,15 +17,9 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]  // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavLeftFactory : IWpfTextViewMarginProvider
     {
-        [Import(typeof(SVsServiceProvider))]
-        private IServiceProvider ServiceProvider { get; set; }
-
-        [Import(typeof(VisualStudioWorkspace))]
-        private VisualStudioWorkspace Workspace { get; set; }
-
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            return CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Left);
+            return CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Left);
         }
     }
 
@@ -43,17 +34,9 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]   // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
-        #pragma warning disable 0649
-        [Import(typeof(SVsServiceProvider))]
-        private readonly IServiceProvider ServiceProvider;
-        #pragma warning restore 0649
-
-        [Import(typeof(VisualStudioWorkspace))]
-        private VisualStudioWorkspace Workspace { get; set; }
-
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            return CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Right);
+            return CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Right);
         }
     }
 
@@ -68,17 +51,9 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class CodeNavTopFactory : IWpfTextViewMarginProvider
     {
-        #pragma warning disable 0649
-        [Import(typeof(SVsServiceProvider))]
-        private readonly IServiceProvider ServiceProvider;
-        #pragma warning restore 0649
-
-        [Import(typeof(VisualStudioWorkspace))]
-        private VisualStudioWorkspace Workspace { get; set; }
-
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            var margin = CodeNavFactory.CreateMargin(wpfTextViewHost, Workspace, ServiceProvider, MarginSideEnum.Top);
+            var margin = CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Top);
             new NavBarOverrider(margin as CodeNavMargin);
 
             return margin;
@@ -87,17 +62,14 @@ namespace CodeNav
 
     internal static class CodeNavFactory
     {
-        public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost,
-            VisualStudioWorkspace visualStudioWorkspace, IServiceProvider serviceProvider, MarginSideEnum side)
+        public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, MarginSideEnum side)
         {
             if ((MarginSideEnum)General.Instance.MarginSide != side)
             {
                 return null;
             }
 
-            var outliningManagerService = OutliningHelper.GetOutliningManagerService(serviceProvider);
-
-            var codeNav = new CodeNavMargin(wpfTextViewHost, outliningManagerService, visualStudioWorkspace, side);
+            var codeNav = new CodeNavMargin(wpfTextViewHost, side);
 
             return codeNav;
         }

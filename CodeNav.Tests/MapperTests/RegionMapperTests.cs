@@ -13,7 +13,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestRegions()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegions.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegions.cs"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -44,7 +44,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestRegionsVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestRegions.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestRegions.vb"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -66,7 +66,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestRegionsNoName()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegionsNoName.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegionsNoName.cs"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -85,7 +85,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestRegionsSpan()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegions.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestRegions.cs"), null);
 
             Assert.IsTrue(document.Any());
 

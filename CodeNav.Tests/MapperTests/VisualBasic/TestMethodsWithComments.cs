@@ -16,7 +16,7 @@ namespace CodeNav.Tests.MapperTests.VisualBasic
         {
             SettingsHelper.UseXMLComments = true;
 
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethodsWithComments.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethodsWithComments.vb"), null);
 
             Assert.IsTrue(document.Any());
 

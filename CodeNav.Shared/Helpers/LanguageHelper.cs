@@ -1,4 +1,5 @@
 ﻿using CodeNav.Models;
+using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.LanguageServices;
 using System.Threading.Tasks;
 
@@ -26,9 +27,9 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task<LanguageEnum> GetActiveDocumentLanguage(VisualStudioWorkspace workspace)
+        public static async Task<LanguageEnum> GetActiveDocumentLanguage()
         {
-            var document = await DocumentHelper.GetCodeAnalysisDocument(workspace);
+            var document = await DocumentHelper.GetCodeAnalysisDocument();
 
             if (document == null)
             {

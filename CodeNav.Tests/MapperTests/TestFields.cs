@@ -13,7 +13,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void ShouldBeOkVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestFields.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestFields.vb"), null);
 
             Assert.IsTrue(document.Any());
 

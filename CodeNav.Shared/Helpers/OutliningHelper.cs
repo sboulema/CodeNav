@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CodeNav.Models;
-using Microsoft;
+using Community.VisualStudio.Toolkit;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -13,19 +13,16 @@ namespace CodeNav.Helpers
 {
     public static class OutliningHelper
     {
-        private static IOutliningManagerService _outliningManagerService;
-        private static IWpfTextView _textView;
-
-        public static IOutliningManagerService GetOutliningManagerService(IServiceProvider serviceProvider)
+        public static async Task<IOutliningManager> GetOutliningManager()
         {
-            var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
-            Assumes.Present(componentModel);
-            return componentModel.GetService<IOutliningManagerService>();
-        }
+            var componentModel = await VS.Services.GetComponentModelAsync();
+            var outliningManagerService = componentModel.GetService<IOutliningManagerService>();
 
-        public static IOutliningManager GetOutliningManager(IOutliningManagerService outliningManagerService, ITextView textView)
-        {
-            if (outliningManagerService == null)
+            var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+            var textView = documentView?.TextView;
+
+            if (outliningManagerService == null ||
+                textView == null)
             {
                 return null;
             }
@@ -49,18 +46,13 @@ namespace CodeNav.Helpers
                 .ForEach(root => root.Descendants().Where(i => i is ICodeCollapsible).ToList()
                 .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded));
 
-        public static void SyncAllRegions(IOutliningManagerService outliningManagerService, IWpfTextView textView, IEnumerable<CodeItem> document)
+        public static async Task SyncAllRegions(IEnumerable<CodeItem> document)
         {
-            if (outliningManagerService == null) return;
-
-            _outliningManagerService = outliningManagerService;
-            _textView = textView;
-
             foreach (var item in document)
             {
                 if (!(item is IMembers)) continue;
 
-                var collapsible = FindCollapsibleFromCodeItem(item, outliningManagerService, textView);
+                var collapsible = await FindCollapsibleFromCodeItem(item);
 
                 if (collapsible == null)
                 {
@@ -76,7 +68,7 @@ namespace CodeNav.Helpers
                     (item as ICodeCollapsible).IsExpandedChanged += OnIsExpandedChanged;
                 }
                 
-                SyncAllRegions(outliningManagerService, textView, (item as IMembers).Members);
+                await SyncAllRegions((item as IMembers).Members);
             }
         }
 
@@ -114,32 +106,31 @@ namespace CodeNav.Helpers
         /// cref="IMembers" />.
         /// </summary>
         /// <param name="item">The IMembers CodeItem.</param>
-        /// <param name="outliningManagerService">The outlining manager to get all regions</param>
-        /// <param name="textView">The textview to find collapsibles in</param>
         /// <returns>The <see cref="ICollapsible" /> on the same starting line, otherwise null.</returns>
-        private static ICollapsible FindCollapsibleFromCodeItem(CodeItem item, 
-            IOutliningManagerService outliningManagerService, IWpfTextView textView)
+        private static async Task<ICollapsible> FindCollapsibleFromCodeItem(CodeItem item)
         {
             if (item.Kind == CodeItemKindEnum.ImplementedInterface)
             {
                 return null;
             }
 
-            if (item.StartLine > textView.TextBuffer.CurrentSnapshot.LineCount)
+            var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+
+            if (item.StartLine > documentView?.TextView?.TextBuffer.CurrentSnapshot.LineCount)
             {
                 return null;
             }
 
             try
             {
-                var outliningManager = GetOutliningManager(outliningManagerService, textView);
+                var outliningManager = await GetOutliningManager();
 
                 if (outliningManager == null)
                 {
                     return null;
                 }
 
-                var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(textView, item.Span));
+                var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(documentView?.TextView, item.Span));
 
                 return (from collapsible in collapsibles
                         let startLine = GetStartLineForCollapsible(collapsible)
@@ -180,26 +171,29 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="eventArgs">The event arguments.</param>
-        private static void OnIsExpandedChanged(object sender, EventArgs eventArgs)
+        private static async void OnIsExpandedChanged(object sender, EventArgs eventArgs)
         {
             if (!(sender is IMembers item))
             {
                 return;
             }
 
-            var iCollapsible = FindCollapsibleFromCodeItem((CodeItem)item, _outliningManagerService, _textView);
-            if (iCollapsible != null)
-            {
-                var outliningManager = _outliningManagerService.GetOutliningManager(_textView);
+            var iCollapsible = await FindCollapsibleFromCodeItem((CodeItem)item);
 
-                if (item.IsExpanded && iCollapsible.IsCollapsed)
-                {
-                    outliningManager.Expand(iCollapsible as ICollapsed);
-                }
-                else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
-                {
-                    outliningManager.TryCollapse(iCollapsible);
-                }
+            if (iCollapsible == null)
+            {
+                return;
+            }
+
+            var outliningManager = await GetOutliningManager();
+
+            if (item.IsExpanded && iCollapsible.IsCollapsed)
+            {
+                outliningManager.Expand(iCollapsible as ICollapsed);
+            }
+            else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
+            {
+                outliningManager.TryCollapse(iCollapsible);
             }
         }
 

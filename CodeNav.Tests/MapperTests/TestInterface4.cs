@@ -13,7 +13,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestClassImplementedInterfaceAndBaseImplementedInterfaceShouldBeOk()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface4.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface4.cs"), null);
 
             Assert.IsTrue(document.Any());
 

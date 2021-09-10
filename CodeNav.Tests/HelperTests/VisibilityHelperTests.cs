@@ -20,7 +20,7 @@ namespace CodeNav.Tests.HelperTests
         {
             var document = new CodeDocumentViewModel
             {
-                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestVisibility.cs"))
+                CodeDocument = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestVisibility.cs"), null)
             };
 
             SettingsHelper.FilterRules = new ObservableCollection<FilterRule>(new List<FilterRule>

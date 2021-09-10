@@ -29,11 +29,11 @@ namespace CodeNav.Mappers
             }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
-            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, control);
+            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, control, semanticModel, tree);
 
             foreach (var classMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(classMember);
+                var memberItem = SyntaxMapper.MapMember(classMember, tree, semanticModel, control);
                 if (memberItem != null && !InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem)
                     && !RegionMapper.AddToRegion(regions, memberItem))
                 {
@@ -90,11 +90,11 @@ namespace CodeNav.Mappers
             }
 
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
-            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, control);
+            var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, control, semanticModel, tree);
 
             foreach (var classMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(classMember);
+                var memberItem = SyntaxMapper.MapMember(classMember, tree, semanticModel, control);
                 if (memberItem != null && !InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem)
                     && !RegionMapper.AddToRegion(regions, memberItem))
                 {

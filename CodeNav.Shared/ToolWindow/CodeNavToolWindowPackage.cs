@@ -17,11 +17,9 @@ namespace CodeNav.ToolWindow
     {
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            CodeNavToolWindow.Initialize(this);
+            this.RegisterToolWindows();
 
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            await CodeNavToolWindowCommand.InitializeAsync(this);
+            await this.RegisterCommandsAsync();
         }
     }
 }

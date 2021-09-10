@@ -10,7 +10,7 @@ namespace CodeNav.Mappers
     public static class StructMapper
     {
         public static CodeClassItem MapStruct(StructDeclarationSyntax member,
-            ICodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -26,14 +26,14 @@ namespace CodeNav.Mappers
 
             foreach (var structMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(structMember));
+                item.Members.Add(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
             }
 
             return item;
         }
 
         public static CodeClassItem MapStruct(VisualBasicSyntax.StructureBlockSyntax member,
-            ICodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -50,7 +50,7 @@ namespace CodeNav.Mappers
 
             foreach (var structMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(structMember));
+                item.Members.Add(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
             }
 
             return item;

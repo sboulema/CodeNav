@@ -4,16 +4,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using CodeNav.Helpers;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using CodeNav.Models;
-using System.Linq;
-using Task = System.Threading.Tasks.Task;
-using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
 
 namespace CodeNav
@@ -27,19 +21,11 @@ namespace CodeNav
         public readonly IWpfTextView _textView;
         private readonly ColumnDefinition _codeNavColumn;
         private readonly Grid _codeNavGrid;
-        private readonly IOutliningManagerService _outliningManagerService;
-        private readonly IOutliningManager _outliningManager;
-        private readonly VisualStudioWorkspace _workspace;
         public readonly MarginSideEnum MarginSide;
 
-        public CodeNavMargin(IWpfTextViewHost textViewHost, IOutliningManagerService outliningManagerService,
-            VisualStudioWorkspace workspace, MarginSideEnum side)
+        public CodeNavMargin(IWpfTextViewHost textViewHost, MarginSideEnum side)
         {
             // Wire up references for the event handlers in RegisterEvents
-            _textView = textViewHost.TextView;
-            _outliningManagerService = outliningManagerService;
-            _outliningManager = OutliningHelper.GetOutliningManager(outliningManagerService, _textView);
-            _workspace = workspace;
             MarginSide = side;
 
             // Add the view/content to the margin area
@@ -54,8 +40,6 @@ namespace CodeNav
             }
 
             Children.Add(_codeNavGrid);
-
-            RegisterEvents();
         }
 
         private Grid CreateGrid(IWpfTextViewHost textViewHost)
@@ -98,7 +82,7 @@ namespace CodeNav
 
             var columnIndex = (MarginSideEnum)General.Instance.MarginSide == MarginSideEnum.Left ? 0 : 2;
 
-            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex], _outliningManagerService, _workspace);
+            _control = new CodeViewUserControl(grid.ColumnDefinitions[columnIndex]);
 
             grid.Children.Add(_control as UIElement);
 
@@ -129,7 +113,7 @@ namespace CodeNav
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
 
-            _control = new CodeViewUserControlTop(grid.RowDefinitions[0], _outliningManagerService, _workspace);
+            _control = new CodeViewUserControlTop(grid.RowDefinitions[0]);
 
             Grid.SetRow(_control as UIElement, 0);
             Grid.SetRow(textViewHost.HostControl, 1);
@@ -174,106 +158,6 @@ namespace CodeNav
                 General.Instance.Width = (_control as FrameworkElement).ActualWidth;
                 General.Instance.Save();
             }
-        }
-
-        public void RegisterEvents()
-        {
-            // Subscribe to Cursor move event
-            if (_textView?.Caret != null &&
-                !General.Instance.DisableHighlight)
-            {
-                _textView.Caret.PositionChanged -= Caret_PositionChanged;
-                _textView.Caret.PositionChanged += Caret_PositionChanged;
-            }
-
-            // Subscribe to TextBuffer changes
-            if ((_textView.TextBuffer as ITextBuffer2) != null &&
-                General.Instance.ShowHistoryIndicators)
-            {
-                var textBuffer2 = _textView.TextBuffer as ITextBuffer2;
-
-                textBuffer2.ChangedOnBackground -= TextBuffer_ChangedOnBackground;
-                textBuffer2.ChangedOnBackground += TextBuffer_ChangedOnBackground;
-            }
-
-            // Subscribe to Document events
-            VS.Events.DocumentEvents.Saved += DocumentEvents_Saved;
-
-            // Subscribe to Outlining events
-            if (_outliningManager != null)
-            {
-                _outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
-                _outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
-                _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
-                _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
-            }
-
-            VS.Events.WindowEvents.ActiveFrameChanged -= WindowEvents_ActiveFrameChanged;
-            VS.Events.WindowEvents.ActiveFrameChanged += WindowEvents_ActiveFrameChanged;
-        }
-
-        private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
-            => WindowChangedEvent(obj).FireAndForget();
-
-        private void DocumentEvents_Saved(string e)
-            => UpdateDocument().FireAndForget();
-
-        private async Task WindowChangedEvent(ActiveFrameChangeEventArgs obj)
-        {
-            if (obj.OldFrame == obj.NewFrame)
-            {
-                return;
-            }
-
-            var documentView = await obj.NewFrame.GetDocumentViewAsync();
-
-            var filePath = documentView?.Document?.FilePath;
-
-            if (string.IsNullOrEmpty(filePath))
-            {
-                return;
-            }
-
-            UpdateDocument(filePath).FireAndForget();
-        }
-
-        private void TextBuffer_ChangedOnBackground(object sender, TextContentChangedEventArgs e)
-        {
-            var changedSpans = e.Changes.Select(c => c.OldSpan);
-
-            foreach (var span in changedSpans)
-            {
-                HistoryHelper.AddItemToHistory(_control.CodeDocumentViewModel, span);
-            }
-        }
-
-        private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e) =>
-            _control.RegionsCollapsed(e);
-
-        private void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e) =>
-            _control.RegionsExpanded(e);
-
-        public void UnRegisterEvents()
-        {
-            _textView.Caret.PositionChanged -= Caret_PositionChanged;
-
-            if ((_textView.TextBuffer as ITextBuffer2) != null)
-            {
-                (_textView.TextBuffer as ITextBuffer2).ChangedOnBackground -= TextBuffer_ChangedOnBackground;
-            }
-        }
-
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            var oldLineNumber = e.OldPosition.BufferPosition.GetContainingLine().LineNumber;
-            var newLineNumber = e.NewPosition.BufferPosition.GetContainingLine().LineNumber;
-
-            if (oldLineNumber == newLineNumber)
-            {
-                return;
-            }
-
-            _control.HighlightCurrentItem(newLineNumber);
         }
 
         #endregion
@@ -361,8 +245,6 @@ namespace CodeNav
                 return;
             }
 
-            UnRegisterEvents();
-
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }
@@ -375,18 +257,6 @@ namespace CodeNav
             if (_isDisposed)
             {
                 throw new ObjectDisposedException(MarginName);
-            }
-        }
-
-        private async Task UpdateDocument(string filePath = "")
-        {
-            if (!await DocumentHelper.IsLargeDocument().ConfigureAwait(false))
-            {
-                _control.UpdateDocument(filePath);
-            }
-            else
-            {
-                _control.CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();
             }
         }
 

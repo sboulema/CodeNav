@@ -112,8 +112,10 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task<Document> GetCodeAnalysisDocument(VisualStudioWorkspace workspace, string filePath = "")
+        public static async Task<Document> GetCodeAnalysisDocument(string filePath = "")
         {
+            var workspace = await GetVisualStudioWorkspace();
+
             if (workspace == null)
             {
                 return null;
@@ -152,9 +154,7 @@ namespace CodeNav.Helpers
         }
 
         public static async Task UpdateDocument(ICodeViewUserControl control,
-            VisualStudioWorkspace workspace,
             CodeDocumentViewModel codeDocumentViewModel,
-            IOutliningManagerService outliningManagerService,
             ColumnDefinition column = null,
             RowDefinition row = null,
             string filePath = "")
@@ -168,13 +168,19 @@ namespace CodeNav.Helpers
 
             try
             {
+                if (await IsLargeDocument())
+                {
+                    codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();
+                    return;
+                }
+
                 // If not show a loading item
                 if (!codeDocumentViewModel.CodeDocument.Any())
                 {
                     codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLoadingItem();
                 }
 
-                var codeItems = await SyntaxMapper.MapDocument(control, workspace, filePath);
+                var codeItems = await SyntaxMapper.MapDocument(control, filePath);
 
                 if (codeItems == null)
                 {
@@ -216,7 +222,7 @@ namespace CodeNav.Helpers
             {
                 // Sync all regions
                 var documentView = await VS.Documents.GetActiveDocumentViewAsync();
-                OutliningHelper.SyncAllRegions(outliningManagerService, documentView?.TextView, codeDocumentViewModel.CodeDocument);
+                OutliningHelper.SyncAllRegions(codeDocumentViewModel.CodeDocument).FireAndForget();
 
                 // Should the margin be shown and are there any items to show, if not hide the margin
                 if (column != null)
@@ -232,6 +238,14 @@ namespace CodeNav.Helpers
             {
                 LogHelper.Log("Error finishing UpdateDocument", e);
             }
+        }
+
+        private static async Task<VisualStudioWorkspace> GetVisualStudioWorkspace()
+        {
+            var componentModel = await VS.Services.GetComponentModelAsync();
+            var workspace = componentModel.GetService<VisualStudioWorkspace>();
+
+            return workspace;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace CodeNav.Tests.MapperTests.VisualBasic
         [OneTimeSetUp]
         public void Setup()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethods.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestMethods.vb"), null);
 
             Assert.IsTrue(document.Any());
 

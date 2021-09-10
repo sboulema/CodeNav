@@ -1,5 +1,4 @@
 ﻿using CodeNav.Models;
-using Microsoft.VisualStudio.Text.Outlining;
 using System.Collections.Generic;
 
 namespace CodeNav
@@ -7,10 +6,6 @@ namespace CodeNav
     public interface ICodeViewUserControl
     {
         CodeDocumentViewModel CodeDocumentViewModel { get; set; }
-
-        void RegionsCollapsed(RegionsCollapsedEventArgs e);
-
-        void RegionsExpanded(RegionsExpandedEventArgs e);
 
         void UpdateDocument(string filePath = "");
 

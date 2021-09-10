@@ -13,7 +13,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestInterfaceShouldBeOk()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface.cs"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -48,7 +48,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestInterfaceInRegionShouldBeOk()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterface.cs"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -75,7 +75,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestInterfaceShouldBeOkVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestInterfaces.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestInterfaces.vb"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -89,7 +89,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void TestInterfaceWithRegion()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterfaceRegion.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestInterfaceRegion.cs"), null);
 
             Assert.IsTrue(document.Any());
 

@@ -14,7 +14,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void ShouldBeVisible()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestEmptyClass.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestEmptyClass.cs"), null);
 
             Assert.IsTrue(document.Any());
 

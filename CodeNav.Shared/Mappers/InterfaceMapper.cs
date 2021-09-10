@@ -20,7 +20,7 @@ namespace CodeNav.Mappers
         }
 
         public static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(SyntaxNode member,
-            SemanticModel semanticModel, ICodeViewUserControl control)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
 
@@ -42,7 +42,7 @@ namespace CodeNav.Mappers
             foreach (INamedTypeSymbol implementedInterface in interfacesList.Distinct())
             {
                 implementedInterfaces.Add(MapImplementedInterface(implementedInterface.Name, 
-                    implementedInterface.GetMembers(), classSymbol, member, control));
+                    implementedInterface.GetMembers(), classSymbol, member, control, semanticModel, tree));
             }
 
             return implementedInterfaces;
@@ -65,7 +65,7 @@ namespace CodeNav.Mappers
 
         public static CodeImplementedInterfaceItem MapImplementedInterface(string name,
             ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass, SyntaxNode currentClass,
-            ICodeViewUserControl control)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             var item = new CodeImplementedInterfaceItem
             {
@@ -105,7 +105,7 @@ namespace CodeNav.Mappers
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
 
-                var interfaceMember = SyntaxMapper.MapMember(declarationSyntax as MemberDeclarationSyntax);
+                var interfaceMember = SyntaxMapper.MapMember(declarationSyntax as MemberDeclarationSyntax, tree, semanticModel, control);
                 if (interfaceMember == null) continue;
 
                 interfaceMember.OverlayMoniker = KnownMonikers.InterfacePublic;
@@ -140,7 +140,7 @@ namespace CodeNav.Mappers
 
             foreach (var interfaceMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(interfaceMember);
+                var memberItem = SyntaxMapper.MapMember(interfaceMember, tree, semanticModel, control);
                 if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
                 {
                     item.Members.Add(memberItem);
@@ -182,7 +182,7 @@ namespace CodeNav.Mappers
 
             foreach (var interfaceMember in member.Members)
             {
-                var memberItem = SyntaxMapper.MapMember(interfaceMember);
+                var memberItem = SyntaxMapper.MapMember(interfaceMember, tree, semanticModel, control);
                 if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
                 {
                     item.Members.Add(memberItem);

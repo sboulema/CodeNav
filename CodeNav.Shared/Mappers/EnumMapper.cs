@@ -35,7 +35,7 @@ namespace CodeNav.Mappers
         }
 
         public static CodeClassItem MapEnum(EnumDeclarationSyntax member,
-            ICodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -52,14 +52,14 @@ namespace CodeNav.Mappers
 
             foreach (var enumMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(enumMember));
+                item.Members.Add(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
             }
 
             return item;
         }
 
         public static CodeClassItem MapEnum(VisualBasicSyntax.EnumBlockSyntax member,
-            ICodeViewUserControl control, SemanticModel semanticModel)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null) return null;
 
@@ -77,7 +77,7 @@ namespace CodeNav.Mappers
 
             foreach (var enumMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(enumMember));
+                item.Members.Add(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
             }
 
             return item;

@@ -15,7 +15,7 @@ namespace CodeNav.Tests.HelperTests
         [TestCase(SortOrderEnum.SortByName, new string[] { "A", "B", "C" })]
         public void ItemsSorting(SortOrderEnum sortOrder, string[] methodNames)
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestSorting.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestSorting.cs"), null);
             var viewModel = new CodeDocumentViewModel { CodeDocument = document, SortOrder = sortOrder };
 
             viewModel.CodeDocument = SortHelper.Sort(viewModel);

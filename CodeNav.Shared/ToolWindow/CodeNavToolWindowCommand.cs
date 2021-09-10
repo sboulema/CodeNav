@@ -4,7 +4,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.ToolWindow
 {
-    [Command(PackageGuids.guidCodeNavToolWindowPackageString, PackageIds.CodeNavToolWindowCommandId)]
+    [Command(PackageIds.CodeNavToolWindowCommandId)]
     internal sealed class CodeNavToolWindowCommand : BaseCommand<CodeNavToolWindowCommand>
     {
         protected override async Task ExecuteAsync(OleMenuCmdEventArgs e)

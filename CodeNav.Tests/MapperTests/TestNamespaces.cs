@@ -13,7 +13,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void NestedNamespacesShouldHaveCorrectStructure()
         {
-            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestNestedNamespaces.cs"));
+            var document = SyntaxMapper.MapDocument(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\TestNestedNamespaces.cs"), null);
 
             Assert.IsTrue(document.Any());
 
@@ -39,7 +39,7 @@ namespace CodeNav.Tests.MapperTests
         [Test]
         public void NamespacesShouldBeOKVB()
         {
-            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestNamespaces.vb"));
+            var document = SyntaxMapper.MapDocumentVB(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\Files\\VisualBasic\\TestNamespaces.vb"), null);
 
             Assert.IsTrue(document.Any());
 
