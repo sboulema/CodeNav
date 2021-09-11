@@ -14,7 +14,10 @@ namespace CodeNav.Mappers
         public static CodeClassItem MapClass(ClassDeclarationSyntax member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Class;
@@ -31,7 +34,41 @@ namespace CodeNav.Mappers
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, control, semanticModel, tree);
 
-            foreach (var classMember in member.Members)
+            var members = new List<MemberDeclarationSyntax>();
+            members.AddRange(member.Members.Select(m => m));
+
+            // Map members from the base class
+            var classSymbol = semanticModel.GetDeclaredSymbol(member) as INamedTypeSymbol;
+            var baseType = classSymbol?.BaseType;
+
+            var baseRegion = new CodeRegionItem
+            {
+                Name = baseType.Name,
+                FullName = baseType.Name,
+                Id = baseType.Name,
+                Tooltip = baseType.Name,
+                ForegroundColor = Colors.Black,
+                BorderColor = Colors.DarkGray,
+                FontSize = General.Instance.Font.SizeInPoints - 2,
+                Kind = CodeItemKindEnum.BaseClass,
+                Control = control
+            };
+
+            regions.Add(baseRegion);
+
+            foreach (var inheritedMember in baseType?.GetMembers())
+            {
+                var syntaxReference = inheritedMember.DeclaringSyntaxReferences.FirstOrDefault();
+
+                if (syntaxReference?.GetSyntax() is MemberDeclarationSyntax declarationSyntax)
+                {
+                    var memberItem = SyntaxMapper.MapMember(declarationSyntax, tree, semanticModel, control);
+                    baseRegion.Members.Add(memberItem);
+                }
+            }
+
+            // Map class members
+            foreach (var classMember in members)
             {
                 var memberItem = SyntaxMapper.MapMember(classMember, tree, semanticModel, control);
                 if (memberItem != null && !InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem)

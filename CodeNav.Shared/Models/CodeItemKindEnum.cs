@@ -22,6 +22,7 @@
         Switch,
         SwitchSection,
         Variable,
-        LocalFunction
+        LocalFunction,
+        BaseClass
     }
 }
