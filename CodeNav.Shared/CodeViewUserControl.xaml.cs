@@ -72,7 +72,6 @@ namespace CodeNav
         private void DocumentEvents_Opened(string obj)
         {
             RegisterDocumentEvents().FireAndForget();
-            UpdateDocument();
         }
 
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)

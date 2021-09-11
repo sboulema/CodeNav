@@ -2,7 +2,6 @@
 using CodeNav.Models;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using CodeNav.Helpers;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -17,7 +16,10 @@ namespace CodeNav.Mappers
     {
         public static List<CodeItem> MapStatement(StatementSyntax statement, ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (statement == null) return new List<CodeItem>();
+            if (statement == null)
+            {
+                return new List<CodeItem>();
+            }
 
             switch (statement.Kind())
             {
@@ -27,6 +29,8 @@ namespace CodeNav.Mappers
                     return MapStatements((statement as BlockSyntax).Statements, control, semanticModel);
                 case SyntaxKind.TryStatement:
                     return MapStatement((statement as TryStatementSyntax).Block, control, semanticModel);
+                case SyntaxKind.LocalFunctionStatement:
+                    return new List<CodeItem> { MethodMapper.MapMethod(statement as LocalFunctionStatementSyntax, control, semanticModel) };
                 default:
                     return new List<CodeItem>();
             }
@@ -54,7 +58,10 @@ namespace CodeNav.Mappers
         {
             var list = new List<CodeItem>();
 
-            if (!statements.Any()) return list;
+            if (!statements.Any())
+            {
+                return list;
+            }
 
             foreach (var statement in statements)
             {

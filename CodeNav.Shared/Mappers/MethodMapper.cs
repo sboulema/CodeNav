@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Imaging;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
@@ -13,37 +14,57 @@ namespace CodeNav.Mappers
     {
         public static CodeItem MapMethod(MethodDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            return MapMethod(member, member.Identifier, member.Modifiers, member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+               CodeItemKindEnum.Method, control, semanticModel);
+        }
+
+        public static CodeItem MapMethod(LocalFunctionStatementSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        {
+            return MapMethod(member, member.Identifier, member.Modifiers, member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+               CodeItemKindEnum.LocalFunction, control, semanticModel);
+        }
+
+        private static CodeItem MapMethod(SyntaxNode node, SyntaxToken identifier,
+            SyntaxTokenList modifiers, BlockSyntax body, ITypeSymbol returnType,
+            ParameterListSyntax parameterList, CodeItemKindEnum kind,
+            ICodeViewUserControl control, SemanticModel semanticModel)
+        {
+            if (node == null)
+            {
+                return null;
+            }
 
             CodeItem item;
 
-            var statementsCodeItems = StatementMapper.MapStatement(member.Body, control, semanticModel);
+            var statementsCodeItems = StatementMapper.MapStatement(body, control, semanticModel);
 
-            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statementsCodeItems.Any())
+            VisibilityHelper.SetCodeItemVisibility(statementsCodeItems);
+
+            if (statementsCodeItems.Any(statement => statement.IsVisible == Visibility.Visible))
             {
                 // Map method as item containing statements
-                item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
+                item = BaseMapper.MapBase<CodeClassItem>(node, identifier,modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
                 ((CodeClassItem)item).BorderColor = Colors.DarkGray;
             }
             else
             {
                 // Map method as single item
-                item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
-                ((CodeFunctionItem)item).Type = TypeMapper.Map(member.ReturnType);
-                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(member.ParameterList);
-                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, member.ParameterList);
+                item = BaseMapper.MapBase<CodeFunctionItem>(node, identifier, modifiers, control, semanticModel);
+                ((CodeFunctionItem)item).Type = TypeMapper.Map(returnType);
+                ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(parameterList);
+                item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).Type, item.Name, parameterList);
             }
 
-            item.Id = IdMapper.MapId(item.FullName, member.ParameterList);
-            item.Kind = CodeItemKindEnum.Method;
+            item.Id = IdMapper.MapId(item.FullName, parameterList);
+            item.Kind = kind;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
-            if (TriviaSummaryMapper.HasSummary(member) && SettingsHelper.UseXMLComments)
+            if (TriviaSummaryMapper.HasSummary(node) && SettingsHelper.UseXMLComments)
             {
-                item.Tooltip = TriviaSummaryMapper.Map(member);
+                item.Tooltip = TriviaSummaryMapper.Map(node);
             }
-            
+
             return item;
         }
 
@@ -73,7 +94,9 @@ namespace CodeNav.Mappers
 
             var statementsCodeItems = StatementMapper.MapStatement(member.Statements, control, semanticModel);
 
-            if (VisibilityHelper.ShouldBeVisible(CodeItemKindEnum.Switch) && statementsCodeItems.Any())
+            VisibilityHelper.SetCodeItemVisibility(statementsCodeItems);
+
+            if (statementsCodeItems.Any(statement => statement.IsVisible == Visibility.Visible))
             {
                 // Map method as item containing statements
                 item = BaseMapper.MapBase<CodeClassItem>(member, member.SubOrFunctionStatement.Identifier,

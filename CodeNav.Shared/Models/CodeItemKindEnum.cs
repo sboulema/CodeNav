@@ -4,7 +4,7 @@
     {
         Unknown,
         All,
-		Class,
+        Class,
         Constant,
         Constructor,
         Delegate,
@@ -13,7 +13,7 @@
         Event,
         ImplementedInterface,
         Indexer,
-		Interface,
+        Interface,
         Method,
         Namespace,
         Property,
@@ -21,6 +21,7 @@
         Struct,
         Switch,
         SwitchSection,
-        Variable
+        Variable,
+        LocalFunction
     }
 }

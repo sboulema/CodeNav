@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Models;
-using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
@@ -221,24 +220,6 @@ namespace CodeNav.Helpers
             }
 
             return visible;
-        }
-
-        public static bool ShouldBeVisible(CodeItemKindEnum kind)
-        {
-            if (SettingsHelper.FilterRules == null)
-            {
-                return true;
-            }
-
-            var filterRule = SettingsHelper.FilterRules
-                .LastOrDefault(f => f.Kind == kind || f.Kind == CodeItemKindEnum.All);
-
-            if (filterRule == null)
-            {
-                return true;
-            }
-
-            return filterRule.Visible;
         }
 
         public static Visibility GetIgnoreVisibility(CodeItem item)
