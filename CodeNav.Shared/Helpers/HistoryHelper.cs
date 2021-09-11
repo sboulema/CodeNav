@@ -21,7 +21,7 @@ namespace CodeNav.Helpers
 
         public static void AddItemToHistory(CodeItem item)
         {
-            if (item == null)
+            if (item?.Control?.CodeDocumentViewModel == null)
             {
                 return;
             }

@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Outlining;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,21 +60,6 @@ namespace CodeNav.Helpers
             }
 
             return 0;
-        }
-
-        public static async Task<int?> GetCurrentLineNumber()
-        {
-            try
-            {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
-                return documentView?.TextView?.Selection.ActivePoint.Position.GetContainingLine().LineNumber;
-            }
-            catch (Exception)
-            {
-                // Ignore
-            }
-
-            return null;
         }
 
         public static async Task ScrollToLine(LinePosition linePosition)
@@ -221,7 +205,6 @@ namespace CodeNav.Helpers
             try
             {
                 // Sync all regions
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
                 OutliningHelper.SyncAllRegions(codeDocumentViewModel.CodeDocument).FireAndForget();
 
                 // Should the margin be shown and are there any items to show, if not hide the margin

@@ -24,8 +24,7 @@ namespace CodeNav.ToolWindow
 
             _control = new CodeViewUserControl();
 
-            _control.tag = "toolwindow";
-            //_control.CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateSelectDocumentItem();
+            _control.CodeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateSelectDocumentItem();
 
             return _control;
         }

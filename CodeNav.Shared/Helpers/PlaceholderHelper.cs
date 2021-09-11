@@ -24,6 +24,7 @@ namespace CodeNav.Helpers
                 new CodeNamespaceItem
                 {
                     Id = name,
+                    IsExpanded = true,
                     Members = new List<CodeItem>
                     {
                         new CodeClassItem
@@ -33,7 +34,8 @@ namespace CodeNav.Helpers
                             Id = name,
                             ForegroundColor = Colors.Black,
                             BorderColor = Colors.DarkGray,
-                            Moniker = moniker
+                            Moniker = moniker,
+                            IsExpanded = true
                         }
                     }
                 }
