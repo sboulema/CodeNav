@@ -39,7 +39,7 @@ jobs:
       run: nuget restore CodeNav.sln -ConfigFile nuget.config
 
     - name: Build VSIX
-      run: msbuild CodeNav.sln /t:Rebuild
+      run: msbuild CodeNav.sln /t:Rebuild /p:Configuration=Release
       env: 
         DeployExtension: False
 
