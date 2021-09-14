@@ -13,7 +13,7 @@ jobs:
         Version: '8.4.${{ github.run_number }}'
     steps:
     - name: Update Assembly Version
-      uses: dannevesdantas/set-version-assemblyinfo-win@v1.0.0
+      uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
       with:
         version: ${{ env.Version }}
 
