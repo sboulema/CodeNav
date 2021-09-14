@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 jobs:
   release-github:
+    name: GitHub
     runs-on: windows-latest
     steps:
     - name: Download artifact
@@ -12,14 +13,14 @@ jobs:
         workflow: build.yml
         workflow_conclusion: success
 
-    - name: Release
-      uses: softprops/action-gh-release@v1
+    - name: Create GitHub Release
+      uses: ncipollo/release-action@v1
       with:
-        files: |
-          CodeNav/CodeNav.VS2019/release/Debug/CodeNav.VS2019.vsix
-          CodeNav/CodeNav.VS2022/release/Debug/CodeNav.VS2022.vsix
+        artifacts: "**/*.vsix"
+        token: ${{ secrets.GITHUB_TOKEN }}
 
   release-marketplace-vs2019:
+    name: VS Marketplace - VS2019
     runs-on: windows-latest
     steps:
     - name: Download artifact
@@ -36,6 +37,7 @@ jobs:
         personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
   release-marketplace-vs2022:
+    name: VS Marketplace - VS2022
     runs-on: windows-latest
     steps:
     - name: Download artifact

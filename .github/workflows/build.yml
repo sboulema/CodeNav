@@ -51,3 +51,9 @@ jobs:
           **\*.vsix
           publish-manifest.*.json
           readme.md
+
+    - name: Create tag
+      uses: hole19/git-tag-action@master
+      env:
+        TAG: 'v${{ env.Version }}'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
