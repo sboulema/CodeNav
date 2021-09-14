@@ -1,0 +1,44 @@
+name: Build CodeNav
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+        Version: '8.4.${{ github.run_number }}'
+    steps:
+    - name: Update Assembly Version
+      uses: dannevesdantas/set-version-assemblyinfo-win@v1.0.0
+      with:
+        version: ${{ env.Version }}
+
+    - name: Update Vsix Version (VS2019)
+      uses: cezarypiatek/VsixVersionAction@1.0
+      with:
+        version: ${{ env.Version }}
+        vsix-manifest-file: 'CodeNav.VS2019\source.extension.vsixmanifest'
+
+    - name: Update Vsix Version (VS2022)
+      uses: cezarypiatek/VsixVersionAction@1.0
+      with:
+        version: ${{ env.Version }}
+        vsix-manifest-file: 'CodeNav.VS2022\source.extension.vsixmanifest'
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build VSIX
+      run: msbuild CodeNav.sln /t:Rebuild
+      env: 
+        DeployExtension: False
+
+    - name: Publish Build Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: CodeNav
+        path: '**\?(*.vsix|publish-manifest.*.json|readme.md)'
