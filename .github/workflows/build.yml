@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: windows-latest
     env:
-        Version: '8.4.${{ github.run_number }}'
+        Version: '8.5.${{ github.run_number }}'
     steps:
     - name: Checkout
       uses: actions/checkout@v2   
@@ -47,4 +47,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: CodeNav
-        path: '**\?(*.vsix|publish-manifest.*.json|readme.md)'
+        path: |
+          **\*.vsix
+          publish-manifest.*.json
+          readme.md
