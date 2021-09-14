@@ -11,6 +11,7 @@ env:
 
 jobs:
   build:
+    name: Build
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -54,9 +55,10 @@ jobs:
             readme.md
 
   release:
+    name: Release
     needs: build
     runs-on: windows-latest
-    environment: release
+    environment: Release
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
@@ -65,7 +67,7 @@ jobs:
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6
         with:
-          custom_tag: 'v${{ env.Version }}'
+          custom_tag: '${{ env.Version }}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
@@ -74,6 +76,7 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: "**/*.vsix"
 
       - name: Publish extension to Marketplace - VS2019
         uses: cezarypiatek/VsixPublisherAction@0.1
