@@ -1,0 +1,89 @@
+name: Build CodeNav
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+env:
+  Version: '8.5.${{ github.run_number }}'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2   
+
+      - name: Update Assembly Version
+        uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
+        with:
+          version: ${{ env.Version }}
+
+      - name: Update Vsix Version (VS2019)
+        uses: cezarypiatek/VsixVersionAction@1.0
+        with:
+          version: ${{ env.Version }}
+          vsix-manifest-file: 'CodeNav.VS2019\source.extension.vsixmanifest'
+
+      - name: Update Vsix Version (VS2022)
+        uses: cezarypiatek/VsixVersionAction@1.0
+        with:
+          version: ${{ env.Version }}
+          vsix-manifest-file: 'CodeNav.VS2022\source.extension.vsixmanifest'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: NuGet restore
+        run: nuget restore CodeNav.sln -ConfigFile nuget.config
+
+      - name: Build VSIX
+        run: msbuild CodeNav.sln /t:Rebuild /p:Configuration=Release
+        env: 
+          DeployExtension: False
+
+      - name: Publish Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: CodeNav
+          path: |
+            **\*.vsix
+            publish-manifest.*.json
+            readme.md
+
+  release:
+    runs-on: windows-latest
+    environment: release
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          custom_tag: 'v${{ env.Version }}'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+
+      - name: Publish extension to Marketplace - VS2019
+        uses: cezarypiatek/VsixPublisherAction@0.1
+        with:
+          extension-file: CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
+          publish-manifest-file: CodeNav/publish-manifest.VS2019.json
+          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
+          
+      - name: Publish extension to Marketplace - VS2022
+        uses: cezarypiatek/VsixPublisherAction@0.1
+        with:
+          extension-file: CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
+          publish-manifest-file: CodeNav/publish-manifest.VS2022.json
+          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }} 
