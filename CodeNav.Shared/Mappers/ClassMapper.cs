@@ -1,6 +1,8 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Shared.Helpers;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,41 +36,11 @@ namespace CodeNav.Mappers
             var regions = RegionMapper.MapRegions(tree, member.Span, control);
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, control, semanticModel, tree);
 
-            var members = new List<MemberDeclarationSyntax>();
-            members.AddRange(member.Members.Select(m => m));
-
             // Map members from the base class
-            var classSymbol = semanticModel.GetDeclaredSymbol(member) as INamedTypeSymbol;
-            var baseType = classSymbol?.BaseType;
-
-            var baseRegion = new CodeRegionItem
-            {
-                Name = baseType.Name,
-                FullName = baseType.Name,
-                Id = baseType.Name,
-                Tooltip = baseType.Name,
-                ForegroundColor = Colors.Black,
-                BorderColor = Colors.DarkGray,
-                FontSize = General.Instance.Font.SizeInPoints - 2,
-                Kind = CodeItemKindEnum.BaseClass,
-                Control = control
-            };
-
-            regions.Add(baseRegion);
-
-            foreach (var inheritedMember in baseType?.GetMembers())
-            {
-                var syntaxReference = inheritedMember.DeclaringSyntaxReferences.FirstOrDefault();
-
-                if (syntaxReference?.GetSyntax() is MemberDeclarationSyntax declarationSyntax)
-                {
-                    var memberItem = SyntaxMapper.MapMember(declarationSyntax, tree, semanticModel, control);
-                    baseRegion.Members.Add(memberItem);
-                }
-            }
+            MapMembersFromBaseClass(member, regions, control, semanticModel, tree);
 
             // Map class members
-            foreach (var classMember in members)
+            foreach (var classMember in member.Members)
             {
                 var memberItem = SyntaxMapper.MapMember(classMember, tree, semanticModel, control);
                 if (memberItem != null && !InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem)
@@ -191,5 +163,54 @@ namespace CodeNav.Mappers
 
             return !inheritanceList.Any() ? string.Empty : $" : {string.Join(", ", inheritanceList)}";
         }
+
+        private static void MapMembersFromBaseClass(ClassDeclarationSyntax member,
+            List<CodeRegionItem> regions, ICodeViewUserControl control,
+            SemanticModel semanticModel, SyntaxTree tree)
+        {
+            var classSymbol = semanticModel.GetDeclaredSymbol(member);
+            var baseType = classSymbol?.BaseType;
+
+            if (baseType.SpecialType == SpecialType.System_Object)
+            {
+                return;
+            }
+
+            var baseRegion = new CodeRegionItem
+            {
+                Name = baseType.Name,
+                FullName = baseType.Name,
+                Id = baseType.Name,
+                Tooltip = baseType.Name,
+                ForegroundColor = Colors.Black,
+                BorderColor = Colors.DarkGray,
+                FontSize = General.Instance.Font.SizeInPoints - 2,
+                Kind = CodeItemKindEnum.BaseClass,
+                Control = control
+            };
+
+            regions.Add(baseRegion);
+
+            foreach (var inheritedMember in baseType?.GetMembers())
+            {
+                var syntaxNode = inheritedMember.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+
+                if (syntaxNode.IsKind(SyntaxKind.VariableDeclarator))
+                {
+                    syntaxNode = syntaxNode.Parent?.Parent;
+                }
+
+                if (syntaxNode == null)
+                {
+                    continue;
+                }
+
+                var memberItem = SyntaxMapper.MapMember(syntaxNode, syntaxNode.SyntaxTree,
+                    SyntaxHelper.GetCSharpSemanticModel(syntaxNode.SyntaxTree), control);
+
+                baseRegion.Members.Add(memberItem);
+            }
+        }
+
     }
 }

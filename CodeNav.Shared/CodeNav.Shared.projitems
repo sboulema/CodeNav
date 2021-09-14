@@ -105,6 +105,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SolutionStorageHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SortHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SymbolHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SyntaxHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\VisibilityHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WpfHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ICodeViewUserControl.cs" />

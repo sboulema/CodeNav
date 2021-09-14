@@ -62,11 +62,17 @@ namespace CodeNav.Helpers
             return 0;
         }
 
-        public static async Task ScrollToLine(LinePosition linePosition)
+        public static async Task ScrollToLine(LinePosition linePosition, string filePath = "")
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync(); 
+                
+                if (documentView?.FilePath != filePath)
+                {
+                    documentView = await VS.Documents.OpenInPreviewTabAsync(filePath);
+                }
+
                 var line = documentView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(linePosition.Line);
 
                 documentView?.TextView?.Selection.Select(line.Extent, false);

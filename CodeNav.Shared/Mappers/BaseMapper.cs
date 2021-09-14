@@ -13,37 +13,34 @@ namespace CodeNav.Mappers
 {
     public static class BaseMapper
     {
-        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, SyntaxTokenList modifiers, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
-        {
-            return MapBase<T>(source, identifier.Text, modifiers, control, semanticModel);
-        }
+        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, SyntaxTokenList modifiers,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+            => MapBase<T>(source, identifier.Text, modifiers, control, semanticModel);
 
-        public static T MapBase<T>(SyntaxNode source, NameSyntax name, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
-        {
-            return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
-        }
+        public static T MapBase<T>(SyntaxNode source, NameSyntax name,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+            => MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
 
-        public static T MapBase<T>(SyntaxNode source, VisualBasicSyntax.NameSyntax name, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
-        {
-            return MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
-        }
+        public static T MapBase<T>(SyntaxNode source, VisualBasicSyntax.NameSyntax name,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+            => MapBase<T>(source, name.ToString(), new SyntaxTokenList(), control, semanticModel);
 
-        public static T MapBase<T>(SyntaxNode source, string name, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
-        {
-            return MapBase<T>(source, name, new SyntaxTokenList(), control, semanticModel);
-        }
+        public static T MapBase<T>(SyntaxNode source, string name,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+            => MapBase<T>(source, name, new SyntaxTokenList(), control, semanticModel);
 
-        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
-        {
-            return MapBase<T>(source, identifier.Text, new SyntaxTokenList(), control, semanticModel);
-        }
+        public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+            => MapBase<T>(source, identifier.Text, new SyntaxTokenList(), control, semanticModel);
 
-        private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers, ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
+        private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers,
+            ICodeViewUserControl control, SemanticModel semanticModel) where T : CodeItem
         {
             var element = Activator.CreateInstance<T>();
 
             element.Name = name;
             element.FullName = GetFullName(source, name, semanticModel);
+            element.FilePath = source.SyntaxTree.FilePath;
             element.Id = element.FullName;
             element.Tooltip = name;
             element.StartLine = GetStartLine(source);

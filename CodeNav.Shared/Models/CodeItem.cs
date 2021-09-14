@@ -18,39 +18,37 @@ namespace CodeNav.Models
     [DataContract]
     public class CodeItem : ObservableObject
     {
-        public CodeItem()
-        {
-            _clickItemCommand = new DelegateCommand(ClickItem, null);
-            _goToDefinitionCommand = new DelegateCommand(GoToDefinition, null);
-            _goToEndCommand = new DelegateCommand(GoToEnd, null);
-            _selectInCodeCommand = new DelegateCommand(SelectInCode, null);
-            _copyNameCommand = new DelegateCommand(CopyName, null);
-            _refreshCommand = new DelegateCommand(RefreshCodeNav, null);
-            _expandAllCommand = new DelegateCommand(ExpandAll, null);
-            _collapseAllCommand = new DelegateCommand(CollapseAll, null);
-            _bookmarkCommand = new DelegateCommand(Bookmark, null);
-            _deleteBookmarkCommand = new DelegateCommand(DeleteBookmark, null);
-            _clearBookmarksCommand = new DelegateCommand(ClearBookmarks, null);
-            _filterBookmarksCommand = new DelegateCommand(FilterBookmarks, null);
-            _customizeBookmarkStylesCommand = new DelegateCommand(CustomizeBookmarkStyles, null);
-            _clearHistoryCommand = new DelegateCommand(ClearHistory, null);
-        }
+        public string Name { get; set; } = string.Empty;
 
-        public string Name { get; set; }
         public LinePosition StartLinePosition { get; set; }
+
         public LinePosition EndLinePosition { get; set; }
+
         public int StartLine { get; set; }
+
         public int EndLine { get; set; }
+
         public TextSpan Span { get; set; }
+
         public ImageMoniker Moniker { get; set; }
+
         public ImageMoniker OverlayMoniker { get; set; }
+
         [DataMember]
-        public string Id { get; set; }
-        public string Tooltip { get; set; }
+        public string Id { get; set; } = string.Empty;
+
+        public string Tooltip { get; set; } = string.Empty;
+
+        public string FilePath { get; set; } = string.Empty;
+
         internal string FullName;
+
         public CodeItemKindEnum Kind;
+
         public CodeItemAccessEnum Access;
+
         internal ICodeViewUserControl Control;
+
         public bool IsHighlighted;
 
         private double _opacity;
@@ -198,51 +196,41 @@ namespace CodeNav.Models
         #endregion
 
         #region Commands
-        private readonly DelegateCommand _clickItemCommand;
-        public ICommand ClickItemCommand => _clickItemCommand;
+        public ICommand ClickItemCommand => new DelegateCommand(ClickItem);
         public void ClickItem(object args)
         {
             HistoryHelper.AddItemToHistory(this);
-            DocumentHelper.ScrollToLine(StartLinePosition).FireAndForget();
+            DocumentHelper.ScrollToLine(StartLinePosition, FilePath).FireAndForget();
         }
 
-        private readonly DelegateCommand _goToDefinitionCommand;
-        public ICommand GoToDefinitionCommand => _goToDefinitionCommand;
+        public ICommand GoToDefinitionCommand => new DelegateCommand(GoToDefinition);
         public void GoToDefinition(object args) => DocumentHelper.ScrollToLine(StartLinePosition).FireAndForget();
 
-        private readonly DelegateCommand _clearHistoryCommand;
-        public ICommand ClearHistoryCommand => _clearHistoryCommand;
+        public ICommand ClearHistoryCommand => new DelegateCommand(ClearHistory);
         public void ClearHistory(object args) => HistoryHelper.ClearHistory(this);
 
-        private readonly DelegateCommand _goToEndCommand;
-        public ICommand GoToEndCommand => _goToEndCommand;
+        public ICommand GoToEndCommand => new DelegateCommand(GoToEnd);
         public void GoToEnd(object args) => DocumentHelper.ScrollToLine(EndLinePosition).FireAndForget();
 
-        private readonly DelegateCommand _selectInCodeCommand;
-        public ICommand SelectInCodeCommand => _selectInCodeCommand;
+        public ICommand SelectInCodeCommand => new DelegateCommand(SelectInCode);
         public void SelectInCode(object args) => DocumentHelper.SelectLines(Span).FireAndForget();
 
-        private readonly DelegateCommand _copyNameCommand;
-        public ICommand CopyNameCommand => _copyNameCommand;
+        public ICommand CopyNameCommand => new DelegateCommand(CopyName);
         public void CopyName(object args) => Clipboard.SetText(Name);
 
-        private readonly DelegateCommand _refreshCommand;
-        public ICommand RefreshCommand => _refreshCommand;
+        public ICommand RefreshCommand => new DelegateCommand(RefreshCodeNav);
         public void RefreshCodeNav(object args) => Control.UpdateDocument();
 
-        private readonly DelegateCommand _expandAllCommand;
-        public ICommand ExpandAllCommand => _expandAllCommand;
+        public ICommand ExpandAllCommand => new DelegateCommand(ExpandAll);
         public void ExpandAll(object args) => Control.ToggleAll(true, new List<CodeItem>() { this });
 
-        private readonly DelegateCommand _collapseAllCommand;
-        public ICommand CollapseAllCommand => _collapseAllCommand;
+        public ICommand CollapseAllCommand => new DelegateCommand(CollapseAll);
         public void CollapseAll(object args) => Control.ToggleAll(false, new List<CodeItem>() { this });
 
         /// <summary>
         /// Add a single bookmark
         /// </summary>
-        private readonly DelegateCommand _bookmarkCommand;
-        public ICommand BookmarkCommand => _bookmarkCommand;
+        public ICommand BookmarkCommand => new DelegateCommand(Bookmark);
         public void Bookmark(object args) => BookmarkAsync(args).FireAndForget();
 
         public async Task BookmarkAsync(object args)
@@ -272,8 +260,7 @@ namespace CodeNav.Models
         /// <summary>
         /// Delete a single bookmark
         /// </summary>
-        private readonly DelegateCommand _deleteBookmarkCommand;
-        public ICommand DeleteBookmarkCommand => _deleteBookmarkCommand;
+        public ICommand DeleteBookmarkCommand => new DelegateCommand(DeleteBookmark);
         public void DeleteBookmark(object args)
         {
             try
@@ -295,8 +282,7 @@ namespace CodeNav.Models
         /// <summary>
         /// Clear all bookmarks
         /// </summary>
-        private readonly DelegateCommand _clearBookmarksCommand;
-        public ICommand ClearBookmarksCommand => _clearBookmarksCommand;
+        public ICommand ClearBookmarksCommand => new DelegateCommand(ClearBookmarks);
         public void ClearBookmarks(object args)
         {
             try
@@ -313,12 +299,10 @@ namespace CodeNav.Models
             }
         }
 
-        private readonly DelegateCommand _filterBookmarksCommand;
-        public ICommand FilterBookmarksCommand => _filterBookmarksCommand;
+        public ICommand FilterBookmarksCommand => new DelegateCommand(FilterBookmarks);
         public void FilterBookmarks(object args) => Control.FilterBookmarks();
 
-        private readonly DelegateCommand _customizeBookmarkStylesCommand;
-        public ICommand CustomizeBookmarkStylesCommand => _customizeBookmarkStylesCommand;
+        public ICommand CustomizeBookmarkStylesCommand => new DelegateCommand(CustomizeBookmarkStyles);
         public void CustomizeBookmarkStyles(object args)
         {
             new BookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();

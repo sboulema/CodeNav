@@ -11,6 +11,7 @@ using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using CodeNav.Mappers.JavaScript;
 using System.Threading.Tasks;
+using CodeNav.Shared.Helpers;
 
 namespace CodeNav.Mappers
 {
@@ -115,7 +116,7 @@ namespace CodeNav.Mappers
                         .Members.Select(member => MapMember(member, tree, semanticModel, control)).ToList();
                 default:
                     return null;
-            }     
+            }
         }
 
         /// <summary>
@@ -147,19 +148,7 @@ namespace CodeNav.Mappers
             else if (fileExtension == ".cs")
             {
                 var tree = CSharpSyntaxTree.ParseText(text);
-                SemanticModel semanticModel = null;
-
-                try
-                {
-                    var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                    var compilation = CSharpCompilation.Create("CodeNavCompilation", new[] { tree }, new[] { mscorlib });
-                    semanticModel = compilation.GetSemanticModel(tree);
-                }
-                catch (ArgumentException) // SyntaxTree not found to remove 
-                {
-                    return new List<CodeItem>();
-                }
-
+                var semanticModel = SyntaxHelper.GetCSharpSemanticModel(tree);
                 var root = (CompilationUnitSyntax)await tree.GetRootAsync();
 
                 return root.Members.Select(member => MapMember(member, tree, semanticModel, control)).ToList();
@@ -167,31 +156,22 @@ namespace CodeNav.Mappers
             else if (fileExtension == ".vb")
             {
                 var tree = VisualBasic.VisualBasicSyntaxTree.ParseText(text);
-                SemanticModel semanticModel = null;
+                var semanticModel = SyntaxHelper.GetVBSemanticModel(tree);
+                var root = (VisualBasicSyntax.CompilationUnitSyntax)await tree.GetRootAsync();
 
-                try
-                {
-                    var mscorlibVB = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-                    var compilationVB = VisualBasic.VisualBasicCompilation.Create("CodeNavCompilation", new[] { tree }, new[] { mscorlibVB });
-                    semanticModel = compilationVB.GetSemanticModel(tree);
-                }
-                catch (ArgumentException) // SyntaxTree not found to remove 
-                {
-                    return new List<CodeItem>();
-                }
-
-                var rootVB = (VisualBasicSyntax.CompilationUnitSyntax)await tree.GetRootAsync();
-
-                return rootVB.Members.Select(member => MapMember(member, tree, semanticModel, control)).ToList();
+                return root.Members.Select(member => MapMember(member, tree, semanticModel, control)).ToList();
             }
 
             return new List<CodeItem>();
         }
 
-        public static CodeItem MapMember(MemberDeclarationSyntax member,
+        public static CodeItem MapMember(SyntaxNode member,
             SyntaxTree tree, SemanticModel semanticModel, ICodeViewUserControl control)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             switch (member.Kind())
             {
@@ -227,6 +207,9 @@ namespace CodeNav.Mappers
                     return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, control, semanticModel);
                 case SyntaxKind.IndexerDeclaration:
                     return IndexerMapper.MapIndexer(member as IndexerDeclarationSyntax, control, semanticModel);
+                case SyntaxKind.VariableDeclarator:
+                    var bla = member as VariableDeclaratorSyntax;
+                    return null;
                 default:
                     return null;
             }
