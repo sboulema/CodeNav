@@ -1,4 +1,4 @@
-name: Build CodeNav
+name: CodeNav
 
 on:
   push:
@@ -54,11 +54,12 @@ jobs:
             readme.md
 
   release:
+    needs: build
     runs-on: windows-latest
     environment: release
     steps:
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v2
 
       - name: Bump version and push tag
         id: tag_version
