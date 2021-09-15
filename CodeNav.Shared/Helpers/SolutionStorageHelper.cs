@@ -17,29 +17,17 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var solution = await VS.Solutions.GetCurrentSolutionAsync();
-                var solutionFilePath = solution.FullPath;
+                var settingFilePath = await GetSettingsFilePath();
 
-                if (!File.Exists(solutionFilePath))
+                if (!File.Exists(settingFilePath))
                 {
                     return (T)Activator.CreateInstance(typeof(T));
                 }
 
-                var solutionFolder = Path.GetDirectoryName(solutionFilePath);
-                var settingFilePath = Path.Combine(solutionFolder, ".vs", $"{ApplicationName}.json");
-                var oldSettingFilePath = Path.Combine(solutionFolder, $"{ApplicationName}.json");
-
-                if (File.Exists(settingFilePath))
+                using (var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var reader = new StreamReader(stream))
                 {
-                    var json = File.ReadAllText(settingFilePath);
-                    return JsonConvert.DeserializeObject<T>(json);
-                }
-
-                if (File.Exists(oldSettingFilePath))
-                {
-                    var json = File.ReadAllText(oldSettingFilePath);
-                    File.Delete(oldSettingFilePath);
-                    return JsonConvert.DeserializeObject<T>(json);
+                    return (T)new JsonSerializer().Deserialize(reader, typeof(T));
                 }
             }
             catch (Exception e)
@@ -52,18 +40,25 @@ namespace CodeNav.Helpers
 
         public static async Task Save<T>(T storage)
         {
-            var solution = await VS.Solutions.GetCurrentSolutionAsync();
-            var solutionFilePath = solution.FullPath;
-
-            if (!File.Exists(solutionFilePath))
+            try
             {
-                return;
+                var settingFilePath = await GetSettingsFilePath();
+
+                if (!File.Exists(settingFilePath))
+                {
+                    return;
+                }
+
+                using (var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
+                using (var writer = new StreamWriter(stream))
+                {
+                    new JsonSerializer().Serialize(writer, storage);
+                }
             }
-
-            var json = JsonConvert.SerializeObject(storage);
-
-            var solutionFolder = Path.GetDirectoryName(solutionFilePath);
-            File.WriteAllText(Path.Combine(solutionFolder, ".vs", $"{ApplicationName}.json"), json);
+            catch (Exception e)
+            {
+                LogHelper.Log("Error serializing Solution Storage", e);
+            }
         }
 
         public static async Task SaveToSolutionStorage(CodeDocumentViewModel codeDocumentViewModel)
@@ -82,6 +77,20 @@ namespace CodeNav.Helpers
             solutionStorageModel.Documents.Add(codeDocumentViewModel);
 
             await Save(solutionStorageModel);
+        }
+
+        private static async Task<string> GetSettingsFilePath()
+        {
+            var solution = await VS.Solutions.GetCurrentSolutionAsync();
+            var solutionFilePath = solution.FullPath;
+
+            if (!File.Exists(solutionFilePath))
+            {
+                return string.Empty;
+            }
+
+            var solutionFolder = Path.GetDirectoryName(solutionFilePath);
+            return Path.Combine(solutionFolder, ".vs", $"{ApplicationName}.json");
         }
     }
 }
