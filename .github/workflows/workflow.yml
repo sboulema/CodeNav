@@ -7,7 +7,8 @@ on:
       - 'feature/**'
 
 env:
-  Version: '8.5.${{ github.run_number }}'
+  version: '8.5.${{ github.run_number }}'
+  repoUrl: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:
   build:
@@ -20,18 +21,18 @@ jobs:
       - name: Update Assembly Version
         uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
         with:
-          version: ${{ env.Version }}
+          version: ${{ env.version }}
 
       - name: Update Vsix Version (VS2019)
         uses: cezarypiatek/VsixVersionAction@1.0
         with:
-          version: ${{ env.Version }}
+          version: ${{ env.version }}
           vsix-manifest-file: 'CodeNav.VS2019\source.extension.vsixmanifest'
 
       - name: Update Vsix Version (VS2022)
         uses: cezarypiatek/VsixVersionAction@1.0
         with:
-          version: ${{ env.Version }}
+          version: ${{ env.version }}
           vsix-manifest-file: 'CodeNav.VS2022\source.extension.vsixmanifest'
 
       - name: Setup MSBuild
@@ -67,7 +68,7 @@ jobs:
         id: tag_release
         uses: mathieudutour/github-tag-action@v5.6
         with:
-          custom_tag: '${{ env.Version }}'
+          custom_tag: '${{ env.version }}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
@@ -92,10 +93,18 @@ jobs:
           publish-manifest-file: CodeNav/publish-manifest.VS2022.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
-      - name: Publish to Open VSIX Gallery
+      - name: Publish to Open VSIX Gallery - VS2019
         uses: leandro-hermes/action-upload-file@v1.1.0
         with:
           host: 'www.vsixgallery.com'
-          path: '/api/upload?repo=${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}&issuetracker=${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/issues'
+          path: '/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues'
           https: true 
           filePath: CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
+
+      - name: Publish to Open VSIX Gallery - VS2022
+        uses: leandro-hermes/action-upload-file@v1.1.0
+        with:
+          host: 'www.vsixgallery.com'
+          path: '/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues'
+          https: true 
+          filePath: CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
