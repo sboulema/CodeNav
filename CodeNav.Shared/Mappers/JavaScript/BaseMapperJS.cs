@@ -1,4 +1,5 @@
-﻿using CodeNav.Models;
+﻿using CodeNav.Helpers;
+using CodeNav.Models;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Linq;
@@ -27,10 +28,10 @@ namespace CodeNav.Mappers.JavaScript
             element.Span = new TextSpan(member.NodeStart, member.End.GetValueOrDefault() - member.NodeStart);
             element.ForegroundColor = Colors.Black;
             element.Access = CodeItemAccessEnum.Public;
-            element.FontSize = General.Instance.Font.SizeInPoints;
-            element.ParameterFontSize = General.Instance.Font.SizeInPoints - 1;
-            element.FontFamily = new FontFamily(General.Instance.Font.FontFamily.Name);
-            element.FontStyle = FontStyleMapper.Map(General.Instance.Font.Style);
+            element.FontSize = SettingsHelper.Font.SizeInPoints;
+            element.ParameterFontSize = SettingsHelper.Font.SizeInPoints - 1;
+            element.FontFamily = new FontFamily(SettingsHelper.Font.FontFamily.Name);
+            element.FontStyle = FontStyleMapper.Map(SettingsHelper.Font.Style);
             element.Control = control;
 
             return element;

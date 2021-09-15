@@ -2,7 +2,6 @@
 using CodeNav.Models;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
-using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -27,7 +26,7 @@ namespace CodeNav.Windows
                 ShowHistoryIndicators = General.Instance.ShowHistoryIndicators,
                 DisableHighlight = General.Instance.DisableHighlight,
                 AutoLoadLineThreshold = General.Instance.AutoLoadLineThreshold,
-                Font = General.Instance.Font,
+                Font = SettingsHelper.Font,
                 BackgroundColor = General.Instance.BackgroundColor,
                 HighlightColor = General.Instance.HighlightColor
             };
@@ -38,6 +37,9 @@ namespace CodeNav.Windows
         private void ShowFontDialog(object sender, RoutedEventArgs e)
         {
             var fontDialog = new FontDialog();
+
+            fontDialog.Font = ViewModel.Font;
+
             if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 ViewModel.Font = fontDialog.Font;
@@ -65,7 +67,9 @@ namespace CodeNav.Windows
         private void OkClick(object sender, RoutedEventArgs e)
         {
             General.Instance.MarginSide = (int)ViewModel.MarginSide;
-            General.Instance.Font = ViewModel.Font;
+            General.Instance.FontFamilyName = ViewModel.Font.FontFamily.Name;
+            General.Instance.FontSize = ViewModel.Font.Size;
+            General.Instance.FontStyle = ViewModel.Font.Style;
             General.Instance.ShowFilterToolbar = ViewModel.ShowFilterToolbar;
             General.Instance.UseXMLComments = ViewModel.UseXMLComments;
             General.Instance.ShowHistoryIndicators = ViewModel.ShowHistoryIndicators;
@@ -90,7 +94,9 @@ namespace CodeNav.Windows
         {
             General.Instance.Width = 200;
             General.Instance.MarginSide = (int)MarginSideEnum.Left;
-            General.Instance.Font = new Font("Segoe UI", (float)11.25);
+            General.Instance.FontFamilyName = "Segoe UI";
+            General.Instance.FontSize = 11.25f;
+            General.Instance.FontStyle = System.Drawing.FontStyle.Regular;
             General.Instance.ShowFilterToolbar = true;
             General.Instance.ShowMargin = true;
             General.Instance.FilterRules = string.Empty;

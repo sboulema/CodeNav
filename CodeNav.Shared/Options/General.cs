@@ -21,7 +21,11 @@ public class General : BaseOptionModel<General>
 
     public int AutoLoadLineThreshold { get; set; } = 0;
 
-    public Font Font { get; set; } = new Font("Segoe UI", 11.25f);
+    public string FontFamilyName { get; set; } = "Segoe UI";
+
+    public float FontSize { get; set; } = 11.25f;
+
+    public FontStyle FontStyle { get; set; } = FontStyle.Regular;
 
     public Color HighlightColor { get; set; } = ColorHelper.Transparent();
 

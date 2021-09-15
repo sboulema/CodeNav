@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 
 namespace CodeNav.Helpers
 {
@@ -21,6 +22,20 @@ namespace CodeNav.Helpers
             set => _useXmlComments = value;
         }
 
+        private static Font _font;
+        public static Font Font
+        {
+            get
+            {
+                if (_font == null)
+                {
+                    _font = new Font(General.Instance.FontFamilyName, General.Instance.FontSize, General.Instance.FontStyle);
+                }
+                return _font;
+            }
+            set => _font = value;
+        }
+
         private static ObservableCollection<FilterRule> _filterRules;
         public static ObservableCollection<FilterRule> FilterRules
         {
@@ -38,6 +53,7 @@ namespace CodeNav.Helpers
         {
             _useXmlComments = null;
             _filterRules = null;
+            _font = null;
         }
 
         private static ObservableCollection<FilterRule> LoadFilterRules()

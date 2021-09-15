@@ -114,7 +114,7 @@ namespace CodeNav.Mappers
                 StartLinePosition = GetStartLinePosition(source),
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
-                FontSize = General.Instance.Font.SizeInPoints - 2,
+                FontSize = SettingsHelper.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.Region,
                 Span = source.Span,
                 Control = control

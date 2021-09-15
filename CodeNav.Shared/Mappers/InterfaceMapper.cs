@@ -74,7 +74,7 @@ namespace CodeNav.Mappers
                 Id = name,
                 ForegroundColor = Colors.Black,
                 BorderColor = Colors.DarkGray,
-                FontSize = General.Instance.Font.SizeInPoints - 2,
+                FontSize = SettingsHelper.Font.SizeInPoints - 2,
                 Kind = CodeItemKindEnum.ImplementedInterface,
                 IsExpanded = true,
                 Control = control
