@@ -1,7 +1,6 @@
 ﻿using CodeNav.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace CodeNav.Helpers
@@ -54,10 +53,7 @@ namespace CodeNav.Helpers
             }
             catch (Exception)
             {
-                // Ignore error while loading filter rules 
-            }
-            finally
-            {
+                // Ignore error while loading filter rules
                 _filterRules = new ObservableCollection<FilterRule>();
             }
 
