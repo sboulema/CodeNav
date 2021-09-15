@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F472B188-F0AE-48F0-B5A0-62F62468D78B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		azure-pipelines.yml = azure-pipelines.yml
 		publish-manifest.VS2019.json = publish-manifest.VS2019.json
 		publish-manifest.VS2022.json = publish-manifest.VS2022.json
 		README.md = README.md
