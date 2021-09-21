@@ -31,7 +31,55 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TabControl>
+        <TabControl Background="Transparent">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Border>
+                                    <Grid>
+                                        <Border x:Name="border"
+                                                    Background="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabMouseOverBorderBrushKey}}">
+                                            <ContentPresenter x:Name="cp" ContentSource="Header"
+                                                        Margin="12,2,12,2"
+                                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border"
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabMouseOverBorderBrushKey}}" />
+                                        <Setter TargetName="cp"
+                                                Property="TextElement.Foreground"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabMouseOverTextBrushKey}}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="border"
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabBorderBrushKey}}" />
+                                        <Setter TargetName="cp"
+                                                Property="TextElement.Foreground"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabSelectedTextBrushKey}}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="border"
+                                                Property="Background"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.FileTabBorderBrushKey}}" />
+                                        <Setter TargetName="cp"
+                                                Property="TextElement.Foreground"
+                                                Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTabTextBrushKey}}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            
             <TabItem Header="General">
                 <Grid Margin="5">
                     <Grid.RowDefinitions>
@@ -42,8 +90,10 @@
 
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">
-                        Show CodeNav on this side of the code editor:
+                            <TextBlock Margin="0,0,5,0" 
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}">
+                                Show CodeNav on this side of the code editor:
                             </TextBlock>
                             <ComboBox ItemsSource="{Binding Source={StaticResource marginSidesFromEnum}}" SelectedItem="{Binding MarginSide, Mode=TwoWay}" />
                         </StackPanel>
@@ -65,8 +115,10 @@
                         </CheckBox>
 
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">
-                        Do not auto load CodeNav for files with more than X lines:
+                            <TextBlock Margin="0,0,5,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}">
+                                Do not auto load CodeNav for files with more than X lines:
                             </TextBlock>
                             <TextBox Text="{Binding AutoLoadLineThreshold, Mode=TwoWay}"></TextBox>
                         </StackPanel>
@@ -76,7 +128,7 @@
             <TabItem Header="Fonts &amp; Colors">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Margin="0,0,5,0">
+                        <TextBlock Margin="0,0,5,0" Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}">
                         Font:
                         </TextBlock>
                         <Button Click="ShowFontDialog">
@@ -85,7 +137,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Margin="0,0,5,0">
+                        <TextBlock Margin="0,0,5,0" Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}">
                         Highlight background:
                         </TextBlock>
                         <Button Click="ShowHighlightColorDialog" Background="{Binding HighlightBrush}">
@@ -94,7 +146,7 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="5">
-                        <TextBlock Margin="0,0,5,0">
+                        <TextBlock Margin="0,0,5,0" Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}">
                         Window background:
                         </TextBlock>
                         <Button Click="ShowBackgroundColorDialog" Background="{Binding BackgroundBrush}">
