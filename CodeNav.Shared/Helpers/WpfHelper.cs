@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -82,6 +83,30 @@ namespace CodeNav.Helpers
 
             // Check if the parent matches the type we’re looking for
             return parentObject is T parent ? parent : FindParent<T>(parentObject);
+        }
+
+        public static List<T> FindChildrenByType<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            var children = new List<T>();
+
+            if (depObj == null)
+            {
+                return children;
+            }
+
+            for (var i = 0; i <= VisualTreeHelper.GetChildrenCount(depObj) - 1; i++)
+            {
+                var childObject = VisualTreeHelper.GetChild(depObj, i);
+
+                if (childObject != null && childObject is T child)
+                {
+                    children.Add(child);
+                }
+
+                children.AddRange(FindChildrenByType<T>(childObject));
+            }
+
+            return children;
         }
     }
 }

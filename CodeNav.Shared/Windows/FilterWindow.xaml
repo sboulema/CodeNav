@@ -21,7 +21,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <DataGrid ItemsSource="{Binding FilterRules}" Background="Transparent">
+        <DataGrid ItemsSource="{Binding FilterRules}"
+                  SelectionMode="Single" 
+                  SelectionUnit="CellOrRowHeader"
+                  DataGridCell.Selected="DataGrid_Selected"
+                  Background="Transparent">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Setter Property="Background" Value="Transparent"/>
