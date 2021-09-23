@@ -19,9 +19,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <DataGrid ItemsSource="{Binding FilterRules}"
+                  SelectedItem="{Binding SelectedFilterRule}"
                   SelectionMode="Single" 
                   SelectionUnit="CellOrRowHeader"
                   DataGridCell.Selected="DataGrid_Selected"
@@ -44,7 +46,17 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <Grid Grid.Row="1" Margin="0,5,0,0">
+        <StackPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal">
+            <Button Click="AddClick" Margin="0,0,5,0">
+                Add filter
+            </Button>
+
+            <Button Click="DeleteClick" Margin="0,0,5,0">
+                Delete filter
+            </Button>
+        </StackPanel>
+        
+        <Grid Grid.Row="2" Margin="0,5,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

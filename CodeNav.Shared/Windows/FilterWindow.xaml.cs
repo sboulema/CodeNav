@@ -1,4 +1,5 @@
 ﻿using CodeNav.Helpers;
+using CodeNav.Models;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
 using System.Linq;
@@ -36,6 +37,16 @@ namespace CodeNav.Windows
         private void CancelClick(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void AddClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.FilterRules.Add(new FilterRule());
+        }
+
+        private void DeleteClick(object sender, RoutedEventArgs e)
+        {
+            ViewModel.FilterRules.Remove(ViewModel.SelectedFilterRule);
         }
 
         private void DataGrid_Selected(object sender, RoutedEventArgs e)

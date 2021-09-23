@@ -70,6 +70,10 @@ namespace CodeNav.Helpers
             catch (Exception)
             {
                 // Ignore error while loading filter rules
+            }
+
+            if (_filterRules == null)
+            {
                 _filterRules = new ObservableCollection<FilterRule>();
             }
 

@@ -13,5 +13,7 @@ namespace CodeNav.Shared.ViewModels
             get => _filterRules;
             set => SetProperty(ref _filterRules, value);
         }
+
+        public FilterRule SelectedFilterRule { get; set; }
     }
 }
