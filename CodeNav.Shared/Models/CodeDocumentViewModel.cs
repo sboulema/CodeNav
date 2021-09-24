@@ -10,19 +10,10 @@ namespace CodeNav.Models
     [DataContract]
     public class CodeDocumentViewModel : ObservableObject
     {
-        public CodeDocumentViewModel()
+        private List<CodeItem> _codeDocument = new List<CodeItem>();
+        public List<CodeItem> CodeDocument
         {
-            _codeDocument = new List<CodeItem>();
-            Bookmarks = new Dictionary<string, int>();
-            HistoryItems = new List<CodeItem>();
-        }
-
-        private List<CodeItem> _codeDocument;
-        public List<CodeItem> CodeDocument {
-            get
-            {
-                return _codeDocument;
-            }
+            get => _codeDocument;
             set
             {
                 SetProperty(ref _codeDocument, value);
@@ -42,10 +33,7 @@ namespace CodeNav.Models
 
                 return result;
             }
-            set
-            {
-                NotifyPropertyChanged();
-            }
+            set => NotifyPropertyChanged();
         }
 
         private void TraverseDepth(List<CodeItem> items, List<CodeItem> result, int depth)
@@ -79,12 +67,7 @@ namespace CodeNav.Models
         public SortOrderEnum SortOrder;
 
         public Visibility BookmarksAvailable
-        {
-            get
-            {
-                return Bookmarks.Any() ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+            => Bookmarks.Any() ? Visibility.Visible : Visibility.Collapsed;
 
         public void AddBookmark(string id, int bookmarkStyleIndex)
         {
@@ -119,10 +102,7 @@ namespace CodeNav.Models
         private string _filterText;
         public string FilterText
         {
-            get
-            {
-                return _filterText;
-            }
+            get => _filterText;
             set
             {
                 _filterText = value;
@@ -130,14 +110,11 @@ namespace CodeNav.Models
             }
         }
 
-        private Dictionary<string, int> _bookmarks;
+        private Dictionary<string, int> _bookmarks = new Dictionary<string, int>();
         [DataMember]
         public Dictionary<string, int> Bookmarks
         {
-            get
-            {
-                return _bookmarks;
-            }
+            get => _bookmarks;
             set
             {
                 _bookmarks = value;
@@ -148,12 +125,12 @@ namespace CodeNav.Models
         public bool FilterOnBookmarks;
 
         [DataMember]
-        public string FilePath;
+        public string FilePath = string.Empty;
 
         [DataMember]
-        public List<BookmarkStyle> BookmarkStyles;
+        public List<BookmarkStyle> BookmarkStyles = new List<BookmarkStyle>();
 
         [DataMember]
-        public List<CodeItem> HistoryItems;
+        public List<CodeItem> HistoryItems = new List<CodeItem>();
     }
 }

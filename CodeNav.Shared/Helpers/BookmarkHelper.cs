@@ -191,7 +191,7 @@ namespace CodeNav.Helpers
             var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
 
             var storageItem = solutionStorage?.Documents?
-                .FirstOrDefault(item => item.FilePath.Equals(filePath));
+                .FirstOrDefault(item => item?.FilePath?.Equals(filePath) == true);
 
             return storageItem?.Bookmarks ?? new Dictionary<string, int>();
         }
