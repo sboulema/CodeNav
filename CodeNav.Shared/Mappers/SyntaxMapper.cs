@@ -166,7 +166,8 @@ namespace CodeNav.Mappers
         }
 
         public static CodeItem MapMember(SyntaxNode member,
-            SyntaxTree tree, SemanticModel semanticModel, ICodeViewUserControl control)
+            SyntaxTree tree, SemanticModel semanticModel, ICodeViewUserControl control,
+            bool mapBaseClass = true)
         {
             if (member == null)
             {
@@ -190,7 +191,7 @@ namespace CodeNav.Mappers
                 case SyntaxKind.StructDeclaration:
                     return StructMapper.MapStruct(member as StructDeclarationSyntax, control, semanticModel, tree);
                 case SyntaxKind.ClassDeclaration:
-                    return ClassMapper.MapClass(member as ClassDeclarationSyntax, control, semanticModel, tree);
+                    return ClassMapper.MapClass(member as ClassDeclarationSyntax, control, semanticModel, tree, mapBaseClass);
                 case SyntaxKind.EventFieldDeclaration:
                     return DelegateEventMapper.MapEvent(member as EventFieldDeclarationSyntax, control, semanticModel);
                 case SyntaxKind.DelegateDeclaration:

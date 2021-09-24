@@ -14,7 +14,7 @@ namespace CodeNav.Mappers
     public class ClassMapper
     {
         public static CodeClassItem MapClass(ClassDeclarationSyntax member,
-            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
+            ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree, bool mapBaseClass)
         {
             if (member == null)
             {
@@ -37,7 +37,10 @@ namespace CodeNav.Mappers
             var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, control, semanticModel, tree);
 
             // Map members from the base class
-            MapMembersFromBaseClass(member, regions, control, semanticModel, tree);
+            if (mapBaseClass)
+            {
+                MapMembersFromBaseClass(member, regions, control, semanticModel);
+            }
 
             // Map class members
             foreach (var classMember in member.Members)
@@ -143,7 +146,10 @@ namespace CodeNav.Mappers
 
         private static string MapInheritance(ClassDeclarationSyntax member)
         {
-            if (member?.BaseList == null) return string.Empty;
+            if (member?.BaseList == null)
+            {
+                return string.Empty;
+            }
 
             var inheritanceList = (from BaseTypeSyntax bases in member.BaseList.Types select bases.Type.ToString()).ToList();
 
@@ -152,7 +158,10 @@ namespace CodeNav.Mappers
 
         private static string MapInheritance(VisualBasicSyntax.TypeBlockSyntax member)
         {
-            if (member?.Inherits == null) return string.Empty;
+            if (member?.Inherits == null)
+            {
+                return string.Empty;
+            }
 
             var inheritanceList = new List<string>();
 
@@ -166,7 +175,7 @@ namespace CodeNav.Mappers
 
         private static void MapMembersFromBaseClass(ClassDeclarationSyntax member,
             List<CodeRegionItem> regions, ICodeViewUserControl control,
-            SemanticModel semanticModel, SyntaxTree tree)
+            SemanticModel semanticModel)
         {
             var classSymbol = semanticModel.GetDeclaredSymbol(member);
             var baseType = classSymbol?.BaseType;
@@ -206,7 +215,7 @@ namespace CodeNav.Mappers
                 }
 
                 var memberItem = SyntaxMapper.MapMember(syntaxNode, syntaxNode.SyntaxTree,
-                    SyntaxHelper.GetCSharpSemanticModel(syntaxNode.SyntaxTree), control);
+                    SyntaxHelper.GetCSharpSemanticModel(syntaxNode.SyntaxTree), control, mapBaseClass: false);
 
                 baseRegion.Members.Add(memberItem);
             }
