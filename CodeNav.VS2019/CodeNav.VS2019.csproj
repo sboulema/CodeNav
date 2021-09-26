@@ -143,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Community.VisualStudio.Toolkit">
-      <Version>15.0.76.280-pre</Version>
+      <Version>15.0.76.288-pre</Version>
     </PackageReference>
     <PackageReference Include="Community.VisualStudio.VSCT">
       <Version>16.0.29.6</Version>
@@ -165,7 +165,7 @@
       <Version>15.4.27004</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.0.4182-preview4</Version>
+      <Version>17.0.5217-preview5</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
