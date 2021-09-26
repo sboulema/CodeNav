@@ -27,6 +27,7 @@
                   SelectionMode="Single" 
                   SelectionUnit="CellOrRowHeader"
                   DataGridCell.Selected="DataGrid_Selected"
+                  Unloaded="DataGrid_Unloaded"
                   Background="Transparent">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridRow}">

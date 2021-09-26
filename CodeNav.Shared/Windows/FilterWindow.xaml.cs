@@ -86,5 +86,11 @@ namespace CodeNav.Windows
                 }
             }
         }
+
+        private void DataGrid_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var grid = sender as DataGrid;
+            grid.CancelEdit(DataGridEditingUnit.Row);
+        }
     }
 }
