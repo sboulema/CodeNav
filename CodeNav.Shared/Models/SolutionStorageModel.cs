@@ -4,6 +4,6 @@ namespace CodeNav.Models
 {
     public class SolutionStorageModel
     {
-        public List<CodeDocumentViewModel> Documents;
+        public List<CodeDocumentViewModel> Documents = new List<CodeDocumentViewModel>();
     }
 }

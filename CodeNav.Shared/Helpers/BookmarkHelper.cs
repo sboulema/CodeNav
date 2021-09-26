@@ -123,7 +123,7 @@ namespace CodeNav.Helpers
         {
             var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>();
 
-            if (solutionStorage?.Documents == null)
+            if (solutionStorage?.Documents?.Any() != true)
             {
                 return GetDefaultBookmarkStyles();
             }
@@ -136,7 +136,7 @@ namespace CodeNav.Helpers
                 codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }
 
-            if (codeDocumentViewModel.BookmarkStyles == null)
+            if (codeDocumentViewModel.BookmarkStyles?.Any() != true)
             {
                 codeDocumentViewModel.BookmarkStyles = GetDefaultBookmarkStyles();
             }
