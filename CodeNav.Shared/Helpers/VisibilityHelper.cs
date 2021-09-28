@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Models;
+using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
@@ -105,14 +106,15 @@ namespace CodeNav.Helpers
 
             var general = await General.GetLiveInstanceAsync();
 
-            if (!general.ShowMargin)
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            if (!general.ShowMargin || IsEmpty(document))
             {
                 column.Width = new GridLength(0);
+                return;
             }
-            else
-            {
-                column.Width = IsEmpty(document) ? new GridLength(0) : new GridLength(general.Width);
-            }
+
+            column.Width = new GridLength(general.Width);
         }
 
         public static bool IsEmpty(List<CodeItem> document)

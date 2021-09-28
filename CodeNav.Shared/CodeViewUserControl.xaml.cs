@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
@@ -17,7 +18,7 @@ namespace CodeNav
     {
         private readonly ColumnDefinition _column;
         private IOutliningManager _outliningManager;
-        public string tag;
+        private CancellationTokenSource _cancellationTokenSource;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         
         public CodeViewUserControl(ColumnDefinition column = null)
@@ -29,6 +30,7 @@ namespace CodeNav
             DataContext = CodeDocumentViewModel;
 
             _column = column;
+            _cancellationTokenSource = new CancellationTokenSource();
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             VS.Events.DocumentEvents.Opened += DocumentEvents_Opened;
@@ -97,7 +99,7 @@ namespace CodeNav
             }
 
             RegisterDocumentEvents().FireAndForget();
-            
+
             UpdateDocument(filePath);
         }
 
@@ -108,6 +110,13 @@ namespace CodeNav
             foreach (var span in changedSpans)
             {
                 HistoryHelper.AddItemToHistory(CodeDocumentViewModel, span);
+            }
+
+            if (General.Instance.UpdateWhileTyping)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource = new CancellationTokenSource();
+                UpdateDocument();
             }
         }
 
@@ -140,7 +149,7 @@ namespace CodeNav
 
         public void UpdateDocument(string filePath = "")
             => DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
-                _column, null, filePath).FireAndForget();
+                _column, null, filePath, _cancellationTokenSource.Token).FireAndForget();
 
         public void HighlightCurrentItem(int lineNumber)
             => HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel, lineNumber).FireAndForget();

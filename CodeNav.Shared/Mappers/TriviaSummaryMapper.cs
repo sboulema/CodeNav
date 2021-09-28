@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Linq;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
@@ -11,9 +12,18 @@ namespace CodeNav.Mappers
     {
         public static string Map(SyntaxNode member)
         {
-            var commentTrivia = GetCommentTrivia(member);
-            var summaryContent = GetCommentContent(commentTrivia, "summary");
-            return summaryContent.Replace("'''", string.Empty).Replace("///", string.Empty).Trim();
+            try
+            {
+                var commentTrivia = GetCommentTrivia(member);
+                var summaryContent = GetCommentContent(commentTrivia, "summary");
+                return summaryContent.Replace("'''", string.Empty).Replace("///", string.Empty).Trim();
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore Unexpected false
+            }
+
+            return string.Empty;
         }
 
         public static bool HasSummary(SyntaxNode member)

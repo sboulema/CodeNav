@@ -75,8 +75,9 @@ namespace CodeNav.Mappers
             {
                 var language = await LanguageHelper.GetActiveDocumentLanguage();
                 LogHelper.Log("Error during mapping", e, null, language.ToString());
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -219,7 +220,10 @@ namespace CodeNav.Mappers
         public static CodeItem MapMember(VisualBasicSyntax.StatementSyntax member,
             SyntaxTree tree, SemanticModel semanticModel, ICodeViewUserControl control)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             switch (member.Kind())
             {

@@ -26,6 +26,7 @@ namespace CodeNav.Windows
                 ShowHistoryIndicators = General.Instance.ShowHistoryIndicators,
                 DisableHighlight = General.Instance.DisableHighlight,
                 AutoLoadLineThreshold = General.Instance.AutoLoadLineThreshold,
+                UpdateWhileTyping = General.Instance.UpdateWhileTyping,
                 Font = SettingsHelper.Font,
                 BackgroundColor = General.Instance.BackgroundColor,
                 HighlightColor = General.Instance.HighlightColor
@@ -36,9 +37,10 @@ namespace CodeNav.Windows
 
         private void ShowFontDialog(object sender, RoutedEventArgs e)
         {
-            var fontDialog = new FontDialog();
-
-            fontDialog.Font = ViewModel.Font;
+            var fontDialog = new FontDialog
+            {
+                Font = ViewModel.Font
+            };
 
             if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -74,6 +76,7 @@ namespace CodeNav.Windows
             General.Instance.UseXMLComments = ViewModel.UseXMLComments;
             General.Instance.ShowHistoryIndicators = ViewModel.ShowHistoryIndicators;
             General.Instance.DisableHighlight = ViewModel.DisableHighlight;
+            General.Instance.UpdateWhileTyping = ViewModel.UpdateWhileTyping;
             General.Instance.AutoLoadLineThreshold = ViewModel.AutoLoadLineThreshold;
             General.Instance.BackgroundColor = ViewModel.BackgroundColor;
             General.Instance.HighlightColor = ViewModel.HighlightColor;
@@ -105,6 +108,7 @@ namespace CodeNav.Windows
             General.Instance.UseXMLComments = false;
             General.Instance.ShowHistoryIndicators = true;
             General.Instance.DisableHighlight = false;
+            General.Instance.UpdateWhileTyping = false;
             General.Instance.AutoLoadLineThreshold = 0;
             General.Instance.BackgroundColor = ColorHelper.Transparent();
             General.Instance.Save();

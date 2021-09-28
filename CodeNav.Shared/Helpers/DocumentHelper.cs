@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Task = System.Threading.Tasks.Task;
@@ -147,7 +148,8 @@ namespace CodeNav.Helpers
             CodeDocumentViewModel codeDocumentViewModel,
             ColumnDefinition column = null,
             RowDefinition row = null,
-            string filePath = "")
+            string filePath = "",
+            CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -158,6 +160,11 @@ namespace CodeNav.Helpers
 
             try
             {
+                cancellationToken.Register(() =>
+                {
+                    throw new OperationCanceledException();
+                });
+
                 if (await IsLargeDocument())
                 {
                     codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();
@@ -203,9 +210,15 @@ namespace CodeNav.Helpers
                 codeDocumentViewModel.HistoryItems = await HistoryHelper.LoadHistoryItemsFromStorage(codeDocumentViewModel.FilePath);
                 HistoryHelper.ApplyHistoryIndicator(codeDocumentViewModel);
             }
+            catch (OperationCanceledException e)
+            {
+                // Ignore
+                return;
+            }
             catch (Exception e)
             {
                 LogHelper.Log("Error running UpdateDocument", e);
+                return;
             }
 
             try

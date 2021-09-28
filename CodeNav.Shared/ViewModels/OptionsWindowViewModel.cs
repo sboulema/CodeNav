@@ -41,6 +41,14 @@ namespace CodeNav.Shared.ViewModels
             set => SetProperty(ref _disableHighlight, value);
         }
 
+        private bool _updateWhileTyping = false;
+
+        public bool UpdateWhileTyping
+        {
+            get => _updateWhileTyping;
+            set => SetProperty(ref _updateWhileTyping, value);
+        }
+
         private MarginSideEnum _marginSide = MarginSideEnum.Left;
 
         public MarginSideEnum MarginSide

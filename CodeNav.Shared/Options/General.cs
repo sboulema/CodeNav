@@ -38,4 +38,6 @@ public class General : BaseOptionModel<General>
     public string FilterRules { get; set; } = string.Empty;
 
     public int SortOrder { get; set; } = 0;
+
+    public bool UpdateWhileTyping { get; set; } = false;
 }
