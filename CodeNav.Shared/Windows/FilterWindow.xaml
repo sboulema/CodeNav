@@ -23,11 +23,13 @@
         </Grid.RowDefinitions>
 
         <DataGrid ItemsSource="{Binding FilterRules}"
-                  SelectedItem="{Binding SelectedFilterRule}"
                   SelectionMode="Single" 
                   SelectionUnit="CellOrRowHeader"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
                   DataGridCell.Selected="DataGrid_Selected"
                   Unloaded="DataGrid_Unloaded"
+                  HeadersVisibility="Column"
                   Background="Transparent">
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridRow}">

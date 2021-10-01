@@ -10,6 +10,8 @@ namespace CodeNav.Windows
 {
     public partial class FilterWindow : DialogWindow
     {
+        private DataGridCell _cell;
+
         public FilterWindow()
         {
             InitializeComponent();
@@ -46,7 +48,12 @@ namespace CodeNav.Windows
 
         private void DeleteClick(object sender, RoutedEventArgs e)
         {
-            ViewModel.FilterRules.Remove(ViewModel.SelectedFilterRule);
+            if (_cell == null)
+            {
+                return;
+            }
+
+            ViewModel.FilterRules.Remove(_cell.DataContext as FilterRule);
         }
 
         private void DataGrid_Selected(object sender, RoutedEventArgs e)
@@ -57,6 +64,8 @@ namespace CodeNav.Windows
                 grid.BeginEdit(e);
 
                 var cell = e.OriginalSource as DataGridCell;
+
+                _cell = cell;
 
                 var comboBox = WpfHelper
                     .FindChildrenByType<ComboBox>(cell)
