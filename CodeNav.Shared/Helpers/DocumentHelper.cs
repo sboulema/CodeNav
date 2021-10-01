@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Task = System.Threading.Tasks.Task;
@@ -148,8 +147,7 @@ namespace CodeNav.Helpers
             CodeDocumentViewModel codeDocumentViewModel,
             ColumnDefinition column = null,
             RowDefinition row = null,
-            string filePath = "",
-            CancellationToken cancellationToken = default)
+            string filePath = "")
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -160,11 +158,6 @@ namespace CodeNav.Helpers
 
             try
             {
-                cancellationToken.Register(() =>
-                {
-                    throw new OperationCanceledException();
-                });
-
                 if (await IsLargeDocument())
                 {
                     codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();

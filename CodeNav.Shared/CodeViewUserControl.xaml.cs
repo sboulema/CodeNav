@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Reactive.Linq;
 using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
@@ -18,7 +19,6 @@ namespace CodeNav
     {
         private readonly ColumnDefinition _column;
         private IOutliningManager _outliningManager;
-        private CancellationTokenSource _cancellationTokenSource;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
         
         public CodeViewUserControl(ColumnDefinition column = null)
@@ -30,7 +30,6 @@ namespace CodeNav
             DataContext = CodeDocumentViewModel;
 
             _column = column;
-            _cancellationTokenSource = new CancellationTokenSource();
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             VS.Events.DocumentEvents.Opened += DocumentEvents_Opened;
@@ -58,6 +57,21 @@ namespace CodeNav
 
                 textBuffer2.ChangedOnBackground -= TextBuffer_ChangedOnBackground;
                 textBuffer2.ChangedOnBackground += TextBuffer_ChangedOnBackground;
+            }
+
+            // Subscribe to Update while typing changes
+            if ((documentView?.TextView.TextBuffer as ITextBuffer2) != null &&
+                General.Instance.UpdateWhileTyping)
+            {
+                var textBuffer2 = documentView.TextView.TextBuffer as ITextBuffer2;
+
+                Observable
+                    .FromEventPattern<TextContentChangedEventArgs>(
+                        h => textBuffer2.ChangedOnBackground += h,
+                        h => textBuffer2.ChangedOnBackground -= h)
+                    .Select(x => x.EventArgs)
+                    .Throttle(TimeSpan.FromMilliseconds(200))
+                    .Subscribe(x => UpdateDocument());
             }
 
             // Subscribe to Outlining events
@@ -111,13 +125,6 @@ namespace CodeNav
             {
                 HistoryHelper.AddItemToHistory(CodeDocumentViewModel, span);
             }
-
-            if (General.Instance.UpdateWhileTyping)
-            {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource = new CancellationTokenSource();
-                UpdateDocument();
-            }
         }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
@@ -149,7 +156,7 @@ namespace CodeNav
 
         public void UpdateDocument(string filePath = "")
             => DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
-                _column, null, filePath, _cancellationTokenSource.Token).FireAndForget();
+                _column, null, filePath).FireAndForget();
 
         public void HighlightCurrentItem(int lineNumber)
             => HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel, lineNumber).FireAndForget();
