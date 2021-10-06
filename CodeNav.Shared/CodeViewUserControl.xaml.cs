@@ -20,7 +20,7 @@ namespace CodeNav
         private readonly ColumnDefinition _column;
         private IOutliningManager _outliningManager;
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
-        
+
         public CodeViewUserControl(ColumnDefinition column = null)
         {
             InitializeComponent();

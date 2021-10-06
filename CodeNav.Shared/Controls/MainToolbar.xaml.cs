@@ -30,6 +30,7 @@ namespace CodeNav.Controls
 
             var control = WpfHelper.FindParent(this);
             control.UpdateDocument();
+            control.RegisterDocumentEvents().FireAndForget();
         }
 
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)

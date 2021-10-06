@@ -1,5 +1,6 @@
 ﻿using CodeNav.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CodeNav
 {
@@ -14,5 +15,7 @@ namespace CodeNav
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);
 
         void FilterBookmarks();
+
+        Task RegisterDocumentEvents();
     }
 }
