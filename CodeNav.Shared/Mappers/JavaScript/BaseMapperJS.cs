@@ -22,7 +22,7 @@ namespace CodeNav.Mappers.JavaScript
             element.Id = name;
             element.Tooltip = name;
             element.StartLine = GetLineNumber(member, member.NodeStart);
-            element.StartLinePosition = new LinePosition(GetLineNumber(member, member.NodeStart), 0);
+            element.StartLinePosition = new LinePosition(GetLineNumber(member, member.NodeStart) - 1, 0);
             element.EndLine = GetLineNumber(member, member.End);
             element.EndLinePosition = new LinePosition(GetLineNumber(member, member.End), 0);
             element.Span = new TextSpan(member.NodeStart, member.End.GetValueOrDefault() - member.NodeStart);
@@ -33,6 +33,7 @@ namespace CodeNav.Mappers.JavaScript
             element.FontFamily = new FontFamily(SettingsHelper.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(SettingsHelper.Font.Style);
             element.Control = control;
+            element.FilePath = control.CodeDocumentViewModel.FilePath;
 
             return element;
         }

@@ -66,8 +66,8 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var documentView = await VS.Documents.GetActiveDocumentViewAsync(); 
-                
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+
                 if (documentView?.FilePath != filePath)
                 {
                     documentView = await VS.Documents.OpenInPreviewTabAsync(filePath);
