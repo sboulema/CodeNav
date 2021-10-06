@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text.Outlining;
+using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav
 {
-    /// <summary>
-    /// Interaction logic for CodeViewUserControl.xaml
-    /// </summary>
     public partial class CodeViewUserControlTop : ICodeViewUserControl
     {
         private readonly RowDefinition _row;
+
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
         public CodeViewUserControlTop(RowDefinition row = null)
@@ -55,6 +55,11 @@ namespace CodeNav
 
             // Force NotifyPropertyChanged
             CodeDocumentViewModel.CodeDocumentTop = null;
+        }
+
+        public async Task RegisterDocumentEvents()
+        {
+            // Todo: Implement events
         }
     }
 }
