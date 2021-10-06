@@ -1,7 +1,7 @@
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
 
-[![Build Status](https://dev.azure.com/sboulema/CodeNav/_apis/build/status/CodeNav?branchName=main)](https://dev.azure.com/sboulema/CodeNav/_build/latest?definitionId=26&branchName=main)
+[![Build Status](https://github.com/sboulema/CodeNav/actions/workflows/workflow.yml/badge.svg)](https://github.com/sboulema/CodeNav/actions/workflows/workflow.yml)
 [![Sponsor](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/sboulema)
 
 ## Features
