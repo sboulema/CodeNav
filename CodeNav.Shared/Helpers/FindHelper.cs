@@ -8,7 +8,8 @@ namespace CodeNav.Helpers
     {
         public static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
         {
-            if (items == null || !items.Any() || string.IsNullOrEmpty(id))
+            if (items?.Any() != true ||
+                string.IsNullOrEmpty(id))
             {
                 return null;
             }
@@ -23,6 +24,7 @@ namespace CodeNav.Helpers
                 if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
                     var found = FindCodeItem(hasMembersItem.Members, id);
+
                     if (found != null)
                     {
                         return found;

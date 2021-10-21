@@ -78,9 +78,7 @@ namespace CodeNav.Mappers.JavaScript
 
         private static List<CodeItem> MapMembers(TypeScriptAST ast)
         {
-            if (ast == null ||
-                ast.RootNode == null ||
-                ast.RootNode.Children == null)
+            if (ast?.RootNode?.Children?.Any() != true)
             {
                 return new List<CodeItem>();
             }
