@@ -245,7 +245,7 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.AddBookmark(Id, bookmarkStyleIndex);
 
-                await SaveToSolutionStorage();
+                await SolutionStorageHelper.SaveToSolutionStorage(Control.CodeDocumentViewModel);
 
                 ContextMenuIsOpen = false;
 
@@ -269,7 +269,7 @@ namespace CodeNav.Models
 
                 Control.CodeDocumentViewModel.RemoveBookmark(Id);
 
-                SaveToSolutionStorage().FireAndForget();
+                SolutionStorageHelper.SaveToSolutionStorage(Control.CodeDocumentViewModel).FireAndForget();
 
                 NotifyPropertyChanged("BookmarksAvailable");
             }
@@ -289,7 +289,7 @@ namespace CodeNav.Models
             {
                 Control.CodeDocumentViewModel.ClearBookmarks();
 
-                SaveToSolutionStorage().FireAndForget();
+                SolutionStorageHelper.SaveToSolutionStorage(Control.CodeDocumentViewModel).FireAndForget();
 
                 NotifyPropertyChanged("BookmarksAvailable");
             }
@@ -309,24 +309,6 @@ namespace CodeNav.Models
             BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel).FireAndForget();
         }
         #endregion
-
-        private async Task SaveToSolutionStorage()
-        {
-            var solutionStorageModel = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
-
-            if (solutionStorageModel.Documents == null)
-            {
-                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
-            }
-
-            var storageItem = solutionStorageModel.Documents
-                .FirstOrDefault(d => d.FilePath.Equals(Control.CodeDocumentViewModel.FilePath));
-            solutionStorageModel.Documents.Remove(storageItem);
-
-            solutionStorageModel.Documents.Add(Control.CodeDocumentViewModel);
-
-            await SolutionStorageHelper.Save(solutionStorageModel).ConfigureAwait(false);
-        }
     }
 
     public class CodeItemComparer : IEqualityComparer<CodeItem>

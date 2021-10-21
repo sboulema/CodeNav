@@ -111,12 +111,14 @@ namespace CodeNav.Helpers
 
         public static async Task<List<CodeItem>> LoadHistoryItemsFromStorage(string filePath)
         {
-            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
+            var storageItem = await SolutionStorageHelper.GetStorageItem(filePath);
 
-            var storageItem = solutionStorage?.Documents?
-                .FirstOrDefault(item => item.FilePath.Equals(filePath));
+            if (storageItem == null)
+            {
+                return new List<CodeItem>();
+            }
 
-            return storageItem?.HistoryItems ?? new List<CodeItem>();
+            return storageItem.HistoryItems ?? new List<CodeItem>();
         }
     }
 }

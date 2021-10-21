@@ -121,17 +121,14 @@ namespace CodeNav.Helpers
         /// <returns>List of bookmark styles</returns>
         public static async Task<List<BookmarkStyle>> GetBookmarkStyles(CodeDocumentViewModel codeDocumentViewModel)
         {
-            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>();
+            var storageItem = await SolutionStorageHelper.GetStorageItem(codeDocumentViewModel.FilePath);
 
-            if (solutionStorage?.Documents?.Any() != true)
+            if (storageItem == null)
             {
                 return GetDefaultBookmarkStyles();
             }
 
-            var storageItem = solutionStorage.Documents
-                .FirstOrDefault(item => item.FilePath.Equals(codeDocumentViewModel.FilePath));
-
-            if (storageItem?.BookmarkStyles?.Any(style => style.BackgroundColor.A != 0) == true)
+            if (storageItem.BookmarkStyles?.Any(style => style.BackgroundColor.A != 0) == true)
             {
                 codeDocumentViewModel.BookmarkStyles = storageItem.BookmarkStyles;
             }
@@ -188,10 +185,7 @@ namespace CodeNav.Helpers
 
         public static async Task<Dictionary<string, int>> LoadBookmarksFromStorage(string filePath)
         {
-            var solutionStorage = await SolutionStorageHelper.Load<SolutionStorageModel>().ConfigureAwait(false);
-
-            var storageItem = solutionStorage?.Documents?
-                .FirstOrDefault(item => item?.FilePath?.Equals(filePath) == true);
+            var storageItem = await SolutionStorageHelper.GetStorageItem(filePath);
 
             return storageItem?.Bookmarks ?? new Dictionary<string, int>();
         }

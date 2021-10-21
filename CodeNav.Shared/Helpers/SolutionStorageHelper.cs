@@ -13,7 +13,45 @@ namespace CodeNav.Helpers
     {
         private const string ApplicationName = "CodeNav";
 
-        public static async Task<T> Load<T>()
+        public static async Task SaveToSolutionStorage(CodeDocumentViewModel codeDocumentViewModel)
+        {
+            var solutionStorageModel = await Load<SolutionStorageModel>();
+
+            if (solutionStorageModel.Documents == null)
+            {
+                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
+            }
+
+            var storageItem = await GetStorageItem(codeDocumentViewModel.FilePath);
+            solutionStorageModel.Documents.Remove(storageItem);
+
+            solutionStorageModel.Documents.Add(codeDocumentViewModel);
+
+            await Save(solutionStorageModel);
+        }
+
+        public static async Task<CodeDocumentViewModel> GetStorageItem(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return null;
+            }
+
+            var solutionStorage = await Load<SolutionStorageModel>();
+
+            if (solutionStorage?.Documents?.Any() != true)
+            {
+                return null;
+            }
+
+            var storageItem = solutionStorage.Documents
+                .Where(item => !string.IsNullOrEmpty(item.FilePath))
+                .FirstOrDefault(item => item.FilePath.Equals(filePath));
+
+            return storageItem;
+        }
+
+        private static async Task<T> Load<T>()
         {
             try
             {
@@ -38,7 +76,7 @@ namespace CodeNav.Helpers
             return (T)Activator.CreateInstance(typeof(T));
         }
 
-        public static async Task Save<T>(T storage)
+        private static async Task Save<T>(T storage)
         {
             try
             {
@@ -59,24 +97,6 @@ namespace CodeNav.Helpers
             {
                 LogHelper.Log("Error serializing Solution Storage", e);
             }
-        }
-
-        public static async Task SaveToSolutionStorage(CodeDocumentViewModel codeDocumentViewModel)
-        {
-            var solutionStorageModel = await Load<SolutionStorageModel>();
-
-            if (solutionStorageModel.Documents == null)
-            {
-                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
-            }
-
-            var storageItem = solutionStorageModel.Documents
-                .FirstOrDefault(d => d.FilePath.Equals(codeDocumentViewModel.FilePath));
-            solutionStorageModel.Documents.Remove(storageItem);
-
-            solutionStorageModel.Documents.Add(codeDocumentViewModel);
-
-            await Save(solutionStorageModel);
         }
 
         private static async Task<string> GetSettingsFilePath()
