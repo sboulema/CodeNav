@@ -200,6 +200,9 @@ namespace CodeNav.Mappers
 
             regions.Add(baseRegion);
 
+            var baseSyntaxTree = baseType.DeclaringSyntaxReferences.FirstOrDefault()?.SyntaxTree;
+            var baseSemanticModel = SyntaxHelper.GetCSharpSemanticModel(baseSyntaxTree);
+
             foreach (var inheritedMember in baseType?.GetMembers())
             {
                 var syntaxNode = inheritedMember.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
@@ -215,7 +218,7 @@ namespace CodeNav.Mappers
                 }
 
                 var memberItem = SyntaxMapper.MapMember(syntaxNode, syntaxNode.SyntaxTree,
-                    SyntaxHelper.GetCSharpSemanticModel(syntaxNode.SyntaxTree), control, mapBaseClass: false);
+                    baseSemanticModel, control, mapBaseClass: false);
 
                 baseRegion.Members.Add(memberItem);
             }
