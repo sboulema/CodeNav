@@ -29,7 +29,10 @@ namespace CodeNav.Helpers
             var model = item.Control.CodeDocumentViewModel;
 
             // Clear current indicators
-            model.HistoryItems.ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
+            model.HistoryItems
+                .Where(i => i != null)
+                .ToList()
+                .ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
 
             // Add new indicator, only keep the five latest history items
             model.HistoryItems.RemoveAll(i => i.Id.Equals(item.Id));

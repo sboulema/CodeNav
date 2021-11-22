@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Task = System.Threading.Tasks.Task;
 
@@ -45,12 +47,15 @@ namespace CodeNav
         }
 
         public void UpdateDocument(string filePath = "")
-            => DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
-                null, _row, filePath).FireAndForget();
+            => ThreadHelper.JoinableTaskFactory.RunAsync(async () => await DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
+                null, _row, filePath));
 
-        public void HighlightCurrentItem(int lineNumber)
+        public void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor)
         {
-            HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel, lineNumber).FireAndForget();
+            HighlightHelper.HighlightCurrentItem(
+                CodeDocumentViewModel,
+                backgroundBrushColor,
+                e.NewPosition.BufferPosition.GetContainingLine().LineNumber);
 
             // Force NotifyPropertyChanged
             CodeDocumentViewModel.CodeDocumentTop = null;

@@ -1,6 +1,8 @@
 ﻿using CodeNav.Models;
+using Microsoft.VisualStudio.Text.Editor;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CodeNav
 {
@@ -10,7 +12,7 @@ namespace CodeNav
 
         void UpdateDocument(string filePath = "");
 
-        void HighlightCurrentItem(int lineNumber);
+        void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor);
 
         void ToggleAll(bool isExpanded, List<CodeItem> root = null);
 

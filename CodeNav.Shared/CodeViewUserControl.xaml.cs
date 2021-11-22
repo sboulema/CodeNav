@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
 using Community.VisualStudio.Toolkit;
@@ -39,32 +40,40 @@ namespace CodeNav
 
         public async Task RegisterDocumentEvents()
         {
-            // Subscribe to Cursor move event
             var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+            var caret = documentView?.TextView.Caret;
+            var textBuffer2 = documentView?.TextView.TextBuffer as ITextBuffer2;
 
-            if (documentView?.TextView.Caret != null &&
-                !General.Instance.DisableHighlight)
+            // Subscribe to Cursor move event
+            if (caret != null && !General.Instance.DisableHighlight)
             {
-                documentView.TextView.Caret.PositionChanged -= Caret_PositionChanged;
-                documentView.TextView.Caret.PositionChanged += Caret_PositionChanged;
+                var backgroundHighlightColor = await HighlightHelper.GetBackgroundHighlightColor();
+
+                Observable
+                    .FromEventPattern<CaretPositionChangedEventArgs>(
+                        h => caret.PositionChanged += h,
+                        h => caret.PositionChanged -= h)
+                    .Select(x => x.EventArgs)
+                    .Where(e => Caret_PositionChanged_LineNumberChanged(e))
+                    .Throttle(TimeSpan.FromMilliseconds(200))
+                    .Subscribe(e => HighlightCurrentItem(e, backgroundHighlightColor));
             }
 
             // Subscribe to TextBuffer changes
-            if ((documentView?.TextView.TextBuffer as ITextBuffer2) != null &&
-                General.Instance.ShowHistoryIndicators)
+            if (textBuffer2 != null && General.Instance.ShowHistoryIndicators)
             {
-                var textBuffer2 = documentView.TextView.TextBuffer as ITextBuffer2;
-
-                textBuffer2.ChangedOnBackground -= TextBuffer_ChangedOnBackground;
-                textBuffer2.ChangedOnBackground += TextBuffer_ChangedOnBackground;
+                Observable
+                    .FromEventPattern<TextContentChangedEventArgs>(
+                        h => textBuffer2.ChangedOnBackground += h,
+                        h => textBuffer2.ChangedOnBackground -= h)
+                    .Select(x => x.EventArgs)
+                    .Throttle(TimeSpan.FromMilliseconds(200))
+                    .Subscribe(e => TextBuffer_ChangedOnBackground(e));
             }
 
             // Subscribe to Update while typing changes
-            if ((documentView?.TextView.TextBuffer as ITextBuffer2) != null &&
-                General.Instance.UpdateWhileTyping)
+            if (textBuffer2 != null && General.Instance.UpdateWhileTyping)
             {
-                var textBuffer2 = documentView.TextView.TextBuffer as ITextBuffer2;
-
                 Observable
                     .FromEventPattern<TextContentChangedEventArgs>(
                         h => textBuffer2.ChangedOnBackground += h,
@@ -117,7 +126,7 @@ namespace CodeNav
             UpdateDocument(filePath);
         }
 
-        private void TextBuffer_ChangedOnBackground(object sender, TextContentChangedEventArgs e)
+        private void TextBuffer_ChangedOnBackground(TextContentChangedEventArgs e)
         {
             var changedSpans = e.Changes.Select(c => c.OldSpan);
 
@@ -127,17 +136,12 @@ namespace CodeNav
             }
         }
 
-        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        private bool Caret_PositionChanged_LineNumberChanged(CaretPositionChangedEventArgs e)
         {
             var oldLineNumber = e.OldPosition.BufferPosition.GetContainingLine().LineNumber;
             var newLineNumber = e.NewPosition.BufferPosition.GetContainingLine().LineNumber;
 
-            if (oldLineNumber == newLineNumber)
-            {
-                return;
-            }
-
-            HighlightCurrentItem(newLineNumber);
+            return oldLineNumber != newLineNumber;
         }
 
         private void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)
@@ -155,10 +159,13 @@ namespace CodeNav
             => OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
 
         public void UpdateDocument(string filePath = "")
-            => DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
-                _column, null, filePath).FireAndForget();
+            => ThreadHelper.JoinableTaskFactory.RunAsync(async () => await DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
+                _column, null, filePath));
 
-        public void HighlightCurrentItem(int lineNumber)
-            => HighlightHelper.HighlightCurrentItem(CodeDocumentViewModel, lineNumber).FireAndForget();
+        public void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor)
+            => HighlightHelper.HighlightCurrentItem(
+                CodeDocumentViewModel,
+                backgroundBrushColor,
+                e.NewPosition.BufferPosition.GetContainingLine().LineNumber);
     }
 }

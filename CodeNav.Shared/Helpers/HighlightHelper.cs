@@ -14,23 +14,20 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
-        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber)
+        public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel,
+            Color backgroundBrushColor, int lineNumber)
         {
-            var general = await General.GetLiveInstanceAsync();
-
-            if (general.DisableHighlight ||
-                codeDocumentViewModel == null)
+            if (codeDocumentViewModel == null)
             {
                 return;
             }
 
-            var backgroundBrush = await GetBackgroundBrush();
-
-            await HighlightCurrentItem(codeDocumentViewModel, lineNumber,
+            HighlightCurrentItem(codeDocumentViewModel, lineNumber,
                 ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                backgroundBrush.Color,
+                backgroundBrushColor,
                 ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey));
+                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey))
+            .FireAndForget();
         }
 
         public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber,
@@ -165,17 +162,19 @@ namespace CodeNav.Helpers
             });
         }
 
-        private static async Task<SolidColorBrush> GetBackgroundBrush()
+        public static async Task<Color> GetBackgroundHighlightColor()
         {
             var general = await General.GetLiveInstanceAsync();
 
             var highlightBackgroundColor = general.HighlightColor;
-            if (highlightBackgroundColor.IsNamedColor && highlightBackgroundColor.Name.Equals("Transparent"))
+
+            if (highlightBackgroundColor.IsNamedColor &&
+                highlightBackgroundColor.Name.Equals("Transparent"))
             {
-                return ColorHelper.ToBrush(EnvironmentColors.AccessKeyToolTipDisabledTextColorKey);
+                return ColorHelper.ToMediaColor(EnvironmentColors.SystemHighlightColorKey);
             }
 
-            return ColorHelper.ToBrush(highlightBackgroundColor);
+            return ColorHelper.ToMediaColor(highlightBackgroundColor);
         }
 
         /// <summary>
