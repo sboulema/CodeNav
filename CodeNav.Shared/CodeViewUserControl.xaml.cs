@@ -80,7 +80,7 @@ namespace CodeNav
                         h => textBuffer2.ChangedOnBackground -= h)
                     .Select(x => x.EventArgs)
                     .Throttle(TimeSpan.FromMilliseconds(200))
-                    .Subscribe(x => UpdateDocument());
+                    .Subscribe(x => DocumentHelper.UpdateDocument(this, CodeDocumentViewModel, _column).FireAndForget());
             }
 
             // Subscribe to Outlining events

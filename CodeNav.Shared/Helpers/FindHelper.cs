@@ -8,7 +8,8 @@ namespace CodeNav.Helpers
     {
         public static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
         {
-            if (items?.Any() != true ||
+            if (items == null ||
+                items.Any() == false ||
                 string.IsNullOrEmpty(id))
             {
                 return null;

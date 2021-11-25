@@ -1,4 +1,5 @@
-﻿using CodeNav.Models;
+﻿using CodeNav.Mappers;
+using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Windows.Media;
 using Zu.TypeScript;
 using Zu.TypeScript.TsTypes;
 
-namespace CodeNav.Mappers.JavaScript
+namespace CodeNav.Languages.JS.Mappers
 {
     public static class SyntaxMapperJS
     {
@@ -83,7 +84,14 @@ namespace CodeNav.Mappers.JavaScript
                 return new List<CodeItem>();
             }
 
-            return ast.RootNode.Children.SelectMany(MapMember).ToList();
+            var members = ast.RootNode.Children.SelectMany(MapMember);
+
+            if (members == null)
+            {
+                return new List<CodeItem>();
+            }
+
+            return members.ToList();
         }
 
         private static List<CodeItem> MapBinaryExpression(BinaryExpression expression)

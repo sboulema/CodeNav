@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,8 +16,15 @@ namespace CodeNav.Helpers
 
         public static void AddItemToHistory(CodeDocumentViewModel model, Span span)
         {
-            var item = FindCodeItem(model.CodeDocument, span);
-            AddItemToHistory(item);
+            try
+            {
+                var item = FindCodeItem(model.CodeDocument, span);
+                AddItemToHistory(item);
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error adding item to history", e);
+            }
         }
 
         public static void AddItemToHistory(CodeItem item)

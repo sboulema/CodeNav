@@ -119,9 +119,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\IdMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\IndexerMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\InterfaceMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\BaseMapperJS.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\FunctionMapperJS.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mappers\JavaScript\SyntaxMapperJS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\MethodMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\NamespaceMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\ParameterMapper.cs" />

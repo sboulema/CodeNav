@@ -22,12 +22,19 @@ namespace CodeNav.Helpers
                 return;
             }
 
-            HighlightCurrentItem(codeDocumentViewModel, lineNumber,
-                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                backgroundBrushColor,
-                ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey))
-            .FireAndForget();
+            try
+            {
+                HighlightCurrentItem(codeDocumentViewModel, lineNumber,
+                    ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
+                    backgroundBrushColor,
+                    ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
+                    ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey))
+                .FireAndForget();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Log("Error highlighting current item", e);
+            }
         }
 
         public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber,

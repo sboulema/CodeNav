@@ -1,4 +1,5 @@
 ﻿using CodeNav.Helpers;
+using CodeNav.Mappers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis.Text;
 using System;
@@ -7,7 +8,7 @@ using System.Windows.Media;
 using Zu.TypeScript.TsTypes;
 using TextSpan = Microsoft.CodeAnalysis.Text.TextSpan;
 
-namespace CodeNav.Mappers.JavaScript
+namespace CodeNav.Languages.JS.Mappers
 {
     public static class BaseMapperJS
     {

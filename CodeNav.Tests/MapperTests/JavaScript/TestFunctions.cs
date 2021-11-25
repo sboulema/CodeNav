@@ -1,4 +1,4 @@
-﻿using CodeNav.Mappers.JavaScript;
+﻿using CodeNav.Languages.JS.Mappers;
 using CodeNav.Models;
 using NUnit.Framework;
 using System;

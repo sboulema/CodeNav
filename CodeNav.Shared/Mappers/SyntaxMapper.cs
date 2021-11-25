@@ -9,9 +9,9 @@ using System.Linq;
 using CodeNav.Helpers;
 using VisualBasic = Microsoft.CodeAnalysis.VisualBasic;
 using VisualBasicSyntax = Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using CodeNav.Mappers.JavaScript;
 using System.Threading.Tasks;
 using CodeNav.Shared.Helpers;
+using CodeNav.Languages.JS.Mappers;
 
 namespace CodeNav.Mappers
 {
@@ -95,6 +95,11 @@ namespace CodeNav.Mappers
             if (Path.GetExtension(codeAnalysisDocument.FilePath).Equals(".js"))
             {
                 return SyntaxMapperJS.Map(codeAnalysisDocument, control);
+            }
+
+            if (Path.GetExtension(codeAnalysisDocument.FilePath) == ".css")
+            {
+                return Languages.CSS.Mappers.SyntaxMapper.Map(codeAnalysisDocument, control);
             }
 
             var tree = await codeAnalysisDocument.GetSyntaxTreeAsync();
