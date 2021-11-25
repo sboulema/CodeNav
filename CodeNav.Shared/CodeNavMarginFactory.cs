@@ -14,6 +14,7 @@ namespace CodeNav
     [ContentType("Basic")]
     [ContentType("JavaScript")]
     [ContentType("TypeScript")]
+    [ContentType("CSS")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]  // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavLeftFactory : IWpfTextViewMarginProvider
     {
@@ -31,6 +32,7 @@ namespace CodeNav
     [ContentType("Basic")]
     [ContentType("JavaScript")]
     [ContentType("TypeScript")]
+    [ContentType("CSS")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]   // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
@@ -48,6 +50,7 @@ namespace CodeNav
     [ContentType("Basic")]
     [ContentType("JavaScript")]
     [ContentType("TypeScript")]
+    [ContentType("CSS")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class CodeNavTopFactory : IWpfTextViewMarginProvider
     {

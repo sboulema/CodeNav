@@ -126,7 +126,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CodeNav.VS2022\CodeNav.VS2022.csproj">
       <Project>{5f314b23-2d45-4748-90be-362411f06ef0}</Project>
-      <Name>CodeNav.VS2019</Name>
+      <Name>CodeNav.VS2022</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

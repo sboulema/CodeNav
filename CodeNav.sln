@@ -20,8 +20,14 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeNav.Shared", "CodeNav.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNav.VS2019", "CodeNav.VS2019\CodeNav.VS2019.csproj", "{B5B2D0BD-CCDF-4E89-AF10-C8C60B087ECE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Languages", "Languages", "{8DFFB8DD-7AEB-4200-A268-BF13D0DDD6A9}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CodeNav.Languages.CSS", "CodeNav.Languages.CSS\CodeNav.Languages.CSS.shproj", "{55D33626-0080-407A-BCDA-52DAFC2EB45C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CodeNav.Languages.CSS\CodeNav.Languages.CSS.projitems*{55d33626-0080-407a-bcda-52dafc2eb45c}*SharedItemsImports = 13
+		CodeNav.Languages.CSS\CodeNav.Languages.CSS.projitems*{5f314b23-2d45-4748-90be-362411f06ef0}*SharedItemsImports = 4
 		CodeNav.Shared\CodeNav.Shared.projitems*{5f314b23-2d45-4748-90be-362411f06ef0}*SharedItemsImports = 4
 		CodeNav.Shared\CodeNav.Shared.projitems*{b5b2d0bd-ccdf-4e89-af10-c8c60b087ece}*SharedItemsImports = 4
 		CodeNav.Shared\CodeNav.Shared.projitems*{fdb3d737-bcd7-42b1-a560-ca869de9bce3}*SharedItemsImports = 13
@@ -74,6 +80,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{55D33626-0080-407A-BCDA-52DAFC2EB45C} = {8DFFB8DD-7AEB-4200-A268-BF13D0DDD6A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F182C2A3-8479-440F-B192-2E5F16581804}

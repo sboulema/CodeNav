@@ -7,7 +7,7 @@ on:
       - 'feature/**'
 
 env:
-  version: '8.7.${{ github.run_number }}'
+  version: '8.8.${{ github.run_number }}'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:

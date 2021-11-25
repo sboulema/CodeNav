@@ -23,6 +23,11 @@
         SwitchSection,
         Variable,
         LocalFunction,
-        BaseClass
+        BaseClass,
+        StyleRule,
+        PageRule,
+        NamespaceRule,
+        MediaRule,
+        FontFaceRule
     }
 }

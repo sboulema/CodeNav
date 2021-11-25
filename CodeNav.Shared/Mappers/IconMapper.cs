@@ -60,6 +60,21 @@ namespace CodeNav.Mappers
                 case CodeItemKindEnum.SwitchSection:
                     monikerString = "FlowDecision";
                     break;
+                case CodeItemKindEnum.StyleRule:
+                    monikerString = "Rule";
+                    break;
+                case CodeItemKindEnum.PageRule:
+                    monikerString = "PageStyle";
+                    break;
+                case CodeItemKindEnum.NamespaceRule:
+                    monikerString = "Namespace";
+                    break;
+                case CodeItemKindEnum.MediaRule:
+                    monikerString = "Media";
+                    break;
+                case CodeItemKindEnum.FontFaceRule:
+                    monikerString = "Font";
+                    break;
                 default:
                     monikerString = $"Property{accessString}";
                     break;

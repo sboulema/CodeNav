@@ -146,6 +146,10 @@ namespace CodeNav.Mappers
             {
                 return SyntaxMapperJS.Map(filePath, control);
             }
+            else if (fileExtension == ".css")
+            {
+                return Languages.CSS.Mappers.SyntaxMapper.Map(filePath, control);
+            }
             else if (fileExtension == ".cs")
             {
                 var tree = CSharpSyntaxTree.ParseText(text);
