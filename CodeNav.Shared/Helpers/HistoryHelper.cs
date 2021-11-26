@@ -37,17 +37,16 @@ namespace CodeNav.Helpers
             var model = item.Control.CodeDocumentViewModel;
 
             // Clear current indicators
-            model.HistoryItems
-                .Where(i => i != null)
-                .ToList()
-                .ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
+            model.HistoryItems.RemoveAll(i => i == null);
+            model.HistoryItems.ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
 
             // Add new indicator, only keep the five latest history items
-            model.HistoryItems.RemoveAll(i => i.Id.Equals(item.Id));
+            model.HistoryItems.RemoveAll(i => i.Id == item.Id);
             model.HistoryItems.Insert(0, item);
             model.HistoryItems = model.HistoryItems.Take(MaxHistoryItems).ToList();
 
             SolutionStorageHelper.SaveToSolutionStorage(model).FireAndForget();
+
             ApplyHistoryIndicator(model);
         }
 
@@ -59,7 +58,7 @@ namespace CodeNav.Helpers
 
                 var codeItem = model.CodeDocument
                     .Flatten()
-                    .FirstOrDefault(item => item.Id.Equals(historyItem.Id));
+                    .FirstOrDefault(item => item.Id == historyItem.Id);
 
                 if (codeItem == null)
                 {

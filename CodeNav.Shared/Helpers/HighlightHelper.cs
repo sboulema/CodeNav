@@ -217,7 +217,7 @@ namespace CodeNav.Helpers
         {
             foreach (var item in items)
             {
-                if (item.Id.Equals(id))
+                if (item.Id == id)
                 {
                     return item;
                 }
