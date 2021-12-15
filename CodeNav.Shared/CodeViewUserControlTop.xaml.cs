@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Helpers;
@@ -14,6 +15,10 @@ namespace CodeNav
     public partial class CodeViewUserControlTop : ICodeViewUserControl
     {
         private readonly RowDefinition _row;
+
+        public IDisposable CaretPositionChangedSubscription { get; set; }
+        public IDisposable TextContentChangedSubscription { get; set; }
+        public IDisposable UpdateWhileTypingSubscription { get; set; }
 
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
