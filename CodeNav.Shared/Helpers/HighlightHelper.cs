@@ -106,21 +106,7 @@ namespace CodeNav.Helpers
                 item.NameBackgroundColor = backgroundColor;
                 item.IsHighlighted = true;
 
-                if (element == null && item.Control != null)
-                {
-                    element = GetCodeItemsControl(item.Control);
-                }
-
-                var found = await FindItemContainer(element as ItemsControl, item);
-                if (found != null)
-                {
-                    element = found;
-
-                    if (!(item is IMembers))
-                    {
-                        found.BringIntoView();
-                    }
-                }
+                element = await BringIntoView(item, element);
 
                 if (item is CodeClassItem)
                 {
@@ -129,6 +115,37 @@ namespace CodeNav.Helpers
             });
 
             await Task.WhenAll(tasks);
+        }
+
+        private static async Task<FrameworkElement> BringIntoView(CodeItem item, FrameworkElement element)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            if (item.Control == null)
+            {
+                return null;
+            }
+
+            if (element == null)
+            {
+                element = GetCodeItemsControl(item.Control);
+            }
+
+            var found = await FindItemContainer(element as ItemsControl, item);
+
+            if (found == null)
+            {
+                return null;
+            }
+
+            if (item is IMembers)
+            {
+                return null;
+            }
+
+            found.BringIntoView();
+
+            return found;
         }
 
         private static IEnumerable<CodeItem> GetItemsToHighlight(IEnumerable<CodeItem> items, int line)
@@ -242,8 +259,6 @@ namespace CodeNav.Helpers
             {
                 return null;
             }
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
             {
