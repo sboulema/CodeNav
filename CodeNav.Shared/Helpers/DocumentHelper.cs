@@ -197,7 +197,7 @@ namespace CodeNav.Helpers
 
                 // Apply bookmarks
                 codeDocumentViewModel.Bookmarks = await BookmarkHelper.LoadBookmarksFromStorage(codeDocumentViewModel.FilePath);
-                BookmarkHelper.ApplyBookmarks(codeDocumentViewModel).FireAndForget();
+                BookmarkHelper.ApplyBookmarks(codeDocumentViewModel);
 
                 // Apply history items
                 codeDocumentViewModel.HistoryItems = await HistoryHelper.LoadHistoryItemsFromStorage(codeDocumentViewModel.FilePath);

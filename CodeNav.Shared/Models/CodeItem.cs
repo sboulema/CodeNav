@@ -241,7 +241,7 @@ namespace CodeNav.Models
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
-                var bookmarkStyleIndex = await BookmarkHelper.GetIndex(Control.CodeDocumentViewModel, bookmarkStyle);
+                var bookmarkStyleIndex = BookmarkHelper.GetIndex(Control.CodeDocumentViewModel, bookmarkStyle);
 
                 Control.CodeDocumentViewModel.AddBookmark(Id, bookmarkStyleIndex);
 
@@ -306,7 +306,7 @@ namespace CodeNav.Models
         public void CustomizeBookmarkStyles(object args)
         {
             new BookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
-            BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel).FireAndForget();
+            BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel);
         }
         #endregion
     }

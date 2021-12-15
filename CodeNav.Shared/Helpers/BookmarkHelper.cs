@@ -16,7 +16,7 @@ namespace CodeNav.Helpers
         /// Apply bookmark style to all code items that are bookmarked
         /// </summary>
         /// <param name="codeDocumentViewModel"></param>
-        public static async Task ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
+        public static void ApplyBookmarks(CodeDocumentViewModel codeDocumentViewModel)
         {
             try
             {
@@ -24,8 +24,6 @@ namespace CodeNav.Helpers
                 {
                     return;
                 }
-
-                await GetBookmarkStyles(codeDocumentViewModel);
 
                 foreach (var bookmark in codeDocumentViewModel.Bookmarks)
                 {
@@ -163,11 +161,9 @@ namespace CodeNav.Helpers
             await SolutionStorageHelper.SaveToSolutionStorage(codeDocumentViewModel);
         }
 
-        public static async Task<int> GetIndex(CodeDocumentViewModel codeDocumentViewModel, BookmarkStyle bookmarkStyle)
+        public static int GetIndex(CodeDocumentViewModel codeDocumentViewModel, BookmarkStyle bookmarkStyle)
         {
-            var bookmarkStyles = await GetBookmarkStyles(codeDocumentViewModel);
-
-            return bookmarkStyles.FindIndex(b =>
+            return codeDocumentViewModel.BookmarkStyles.FindIndex(b =>
                 b.BackgroundColor == bookmarkStyle.BackgroundColor &&
                 b.ForegroundColor == bookmarkStyle.ForegroundColor);
         }

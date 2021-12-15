@@ -40,9 +40,7 @@ namespace CodeNav.Helpers
         public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber,
             Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
         {
-            var bookmarkStyles = await BookmarkHelper.GetBookmarkStyles(codeDocumentViewModel);
-
-            UnHighlight(codeDocumentViewModel.CodeDocument, regularForegroundColor, codeDocumentViewModel.Bookmarks, bookmarkStyles);
+            UnHighlight(codeDocumentViewModel.CodeDocument, regularForegroundColor, codeDocumentViewModel.Bookmarks, codeDocumentViewModel.BookmarkStyles);
             var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, lineNumber);
             await Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
         }
@@ -296,54 +294,6 @@ namespace CodeNav.Helpers
                 var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
                 groupItem.SelectedIndex = selectedItem != null ? groupItem.Members.IndexOf(selectedItem) : 0;
             });
-        }
-    }
-
-    public class CodeItemKindComparer : IComparer<CodeItem>
-    {
-        public int Compare(CodeItem itemA, CodeItem itemB)
-        {
-            switch (itemA.Kind)
-            {
-                case CodeItemKindEnum.Class:
-                    switch (itemB.Kind)
-                    {
-                        case CodeItemKindEnum.Class:
-                            return 0;
-                        case CodeItemKindEnum.Interface:
-                            return -1;
-                        default:
-                            return 1;
-                    }
-                case CodeItemKindEnum.Constant:
-                case CodeItemKindEnum.Constructor:
-                case CodeItemKindEnum.Delegate:
-                case CodeItemKindEnum.Enum:
-                case CodeItemKindEnum.EnumMember:
-                case CodeItemKindEnum.Event:
-                case CodeItemKindEnum.Method:
-                case CodeItemKindEnum.Property:
-                case CodeItemKindEnum.Variable:
-                    return -1;
-                case CodeItemKindEnum.Interface:
-                case CodeItemKindEnum.Namespace:
-                    return 1;
-                case CodeItemKindEnum.Region:
-                case CodeItemKindEnum.Struct:
-                    switch (itemB.Kind)
-                    {
-                        case CodeItemKindEnum.Region:
-                        case CodeItemKindEnum.Struct:
-                            return 0;
-                        case CodeItemKindEnum.Interface:
-                        case CodeItemKindEnum.Class:
-                            return -1;
-                        default:
-                            return 1;
-                    }
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

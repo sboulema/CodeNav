@@ -97,6 +97,9 @@ namespace CodeNav
                 _outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
                 _outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
             }
+
+            // Load bookmark styles
+            BookmarkHelper.GetBookmarkStyles(CodeDocumentViewModel).FireAndForget();
         }
 
         private void DocumentEvents_Opened(string obj)
