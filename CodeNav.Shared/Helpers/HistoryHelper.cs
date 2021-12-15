@@ -37,15 +37,20 @@ namespace CodeNav.Helpers
             var model = item.Control.CodeDocumentViewModel;
 
             // Clear current indicators
-            model.HistoryItems.RemoveAll(i => i == null);
-            model.HistoryItems.ForEach(i => i.StatusMonikerVisibility = Visibility.Collapsed);
+            foreach (var historyItem in model.HistoryItems)
+            {
+                if (historyItem == null)
+                {
+                    continue;
+                }
+
+                historyItem.StatusMonikerVisibility = Visibility.Collapsed;
+            }
 
             // Add new indicator, only keep the five latest history items
-            model.HistoryItems.RemoveAll(i => i.Id == item.Id);
+            model.HistoryItems.Remove(item);
             model.HistoryItems.Insert(0, item);
-            model.HistoryItems = model.HistoryItems.Take(MaxHistoryItems).ToList();
-
-            SolutionStorageHelper.SaveToSolutionStorage(model).FireAndForget();
+            model.HistoryItems = new SynchronizedCollection<CodeItem>(model.HistoryItems.SyncRoot, model.HistoryItems.Take(MaxHistoryItems));
 
             ApplyHistoryIndicator(model);
         }
@@ -119,16 +124,16 @@ namespace CodeNav.Helpers
             return null;
         }
 
-        public static async Task<List<CodeItem>> LoadHistoryItemsFromStorage(string filePath)
+        public static async Task<SynchronizedCollection<CodeItem>> LoadHistoryItemsFromStorage(string filePath)
         {
             var storageItem = await SolutionStorageHelper.GetStorageItem(filePath);
 
             if (storageItem == null)
             {
-                return new List<CodeItem>();
+                return new SynchronizedCollection<CodeItem>();
             }
 
-            return storageItem.HistoryItems ?? new List<CodeItem>();
+            return storageItem.HistoryItems ?? new SynchronizedCollection<CodeItem>();
         }
     }
 }

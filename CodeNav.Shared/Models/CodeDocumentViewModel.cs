@@ -131,6 +131,6 @@ namespace CodeNav.Models
         public List<BookmarkStyle> BookmarkStyles = new List<BookmarkStyle>();
 
         [DataMember]
-        public List<CodeItem> HistoryItems = new List<CodeItem>();
+        public SynchronizedCollection<CodeItem> HistoryItems = new SynchronizedCollection<CodeItem>();
     }
 }

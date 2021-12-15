@@ -245,6 +245,10 @@ namespace CodeNav
                 return;
             }
 
+            _control.CaretPositionChangedSubscription?.Dispose();
+            _control.TextContentChangedSubscription?.Dispose();
+            _control.UpdateWhileTypingSubscription?.Dispose();
+
             GC.SuppressFinalize(this);
             _isDisposed = true;
         }

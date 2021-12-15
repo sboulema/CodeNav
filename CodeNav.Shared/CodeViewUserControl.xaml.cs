@@ -20,6 +20,11 @@ namespace CodeNav
     {
         private readonly ColumnDefinition _column;
         private IOutliningManager _outliningManager;
+
+        public IDisposable CaretPositionChangedSubscription { get; set; }
+        public IDisposable TextContentChangedSubscription { get; set; }
+        public IDisposable UpdateWhileTypingSubscription { get; set; }
+
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
         public CodeViewUserControl(ColumnDefinition column = null)
@@ -45,11 +50,11 @@ namespace CodeNav
             var textBuffer2 = documentView?.TextView.TextBuffer as ITextBuffer2;
 
             // Subscribe to Cursor move event
-            if (caret != null && !General.Instance.DisableHighlight)
+            if (caret != null && !General.Instance.DisableHighlight && CaretPositionChangedSubscription == null)
             {
                 var backgroundHighlightColor = await HighlightHelper.GetBackgroundHighlightColor();
 
-                Observable
+                CaretPositionChangedSubscription = Observable
                     .FromEventPattern<CaretPositionChangedEventArgs>(
                         h => caret.PositionChanged += h,
                         h => caret.PositionChanged -= h)
@@ -60,9 +65,9 @@ namespace CodeNav
             }
 
             // Subscribe to TextBuffer changes
-            if (textBuffer2 != null && General.Instance.ShowHistoryIndicators)
+            if (textBuffer2 != null && General.Instance.ShowHistoryIndicators && TextContentChangedSubscription == null)
             {
-                Observable
+                TextContentChangedSubscription = Observable
                     .FromEventPattern<TextContentChangedEventArgs>(
                         h => textBuffer2.ChangedOnBackground += h,
                         h => textBuffer2.ChangedOnBackground -= h)
@@ -72,9 +77,9 @@ namespace CodeNav
             }
 
             // Subscribe to Update while typing changes
-            if (textBuffer2 != null && General.Instance.UpdateWhileTyping)
+            if (textBuffer2 != null && General.Instance.UpdateWhileTyping && UpdateWhileTypingSubscription == null)
             {
-                Observable
+                UpdateWhileTypingSubscription = Observable
                     .FromEventPattern<TextContentChangedEventArgs>(
                         h => textBuffer2.ChangedOnBackground += h,
                         h => textBuffer2.ChangedOnBackground -= h)
@@ -103,7 +108,10 @@ namespace CodeNav
             => WindowChangedEvent(obj).FireAndForget();
 
         private void DocumentEvents_Saved(string e)
-            => UpdateDocument();
+        {
+            UpdateDocument();
+            SolutionStorageHelper.SaveToSolutionStorage(CodeDocumentViewModel).FireAndForget();
+        } 
 
         private async Task WindowChangedEvent(ActiveFrameChangeEventArgs obj)
         {
