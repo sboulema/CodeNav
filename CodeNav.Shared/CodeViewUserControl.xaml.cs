@@ -46,9 +46,9 @@ namespace CodeNav
 
         public async Task RegisterDocumentEvents()
         {
-            var documentView = await VS.Documents.GetActiveDocumentViewAsync();
-            var caret = documentView?.TextView.Caret;
-            var textBuffer2 = documentView?.TextView.TextBuffer as ITextBuffer2;
+            var textView = await DocumentHelper.GetTextView();
+            var caret = textView?.Caret;
+            var textBuffer2 = textView?.TextBuffer as ITextBuffer2;
 
             // Subscribe to Cursor move event
             if (caret != null && !General.Instance.DisableHighlight && CaretPositionChangedSubscription == null)
