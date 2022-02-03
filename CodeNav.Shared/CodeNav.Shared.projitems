@@ -123,9 +123,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\NamespaceMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\ParameterMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\PropertyMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappers\RecordMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\RegionMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\StatementMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mappers\RecordMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\StructMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\SyntaxMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mappers\TooltipMapper.cs" />

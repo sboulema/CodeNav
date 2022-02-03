@@ -8,7 +8,7 @@ namespace CodeNav.Mappers
 {
     public static class RecordMapper
     {
-        public static CodeClassItem MapRecord(RecordDeclarationSyntax member,
+        public static CodeClassItem MapRecord(TypeDeclarationSyntax member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
             if (member == null)

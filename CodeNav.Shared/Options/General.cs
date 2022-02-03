@@ -1,9 +1,11 @@
 using CodeNav.Helpers;
 using Community.VisualStudio.Toolkit;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 internal partial class OptionsProvider
 {
+    [ComVisible(true)]
     public class GeneralOptions : BaseOptionPage<General> { }
 }
 
