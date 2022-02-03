@@ -5,7 +5,7 @@ using System.Windows;
 using CodeNav.Helpers;
 using Microsoft.VisualStudio.PlatformUI;
 
-namespace CodeNav.Models
+namespace CodeNav.Models.ViewModels
 {
     [DataContract]
     public class CodeDocumentViewModel : ObservableObject

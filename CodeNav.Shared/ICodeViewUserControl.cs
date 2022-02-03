@@ -1,4 +1,5 @@
 ﻿using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;

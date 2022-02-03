@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Helpers;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;

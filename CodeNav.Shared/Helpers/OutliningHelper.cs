@@ -41,10 +41,15 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="document">document that holds the collapsibles</param>
         /// <param name="isExpanded">should collapsible be expanded</param>
-        public static void ToggleAll(IEnumerable<CodeItem> document, bool isExpanded) =>
-            document.ToList()
-                .ForEach(root => root.Descendants().Where(i => i is ICodeCollapsible).ToList()
-                .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded));
+        public static void ToggleAll(IEnumerable<CodeItem> document, bool isExpanded)
+            => document
+                .ToList()
+                .ForEach(root => root
+                    .Descendants()
+                    .Where(i => i is ICodeCollapsible)
+                    .Cast<IMembers>()
+                    .ToList()
+                    .ForEach(i => i.IsExpanded = isExpanded));
 
         public static async Task SyncAllRegions(IEnumerable<CodeItem> document)
         {
@@ -72,17 +77,30 @@ namespace CodeNav.Helpers
             }
         }
 
+        /// <summary>
+        /// Set CodeItem to be expanded or not
+        /// </summary>
+        /// <param name="document">Document with all codeitems</param>
+        /// <param name="region">Region/Collapsible that changed outlining</param>
+        /// <param name="isExpanded">Should codeitem be expanded</param>
         private static void SetRegionIsExpanded(IEnumerable<CodeItem> document, ICollapsible region, bool isExpanded)
         {
-            if (!document.Any()) return;
+            if (!document.Any())
+            {
+                return;
+            }
 
             var startLine = GetStartLineForCollapsible(region);
 
-            document.ToList().ForEach(
-                root => root.Descendants().Where(i => i.StartLine == startLine 
-                    && (i is IMembers)).ToList()
-                    .ForEach(ci => (ci as IMembers).IsExpanded = isExpanded)
-            );
+            document
+                .ToList()
+                .ForEach(root => root
+                    .Descendants()
+                    .Where(i => i.StartLine == startLine)
+                    .Where(i => i is IMembers)
+                    .Cast<IMembers>()
+                    .ToList()
+                    .ForEach(i => i.IsExpanded = isExpanded));
         }
 
         /// <summary>

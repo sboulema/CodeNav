@@ -1,6 +1,7 @@
 ﻿using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

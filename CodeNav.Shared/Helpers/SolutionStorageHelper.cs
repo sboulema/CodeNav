@@ -1,4 +1,5 @@
 ﻿using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Community.VisualStudio.Toolkit;
 using Newtonsoft.Json;
 using System;

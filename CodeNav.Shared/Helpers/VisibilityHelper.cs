@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 

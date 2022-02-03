@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿using CodeNav.Extensions;
+using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;

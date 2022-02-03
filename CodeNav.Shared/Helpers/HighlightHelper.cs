@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using CodeNav.Extensions;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -14,8 +16,18 @@ namespace CodeNav.Helpers
 {
     public static class HighlightHelper
     {
+        private static Color _foregroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey);
+        private static Color _borderColor = ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey);
+        private static Color _regularForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
+
+        /// <summary>
+        /// Highlight code items that contain the current line number
+        /// </summary>
+        /// <param name="codeDocumentViewModel">Code document</param>
+        /// <param name="backgroundColor">Background color to use when highlighting</param>
+        /// <param name="lineNumber">Current line number</param>
         public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel,
-            Color backgroundBrushColor, int lineNumber)
+            Color backgroundColor, int lineNumber)
         {
             if (codeDocumentViewModel == null)
             {
@@ -24,12 +36,8 @@ namespace CodeNav.Helpers
 
             try
             {
-                HighlightCurrentItem(codeDocumentViewModel, lineNumber,
-                    ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTabSelectedTextColorKey),
-                    backgroundBrushColor,
-                    ColorHelper.ToMediaColor(EnvironmentColors.FileTabButtonDownSelectedActiveColorKey),
-                    ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey))
-                .FireAndForget();
+                UnHighlight(codeDocumentViewModel);
+                Highlight(codeDocumentViewModel, lineNumber, backgroundColor).FireAndForget();
             }
             catch (Exception e)
             {
@@ -37,85 +45,93 @@ namespace CodeNav.Helpers
             }
         }
 
-        public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel, int lineNumber,
-            Color foregroundColor, Color backgroundColor, Color borderColor, Color regularForegroundColor)
-        {
-            UnHighlight(codeDocumentViewModel.CodeDocument, regularForegroundColor, codeDocumentViewModel.Bookmarks, codeDocumentViewModel.BookmarkStyles);
-            var itemsToHighlight = GetItemsToHighlight(codeDocumentViewModel.CodeDocument, lineNumber);
-            await Highlight(codeDocumentViewModel, itemsToHighlight.Select(i => i.Id), foregroundColor, backgroundColor, borderColor);
-        }
-
-        private static void UnHighlight(List<CodeItem> codeItems, Color foregroundColor, 
-            Dictionary<string, int> bookmarks, List<BookmarkStyle> bookmarkStyles)
-        {
-            foreach (var item in codeItems)
-            {
-                if (item == null)
+        /// <summary>
+        /// Remove highlight from all code items
+        /// </summary>
+        /// <remarks>Will restore bookmark foreground color when unhighlighting a bookmarked item</remarks>
+        /// <param name="codeDocumentViewModel">Code document</param>
+        public static void UnHighlight(CodeDocumentViewModel codeDocumentViewModel)
+            => codeDocumentViewModel.CodeDocument
+                .Flatten()
+                .FilterNull()
+                .ToList()
+                .ForEach(item =>
                 {
-                    return;
-                }
+                    item.FontWeight = FontWeights.Regular;
+                    item.NameBackgroundColor = Brushes.Transparent.Color;
+                    item.IsHighlighted = false;
+                    item.ForegroundColor = BookmarkHelper.IsBookmark(codeDocumentViewModel.Bookmarks, item)
+                        ? codeDocumentViewModel.BookmarkStyles[codeDocumentViewModel.Bookmarks[item.Id]].ForegroundColor
+                        : _regularForegroundColor;
 
-                item.FontWeight = FontWeights.Regular;
-                item.NameBackgroundColor = Brushes.Transparent.Color;
-                item.IsHighlighted = false;
-
-                if (!BookmarkHelper.IsBookmark(bookmarks, item))
-                {
-                    item.ForegroundColor = foregroundColor;
-                }
-                else
-                {
-                    item.ForegroundColor = bookmarkStyles[bookmarks[item.Id]].ForegroundColor;
-                }
-
-                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
-                {
-                    UnHighlight(hasMembersItem.Members, foregroundColor, bookmarks, bookmarkStyles);
-                }
-
-                if (item is CodeClassItem classItem)
-                {
-                    classItem.BorderColor = Colors.DarkGray;
-                }
-            }
-        }
+                    if (item is CodeClassItem classItem)
+                    {
+                        classItem.BorderColor = Colors.DarkGray;
+                    }
+                });
 
         /// <summary>
-        /// Given a list of unique ids and a code document, find all code items and 'highlight' them.
-        /// Highlighting changes the foreground, fontweight and background of a code item
+        /// Highlight code items that contain the current line number
         /// </summary>
+        /// <remarks>
+        /// Highlighting changes the foreground, fontweight and background of a code item
+        /// Deepest highlighted code item will be scrolled to, to ensure it is in view
+        /// </remarks>
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
-        private static async Task Highlight(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<string> ids, 
-            Color foregroundColor, Color backgroundColor, Color borderColor)
+        private static async Task Highlight(CodeDocumentViewModel codeDocumentViewModel,
+            int lineNumber, Color backgroundColor)
         {
-            FrameworkElement element = null;
+            FrameworkElement frameworkElement = null;
 
-            var tasks = ids.Select(async id => {
-                var item = FindCodeItem(codeDocumentViewModel.CodeDocument, id);
+            var itemsToHighlight = codeDocumentViewModel
+                .CodeDocument
+                .Flatten()
+                .FilterNull()
+                .Where(item => item.StartLine <= lineNumber && item.EndLine >= lineNumber)
+                .OrderBy(item => item.StartLine);
 
-                if (item == null)
-                {
-                    return;
-                }
-
-                item.ForegroundColor = foregroundColor;
+            foreach (var item in itemsToHighlight)
+            {
+                item.ForegroundColor = _foregroundColor;
                 item.FontWeight = FontWeights.Bold;
                 item.NameBackgroundColor = backgroundColor;
                 item.IsHighlighted = true;
 
-                element = await BringIntoView(item, element);
-
-                if (item is CodeClassItem)
+                if (item is CodeClassItem classItem)
                 {
-                    (item as CodeClassItem).BorderColor = borderColor;
+                    classItem.BorderColor = _borderColor;
                 }
-            });
 
-            await Task.WhenAll(tasks);
+                frameworkElement = await FindItemContainer(item, frameworkElement, codeDocumentViewModel);
+            }
+
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            frameworkElement?.BringIntoView();
+
+            //var smallestCodeItem = itemsToHighlight
+            //    .OrderBy(item => (lineNumber - item?.StartLine) + (item?.EndLine - lineNumber))
+            //    .FirstOrDefault();
+
+            //var codeItem = FindCodeItem(codeDocumentViewModel.CodeDocument, smallestCodeItem);
+
+            //await BringIntoView(smallestCodeItem);
+
+            //await BringIntoView(codeItem);
         }
 
-        private static async Task<FrameworkElement> BringIntoView(CodeItem item, FrameworkElement element)
+        /// <summary>
+        /// Find frameworkElement belonging to a code item
+        /// </summary>
+        /// <remarks>
+        /// Must be called recursively to gradually move the frameworkElement close to the highlighted code item
+        /// </remarks>
+        /// <param name="frameworkElement">FrameworkElement to get the item container from</param>
+        /// <param name="item">Code item of which whe want to find the container</param>
+        /// <returns></returns>
+        private static async Task<FrameworkElement> FindItemContainer(CodeItem item,
+            FrameworkElement frameworkElement, CodeDocumentViewModel codeDocumentViewModel)
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -124,95 +140,17 @@ namespace CodeNav.Helpers
                 return null;
             }
 
-            if (element == null)
+            if (frameworkElement == null)
             {
-                element = GetCodeItemsControl(item.Control);
+                frameworkElement = GetCodeItemsControl(item.Control);
             }
 
-            var found = await FindItemContainer(element as ItemsControl, item);
-
-            if (found == null)
+            if (frameworkElement == null)
             {
                 return null;
             }
 
-            if (item is IMembers)
-            {
-                return null;
-            }
-
-            found.BringIntoView();
-
-            return found;
-        }
-
-        private static IEnumerable<CodeItem> GetItemsToHighlight(IEnumerable<CodeItem> items, int line)
-        {
-            var itemsToHighlight = new List<CodeItem>();
-
-            Parallel.ForEach(items, item => 
-            {
-                if (item.StartLine <= line && item.EndLine >= line)
-                {
-                    itemsToHighlight.Add(item);
-                }
-
-                if (item is IMembers hasMembersItem)
-                {
-                    itemsToHighlight.AddRange(GetItemsToHighlight(hasMembersItem.Members, line));
-                }
-            });
-
-            return itemsToHighlight;
-        }
-            
-        public static void SetForeground(IEnumerable<CodeItem> items)
-        {
-            if (items == null)
-            {
-                return;
-            }
-
-            Parallel.ForEach(items, item => 
-            {
-                item.ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey);
-
-                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
-                {
-                    SetForeground(hasMembersItem.Members);
-                }
-            });
-        }
-
-        public static async Task<Color> GetBackgroundHighlightColor()
-        {
-            var general = await General.GetLiveInstanceAsync();
-
-            var highlightBackgroundColor = general.HighlightColor;
-
-            if (highlightBackgroundColor.IsNamedColor &&
-                highlightBackgroundColor.Name.Equals("Transparent"))
-            {
-                return ColorHelper.ToMediaColor(EnvironmentColors.SystemHighlightColorKey);
-            }
-
-            return ColorHelper.ToMediaColor(highlightBackgroundColor);
-        }
-
-        /// <summary>
-        /// Find frameworkElement belonging to a code item
-        /// </summary>
-        /// <param name="itemsControl">itemsControl to search in</param>
-        /// <param name="item">item to find</param>
-        /// <returns></returns>
-        private static async Task<FrameworkElement> FindItemContainer(ItemsControl itemsControl, CodeItem item)
-        {
-            if (itemsControl == null)
-            {
-                return null;
-            }
-
-            var itemContainer = itemsControl.ItemContainerGenerator.ContainerFromItem(item);
+            var itemContainer = (frameworkElement as ItemsControl).ItemContainerGenerator.ContainerFromItem(item);
             var itemContainerSubItemsControl = await FindVisualChild<ItemsControl>(itemContainer);
 
             if (itemContainerSubItemsControl != null)
@@ -228,18 +166,28 @@ namespace CodeNav.Helpers
             return null;
         }
 
-        private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, string id)
+        /// <summary>
+        /// Based on a code item find the same code item within the view model
+        /// </summary>
+        /// <remarks>
+        /// We need to find the exact code item in the view model nested list,
+        /// else we cannot find its WPF UI ItemContainer
+        /// </remarks>
+        /// <param name="codeItems">List of code items</param>
+        /// <param name="codeItem">code item to be found</param>
+        /// <returns></returns>
+        private static CodeItem FindCodeItem(IEnumerable<CodeItem> codeItems, CodeItem codeItem)
         {
-            foreach (var item in items)
+            foreach (var item in codeItems)
             {
-                if (item.Id == id)
+                if (item.Id == codeItem.Id)
                 {
                     return item;
                 }
 
                 if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
                 {
-                    var found = FindCodeItem(hasMembersItem.Members, id);
+                    var found = FindCodeItem(hasMembersItem.Members, codeItem);
 
                     if (found != null)
                     {
@@ -249,6 +197,44 @@ namespace CodeNav.Helpers
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Set selected/highlighted item within a depth group
+        /// </summary>
+        /// <remarks>Used for the CodeNav top margin</remarks>
+        /// <param name="items">List of code items</param>
+        public static void SetSelectedIndex(List<CodeItem> items)
+            => items
+                .Cast<CodeDepthGroupItem>()
+                .ToList()
+                .ForEach(groupItem =>
+                {
+                    var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
+                    groupItem.SelectedIndex = selectedItem != null ? groupItem.Members.IndexOf(selectedItem) : 0;
+                });
+
+        /// <summary>
+        /// Get background highlight color from settings
+        /// </summary>
+        /// <remarks>
+        /// Should be used separate from the actual highlighting to avoid,
+        /// reading settings everytime we highlight
+        /// </remarks>
+        /// <returns>Background color</returns>
+        public static async Task<Color> GetBackgroundHighlightColor()
+        {
+            var general = await General.GetLiveInstanceAsync();
+
+            var highlightBackgroundColor = general.HighlightColor;
+
+            if (highlightBackgroundColor.IsNamedColor &&
+                highlightBackgroundColor.Name.Equals("Transparent"))
+            {
+                return ColorHelper.ToMediaColor(EnvironmentColors.SystemHighlightColorKey);
+            }
+
+            return ColorHelper.ToMediaColor(highlightBackgroundColor);
         }
 
         public static async Task<T> FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
@@ -284,16 +270,6 @@ namespace CodeNav.Helpers
             }
 
             return (control as CodeViewUserControlTop).CodeItemsControl;
-        }
-
-        public static void SetSelectedIndex(List<CodeItem> items)
-        {
-            Parallel.ForEach(items, item => 
-            {
-                var groupItem = item as CodeDepthGroupItem;
-                var selectedItem = groupItem.Members.LastOrDefault(i => i.IsHighlighted);
-                groupItem.SelectedIndex = selectedItem != null ? groupItem.Members.IndexOf(selectedItem) : 0;
-            });
         }
     }
 }

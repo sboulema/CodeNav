@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CodeNav.Models.ViewModels;
+using System.Collections.Generic;
 
 namespace CodeNav.Models
 {

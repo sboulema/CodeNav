@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 
 namespace CodeNav.Helpers
 {

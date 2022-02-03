@@ -1,5 +1,5 @@
 ﻿using CodeNav.Helpers;
-using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using CodeNav.Helpers;
-using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using CodeNav.Windows;
 
 namespace CodeNav.Controls

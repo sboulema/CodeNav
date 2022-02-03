@@ -1,5 +1,6 @@
 ﻿using CodeNav.Mappers;
 using CodeNav.Models;
+using CodeNav.Models.ViewModels;
 using Community.VisualStudio.Toolkit;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -186,11 +187,11 @@ namespace CodeNav.Helpers
                 codeDocumentViewModel.SortOrder = (SortOrderEnum)general.SortOrder;
                 SortHelper.Sort(codeItems, (SortOrderEnum)general.SortOrder);
 
-                // Set currently active codeitem
-                HighlightHelper.SetForeground(codeItems);
-
                 // Set the new list of codeitems as DataContext
                 codeDocumentViewModel.CodeDocument = codeItems;
+
+                // Apply highlights
+                HighlightHelper.UnHighlight(codeDocumentViewModel);
 
                 // Apply current visibility settings to the document
                 VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel);
