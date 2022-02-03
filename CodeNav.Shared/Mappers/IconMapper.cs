@@ -49,6 +49,7 @@ namespace CodeNav.Mappers
                     monikerString = $"Property{accessString}";
                     break;
                 case CodeItemKindEnum.Struct:
+                case CodeItemKindEnum.Record:
                     monikerString = $"Structure{accessString}";
                     break;
                 case CodeItemKindEnum.Variable:

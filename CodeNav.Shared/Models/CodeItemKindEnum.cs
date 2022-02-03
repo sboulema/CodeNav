@@ -28,6 +28,7 @@
         PageRule,
         NamespaceRule,
         MediaRule,
-        FontFaceRule
+        FontFaceRule,
+        Record
     }
 }

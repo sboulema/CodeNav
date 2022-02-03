@@ -210,6 +210,8 @@ namespace CodeNav.Mappers
                 case SyntaxKind.FileScopedNamespaceDeclaration:
                 case SyntaxKind.NamespaceDeclaration:
                     return NamespaceMapper.MapNamespace(member as BaseNamespaceDeclarationSyntax, control, semanticModel, tree);
+                case SyntaxKind.RecordDeclaration:
+                    return RecordMapper.MapRecord(member as RecordDeclarationSyntax, control, semanticModel, tree);
                 #else
                 case SyntaxKind.NamespaceDeclaration:
                 return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, control, semanticModel, tree);
