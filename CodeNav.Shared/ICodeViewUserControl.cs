@@ -27,5 +27,7 @@ namespace CodeNav
         IDisposable TextContentChangedSubscription { get; set; }
 
         IDisposable UpdateWhileTypingSubscription { get; set; }
+
+        IDisposable FileActionOccuredSubscription { get; set; }
     }
 }

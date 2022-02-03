@@ -18,6 +18,20 @@ namespace CodeNav.Helpers
 {
     public static class DocumentHelper
     {
+        public static async Task<DocumentView> GetDocumentView()
+        {
+            try
+            {
+                return await VS.Documents.GetActiveDocumentViewAsync();
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return null;
+        }
+
         public static async Task<IWpfTextView> GetTextView()
         {
             try

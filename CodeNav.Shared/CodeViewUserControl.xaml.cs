@@ -25,6 +25,7 @@ namespace CodeNav
         public IDisposable CaretPositionChangedSubscription { get; set; }
         public IDisposable TextContentChangedSubscription { get; set; }
         public IDisposable UpdateWhileTypingSubscription { get; set; }
+        public IDisposable FileActionOccuredSubscription { get; set; }
 
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
@@ -40,15 +41,27 @@ namespace CodeNav
 
             VSColorTheme.ThemeChanged += VSColorTheme_ThemeChanged;
             VS.Events.DocumentEvents.Opened += DocumentEvents_Opened;
-            VS.Events.DocumentEvents.Saved += DocumentEvents_Saved;
             VS.Events.WindowEvents.ActiveFrameChanged += WindowEvents_ActiveFrameChanged;
         }
 
         public async Task RegisterDocumentEvents()
         {
-            var textView = await DocumentHelper.GetTextView();
-            var caret = textView?.Caret;
-            var textBuffer2 = textView?.TextBuffer as ITextBuffer2;
+            var documentView = await DocumentHelper.GetDocumentView();
+            var document = documentView?.Document;
+            var caret = documentView?.TextView?.Caret;
+            var textBuffer2 = documentView?.TextView?.TextBuffer as ITextBuffer2;
+
+            // Subscribe to Document save events
+            if (document != null && FileActionOccuredSubscription == null)
+            {
+                FileActionOccuredSubscription = Observable
+                    .FromEventPattern<TextDocumentFileActionEventArgs>(
+                        h => document.FileActionOccurred += h,
+                        h => document.FileActionOccurred -= h)
+                    .Select(x => x.EventArgs)
+                    .Where(e => e.FileActionType == FileActionTypes.ContentSavedToDisk)
+                    .Subscribe(e => DocumentEvents_Saved());
+            }
 
             // Subscribe to Cursor move event
             if (caret != null && !General.Instance.DisableHighlight && CaretPositionChangedSubscription == null)
@@ -111,7 +124,7 @@ namespace CodeNav
         private void WindowEvents_ActiveFrameChanged(ActiveFrameChangeEventArgs obj)
             => WindowChangedEvent(obj).FireAndForget();
 
-        private void DocumentEvents_Saved(string e)
+        private void DocumentEvents_Saved()
         {
             UpdateDocument();
             SolutionStorageHelper.SaveToSolutionStorage(CodeDocumentViewModel).FireAndForget();

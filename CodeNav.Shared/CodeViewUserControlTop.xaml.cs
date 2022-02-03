@@ -20,6 +20,7 @@ namespace CodeNav
         public IDisposable CaretPositionChangedSubscription { get; set; }
         public IDisposable TextContentChangedSubscription { get; set; }
         public IDisposable UpdateWhileTypingSubscription { get; set; }
+        public IDisposable FileActionOccuredSubscription { get; set; }
 
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
