@@ -26,7 +26,13 @@ namespace CodeNav.Helpers
         {
             try
             {
-                var item = FindCodeItem(model.CodeDocument, span);
+                var item = model
+                    .CodeDocument
+                    .Flatten()
+                    .FilterNull()
+                    .Where(i => !(i is IMembers))
+                    .FirstOrDefault(i => i.Span.Contains(span.Start));
+
                 AddItemToHistory(item);
             }
             catch (Exception e)
@@ -140,24 +146,6 @@ namespace CodeNav.Helpers
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
             SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel).FireAndForget();
             item.Control.UpdateDocument();
-        }
-
-        private static CodeItem FindCodeItem(IEnumerable<CodeItem> items, Span span)
-        {
-            foreach (var item in items)
-            {
-                if (item.Span.Contains(span.Start) && !(item is IMembers))
-                {
-                    return item;
-                }
-
-                if (item is IMembers hasMembersItem)
-                {
-                    return FindCodeItem(hasMembersItem.Members, span);
-                }
-            }
-
-            return null;
         }
 
         public static async Task<SynchronizedCollection<CodeItem>> LoadHistoryItemsFromStorage(string filePath)

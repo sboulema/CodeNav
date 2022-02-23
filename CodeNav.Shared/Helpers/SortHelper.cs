@@ -29,9 +29,9 @@ namespace CodeNav.Helpers
 
             foreach (var item in document)
             {
-                if (item is CodeClassItem)
+                if (item is CodeClassItem codeClassItem)
                 {
-                    (item as CodeClassItem).Members = SortByName((item as CodeClassItem).Members);
+                    codeClassItem.Members = SortByName(codeClassItem.Members);
                 }
                 if (item is CodeNamespaceItem)
                 {

@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using CodeNav.Extensions;
 using CodeNav.Models;
 using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
 {
@@ -37,7 +34,7 @@ namespace CodeNav.Helpers
             try
             {
                 UnHighlight(codeDocumentViewModel);
-                Highlight(codeDocumentViewModel, lineNumber, backgroundColor).FireAndForget();
+                Highlight(codeDocumentViewModel, lineNumber, backgroundColor);
             }
             catch (Exception e)
             {
@@ -79,11 +76,9 @@ namespace CodeNav.Helpers
         /// </remarks>
         /// <param name="document">Code document</param>
         /// <param name="ids">List of unique code item ids</param>
-        private static async Task Highlight(CodeDocumentViewModel codeDocumentViewModel,
+        private static void Highlight(CodeDocumentViewModel codeDocumentViewModel,
             int lineNumber, Color backgroundColor)
         {
-            FrameworkElement frameworkElement = null;
-
             var itemsToHighlight = codeDocumentViewModel
                 .CodeDocument
                 .Flatten()
@@ -102,101 +97,7 @@ namespace CodeNav.Helpers
                 {
                     classItem.BorderColor = _borderColor;
                 }
-
-                frameworkElement = await FindItemContainer(item, frameworkElement, codeDocumentViewModel);
             }
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            frameworkElement?.BringIntoView();
-
-            //var smallestCodeItem = itemsToHighlight
-            //    .OrderBy(item => (lineNumber - item?.StartLine) + (item?.EndLine - lineNumber))
-            //    .FirstOrDefault();
-
-            //var codeItem = FindCodeItem(codeDocumentViewModel.CodeDocument, smallestCodeItem);
-
-            //await BringIntoView(smallestCodeItem);
-
-            //await BringIntoView(codeItem);
-        }
-
-        /// <summary>
-        /// Find frameworkElement belonging to a code item
-        /// </summary>
-        /// <remarks>
-        /// Must be called recursively to gradually move the frameworkElement close to the highlighted code item
-        /// </remarks>
-        /// <param name="frameworkElement">FrameworkElement to get the item container from</param>
-        /// <param name="item">Code item of which whe want to find the container</param>
-        /// <returns></returns>
-        private static async Task<FrameworkElement> FindItemContainer(CodeItem item,
-            FrameworkElement frameworkElement, CodeDocumentViewModel codeDocumentViewModel)
-        {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            if (item.Control == null)
-            {
-                return null;
-            }
-
-            if (frameworkElement == null)
-            {
-                frameworkElement = GetCodeItemsControl(item.Control);
-            }
-
-            if (frameworkElement == null)
-            {
-                return null;
-            }
-
-            var itemContainer = (frameworkElement as ItemsControl).ItemContainerGenerator.ContainerFromItem(item);
-            var itemContainerSubItemsControl = await FindVisualChild<ItemsControl>(itemContainer);
-
-            if (itemContainerSubItemsControl != null)
-            {
-                return itemContainerSubItemsControl;
-            }
-
-            if ((itemContainer as ContentPresenter)?.Content == item)
-            {
-                return itemContainer as FrameworkElement;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Based on a code item find the same code item within the view model
-        /// </summary>
-        /// <remarks>
-        /// We need to find the exact code item in the view model nested list,
-        /// else we cannot find its WPF UI ItemContainer
-        /// </remarks>
-        /// <param name="codeItems">List of code items</param>
-        /// <param name="codeItem">code item to be found</param>
-        /// <returns></returns>
-        private static CodeItem FindCodeItem(IEnumerable<CodeItem> codeItems, CodeItem codeItem)
-        {
-            foreach (var item in codeItems)
-            {
-                if (item.Id == codeItem.Id)
-                {
-                    return item;
-                }
-
-                if (item is IMembers hasMembersItem && hasMembersItem.Members.Any())
-                {
-                    var found = FindCodeItem(hasMembersItem.Members, codeItem);
-
-                    if (found != null)
-                    {
-                        return found;
-                    }
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -235,41 +136,6 @@ namespace CodeNav.Helpers
             }
 
             return ColorHelper.ToMediaColor(highlightBackgroundColor);
-        }
-
-        public static async Task<T> FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj == null)
-            {
-                return null;
-            }
-
-            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(depObj, i);
-                if (child != null && child is T t)
-                {
-                    return t;
-                }
-
-                var childItem = await FindVisualChild<T>(child);
-                if (childItem != null)
-                {
-                    return childItem;
-                }
-            }
-
-            return null;
-        }
-
-        private static FrameworkElement GetCodeItemsControl(ICodeViewUserControl control)
-        {
-            if (control is CodeViewUserControl)
-            {
-                return (control as CodeViewUserControl).CodeItemsControl;
-            }
-
-            return (control as CodeViewUserControlTop).CodeItemsControl;
         }
     }
 }

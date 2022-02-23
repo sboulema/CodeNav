@@ -1,4 +1,4 @@
-﻿using EnvDTE;
+﻿using Community.VisualStudio.Toolkit;
 using Microsoft.ApplicationInsights;
 using Newtonsoft.Json;
 using System;
@@ -14,7 +14,6 @@ namespace CodeNav.Helpers
     {
         private static TelemetryClient _client;
         private const string InstrumentationKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
-        public static _DTE Dte;
 
         public static void GetClient()
         {
@@ -24,11 +23,8 @@ namespace CodeNav.Helpers
             _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
 
             var enc = Encoding.UTF8.GetBytes(Environment.UserName + Environment.MachineName);
-            using (var crypto = new MD5CryptoServiceProvider())
-            {
-                var hash = crypto.ComputeHash(enc);
-                _client.Context.User.Id = Convert.ToBase64String(hash);
-            }
+            var hash = new MD5CryptoServiceProvider().ComputeHash(enc);
+            _client.Context.User.Id = Convert.ToBase64String(hash);
         }
 
         public static void Log(string message, Exception exception = null, 
@@ -39,13 +35,18 @@ namespace CodeNav.Helpers
                 GetClient();
             }
 
+            if (_client == null)
+            {
+                return;
+            }
+
             var properties = new Dictionary<string, string>
             {
                 { "version", GetExecutingAssemblyVersion().ToString() },
                 { "message", JsonConvert.SerializeObject(message) },
                 { "language", language },
                 { "additional", JsonConvert.SerializeObject(additional) },
-                { "vsVersion", Dte?.Version ?? string.Empty }
+                { "vsVersion", VS.Shell.GetVsVersionAsync().Result?.ToString() ?? string.Empty }
             };
 
             if (exception == null)

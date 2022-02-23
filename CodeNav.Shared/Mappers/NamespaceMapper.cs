@@ -1,4 +1,5 @@
-﻿using CodeNav.Helpers;
+﻿using CodeNav.Extensions;
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -42,7 +43,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (FindHelper.FindCodeItem(item.Members, region.Id) == null)
+                    if (item.Members.Flatten().FilterNull().Any(i => i.Id == region.Id) == false)
                     {
                         item.Members.Add(region);
                     }                   
@@ -85,7 +86,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (FindHelper.FindCodeItem(item.Members, region.Id) == null)
+                    if (item.Members.Flatten().FilterNull().Any(i => i.Id == region.Id) == false)
                     {
                         item.Members.Add(region);
                     }
@@ -127,7 +128,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (FindHelper.FindCodeItem(item.Members, region.Id) == null)
+                    if (item.Members.Flatten().FilterNull().Any(i => i.Id == region.Id) == false)
                     {
                         item.Members.Add(region);
                     }

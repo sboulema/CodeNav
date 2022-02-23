@@ -93,7 +93,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CodeItemExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ColorHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DocumentHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FindHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HighlightHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HistoryHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LanguageHelper.cs" />
