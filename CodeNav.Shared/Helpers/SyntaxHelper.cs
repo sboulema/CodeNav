@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.VisualBasic;
 using System;
@@ -7,7 +9,7 @@ namespace CodeNav.Shared.Helpers
 {
     public static class SyntaxHelper
     {
-        public static SemanticModel GetCSharpSemanticModel(SyntaxTree tree)
+        public static SemanticModel? GetCSharpSemanticModel(SyntaxTree tree)
         {
             SemanticModel semanticModel;
 
@@ -25,7 +27,7 @@ namespace CodeNav.Shared.Helpers
             return semanticModel;
         }
 
-        public static SemanticModel GetVBSemanticModel(SyntaxTree tree)
+        public static SemanticModel? GetVBSemanticModel(SyntaxTree tree)
         {
             SemanticModel semanticModel;
 

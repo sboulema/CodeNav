@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
@@ -10,7 +12,7 @@ namespace CodeNav.Windows
 {
     public partial class FilterWindow : DialogWindow
     {
-        private DataGridCell _cell;
+        private DataGridCell? _cell;
 
         public FilterWindow()
         {
@@ -27,10 +29,15 @@ namespace CodeNav.Windows
             };
         }
 
-        private FilterWindowViewModel ViewModel => DataContext as FilterWindowViewModel;
+        private FilterWindowViewModel? ViewModel => DataContext as FilterWindowViewModel;
 
         private void OkClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             SettingsHelper.SaveFilterRules(ViewModel.FilterRules);
 
             Close();
@@ -43,62 +50,75 @@ namespace CodeNav.Windows
 
         private void AddClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             ViewModel.FilterRules.Add(new FilterRule());
         }
 
         private void DeleteClick(object sender, RoutedEventArgs e)
         {
-            if (_cell == null)
+            if (_cell == null ||
+                ViewModel == null ||
+                !(_cell.DataContext is FilterRule filterRule))
             {
                 return;
             }
 
-            ViewModel.FilterRules.Remove(_cell.DataContext as FilterRule);
+            ViewModel.FilterRules.Remove(filterRule);
         }
 
         private void DataGrid_Selected(object sender, RoutedEventArgs e)
         {
-            if (e.OriginalSource.GetType() == typeof(DataGridCell))
+            if (e.OriginalSource.GetType() != typeof(DataGridCell) ||
+                !(sender is DataGrid grid))
             {
-                var grid = sender as DataGrid;
-                grid.BeginEdit(e);
+                return;
+            }
 
-                var cell = e.OriginalSource as DataGridCell;
+            grid.BeginEdit(e);
 
-                _cell = cell;
+            var cell = e.OriginalSource as DataGridCell;
 
-                var comboBox = WpfHelper
-                    .FindChildrenByType<ComboBox>(cell)
-                    .FirstOrDefault();
+            _cell = cell;
 
-                if (comboBox != null)
-                {
-                    comboBox.IsDropDownOpen = true;
-                }
+            var comboBox = WpfHelper
+                .FindChildrenByType<ComboBox>(cell)
+                .FirstOrDefault();
 
-                var checkBox = WpfHelper
-                    .FindChildrenByType<CheckBox>(cell)
-                    .FirstOrDefault();
+            if (comboBox != null)
+            {
+                comboBox.IsDropDownOpen = true;
+            }
 
-                if (checkBox != null)
-                {
-                    checkBox.IsChecked = !checkBox.IsChecked;
-                }
+            var checkBox = WpfHelper
+                .FindChildrenByType<CheckBox>(cell)
+                .FirstOrDefault();
 
-                var textBox = WpfHelper
-                    .FindChildrenByType<TextBox>(cell)
-                    .FirstOrDefault();
+            if (checkBox != null)
+            {
+                checkBox.IsChecked = !checkBox.IsChecked;
+            }
 
-                if (textBox != null)
-                {
-                    textBox.SelectAll();
-                }
+            var textBox = WpfHelper
+                .FindChildrenByType<TextBox>(cell)
+                .FirstOrDefault();
+
+            if (textBox != null)
+            {
+                textBox.SelectAll();
             }
         }
 
         private void DataGrid_Unloaded(object sender, RoutedEventArgs e)
         {
-            var grid = sender as DataGrid;
+            if (!(sender is DataGrid grid))
+            {
+                return;
+            }
+
             grid.CancelEdit(DataGridEditingUnit.Row);
         }
     }

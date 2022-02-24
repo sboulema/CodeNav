@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,7 +10,7 @@ namespace CodeNav.Mappers
     public static class RecordMapper
     {
         #if VS2022
-        public static CodeFunctionItem MapRecord(RecordDeclarationSyntax member,
+        public static CodeFunctionItem? MapRecord(RecordDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
             if (member == null)

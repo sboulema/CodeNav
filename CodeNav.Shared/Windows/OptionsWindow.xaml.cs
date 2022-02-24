@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
@@ -33,10 +35,15 @@ namespace CodeNav.Windows
             };
         }
 
-        private OptionsWindowViewModel ViewModel => DataContext as OptionsWindowViewModel;
+        private OptionsWindowViewModel? ViewModel => DataContext as OptionsWindowViewModel;
 
         private void ShowFontDialog(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             var fontDialog = new FontDialog
             {
                 Font = ViewModel.Font
@@ -50,6 +57,11 @@ namespace CodeNav.Windows
 
         private void ShowHighlightColorDialog(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             var colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -59,6 +71,11 @@ namespace CodeNav.Windows
 
         private void ShowBackgroundColorDialog(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             var colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -68,6 +85,12 @@ namespace CodeNav.Windows
 
         private void OkClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null ||
+                ViewModel.Font == null)
+            {
+                return;
+            }
+
             General.Instance.MarginSide = (int)ViewModel.MarginSide;
             General.Instance.FontFamilyName = ViewModel.Font.FontFamily.Name;
             General.Instance.FontSize = ViewModel.Font.Size;

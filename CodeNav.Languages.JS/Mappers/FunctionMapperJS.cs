@@ -1,4 +1,7 @@
-﻿using CodeNav.Mappers;
+﻿#nullable enable
+
+using CodeNav.Extensions;
+using CodeNav.Mappers;
 using CodeNav.Models;
 using System;
 using System.Collections.Generic;
@@ -10,60 +13,88 @@ namespace CodeNav.Languages.JS.Mappers
 {
     public static class FunctionMapperJS
     {
-        public static List<CodeItem> MapFunction(FunctionDeclaration function, ICodeViewUserControl control)
+        public static List<CodeItem> MapFunction(FunctionDeclaration? function, ICodeViewUserControl? control)
         {
+            if (function == null)
+            {
+                return new List<CodeItem>();
+            }
+
             return MapFunction(function, function.Parameters, function.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl control)
+        public static List<CodeItem> MapFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl? control)
         {
-            var function = declarator.Initializer as FunctionExpression;
+            if (!(declarator.Initializer is FunctionExpression function))
+            {
+                return new List<CodeItem>();
+            }
 
             return MapFunction(function, function.Parameters, declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunctionExpression(FunctionExpression function, ICodeViewUserControl control)
+        public static List<CodeItem> MapFunctionExpression(FunctionExpression? function, ICodeViewUserControl? control)
         {
+            if (function == null)
+            {
+                return new List<CodeItem>();
+            }
+
             return MapFunction(function, function.Parameters, function.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapArrowFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl control)
+        public static List<CodeItem> MapArrowFunctionExpression(VariableDeclaration declarator, ICodeViewUserControl? control)
         {
-            var function = declarator.Initializer as ArrowFunction;
+            if (!(declarator.Initializer is ArrowFunction function))
+            {
+                return new List<CodeItem>();
+            }
 
             return MapFunction(function, function.Parameters, declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapNewExpression(VariableDeclaration declarator, ICodeViewUserControl control)
+        public static List<CodeItem> MapNewExpression(VariableDeclaration declarator, ICodeViewUserControl? control)
         {
-            var expression = declarator.Initializer as NewExpression;
+            if (!(declarator.Initializer is NewExpression expression))
+            {
+                return new List<CodeItem>();
+            }
 
-            if (!expression.IdentifierStr?.Equals("Function") ?? false) return null;
+            if (!expression.IdentifierStr?.Equals("Function") ?? false)
+            {
+                return new List<CodeItem>();
+            }
 
             return MapFunction(expression, new NodeArray<ParameterDeclaration>(), declarator.IdentifierStr, control);
         }
 
-        public static List<CodeItem> MapFunction(Node function, NodeArray<ParameterDeclaration> parameters, string id, ICodeViewUserControl control)
+        public static List<CodeItem> MapFunction(Node? function,
+            NodeArray<ParameterDeclaration>? parameters, string id, ICodeViewUserControl? control)
         {
-            if (function == null) return null;
+            if (function == null)
+            {
+                return new List<CodeItem>();
+            }
 
-            List<CodeItem> children;
+            List<CodeItem?> children;
 
             try
             {
-                children = function.Children
-                .FirstOrDefault(c => c.Kind == SyntaxKind.Block)?.Children
-                .SelectMany(SyntaxMapperJS.MapMember)
-                .ToList();
+                children = function
+                    .Children
+                    .FirstOrDefault(c => c.Kind == SyntaxKind.Block)?.Children
+                    .SelectMany(SyntaxMapperJS.MapMember)
+                    .Cast<CodeItem?>()
+                    .ToList() ?? new List<CodeItem?>();
             }
             catch (NullReferenceException)
             {
                 return new List<CodeItem>();
             }
 
-            if (children != null && children.Any())
+            if (children.Any())
             {
-                SyntaxMapper.FilterNullItems(children);
+                children.FilterNullItems();
 
                 var item = BaseMapperJS.MapBase<CodeClassItem>(function, id, control);
 
@@ -71,11 +102,11 @@ namespace CodeNav.Languages.JS.Mappers
 
                 item.Kind = CodeItemKindEnum.Method;
                 item.Parameters = $"({string.Join(", ", parameters.Select(p => p.IdentifierStr))})";
-                item.Tooltip = TooltipMapper.Map(item.Access, null, item.Name, item.Parameters);
+                item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
                 item.Id = IdMapper.MapId(item.FullName, parameters);
                 item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
-                item.Members = children;
+                item.Members = children.Cast<CodeItem>().ToList();
 
                 return new List<CodeItem> { item };
             }
@@ -84,7 +115,7 @@ namespace CodeNav.Languages.JS.Mappers
 
             functionItem.Kind = CodeItemKindEnum.Method;
             functionItem.Parameters = $"({string.Join(", ", parameters.Select(p => p.IdentifierStr))})";
-            functionItem.Tooltip = TooltipMapper.Map(functionItem.Access, null, functionItem.Name, functionItem.Parameters);
+            functionItem.Tooltip = TooltipMapper.Map(functionItem.Access, string.Empty, functionItem.Name, functionItem.Parameters);
             functionItem.Id = IdMapper.MapId(functionItem.FullName, parameters);
             functionItem.Moniker = IconMapper.MapMoniker(functionItem.Kind, functionItem.Access);
 

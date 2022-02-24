@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
@@ -22,7 +24,7 @@ namespace CodeNav.Helpers
             set => _useXmlComments = value;
         }
 
-        private static Font _font;
+        private static Font? _font;
         public static Font Font
         {
             get
@@ -36,7 +38,7 @@ namespace CodeNav.Helpers
             set => _font = value;
         }
 
-        private static ObservableCollection<FilterRule> _filterRules;
+        private static ObservableCollection<FilterRule>? _filterRules;
         public static ObservableCollection<FilterRule> FilterRules
         {
             get => LoadFilterRules();

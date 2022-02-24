@@ -124,7 +124,7 @@ namespace CodeNav.Mappers
         /// <returns></returns>
         private static CodeItemAccessEnum MapDefaultAccess(SyntaxNode source)
         {
-            if (source.Parent.Kind() == SyntaxKind.CompilationUnit)
+            if (source.Parent.IsKind(SyntaxKind.CompilationUnit))
             {
                 switch (source.Kind())
                 {

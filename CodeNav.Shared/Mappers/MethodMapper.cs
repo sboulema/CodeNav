@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,20 +14,35 @@ namespace CodeNav.Mappers
 {
     public static class MethodMapper
     {
-        public static CodeItem MapMethod(MethodDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapMethod(MethodDeclarationSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            return MapMethod(member, member.Identifier, member.Modifiers, member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+            if (member == null ||
+                !(member.ReturnType is ITypeSymbol returnTypeSymbol))
+            {
+                return null;
+            }
+
+            return MapMethod(member, member.Identifier, member.Modifiers,
+                member.Body, returnTypeSymbol, member.ParameterList,
                CodeItemKindEnum.Method, control, semanticModel);
         }
 
-        public static CodeItem MapMethod(LocalFunctionStatementSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapMethod(LocalFunctionStatementSyntax member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            return MapMethod(member, member.Identifier, member.Modifiers, member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+            if (!(member.ReturnType is ITypeSymbol returnTypeSymbol))
+            {
+                return null;
+            }
+
+            return MapMethod(member, member.Identifier, member.Modifiers,
+                member.Body, returnTypeSymbol, member.ParameterList,
                CodeItemKindEnum.LocalFunction, control, semanticModel);
         }
 
-        private static CodeItem MapMethod(SyntaxNode node, SyntaxToken identifier,
-            SyntaxTokenList modifiers, BlockSyntax body, ITypeSymbol returnType,
+        private static CodeItem? MapMethod(SyntaxNode node, SyntaxToken identifier,
+            SyntaxTokenList modifiers, BlockSyntax? body, ITypeSymbol returnType,
             ParameterListSyntax parameterList, CodeItemKindEnum kind,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
@@ -68,9 +85,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapMethod(VisualBasicSyntax.MethodStatementSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapMethod(VisualBasicSyntax.MethodStatementSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
 
@@ -86,9 +107,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapMethod(VisualBasicSyntax.MethodBlockSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapMethod(VisualBasicSyntax.MethodBlockSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             CodeItem item;
 
@@ -129,9 +154,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapConstructor(VisualBasicSyntax.ConstructorBlockSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapConstructor(VisualBasicSyntax.ConstructorBlockSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.SubNewStatement.NewKeyword, member.SubNewStatement.Modifiers, control, semanticModel);
             item.Parameters = ParameterMapper.MapParameters(member.SubNewStatement.ParameterList, semanticModel);
@@ -144,9 +173,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapConstructor(ConstructorDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapConstructor(ConstructorDeclarationSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Parameters = ParameterMapper.MapParameters(member.ParameterList);

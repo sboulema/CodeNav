@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,17 +26,21 @@ namespace CodeNav.Mappers
         {
             var implementedInterfaces = new List<CodeImplementedInterfaceItem>();
 
-            INamedTypeSymbol classSymbol;
+            ISymbol? symbol;
             try
             {
-                classSymbol = semanticModel.GetDeclaredSymbol(member) as INamedTypeSymbol;
+                symbol = semanticModel.GetDeclaredSymbol(member);
             }
             catch (Exception)
             {
                 return implementedInterfaces;
             }
 
-            if (classSymbol == null) return implementedInterfaces;
+            if (symbol == null ||
+                !(symbol is INamedTypeSymbol classSymbol))
+            {
+                return implementedInterfaces;
+            }
 
             var interfacesList = new List<INamedTypeSymbol>();
             GetInterfaces(interfacesList, classSymbol.Interfaces);
@@ -105,8 +111,16 @@ namespace CodeNav.Mappers
                 var reference = implementation.DeclaringSyntaxReferences.First();
                 var declarationSyntax = reference.GetSyntax();
 
-                var interfaceMember = SyntaxMapper.MapMember(declarationSyntax as MemberDeclarationSyntax, tree, semanticModel, control);
-                if (interfaceMember == null) continue;
+                if (!(declarationSyntax is MemberDeclarationSyntax memberDeclaration))
+                {
+                    continue;
+                }
+
+                var interfaceMember = SyntaxMapper.MapMember(memberDeclaration, tree, semanticModel, control);
+                if (interfaceMember == null)
+                {
+                    continue;
+                }
 
                 interfaceMember.OverlayMoniker = KnownMonikers.InterfacePublic;
                 item.Members.Add(interfaceMember);
@@ -121,10 +135,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeInterfaceItem MapInterface(InterfaceDeclarationSyntax member,
+        public static CodeInterfaceItem? MapInterface(InterfaceDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Interface;
@@ -152,7 +169,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (region?.Members.Any() == true)
                     {
                         item.Members.Add(region);
                     }
@@ -162,10 +179,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeInterfaceItem MapInterface(VisualBasicSyntax.InterfaceBlockSyntax member,
+        public static CodeInterfaceItem? MapInterface(VisualBasicSyntax.InterfaceBlockSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.InterfaceStatement.Identifier, 
                 member.InterfaceStatement.Modifiers, control, semanticModel);
@@ -194,7 +214,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (region?.Members.Any() == true)
                     {
                         item.Members.Add(region);
                     }

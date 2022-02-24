@@ -1,15 +1,17 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using System;
 
 namespace CodeNav.Helpers
 {
     public static class SymbolHelper
     {
-        public static T GetSymbol<T>(SemanticModel semanticModel, SyntaxNode member) 
+        public static T? GetSymbol<T>(SemanticModel semanticModel, SyntaxNode member) 
         {
             try
             {
-                return (T)semanticModel.GetDeclaredSymbol(member);
+                return (T?)semanticModel.GetDeclaredSymbol(member);
             }
             catch (ArgumentException e)
             {

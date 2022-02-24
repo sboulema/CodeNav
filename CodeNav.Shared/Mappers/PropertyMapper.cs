@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,10 +13,13 @@ namespace CodeNav.Mappers
 {
     public class PropertyMapper
     {
-        public static CodePropertyItem MapProperty(PropertyDeclarationSyntax member,
+        public static CodePropertyItem? MapProperty(PropertyDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Type = TypeMapper.Map(member.Type);
@@ -49,10 +54,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodePropertyItem MapProperty(VisualBasicSyntax.PropertyBlockSyntax member,
+        public static CodePropertyItem? MapProperty(VisualBasicSyntax.PropertyBlockSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodePropertyItem>(member, member.PropertyStatement.Identifier, 
                 member.PropertyStatement.Modifiers, control, semanticModel);

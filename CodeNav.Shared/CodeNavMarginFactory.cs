@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Composition;
+﻿#nullable enable
+
+using System.ComponentModel.Composition;
 using CodeNav.Helpers;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -18,7 +20,7 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]  // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavLeftFactory : IWpfTextViewMarginProvider
     {
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        public IWpfTextViewMargin? CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             return CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Left);
         }
@@ -36,7 +38,7 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]   // This is to prevent the margin from loading in the diff view
     internal sealed class CodeNavRightFactory : IWpfTextViewMarginProvider
     {
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        public IWpfTextViewMargin? CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             return CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Right);
         }
@@ -54,7 +56,7 @@ namespace CodeNav
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class CodeNavTopFactory : IWpfTextViewMarginProvider
     {
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        public IWpfTextViewMargin? CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
             var margin = CodeNavFactory.CreateMargin(wpfTextViewHost, MarginSideEnum.Top);
             new NavBarOverrider(margin as CodeNavMargin);
@@ -65,7 +67,7 @@ namespace CodeNav
 
     internal static class CodeNavFactory
     {
-        public static IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, MarginSideEnum side)
+        public static IWpfTextViewMargin? CreateMargin(IWpfTextViewHost wpfTextViewHost, MarginSideEnum side)
         {
             if ((MarginSideEnum)General.Instance.MarginSide != side)
             {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using CodeNav.Helpers;
 using System.Runtime.InteropServices;
 using Community.VisualStudio.Toolkit;
@@ -12,7 +14,7 @@ namespace CodeNav.ToolWindow
 {
     public class CodeNavToolWindow : BaseToolWindow<CodeNavToolWindow>
     {
-        private CodeViewUserControl _control;
+        private CodeViewUserControl? _control;
 
         public override string GetTitle(int toolWindowId) => "CodeNav";
 
@@ -20,7 +22,7 @@ namespace CodeNav.ToolWindow
 
         public override async Task<FrameworkElement> CreateAsync(int toolWindowId, CancellationToken cancellationToken)
         {
-            await Package.JoinableTaskFactory.SwitchToMainThreadAsync();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             _control = new CodeViewUserControl();
 

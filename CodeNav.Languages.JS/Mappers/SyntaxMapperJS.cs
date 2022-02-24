@@ -1,4 +1,6 @@
-﻿using CodeNav.Mappers;
+﻿#nullable enable
+
+using CodeNav.Mappers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
@@ -12,25 +14,26 @@ namespace CodeNav.Languages.JS.Mappers
 {
     public static class SyntaxMapperJS
     {
-        private static ICodeViewUserControl _control;
+        private static ICodeViewUserControl? _control;
 
-        public static List<CodeItem> Map(Document document, ICodeViewUserControl control)
+        public static List<CodeItem?> Map(Document document, ICodeViewUserControl control)
             => Map(document.FilePath, control);
 
-        public static List<CodeItem> Map(string filePath, ICodeViewUserControl control)
+        public static List<CodeItem?> Map(string? filePath, ICodeViewUserControl control)
         {
             _control = control;
 
-            if (!File.Exists(filePath))
+            if (string.IsNullOrEmpty(filePath) ||
+                !File.Exists(filePath))
             {
-                return new List<CodeItem>();
+                return new List<CodeItem?>();
             }
 
             var jsString = File.ReadAllText(filePath);
 
             var ast = new TypeScriptAST(jsString, filePath);
 
-            return new List<CodeItem>
+            return new List<CodeItem?>
             {
                 new CodeNamespaceItem
                 {
@@ -40,7 +43,7 @@ namespace CodeNav.Languages.JS.Mappers
                     {
                         new CodeClassItem
                         {
-                            Id = filePath,
+                            Id = filePath!,
                             Kind = CodeItemKindEnum.Class,
                             Access = CodeItemAccessEnum.Public,
                             Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Class, CodeItemAccessEnum.Public),
@@ -94,17 +97,33 @@ namespace CodeNav.Languages.JS.Mappers
             return members.ToList();
         }
 
-        private static List<CodeItem> MapBinaryExpression(BinaryExpression expression)
+        private static List<CodeItem> MapBinaryExpression(BinaryExpression? expression)
         {
-            if (expression.Right.Kind != SyntaxKind.FunctionExpression) return new List<CodeItem>();
+            if (expression == null)
+            {
+                return new List<CodeItem>();
+            }
 
-            var function = expression.Right as FunctionExpression;
+            if (expression.Right.Kind != SyntaxKind.FunctionExpression)
+            {
+                return new List<CodeItem>();
+            }
+
+            if (!(expression.Right is FunctionExpression function))
+            {
+                return new List<CodeItem>();
+            }
 
             return FunctionMapperJS.MapFunction(function, function.Parameters, expression.First.IdentifierStr, _control);
         }
 
-        private static List<CodeItem> MapVariable(VariableStatement variable)
+        private static List<CodeItem> MapVariable(VariableStatement? variable)
         {
+            if (variable == null)
+            {
+                return new List<CodeItem>();
+            }
+
             var declarator = variable.DeclarationList.Declarations.First();
 
             if (declarator.Initializer != null)
@@ -122,7 +141,10 @@ namespace CodeNav.Languages.JS.Mappers
                 }
             }
 
-            if (variable.Parent.Kind != SyntaxKind.SourceFile) return new List<CodeItem>();
+            if (variable.Parent.Kind != SyntaxKind.SourceFile)
+            {
+                return new List<CodeItem>();
+            }
 
             var item = BaseMapperJS.MapBase<CodeItem>(variable, declarator.IdentifierStr, _control);
             item.Kind = CodeItemKindEnum.Variable;

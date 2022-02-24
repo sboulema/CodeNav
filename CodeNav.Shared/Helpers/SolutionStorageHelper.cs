@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using CodeNav.Models.ViewModels;
 using Community.VisualStudio.Toolkit;
 using Newtonsoft.Json;
@@ -14,24 +16,33 @@ namespace CodeNav.Helpers
     {
         private const string ApplicationName = "CodeNav";
 
-        public static async Task SaveToSolutionStorage(CodeDocumentViewModel codeDocumentViewModel)
+        public static async Task SaveToSolutionStorage(CodeDocumentViewModel? codeDocumentViewModel)
         {
+            if (codeDocumentViewModel == null)
+            {
+                return;
+            }
+
             var solutionStorageModel = await Load<SolutionStorageModel>();
 
-            if (solutionStorageModel.Documents == null)
+            if (solutionStorageModel == null)
             {
-                solutionStorageModel.Documents = new List<CodeDocumentViewModel>();
+                solutionStorageModel = new SolutionStorageModel();
             }
 
             var storageItem = await GetStorageItem(codeDocumentViewModel.FilePath);
-            solutionStorageModel.Documents.Remove(storageItem);
+
+            if (storageItem != null)
+            {
+                solutionStorageModel.Documents.Remove(storageItem);
+            }
 
             solutionStorageModel.Documents.Add(codeDocumentViewModel);
 
             await Save(solutionStorageModel);
         }
 
-        public static async Task<CodeDocumentViewModel> GetStorageItem(string filePath)
+        public static async Task<CodeDocumentViewModel?> GetStorageItem(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -52,7 +63,7 @@ namespace CodeNav.Helpers
             return storageItem;
         }
 
-        private static async Task<T> Load<T>()
+        private static async Task<T?> Load<T>()
         {
             try
             {
@@ -60,21 +71,20 @@ namespace CodeNav.Helpers
 
                 if (!File.Exists(settingFilePath))
                 {
-                    return (T)Activator.CreateInstance(typeof(T));
+                    return default;
                 }
 
-                using (var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (var reader = new StreamReader(stream))
-                {
-                    return (T)new JsonSerializer().Deserialize(reader, typeof(T));
-                }
+                using var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream);
+
+                return (T?)new JsonSerializer().Deserialize(reader, typeof(T));
             }
             catch (Exception e)
             {
                 LogHelper.Log("Error deserializing Solution Storage", e);
             }
 
-            return (T)Activator.CreateInstance(typeof(T));
+            return default;
         }
 
         private static async Task Save<T>(T storage)
@@ -88,11 +98,10 @@ namespace CodeNav.Helpers
                     return;
                 }
 
-                using (var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
-                using (var writer = new StreamWriter(stream))
-                {
-                    new JsonSerializer().Serialize(writer, storage);
-                }
+                using var stream = new FileStream(settingFilePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
+                using var writer = new StreamWriter(stream);
+
+                new JsonSerializer().Serialize(writer, storage);
             }
             catch (Exception e)
             {
@@ -103,7 +112,7 @@ namespace CodeNav.Helpers
         private static async Task<string> GetSettingsFilePath()
         {
             var solution = await VS.Solutions.GetCurrentSolutionAsync();
-            var solutionFilePath = solution.FullPath;
+            var solutionFilePath = solution?.FullPath;
 
             if (!File.Exists(solutionFilePath))
             {

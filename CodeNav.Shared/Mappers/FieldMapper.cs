@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,26 +13,35 @@ namespace CodeNav.Mappers
 {
     public static class FieldMapper
     {
-        public static CodeItem MapField(FieldDeclarationSyntax member,
+        public static CodeItem? MapField(FieldDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             return MapField(member, member.Declaration.Variables.First().Identifier, member.Modifiers, control, semanticModel);
         }
 
-        public static CodeItem MapField(VisualBasicSyntax.FieldDeclarationSyntax member,
+        public static CodeItem? MapField(VisualBasicSyntax.FieldDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             return MapField(member, member.Declarators.First().Names.First().Identifier, member.Modifiers, control, semanticModel);
         }
 
-        private static CodeItem MapField(SyntaxNode member, SyntaxToken identifier, SyntaxTokenList modifiers,
+        private static CodeItem? MapField(SyntaxNode? member, SyntaxToken identifier, SyntaxTokenList modifiers,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeItem>(member, identifier, modifiers, control, semanticModel);
             item.Kind = IsConstant(modifiers)

@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models.ViewModels;
 using CodeNav.Shared.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
@@ -29,10 +31,17 @@ namespace CodeNav.Windows
             };
         }
 
-        private BookmarkStylesWindowViewModel ViewModel => DataContext as BookmarkStylesWindowViewModel;
+        private BookmarkStylesWindowViewModel? ViewModel
+            => DataContext as BookmarkStylesWindowViewModel;
 
         private void BackgroundClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null ||
+                ViewModel.SelectedBookmarkStyle == null)
+            {
+                return;
+            }
+
             var colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -42,6 +51,12 @@ namespace CodeNav.Windows
 
         private void ForegroundClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null ||
+                ViewModel.SelectedBookmarkStyle == null)
+            {
+                return;
+            }
+
             var colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -51,6 +66,11 @@ namespace CodeNav.Windows
 
         private void OkClick(object sender, RoutedEventArgs e)
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
+
             BookmarkHelper.SetBookmarkStyles(_codeDocumentViewModel, ViewModel.BookmarkStyles).FireAndForget();
 
             Close();

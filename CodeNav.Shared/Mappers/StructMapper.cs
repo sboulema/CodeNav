@@ -1,4 +1,7 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Extensions;
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,10 +12,13 @@ namespace CodeNav.Mappers
 {
     public static class StructMapper
     {
-        public static CodeClassItem MapStruct(StructDeclarationSyntax member,
+        public static CodeClassItem? MapStruct(StructDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Struct;
@@ -26,16 +32,19 @@ namespace CodeNav.Mappers
 
             foreach (var structMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
+                item.Members.AddIfNotNull(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
             }
 
             return item;
         }
 
-        public static CodeClassItem MapStruct(VisualBasicSyntax.StructureBlockSyntax member,
+        public static CodeClassItem? MapStruct(VisualBasicSyntax.StructureBlockSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.StructureStatement.Identifier, 
                 member.StructureStatement.Modifiers, control, semanticModel);
@@ -50,7 +59,7 @@ namespace CodeNav.Mappers
 
             foreach (var structMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
+                item.Members.AddIfNotNull(SyntaxMapper.MapMember(structMember, tree, semanticModel, control));
             }
 
             return item;

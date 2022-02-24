@@ -1,6 +1,6 @@
-﻿using CodeNav.Models;
-using Community.VisualStudio.Toolkit;
-using Microsoft.VisualStudio.LanguageServices;
+﻿#nullable enable
+
+using CodeNav.Models;
 using System.Threading.Tasks;
 
 namespace CodeNav.Helpers
@@ -12,7 +12,7 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="language">string representing the syntaxnode language</param>
         /// <returns></returns>
-        public static LanguageEnum GetLanguage(string language)
+        public static LanguageEnum GetLanguage(string? language)
         {
             switch (language)
             {

@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using System.Linq;
@@ -22,8 +24,13 @@ namespace CodeNav.Mappers
             return MapId(identifier.Text, parameters, semanticModel);
         }
 
-        public static string MapId(string name, NodeArray<ParameterDeclaration> parameters)
+        public static string MapId(string name, NodeArray<ParameterDeclaration>? parameters)
         {
+            if (parameters == null)
+            {
+                return name;
+            }
+
             return name + string.Join(string.Empty, parameters.Select(p => p.IdentifierStr));
         }
 
@@ -32,7 +39,7 @@ namespace CodeNav.Mappers
             return name + ParameterMapper.MapParameters(parameters, true, false);
         }
 
-        public static string MapId(string name, VisualBasicSyntax.ParameterListSyntax parameters, SemanticModel semanticModel)
+        public static string MapId(string name, VisualBasicSyntax.ParameterListSyntax? parameters, SemanticModel semanticModel)
         {
             return name + ParameterMapper.MapParameters(parameters, semanticModel, true, false);
         }

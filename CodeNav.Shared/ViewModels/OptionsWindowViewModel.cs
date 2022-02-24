@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.VisualStudio.PlatformUI;
 using System.Drawing;
@@ -65,9 +67,9 @@ namespace CodeNav.Shared.ViewModels
             set => SetProperty(ref _autoLoadLineThreshold, value);
         }
 
-        private Font _font;
+        private Font? _font;
 
-        public Font Font
+        public Font? Font
         {
             get => _font;
             set => SetProperty(ref _font, value);

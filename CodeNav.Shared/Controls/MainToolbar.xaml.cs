@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿#nullable enable
+
+using System.Windows;
 using System.Windows.Controls.Primitives;
 using CodeNav.Helpers;
 using CodeNav.Models;
@@ -18,29 +20,43 @@ namespace CodeNav.Controls
             ButtonSortByFile.IsChecked = (SortOrderEnum)General.Instance.SortOrder == SortOrderEnum.SortByFile;
         }
 
-        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e) => WpfHelper.FindParent(this).UpdateDocument();
+        private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+            => WpfHelper.FindParent(this)?.UpdateDocument();
 
-        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByFile).FireAndForget();
+        private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
+            => Sort(SortOrderEnum.SortByFile).FireAndForget();
 
-        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e) => Sort(SortOrderEnum.SortByName).FireAndForget();
+        private void ButtonSortByName_OnClick(object sender, RoutedEventArgs e)
+            => Sort(SortOrderEnum.SortByName).FireAndForget();
 
         private void ButtonOptions_OnClick(object sender, RoutedEventArgs e)
         {
             new OptionsWindow().ShowDialog();
 
             var control = WpfHelper.FindParent(this);
-            control.UpdateDocument();
-            control.RegisterDocumentEvents().FireAndForget();
+            control?.UpdateDocument();
+            control?.RegisterDocumentEvents().FireAndForget();
         }
 
         private void ButtonRegion_OnClick(object sender, RoutedEventArgs e)
         {
-            WpfHelper.FindParent<CodeViewUserControl>(this).ToggleAll(!(sender as ToggleButton).IsChecked.Value);
+            if (!(sender is ToggleButton toggleButton))
+            {
+                return;
+            }
+
+            WpfHelper.FindParent<CodeViewUserControl>(this)?.ToggleAll(toggleButton.IsChecked == false);
         }
 
         private async Task Sort(SortOrderEnum sortOrder)
         {
             var control = WpfHelper.FindParent(this);
+
+            if (control == null)
+            {
+                return;
+            }
+
             control.CodeDocumentViewModel.SortOrder = sortOrder;
             control.CodeDocumentViewModel.CodeDocument = SortHelper.Sort(control.CodeDocumentViewModel);
 

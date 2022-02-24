@@ -1,4 +1,6 @@
-﻿using CodeNav.Languages.CSS.Models;
+﻿#nullable enable
+
+using CodeNav.Languages.CSS.Models;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using ExCSS;
@@ -12,21 +14,21 @@ namespace CodeNav.Languages.CSS.Mappers
 {
     public static class SyntaxMapper
     {
-        public static List<CodeItem> Map(Document document, ICodeViewUserControl control)
+        public static List<CodeItem?> Map(Document document, ICodeViewUserControl control)
             => Map(document.FilePath, control);
 
-        public static List<CodeItem> Map(string filePath, ICodeViewUserControl control)
+        public static List<CodeItem?> Map(string? filePath, ICodeViewUserControl control)
         {
             if (!File.Exists(filePath))
             {
-                return new List<CodeItem>();
+                return new List<CodeItem?>();
             }
 
             var text = File.ReadAllText(filePath);
 
             var ast = new StylesheetParser().Parse(text);
 
-            return new List<CodeItem>
+            return new List<CodeItem?>
             {
                 new CodeNamespaceItem
                 {
@@ -91,7 +93,12 @@ namespace CodeNav.Languages.CSS.Mappers
 
         private static List<CodeItem> MapNamespaceRule(Rule rule, ICodeViewUserControl control)
         {
-            var item = BaseMapper.MapBase<CodeStyleRuleItem>(rule, (rule as INamespaceRule).Prefix, control);
+            if (!(rule is INamespaceRule namespaceRule))
+            {
+                return new List<CodeItem>();
+            }
+
+            var item = BaseMapper.MapBase<CodeStyleRuleItem>(rule, namespaceRule.Prefix, control);
 
             item.Kind = CodeItemKindEnum.NamespaceRule;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
@@ -101,19 +108,27 @@ namespace CodeNav.Languages.CSS.Mappers
 
         private static List<CodeItem> MapMediaRule(Rule rule, ICodeViewUserControl control)
         {
-            var item = BaseMapper.MapBase<CodeClassItem>(rule, (rule as IMediaRule).Media.MediaText, control);
+            if (!(rule is IMediaRule mediaRule))
+            {
+                return new List<CodeItem>();
+            }
+
+            var item = BaseMapper.MapBase<CodeClassItem>(rule, mediaRule.Media.MediaText, control);
 
             item.Kind = CodeItemKindEnum.MediaRule;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
             item.BorderColor = Colors.DarkGray;
-            item.Members = (rule as IMediaRule).Rules.SelectMany(r => MapMember(r, control)).ToList();
+            item.Members = mediaRule.Rules.SelectMany(r => MapMember(r, control)).ToList();
 
             return new List<CodeItem> { item };
         }
 
         private static List<CodeItem> MapFontFaceRule(Rule rule, ICodeViewUserControl control)
         {
-            var fontRule = rule as IFontFaceRule;
+            if (!(rule is IFontFaceRule fontRule))
+            {
+                return new List<CodeItem>();
+            }
 
             var item = BaseMapper.MapBase<CodeStyleRuleItem>(rule, $"{fontRule.Family} {fontRule.Weight}" , control);
 

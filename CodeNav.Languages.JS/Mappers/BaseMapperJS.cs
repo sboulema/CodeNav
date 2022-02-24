@@ -1,4 +1,8 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Mappers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis.Text;
@@ -12,7 +16,7 @@ namespace CodeNav.Languages.JS.Mappers
 {
     public static class BaseMapperJS
     {
-        public static T MapBase<T>(Node member, string id, ICodeViewUserControl control) where T : CodeItem
+        public static T MapBase<T>(Node member, string id, ICodeViewUserControl? control) where T : CodeItem
         {
             var element = Activator.CreateInstance<T>();
 
@@ -34,7 +38,7 @@ namespace CodeNav.Languages.JS.Mappers
             element.FontFamily = new FontFamily(SettingsHelper.Font.FontFamily.Name);
             element.FontStyle = FontStyleMapper.Map(SettingsHelper.Font.Style);
             element.Control = control;
-            element.FilePath = control.CodeDocumentViewModel.FilePath;
+            element.FilePath = control?.CodeDocumentViewModel.FilePath ?? string.Empty;
 
             return element;
         }

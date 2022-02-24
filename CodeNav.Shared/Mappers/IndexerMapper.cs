@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -7,9 +9,13 @@ namespace CodeNav.Mappers
 {
     public class IndexerMapper
     {
-        public static CodeItem MapIndexer(IndexerDeclarationSyntax member, ICodeViewUserControl control, SemanticModel semanticModel)
+        public static CodeItem? MapIndexer(IndexerDeclarationSyntax? member,
+            ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.ThisKeyword, member.Modifiers, control, semanticModel);
             item.Type = TypeMapper.Map(member.Type);

@@ -1,4 +1,7 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Extensions;
+using CodeNav.Helpers;
 using CodeNav.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,10 +13,13 @@ namespace CodeNav.Mappers
 {
     public static class EnumMapper
     {
-        public static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member,
+        public static CodeItem? MapEnumMember(EnumMemberDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, control, semanticModel);
             item.Kind = CodeItemKindEnum.EnumMember;
@@ -22,10 +28,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeItem MapEnumMember(VisualBasicSyntax.EnumMemberDeclarationSyntax member,
+        public static CodeItem? MapEnumMember(VisualBasicSyntax.EnumMemberDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, control, semanticModel);
             item.Kind = CodeItemKindEnum.EnumMember;
@@ -34,10 +43,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeClassItem MapEnum(EnumDeclarationSyntax member,
+        public static CodeClassItem? MapEnum(EnumDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, control, semanticModel);
             item.Kind = CodeItemKindEnum.Enum;
@@ -52,16 +64,19 @@ namespace CodeNav.Mappers
 
             foreach (var enumMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
+                item.Members.AddIfNotNull(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
             }
 
             return item;
         }
 
-        public static CodeClassItem MapEnum(VisualBasicSyntax.EnumBlockSyntax member,
+        public static CodeClassItem? MapEnum(VisualBasicSyntax.EnumBlockSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.EnumStatement.Identifier, 
                 member.EnumStatement.Modifiers, control, semanticModel);
@@ -77,7 +92,7 @@ namespace CodeNav.Mappers
 
             foreach (var enumMember in member.Members)
             {
-                item.Members.Add(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
+                item.Members.AddIfNotNull(SyntaxMapper.MapMember(enumMember, tree, semanticModel, control));
             }
 
             return item;

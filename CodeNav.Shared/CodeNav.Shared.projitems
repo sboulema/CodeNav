@@ -83,6 +83,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CodeViewUserControlTop.xaml.cs">
       <DependentUpon>CodeViewUserControlTop.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Comparers\CodeItemComparer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FilterToolbar.xaml.cs">
       <DependentUpon>FilterToolbar.xaml</DependentUpon>
     </Compile>

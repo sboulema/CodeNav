@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
@@ -16,18 +18,18 @@ namespace CodeNav
 
         void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor);
 
-        void ToggleAll(bool isExpanded, List<CodeItem> root = null);
+        void ToggleAll(bool isExpanded, List<CodeItem>? root = null);
 
         void FilterBookmarks();
 
         Task RegisterDocumentEvents();
 
-        IDisposable CaretPositionChangedSubscription { get; set; }
+        IDisposable? CaretPositionChangedSubscription { get; set; }
 
-        IDisposable TextContentChangedSubscription { get; set; }
+        IDisposable? TextContentChangedSubscription { get; set; }
 
-        IDisposable UpdateWhileTypingSubscription { get; set; }
+        IDisposable? UpdateWhileTypingSubscription { get; set; }
 
-        IDisposable FileActionOccuredSubscription { get; set; }
+        IDisposable? FileActionOccuredSubscription { get; set; }
     }
 }

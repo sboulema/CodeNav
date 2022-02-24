@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -17,9 +19,9 @@ namespace CodeNav
         public const string MarginName = "CodeNav";
         private bool _isDisposed;
 
-        public ICodeViewUserControl _control;
-        public readonly IWpfTextView _textView;
-        private readonly ColumnDefinition _codeNavColumn;
+        public ICodeViewUserControl? _control;
+        public readonly IWpfTextView? _textView;
+        private readonly ColumnDefinition? _codeNavColumn;
         private readonly Grid _codeNavGrid;
         public readonly MarginSideEnum MarginSide;
 
@@ -90,13 +92,18 @@ namespace CodeNav
             Grid.SetColumn(splitter, 1);
             Grid.SetColumn(textViewHost.HostControl, (MarginSideEnum)General.Instance.MarginSide == MarginSideEnum.Left ? 2 : 0);
 
-            if (General.Instance.BackgroundColor.IsNamedColor && General.Instance.BackgroundColor.Name.Equals("Transparent"))
+            var gridChild = grid.GetGridChildByType<CodeViewUserControl>();
+
+            if (gridChild != null)
             {
-                grid.GetGridChildByType<CodeViewUserControl>().Background = Brushes.Transparent;
-            }
-            else
-            {
-                grid.GetGridChildByType<CodeViewUserControl>().Background = ColorHelper.ToBrush(General.Instance.BackgroundColor);
+                if (General.Instance.BackgroundColor.IsNamedColor && General.Instance.BackgroundColor.Name.Equals("Transparent"))
+                {
+                    gridChild.Background = Brushes.Transparent;
+                }
+                else
+                {
+                    gridChild.Background = ColorHelper.ToBrush(General.Instance.BackgroundColor);
+                }
             }
 
             return grid;
@@ -119,7 +126,7 @@ namespace CodeNav
             Grid.SetRow(textViewHost.HostControl, 1);
 
             // Apply custom background color to CodeNav grid child
-            (_control as CodeViewUserControlTop).Background =
+            (_control as CodeViewUserControlTop)!.Background =
                 General.Instance.BackgroundColor.IsNamedColor && General.Instance.BackgroundColor.Name.Equals("Transparent") 
                 ? Brushes.Transparent : ColorHelper.ToBrush(General.Instance.BackgroundColor);
 
@@ -146,6 +153,11 @@ namespace CodeNav
 
         private void Splitter_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if (_codeNavColumn == null)
+            {
+                return;
+            }
+
             VisibilityHelper.SetMarginWidth(_codeNavColumn, _codeNavColumn.Width != new GridLength(0)).FireAndForget();
             General.Instance.ShowMargin = !General.Instance.ShowMargin;
             General.Instance.Save();
@@ -153,9 +165,14 @@ namespace CodeNav
 
         private void DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            if (!double.IsNaN((_control as FrameworkElement).ActualWidth) && (_control as FrameworkElement).ActualWidth != 0)
+            if (!(_control is FrameworkElement controlElement))
             {
-                General.Instance.Width = (_control as FrameworkElement).ActualWidth;
+                return;
+            }
+
+            if (!double.IsNaN(controlElement.ActualWidth) && controlElement.ActualWidth != 0)
+            {
+                General.Instance.Width = controlElement.ActualWidth;
                 General.Instance.Save();
             }
         }
@@ -230,7 +247,7 @@ namespace CodeNav
         /// forwards the call to its children. Margin name comparisons are case-insensitive.
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="marginName"/> is null.</exception>
-        public ITextViewMargin GetTextViewMargin(string marginName)
+        public ITextViewMargin? GetTextViewMargin(string marginName)
         {
             return string.Equals(marginName, MarginName, StringComparison.OrdinalIgnoreCase) ? this : null;
         }
@@ -240,7 +257,7 @@ namespace CodeNav
         /// </summary>
         public void Dispose()
         {
-            if (_isDisposed)
+            if (_isDisposed || _control == null)
             {
                 return;
             }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace CodeNav.Helpers
 {
     public static class OutliningHelper
     {
-        public static async Task<IOutliningManager> GetOutliningManager()
+        public static async Task<IOutliningManager?> GetOutliningManager()
         {
             var componentModel = await VS.Services.GetComponentModelAsync();
             var outliningManagerService = componentModel.GetService<IOutliningManagerService>();
@@ -55,25 +57,28 @@ namespace CodeNav.Helpers
         {
             foreach (var item in document)
             {
-                if (!(item is IMembers)) continue;
+                if (!(item is IMembers membersItem))
+                {
+                    continue;
+                }
 
                 var collapsible = await FindCollapsibleFromCodeItem(item);
 
                 if (collapsible == null)
                 {
-                    (item as IMembers).IsExpanded = true;
+                    membersItem.IsExpanded = true;
                 }
                 else
                 {
-                    (item as IMembers).IsExpanded = !collapsible.IsCollapsed;
+                    membersItem.IsExpanded = !collapsible.IsCollapsed;
                 }
 
-                if (item is ICodeCollapsible)
+                if (item is ICodeCollapsible collapsibleItem)
                 {
-                    (item as ICodeCollapsible).IsExpandedChanged += OnIsExpandedChanged;
+                    collapsibleItem.IsExpandedChanged += OnIsExpandedChanged;
                 }
                 
-                await SyncAllRegions((item as IMembers).Members);
+                await SyncAllRegions(membersItem.Members);
             }
         }
 
@@ -125,7 +130,7 @@ namespace CodeNav.Helpers
         /// </summary>
         /// <param name="item">The IMembers CodeItem.</param>
         /// <returns>The <see cref="ICollapsible" /> on the same starting line, otherwise null.</returns>
-        private static async Task<ICollapsible> FindCollapsibleFromCodeItem(CodeItem item)
+        private static async Task<ICollapsible?> FindCollapsibleFromCodeItem(CodeItem item)
         {
             if (item.Kind == CodeItemKindEnum.ImplementedInterface)
             {
@@ -134,7 +139,12 @@ namespace CodeNav.Helpers
 
             var documentView = await VS.Documents.GetActiveDocumentViewAsync();
 
-            if (item.StartLine > documentView?.TextView?.TextBuffer.CurrentSnapshot.LineCount)
+            if (documentView?.TextView == null)
+            {
+                return null;
+            }
+
+            if (item.StartLine > documentView.TextView.TextBuffer.CurrentSnapshot.LineCount)
             {
                 return null;
             }
@@ -148,7 +158,7 @@ namespace CodeNav.Helpers
                     return null;
                 }
 
-                var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(documentView?.TextView, item.Span));
+                var collapsibles = outliningManager.GetAllRegions(ToSnapshotSpan(documentView.TextView, item.Span));
 
                 return (from collapsible in collapsibles
                         let startLine = GetStartLineForCollapsible(collapsible)
@@ -207,11 +217,11 @@ namespace CodeNav.Helpers
 
             if (item.IsExpanded && iCollapsible.IsCollapsed)
             {
-                outliningManager.Expand(iCollapsible as ICollapsed);
+                outliningManager?.Expand(iCollapsible as ICollapsed);
             }
             else if (!item.IsExpanded && !iCollapsible.IsCollapsed)
             {
-                outliningManager.TryCollapse(iCollapsible);
+                outliningManager?.TryCollapse(iCollapsible);
             }
         }
 
@@ -223,9 +233,9 @@ namespace CodeNav.Helpers
                 var item = items.Pop();
                 yield return item;
 
-                if (item is IMembers)
+                if (item is IMembers membersItem)
                 {
-                    foreach (var i in (item as IMembers).Members) items.Push(i);
+                    foreach (var i in membersItem.Members) items.Push(i);
                 }
             }
         }

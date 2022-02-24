@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -19,17 +21,17 @@ namespace CodeNav
 {
     public partial class CodeViewUserControl : ICodeViewUserControl
     {
-        private readonly ColumnDefinition _column;
-        private IOutliningManager _outliningManager;
+        private readonly ColumnDefinition? _column;
+        private IOutliningManager? _outliningManager;
 
-        public IDisposable CaretPositionChangedSubscription { get; set; }
-        public IDisposable TextContentChangedSubscription { get; set; }
-        public IDisposable UpdateWhileTypingSubscription { get; set; }
-        public IDisposable FileActionOccuredSubscription { get; set; }
+        public IDisposable? CaretPositionChangedSubscription { get; set; }
+        public IDisposable? TextContentChangedSubscription { get; set; }
+        public IDisposable? UpdateWhileTypingSubscription { get; set; }
+        public IDisposable? FileActionOccuredSubscription { get; set; }
 
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
-        public CodeViewUserControl(ColumnDefinition column = null)
+        public CodeViewUserControl(ColumnDefinition? column = null)
         {
             InitializeComponent();
 
@@ -148,7 +150,7 @@ namespace CodeNav
 
             RegisterDocumentEvents().FireAndForget();
 
-            UpdateDocument(filePath);
+            UpdateDocument(filePath!);
         }
 
         private void TextBuffer_ChangedOnBackground(TextContentChangedEventArgs e)
@@ -180,7 +182,7 @@ namespace CodeNav
         public void FilterBookmarks()
             => VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel);
 
-        public void ToggleAll(bool isExpanded, List<CodeItem> root = null)
+        public void ToggleAll(bool isExpanded, List<CodeItem>? root = null)
             => OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
 
         public void UpdateDocument(string filePath = "")

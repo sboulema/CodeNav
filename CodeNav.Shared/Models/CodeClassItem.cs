@@ -1,4 +1,6 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,8 @@ namespace CodeNav.Models
         }
 
         public List<CodeItem> Members { get; set; }
-        public string Parameters { get; set; }
+
+        public string Parameters { get; set; } = string.Empty;
 
         private Color _borderColor;
         public Color BorderColor
@@ -38,7 +41,7 @@ namespace CodeNav.Models
             }
         }
 
-        public event EventHandler IsExpandedChanged;
+        public event EventHandler? IsExpandedChanged;
         private bool _isExpanded;
         public bool IsExpanded
         {

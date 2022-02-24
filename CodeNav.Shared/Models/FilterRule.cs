@@ -8,7 +8,7 @@
 
         public bool Visible { get; set; }
 
-        public string Opacity { get; set; }
+        public string Opacity { get; set; } = string.Empty;
 
         public bool HideIfEmpty { get; set; }
 

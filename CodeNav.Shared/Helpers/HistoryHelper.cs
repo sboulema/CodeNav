@@ -1,4 +1,6 @@
-﻿using CodeNav.Extensions;
+﻿#nullable enable
+
+using CodeNav.Extensions;
 using CodeNav.Models;
 using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.Imaging;
@@ -143,6 +145,11 @@ namespace CodeNav.Helpers
         /// <param name="item">Codeitem on which the context menu was invoked</param>
         public static void ClearHistory(CodeItem item)
         {
+            if (item.Control == null)
+            {
+                return;
+            }
+
             item.Control.CodeDocumentViewModel.HistoryItems.Clear();
             SolutionStorageHelper.SaveToSolutionStorage(item.Control.CodeDocumentViewModel).FireAndForget();
             item.Control.UpdateDocument();

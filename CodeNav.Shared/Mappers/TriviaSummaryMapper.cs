@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿#nullable enable
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -41,20 +43,20 @@ namespace CodeNav.Mappers
 
         private static string GetCommentContent(SyntaxTrivia commentTrivia, string commentName)
         {
-            var nodes = commentTrivia.GetStructure().ChildNodes();
+            var nodes = commentTrivia.GetStructure()?.ChildNodes();
             var xmlElement = nodes.FirstOrDefault(n => (
                                                         n.RawKind == (int)SyntaxKind.XmlElement ||
                                                         n.RawKind == (int)VisualBasic.SyntaxKind.XmlElement
                                                        ) 
                                                        && IsCommentNamed(n, commentName));
-            if (xmlElement is XmlElementSyntax)
+            if (xmlElement is XmlElementSyntax xmlSyntax)
             {
-                return (xmlElement as XmlElementSyntax).Content.ToString();
+                return xmlSyntax.Content.ToString();
             }
 
-            if (xmlElement is VisualBasicSyntax.XmlElementSyntax)
+            if (xmlElement is VisualBasicSyntax.XmlElementSyntax vbXmlSyntax)
             {
-                return (xmlElement as VisualBasicSyntax.XmlElementSyntax).Content.ToString();
+                return vbXmlSyntax.Content.ToString();
             }
 
             return string.Empty;
@@ -62,14 +64,14 @@ namespace CodeNav.Mappers
 
         private static bool IsCommentNamed(SyntaxNode node, string commentName)
         {
-            if (node is XmlElementSyntax)
+            if (node is XmlElementSyntax xmlSyntax)
             {
-                return (node as XmlElementSyntax).StartTag.Name.LocalName.ValueText.Equals(commentName);
+                return xmlSyntax.StartTag.Name.LocalName.ValueText.Equals(commentName);
             }
 
-            if (node is VisualBasicSyntax.XmlElementSyntax)
+            if (node is VisualBasicSyntax.XmlElementSyntax vbXmlSyntax)
             {
-                return (node as VisualBasicSyntax.XmlElementSyntax).StartTag.Name.ToString().Equals(commentName);
+                return vbXmlSyntax.StartTag.Name.ToString().Equals(commentName);
             }
 
             return false;

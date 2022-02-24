@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -20,13 +22,13 @@ namespace CodeNav.Models
     {
         public string Name { get; set; } = string.Empty;
 
-        public LinePosition StartLinePosition { get; set; }
+        public LinePosition? StartLinePosition { get; set; }
 
-        public LinePosition EndLinePosition { get; set; }
+        public LinePosition? EndLinePosition { get; set; }
 
-        public int StartLine { get; set; }
+        public int? StartLine { get; set; }
 
-        public int EndLine { get; set; }
+        public int? EndLine { get; set; }
 
         public TextSpan Span { get; set; }
 
@@ -41,13 +43,13 @@ namespace CodeNav.Models
 
         public string FilePath { get; set; } = string.Empty;
 
-        internal string FullName;
+        internal string FullName = string.Empty;
 
         public CodeItemKindEnum Kind;
 
         public CodeItemAccessEnum Access;
 
-        internal ICodeViewUserControl Control;
+        internal ICodeViewUserControl? Control;
 
         public bool IsHighlighted;
 
@@ -89,15 +91,15 @@ namespace CodeNav.Models
         #endregion
 
         public List<BookmarkStyle> BookmarkStyles
-            => Control.CodeDocumentViewModel.BookmarkStyles;
+            => Control?.CodeDocumentViewModel.BookmarkStyles ?? new List<BookmarkStyle>();
 
         public bool FilterOnBookmarks
         {
-            get => Control.CodeDocumentViewModel.FilterOnBookmarks;
-            set => Control.CodeDocumentViewModel.FilterOnBookmarks = value;
+            get => Control?.CodeDocumentViewModel.FilterOnBookmarks ?? false;
+            set => Control!.CodeDocumentViewModel.FilterOnBookmarks = value;
         }
 
-        public bool BookmarksAvailable => Control.CodeDocumentViewModel.Bookmarks.Any();
+        public bool BookmarksAvailable => Control?.CodeDocumentViewModel.Bookmarks.Any() == true;
 
         private bool _contextMenuIsOpen;
         public bool ContextMenuIsOpen
@@ -121,8 +123,8 @@ namespace CodeNav.Models
             set => SetProperty(ref _parameterFontSize, value);
         }
 
-        private FontFamily _fontFamily;
-        public FontFamily FontFamily
+        private FontFamily? _fontFamily;
+        public FontFamily? FontFamily
         {
             get => _fontFamily;
             set => SetProperty(ref _fontFamily, value);
@@ -219,13 +221,13 @@ namespace CodeNav.Models
         public void CopyName(object args) => Clipboard.SetText(Name);
 
         public ICommand RefreshCommand => new DelegateCommand(RefreshCodeNav);
-        public void RefreshCodeNav(object args) => Control.UpdateDocument();
+        public void RefreshCodeNav(object args) => Control?.UpdateDocument();
 
         public ICommand ExpandAllCommand => new DelegateCommand(ExpandAll);
-        public void ExpandAll(object args) => Control.ToggleAll(true, new List<CodeItem>() { this });
+        public void ExpandAll(object args) => Control?.ToggleAll(true, new List<CodeItem>() { this });
 
         public ICommand CollapseAllCommand => new DelegateCommand(CollapseAll);
-        public void CollapseAll(object args) => Control.ToggleAll(false, new List<CodeItem>() { this });
+        public void CollapseAll(object args) => Control?.ToggleAll(false, new List<CodeItem>() { this });
 
         /// <summary>
         /// Add a single bookmark
@@ -238,6 +240,12 @@ namespace CodeNav.Models
             try
             {
                 var bookmarkStyle = args as BookmarkStyle;
+
+                if (bookmarkStyle == null ||
+                    Control?.CodeDocumentViewModel == null)
+                {
+                    return;
+                }
 
                 BookmarkHelper.ApplyBookmark(this, bookmarkStyle);
 
@@ -267,9 +275,9 @@ namespace CodeNav.Models
             {
                 BookmarkHelper.ClearBookmark(this);
 
-                Control.CodeDocumentViewModel.RemoveBookmark(Id);
+                Control?.CodeDocumentViewModel.RemoveBookmark(Id);
 
-                SolutionStorageHelper.SaveToSolutionStorage(Control.CodeDocumentViewModel).FireAndForget();
+                SolutionStorageHelper.SaveToSolutionStorage(Control?.CodeDocumentViewModel).FireAndForget();
 
                 NotifyPropertyChanged("BookmarksAvailable");
             }
@@ -287,9 +295,9 @@ namespace CodeNav.Models
         {
             try
             {
-                Control.CodeDocumentViewModel.ClearBookmarks();
+                Control?.CodeDocumentViewModel.ClearBookmarks();
 
-                SolutionStorageHelper.SaveToSolutionStorage(Control.CodeDocumentViewModel).FireAndForget();
+                SolutionStorageHelper.SaveToSolutionStorage(Control?.CodeDocumentViewModel).FireAndForget();
 
                 NotifyPropertyChanged("BookmarksAvailable");
             }
@@ -300,45 +308,19 @@ namespace CodeNav.Models
         }
 
         public ICommand FilterBookmarksCommand => new DelegateCommand(FilterBookmarks);
-        public void FilterBookmarks(object args) => Control.FilterBookmarks();
+        public void FilterBookmarks(object args) => Control?.FilterBookmarks();
 
         public ICommand CustomizeBookmarkStylesCommand => new DelegateCommand(CustomizeBookmarkStyles);
         public void CustomizeBookmarkStyles(object args)
         {
+            if (Control?.CodeDocumentViewModel == null)
+            {
+                return;
+            }
+
             new BookmarkStylesWindow(Control.CodeDocumentViewModel).ShowDialog();
             BookmarkHelper.ApplyBookmarks(Control.CodeDocumentViewModel);
         }
         #endregion
-    }
-
-    public class CodeItemComparer : IEqualityComparer<CodeItem>
-    {
-        public bool Equals(CodeItem x, CodeItem y)
-        {
-            //Check whether the objects are the same object. 
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-            //Check whether the products' properties are equal. 
-            var membersAreEqual = true;
-            if (x is CodeClassItem && y is CodeClassItem)
-            {
-                membersAreEqual = (x as CodeClassItem).Members.SequenceEqual((y as CodeClassItem).Members, new CodeItemComparer());
-            }
-            if (x is CodeNamespaceItem && y is CodeNamespaceItem)
-            {
-                membersAreEqual = (x as CodeNamespaceItem).Members.SequenceEqual((y as CodeNamespaceItem).Members, new CodeItemComparer());
-            }
-
-            return x != null && y != null && x.Id.Equals(y.Id) && membersAreEqual;
-        }
-
-        // Not used, but must be implemented because of interface
-        public int GetHashCode(CodeItem obj)
-        {
-            return 0;
-        }
     }
 }

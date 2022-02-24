@@ -1,4 +1,6 @@
-﻿using CodeNav.Models;
+﻿#nullable enable
+
+using CodeNav.Models;
 using Microsoft.VisualStudio.PlatformUI;
 using System.Collections.Generic;
 
@@ -14,9 +16,9 @@ namespace CodeNav.Shared.ViewModels
             set => SetProperty(ref _bookmarkStyles, value);
         }
 
-        private BookmarkStyle _selectedBookmarkStyle;
+        private BookmarkStyle? _selectedBookmarkStyle;
 
-        public BookmarkStyle SelectedBookmarkStyle
+        public BookmarkStyle? SelectedBookmarkStyle
         {
             get => _selectedBookmarkStyle;
             set => SetProperty(ref _selectedBookmarkStyle, value);

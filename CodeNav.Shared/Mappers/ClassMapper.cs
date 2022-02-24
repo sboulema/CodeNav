@@ -1,4 +1,7 @@
-﻿using CodeNav.Helpers;
+﻿#nullable enable
+
+using CodeNav.Extensions;
+using CodeNav.Helpers;
 using CodeNav.Models;
 using CodeNav.Shared.Helpers;
 using Microsoft.CodeAnalysis;
@@ -13,7 +16,7 @@ namespace CodeNav.Mappers
 {
     public class ClassMapper
     {
-        public static CodeClassItem MapClass(ClassDeclarationSyntax member,
+        public static CodeClassItem? MapClass(ClassDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree, bool mapBaseClass)
         {
             if (member == null)
@@ -73,7 +76,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (region?.Members.Any() == true)
                     {
                         item.Members.Add(region);
                     }
@@ -83,10 +86,13 @@ namespace CodeNav.Mappers
             return item;
         }
 
-        public static CodeClassItem MapClass(VisualBasicSyntax.TypeBlockSyntax member,
+        public static CodeClassItem? MapClass(VisualBasicSyntax.TypeBlockSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel, SyntaxTree tree)
         {
-            if (member == null) return null;
+            if (member == null)
+            {
+                return null;
+            }
 
             var item = BaseMapper.MapBase<CodeClassItem>(member, member.BlockStatement.Identifier, 
                 member.BlockStatement.Modifiers, control, semanticModel);
@@ -134,7 +140,7 @@ namespace CodeNav.Mappers
             {
                 foreach (var region in regions)
                 {
-                    if (region.Members.Any())
+                    if (region?.Members.Any() == true)
                     {
                         item.Members.Add(region);
                     }
@@ -180,7 +186,8 @@ namespace CodeNav.Mappers
             var classSymbol = semanticModel.GetDeclaredSymbol(member);
             var baseType = classSymbol?.BaseType;
 
-            if (baseType.SpecialType == SpecialType.System_Object)
+            if (baseType == null ||
+                baseType.SpecialType == SpecialType.System_Object)
             {
                 return;
             }
@@ -201,15 +208,33 @@ namespace CodeNav.Mappers
             regions.Add(baseRegion);
 
             var baseSyntaxTree = baseType.DeclaringSyntaxReferences.FirstOrDefault()?.SyntaxTree;
+
+            if (baseSyntaxTree == null)
+            {
+                return;
+            }
+
             var baseSemanticModel = SyntaxHelper.GetCSharpSemanticModel(baseSyntaxTree);
 
-            foreach (var inheritedMember in baseType?.GetMembers())
+            if (baseSemanticModel == null)
+            {
+                return;
+            }
+
+            var baseTypeMembers = baseType?.GetMembers();
+
+            if (baseTypeMembers == null)
+            {
+                return;
+            }
+
+            foreach (var inheritedMember in baseTypeMembers)
             {
                 var syntaxNode = inheritedMember.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
 
                 if (syntaxNode.IsKind(SyntaxKind.VariableDeclarator))
                 {
-                    syntaxNode = syntaxNode.Parent?.Parent;
+                    syntaxNode = syntaxNode?.Parent?.Parent;
                 }
 
                 if (syntaxNode == null)
@@ -220,7 +245,7 @@ namespace CodeNav.Mappers
                 var memberItem = SyntaxMapper.MapMember(syntaxNode, syntaxNode.SyntaxTree,
                     baseSemanticModel, control, mapBaseClass: false);
 
-                baseRegion.Members.Add(memberItem);
+                baseRegion.Members.AddIfNotNull(memberItem);
             }
         }
 

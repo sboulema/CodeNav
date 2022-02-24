@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +15,7 @@ namespace CodeNav.Helpers
             return obj is Visual ? VisualTreeHelper.GetParent(obj) : LogicalTreeHelper.GetParent(obj);
         }
 
-        public static TParent GetParent<TParent>(this DependencyObject obj, Predicate<TParent> predicate = null)
+        public static TParent? GetParent<TParent>(this DependencyObject obj, Predicate<TParent>? predicate = null)
             where TParent : DependencyObject
         {
             if (obj == null)
@@ -21,7 +23,7 @@ namespace CodeNav.Helpers
                 return null;
             }
             var p = obj;
-            TParent r;
+            TParent? r;
             while ((p = p.GetParent()) != null)
             {
                 r = p as TParent;
@@ -33,27 +35,31 @@ namespace CodeNav.Helpers
             return null;
         }
 
-        public static TChild GetFirstVisualChild<TChild>(this DependencyObject obj, Predicate<TChild> predicate = null)
+        public static TChild? GetFirstVisualChild<TChild>(this DependencyObject obj, Predicate<TChild>? predicate = null)
             where TChild : DependencyObject
         {
             var count = VisualTreeHelper.GetChildrenCount(obj);
+
             for (var i = 0; i < count; i++)
             {
-                var c = VisualTreeHelper.GetChild(obj, i);
-                if (c is TChild r && (predicate == null || predicate(r)))
+                var child = VisualTreeHelper.GetChild(obj, i);
+
+                if (child is TChild r && (predicate == null || predicate(r)))
                 {
                     return r;
                 }
-                r = GetFirstVisualChild(c, predicate);
-                if (r != null)
+
+                var visualChild = GetFirstVisualChild(child, predicate);
+                if (visualChild != null)
                 {
-                    return r;
+                    return visualChild;
                 }
             }
+
             return null;
         }
 
-        public static T GetGridChildByType<T>(this Grid grid) where T : class
+        public static T? GetGridChildByType<T>(this Grid grid) where T : class
         {
             foreach (var child in grid.Children)
             {
@@ -66,11 +72,11 @@ namespace CodeNav.Helpers
             return default;
         }
 
-        public static ICodeViewUserControl FindParent(DependencyObject child)
+        public static ICodeViewUserControl? FindParent(DependencyObject child)
             => FindParent<CodeViewUserControl>(child) ??
-                (ICodeViewUserControl)FindParent<CodeViewUserControlTop>(child);
+                (ICodeViewUserControl?)FindParent<CodeViewUserControlTop>(child);
 
-        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        public static T? FindParent<T>(DependencyObject child) where T : DependencyObject
         {
             // Get parent item
             var parentObject = VisualTreeHelper.GetParent(child);
@@ -85,7 +91,7 @@ namespace CodeNav.Helpers
             return parentObject is T parent ? parent : FindParent<T>(parentObject);
         }
 
-        public static List<T> FindChildrenByType<T>(DependencyObject depObj) where T : DependencyObject
+        public static List<T> FindChildrenByType<T>(DependencyObject? depObj) where T : DependencyObject
         {
             var children = new List<T>();
 

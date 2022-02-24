@@ -1,4 +1,6 @@
-﻿using CodeNav.Extensions;
+﻿#nullable enable
+
+using CodeNav.Extensions;
 using CodeNav.Models;
 using CodeNav.Models.ViewModels;
 using Microsoft.VisualStudio.PlatformUI;
@@ -112,8 +114,8 @@ namespace CodeNav.Helpers
         /// <param name="bookmarks">List of bookmarks</param>
         /// <param name="codeItem">code item</param>
         /// <returns>if code item is bookmarked</returns>
-        public static bool IsBookmark(Dictionary<string, int> bookmarks, CodeItem codeItem)
-            => bookmarks.ContainsKey(codeItem.Id);
+        public static bool IsBookmark(Dictionary<string, int>? bookmarks, CodeItem codeItem)
+            => bookmarks?.ContainsKey(codeItem.Id) == true;
 
         /// <summary>
         /// Default available bookmark styles
@@ -147,7 +149,11 @@ namespace CodeNav.Helpers
 
             foreach (var item in controls)
             {
-                var label = item as Label;
+                if (!(item is Label label))
+                {
+                    continue;
+                }
+
                 styles.Add(new BookmarkStyle(ColorHelper.ToMediaColor(label.BackColor), ColorHelper.ToMediaColor(label.ForeColor)));
             }
 

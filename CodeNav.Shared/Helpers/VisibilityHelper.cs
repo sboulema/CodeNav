@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -23,7 +25,7 @@ namespace CodeNav.Helpers
         /// <param name="filterOnBookmarks">Filters items by being bookmarked</param>
         /// <param name="bookmarks">List of bookmarked items</param>
         public static List<CodeItem> SetCodeItemVisibility(List<CodeItem> document, string name = "",
-            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
+            bool filterOnBookmarks = false, Dictionary<string, int>? bookmarks = null)
         {
             if (document?.Any() != true)
             {
@@ -40,7 +42,9 @@ namespace CodeNav.Helpers
                         SetCodeItemVisibility(hasMembersItem.Members, name, filterOnBookmarks, bookmarks);
                     }
 
-                    item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks) ? Visibility.Visible : Visibility.Collapsed;
+                    item.IsVisible = ShouldBeVisible(item, name, filterOnBookmarks, bookmarks)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
                     item.Opacity = SetOpacity(item);
                 }
             }
@@ -129,9 +133,9 @@ namespace CodeNav.Helpers
 
             foreach (var item in document)
             {
-                if (item is IMembers)
+                if (item is IMembers membersItem)
                 {
-                    isEmpty = !(item as IMembers).Members.Any();
+                    isEmpty = !membersItem.Members.Any();
                 }
             }
 
@@ -186,7 +190,7 @@ namespace CodeNav.Helpers
         /// <param name="bookmarks">List of current bookmarks</param>
         /// <returns></returns>
         private static bool ShouldBeVisible(CodeItem item, string name = "",
-            bool filterOnBookmarks = false, Dictionary<string, int> bookmarks = null)
+            bool filterOnBookmarks = false, Dictionary<string, int>? bookmarks = null)
         {
             var visible = true;
 
@@ -242,7 +246,7 @@ namespace CodeNav.Helpers
             return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
         }
 
-        private static FilterRule GetFilterRule(CodeItem item)
+        private static FilterRule? GetFilterRule(CodeItem item)
         {
             if (SettingsHelper.FilterRules == null)
             {
