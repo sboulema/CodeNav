@@ -17,32 +17,26 @@ namespace CodeNav.Mappers
         public static CodeItem? MapMethod(MethodDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (member == null ||
-                !(member.ReturnType is ITypeSymbol returnTypeSymbol))
+            if (member == null)
             {
                 return null;
             }
 
             return MapMethod(member, member.Identifier, member.Modifiers,
-                member.Body, returnTypeSymbol, member.ParameterList,
+                member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
                CodeItemKindEnum.Method, control, semanticModel);
         }
 
         public static CodeItem? MapMethod(LocalFunctionStatementSyntax member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
-            if (!(member.ReturnType is ITypeSymbol returnTypeSymbol))
-            {
-                return null;
-            }
-
             return MapMethod(member, member.Identifier, member.Modifiers,
-                member.Body, returnTypeSymbol, member.ParameterList,
+                member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
                CodeItemKindEnum.LocalFunction, control, semanticModel);
         }
 
         private static CodeItem? MapMethod(SyntaxNode node, SyntaxToken identifier,
-            SyntaxTokenList modifiers, BlockSyntax? body, ITypeSymbol returnType,
+            SyntaxTokenList modifiers, BlockSyntax? body, ITypeSymbol? returnType,
             ParameterListSyntax parameterList, CodeItemKindEnum kind,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
