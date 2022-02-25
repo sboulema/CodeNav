@@ -9,7 +9,6 @@ namespace CodeNav.Mappers
 {
     public static class RecordMapper
     {
-        #if VS2022
         public static CodeFunctionItem? MapRecord(RecordDeclarationSyntax? member,
             ICodeViewUserControl control, SemanticModel semanticModel)
         {
@@ -30,6 +29,5 @@ namespace CodeNav.Mappers
 
             return item;
         }
-        #endif
     }
 }
