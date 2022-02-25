@@ -52,20 +52,28 @@ namespace CodeNav.Mappers
                 regionList.Add(MapRegion(regionDirective, control));
             }
 
-            if (!regionList.Any()) return regionList;
+            if (!regionList.Any())
+            {
+                return regionList;
+            }
 
             // Find all matching end points of regions
             foreach (var endRegionDirective in root.DescendantTrivia()
                 .Where(j => (j.RawKind == (int)SyntaxKind.EndRegionDirectiveTrivia ||
                              j.RawKind == (int)VisualBasic.SyntaxKind.EndRegionDirectiveTrivia) && 
                              span.Contains(j.Span)))
-            {              
-                var reg = regionList.LastOrDefault(x => x.StartLine < GetStartLine(endRegionDirective) && x.EndLine == 0);
-                if (reg != null)
+            {
+                var region = regionList
+                    .LastOrDefault(x => x.StartLine < GetStartLine(endRegionDirective) &&
+                                        x.EndLine == null);
+                
+                if (region == null)
                 {
-                    reg.EndLine = GetEndLine(endRegionDirective);
-                    reg.EndLinePosition = GetEndLinePosition(endRegionDirective);
-                }             
+                    continue;
+                }
+
+                region.EndLine = GetEndLine(endRegionDirective);
+                region.EndLinePosition = GetEndLinePosition(endRegionDirective);
             }
 
             var regions = ToHierarchy(regionList, int.MinValue, int.MaxValue);
@@ -82,27 +90,21 @@ namespace CodeNav.Mappers
         /// <returns></returns>
         private static List<CodeRegionItem> ToHierarchy(List<CodeRegionItem> regionList, int? startLine, int? endLine)
         {
-            return (from r in regionList
-                    where r.StartLine > startLine && r.EndLine < endLine && 
-                        !regionList.Any(q => IsContainedWithin(r, q) && (startLine != int.MinValue ? q.EndLine - q.StartLine < endLine - startLine : true))
-                    select new CodeRegionItem
-                    {
-                        Name = r.Name,
-                        FullName = r.Name,
-                        Id = r.Name,
-                        Tooltip = r.Name,
-                        StartLine = r.StartLine,
-                        StartLinePosition = r.StartLinePosition,
-                        EndLine = r.EndLine,
-                        EndLinePosition = r.EndLinePosition,
-                        ForegroundColor = r.ForegroundColor,
-                        BorderColor = r.BorderColor,
-                        FontSize = r.FontSize,
-                        Kind = r.Kind,
-                        Span = r.Span,
-                        Control = r.Control,
-                        Members = ToHierarchy(regionList, r.StartLine, r.EndLine).Cast<CodeItem>().ToList()
-                    }).ToList();
+            var nestedRegions = new List<CodeRegionItem>();
+
+            foreach (var region in regionList)
+            {
+                if (IsContainedWithin(region, startLine, endLine) && 
+                    regionList.Any(otherBiggerRegion => IsContainedWithin(region, otherBiggerRegion) &&
+                        (startLine != int.MinValue ? otherBiggerRegion.EndLine - otherBiggerRegion.StartLine < endLine - startLine : true)) == false)
+                {
+                    region.Members = ToHierarchy(regionList, region.StartLine, region.EndLine).Cast<CodeItem>().ToList();
+
+                    nestedRegions.Add(region);
+                }
+            }
+
+            return nestedRegions;
         }
 
         private static CodeRegionItem MapRegion(SyntaxTrivia source, ICodeViewUserControl control)
@@ -242,10 +244,15 @@ namespace CodeNav.Mappers
         /// <summary>
         /// Check if item 1 is contained within item 2
         /// </summary>
-        /// <param name="r1">Smaller Item</param>
-        /// <param name="r2">Bigger Item</param>
+        /// <param name="smallerRegion">Smaller Item</param>
+        /// <param name="biggerRegion">Bigger Item</param>
         /// <returns></returns>
-        private static bool IsContainedWithin(CodeItem r1, CodeItem r2) =>
-            r1.StartLine > r2.StartLine && r1.EndLine < r2.EndLine;
+        private static bool IsContainedWithin(CodeItem smallerRegion, CodeItem biggerRegion)
+            => smallerRegion.StartLine > biggerRegion.StartLine &&
+               smallerRegion.EndLine < biggerRegion.EndLine;
+
+        private static bool IsContainedWithin(CodeItem region, int? startLine, int? endLine)
+            => region.StartLine > startLine &&
+               region.EndLine < endLine;
     }
 }
