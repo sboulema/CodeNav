@@ -80,10 +80,16 @@ namespace CodeNav.Mappers
             source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition;
 
         private static int GetStartLine(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).StartLinePosition.Line + 1;
+            GetStartLinePosition(source).Line + 1;
 
         private static int GetEndLine(SyntaxNode source) =>
-            source.SyntaxTree.GetLineSpan(source.Span).EndLinePosition.Line + 1;
+            GetEndLinePosition(source).Line + 1;
+
+        public static LinePosition GetStartLinePosition(SyntaxToken identifier) =>
+            identifier.SyntaxTree.GetLineSpan(identifier.Span).StartLinePosition;
+
+        public static int GetStartLine(SyntaxToken identifier) =>
+            GetStartLinePosition(identifier).Line + 1;
 
         private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
         {
