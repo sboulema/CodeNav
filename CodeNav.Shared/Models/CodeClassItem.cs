@@ -1,10 +1,12 @@
 ﻿#nullable enable
 
 using CodeNav.Helpers;
+using Microsoft.VisualStudio.PlatformUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace CodeNav.Models
@@ -68,6 +70,13 @@ namespace CodeNav.Models
                     ? Visibility.Visible 
                     : Visibility.Collapsed;
             }
+        }
+
+        public ICommand ToggleIsExpandedCommand => new DelegateCommand(ToggleIsExpanded);
+        public void ToggleIsExpanded(object args)
+        {
+            IsDoubleClicked = true;
+            IsExpanded = !IsExpanded;
         }
     }
 }

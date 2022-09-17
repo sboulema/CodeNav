@@ -14,6 +14,7 @@ using System;
 using System.Runtime.Serialization;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.VisualStudio.Shell;
+using System.Threading;
 
 namespace CodeNav.Models
 {
@@ -108,6 +109,8 @@ namespace CodeNav.Models
             set => SetProperty(ref _contextMenuIsOpen, value);
         }
 
+        public bool IsDoubleClicked;
+
         #region Fonts
         private float _fontSize;
         public float FontSize
@@ -199,10 +202,20 @@ namespace CodeNav.Models
 
         #region Commands
         public ICommand ClickItemCommand => new DelegateCommand(ClickItem);
-        public void ClickItem(object args)
+        public void ClickItem() => ClickItemAsync().FireAndForget();
+
+        private async Task ClickItemAsync()
         {
+            await Task.Delay(200);
+
+            if (IsDoubleClicked)
+            {
+                IsDoubleClicked = false;
+                return;
+            }
+
             HistoryHelper.AddItemToHistory(this);
-            DocumentHelper.ScrollToLine(StartLinePosition, FilePath).FireAndForget();
+            await DocumentHelper.ScrollToLine(StartLinePosition, FilePath);
         }
 
         public ICommand GoToDefinitionCommand => new DelegateCommand(GoToDefinition);
