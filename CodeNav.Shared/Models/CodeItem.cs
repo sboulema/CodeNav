@@ -14,7 +14,6 @@ using System;
 using System.Runtime.Serialization;
 using Task = System.Threading.Tasks.Task;
 using Microsoft.VisualStudio.Shell;
-using System.Threading;
 
 namespace CodeNav.Models
 {
@@ -229,6 +228,13 @@ namespace CodeNav.Models
 
         public ICommand SelectInCodeCommand => new DelegateCommand(SelectInCode);
         public void SelectInCode(object args) => DocumentHelper.SelectLines(Span).FireAndForget();
+
+        public ICommand EditLineCommand => new DelegateCommand(EditLine);
+        public void EditLine(object args)
+        {
+            IsDoubleClicked = true;
+            DocumentHelper.EditLine(StartLinePosition, FilePath).FireAndForget();
+        }
 
         public ICommand CopyNameCommand => new DelegateCommand(CopyName);
         public void CopyName(object args) => Clipboard.SetText(Name);

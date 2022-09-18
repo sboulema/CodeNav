@@ -88,14 +88,13 @@
                                             BorderThickness="0"
                                             Margin="4,0,0,0">
                                         <Button.InputBindings>
-
-                                            <MouseBinding
-                                                Gesture="LeftDoubleClick"
-                                                Command="{Binding Path=ToggleIsExpandedCommand}" />
                                             <MouseBinding
                                                 Gesture="LeftClick"
                                                 Command="{Binding Path=ClickItemCommand}"
                                                 CommandParameter="{Binding StartLinePosition}" />
+                                            <MouseBinding
+                                                Gesture="LeftDoubleClick"
+                                                Command="{Binding Path=ToggleIsExpandedCommand}" />
                                         </Button.InputBindings>
                                     </Button>
                                 </Border>

@@ -8,8 +8,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <DataTemplate DataType="{x:Type models:CodeItem}">
-        <Button Command="{Binding Path=ClickItemCommand}" CommandParameter="{Binding StartLinePosition}" 
-                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
+        <Button Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
                 ContextMenu="{StaticResource ItemContextMenu}"
                 BorderThickness="0" 
                 HorizontalContentAlignment="Stretch"
@@ -18,6 +17,16 @@
                 Background="{Binding BackgroundBrush}"
                 Margin="-3"
                 Opacity="{Binding Opacity}">
+
+            <Button.InputBindings>
+                <MouseBinding
+                    Gesture="LeftClick"
+                    Command="{Binding Path=ClickItemCommand}"
+                    CommandParameter="{Binding StartLinePosition}" />
+                <MouseBinding
+                    Gesture="LeftDoubleClick"
+                    Command="{Binding Path=EditLineCommand}" />
+            </Button.InputBindings>
 
             <Grid>
                 <Grid.ColumnDefinitions>

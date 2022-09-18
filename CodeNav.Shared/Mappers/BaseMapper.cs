@@ -91,6 +91,12 @@ namespace CodeNav.Mappers
         public static int GetStartLine(SyntaxToken identifier) =>
             GetStartLinePosition(identifier).Line + 1;
 
+        public static LinePosition GetStartLinePosition(SyntaxNode source, SyntaxTokenList modifiers) =>
+            source.SyntaxTree.GetLineSpan(modifiers.Span).StartLinePosition;
+
+        public static int GetStartLine(SyntaxNode source, SyntaxTokenList modifiers) =>
+            GetStartLinePosition(source, modifiers).Line + 1;
+
         private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
         {
             if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.SealedKeyword ||

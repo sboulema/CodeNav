@@ -15,6 +15,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using Task = System.Threading.Tasks.Task;
 
 namespace CodeNav.Helpers
@@ -121,6 +122,39 @@ namespace CodeNav.Helpers
 
                 documentView.TextView.Selection.Select(line.Extent, false);
                 documentView.TextView.ViewScroller.EnsureSpanVisible(line.Extent, EnsureSpanVisibleOptions.AlwaysCenter);
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+        }
+
+        public static async Task EditLine(LinePosition? linePosition, string filePath = "")
+        {
+            if (linePosition == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var documentView = await VS.Documents.GetActiveDocumentViewAsync();
+
+                if (documentView?.FilePath != filePath)
+                {
+                    documentView = await VS.Documents.OpenInPreviewTabAsync(filePath);
+                }
+
+                if (documentView?.TextBuffer == null ||
+                    documentView?.TextView == null)
+                {
+                    return;
+                }
+
+                var line = documentView.TextView.TextSnapshot.GetLineFromLineNumber(linePosition.Value.Line);
+                var point = new SnapshotPoint(line.Snapshot, line.Start.Position + linePosition.Value.Character);
+
+                documentView.TextView.Caret.MoveTo(point);
             }
             catch (Exception)
             {
