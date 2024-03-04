@@ -42,4 +42,6 @@ public class General : BaseOptionModel<General>
     public int SortOrder { get; set; } = 0;
 
     public bool UpdateWhileTyping { get; set; } = false;
+
+    public bool ShowRegions { get; set; } = true;
 }

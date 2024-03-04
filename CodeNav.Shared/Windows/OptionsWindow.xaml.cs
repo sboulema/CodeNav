@@ -31,7 +31,8 @@ namespace CodeNav.Windows
                 UpdateWhileTyping = General.Instance.UpdateWhileTyping,
                 Font = SettingsHelper.Font,
                 BackgroundColor = General.Instance.BackgroundColor,
-                HighlightColor = General.Instance.HighlightColor
+                HighlightColor = General.Instance.HighlightColor,
+                ShowRegions = General.Instance.ShowRegions,
             };
         }
 
@@ -103,6 +104,7 @@ namespace CodeNav.Windows
             General.Instance.AutoLoadLineThreshold = ViewModel.AutoLoadLineThreshold;
             General.Instance.BackgroundColor = ViewModel.BackgroundColor;
             General.Instance.HighlightColor = ViewModel.HighlightColor;
+            General.Instance.ShowRegions = ViewModel.ShowRegions;
 
             General.Instance.Save();
 
@@ -134,6 +136,7 @@ namespace CodeNav.Windows
             General.Instance.UpdateWhileTyping = false;
             General.Instance.AutoLoadLineThreshold = 0;
             General.Instance.BackgroundColor = ColorHelper.Transparent();
+            General.Instance.ShowRegions = true;
             General.Instance.Save();
 
             SettingsHelper.Refresh();

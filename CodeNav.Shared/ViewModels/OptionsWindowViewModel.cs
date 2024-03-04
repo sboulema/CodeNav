@@ -35,6 +35,14 @@ namespace CodeNav.Shared.ViewModels
             set => SetProperty(ref _showHistoryIndicators, value);
         }
 
+        private bool _showRegions = true;
+
+        public bool ShowRegions
+        {
+            get => _showRegions;
+            set => SetProperty(ref _showRegions, value);
+        }
+
         private bool _disableHighlight = false;
 
         public bool DisableHighlight

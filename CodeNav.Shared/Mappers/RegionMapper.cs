@@ -26,7 +26,8 @@ namespace CodeNav.Mappers
         {
             var regionList = new List<CodeRegionItem>();
 
-            if (tree == null)
+            if (tree == null ||
+                !General.Instance.ShowRegions)
             {
                 return regionList;
             }
@@ -178,8 +179,12 @@ namespace CodeNav.Mappers
         /// <returns></returns>
         public static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
         {
-            if (item?.StartLine == null) return false;
-            
+            if (item?.StartLine == null ||
+                !General.Instance.ShowRegions)
+            {
+                return false;
+            }
+
             foreach (var region in regions)
             {
                 if (region?.Kind == CodeItemKindEnum.Region)

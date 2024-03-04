@@ -102,6 +102,10 @@
                             Show the filter toolbar
                         </CheckBox>
 
+                        <CheckBox IsChecked="{Binding ShowRegions, Mode=TwoWay}" Margin="0,5">
+                            Show regions
+                        </CheckBox>
+
                         <CheckBox IsChecked="{Binding UseXMLComments, Mode=TwoWay}" Margin="0,5">
                             Use XML comments for method tooltips
                         </CheckBox>
