@@ -237,6 +237,7 @@ namespace CodeNav.Mappers
                     return NamespaceMapper.MapNamespace(member as NamespaceDeclarationSyntax, control, semanticModel, tree);
                 #endif
                 case SyntaxKind.RecordDeclaration:
+                case SyntaxKind.RecordStructDeclaration:
                     return RecordMapper.MapRecord(member as RecordDeclarationSyntax, control, semanticModel);
                 case SyntaxKind.ConstructorDeclaration:
                     return MethodMapper.MapConstructor(member as ConstructorDeclarationSyntax, control, semanticModel);
