@@ -24,7 +24,8 @@
                      Background="Transparent"
                      Text="{Binding FilterText, Mode=TwoWay}"
                      Foreground="{DynamicResource {x:Static platformUI:EnvironmentColors.ToolWindowTextBrushKey}}" 
-                     CaretBrush="{DynamicResource {x:Static platformUI:EnvironmentColors.ToolWindowTextBrushKey}}"/>
+                     CaretBrush="{DynamicResource {x:Static platformUI:EnvironmentColors.ToolWindowTextBrushKey}}"
+                     BorderBrush="{DynamicResource {x:Static platformUI:EnvironmentColors.ToolWindowBorderBrushKey}}"/>
             <TextBlock IsHitTestVisible="False" Text="Enter text to filter by..." VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0,0,10,0" Foreground="DarkGray">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">

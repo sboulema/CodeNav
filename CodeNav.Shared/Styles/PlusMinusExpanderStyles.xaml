@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
-                    xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog">
+                    xmlns:catalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+                    xmlns:vsShell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Menus/ItemContextMenu.xaml"/>
@@ -64,8 +65,7 @@
                                 <Border BorderThickness="0" x:Name="ExpanderHeaderBorder">
                                     <Border.BorderBrush>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                            <GradientStop Color="DarkGray" Offset="0.0" />
-                                            <GradientStop Color="LightGray" Offset="0.5" />
+                                            <GradientStop Color="{DynamicResource {x:Static vsShell:EnvironmentColors.ToolWindowBorderColorKey}}" Offset="0.0" />
                                             <GradientStop Color="Transparent" Offset="1" />
                                         </LinearGradientBrush>
                                     </Border.BorderBrush>

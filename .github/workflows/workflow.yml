@@ -94,17 +94,9 @@ jobs:
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Open VSIX Gallery - VS2019
-        uses: leandro-hermes/action-upload-file@v1.1.0
-        with:
-          host: 'www.vsixgallery.com'
-          path: '/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues'
-          https: true 
-          filePath: CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
+        run: |
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2019.vsix"'
 
       - name: Publish to Open VSIX Gallery - VS2022
-        uses: leandro-hermes/action-upload-file@v1.1.0
-        with:
-          host: 'www.vsixgallery.com'
-          path: '/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues'
-          https: true 
-          filePath: CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
+        run: |
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix"'

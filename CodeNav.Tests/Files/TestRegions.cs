@@ -51,6 +51,11 @@ namespace CodeNav.Tests.Files
         {
 
         }
+
+        void _MethodWithoutAccessModifier()
+        {
+
+        }
         #endregion
     }
 }
