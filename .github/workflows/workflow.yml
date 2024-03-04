@@ -95,7 +95,7 @@ jobs:
 
       - name: Publish to Open VSIX Gallery - VS2019
         run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2019.vsix"'
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix"'
 
       - name: Publish to Open VSIX Gallery - VS2022
         run: |
