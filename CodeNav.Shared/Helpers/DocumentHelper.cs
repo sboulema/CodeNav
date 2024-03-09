@@ -86,7 +86,7 @@ namespace CodeNav.Helpers
             try
             {
                 var documentView = await VS.Documents.GetActiveDocumentViewAsync();
-                return documentView?.TextView?.TextViewLines?.Count ?? 0;
+                return documentView?.TextBuffer?.CurrentSnapshot?.AsText().Lines.Count ?? 0;
             }
             catch (Exception)
             {
