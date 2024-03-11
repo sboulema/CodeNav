@@ -5,11 +5,13 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Styles/BookmarkButtonStyle.xaml"/>
+        <ResourceDictionary Source="../Styles/ContextMenuStyle.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <ContextMenu
         x:Key="ItemContextMenu"
-        IsOpen="{Binding Path=ContextMenuIsOpen, Mode=TwoWay}">
+        IsOpen="{Binding Path=ContextMenuIsOpen, Mode=TwoWay}"
+        Style="{StaticResource ContextMenuStyle}">
 
         <MenuItem
             Header="Go to Definition"
