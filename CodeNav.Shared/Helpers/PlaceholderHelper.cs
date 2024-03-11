@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Imaging;
 using System.Collections.Generic;
 using System.Windows.Media;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace CodeNav.Helpers
 {
@@ -32,7 +33,7 @@ namespace CodeNav.Helpers
                             Name = name,
                             FullName = name,
                             Id = name,
-                            ForegroundColor = Colors.Black,
+                            ForegroundColor = ColorHelper.ToMediaColor(EnvironmentColors.ToolWindowTextColorKey),
                             BorderColor = Colors.DarkGray,
                             Moniker = moniker,
                             IsExpanded = true
