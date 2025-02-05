@@ -21,7 +21,7 @@ namespace CodeNav.Controls
         }
 
         private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
-            => WpfHelper.FindParent(this)?.UpdateDocument();
+            => WpfHelper.FindParent(this)?.UpdateDocument(force: true);
 
         private void ButtonSortByFileOrder_OnClick(object sender, RoutedEventArgs e)
             => Sort(SortOrderEnum.SortByFile).FireAndForget();

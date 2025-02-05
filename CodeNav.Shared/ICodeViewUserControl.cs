@@ -14,7 +14,12 @@ namespace CodeNav
     {
         CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
-        void UpdateDocument(string filePath = "");
+        /// <summary>
+        /// Update the Code Document View Model
+        /// </summary>
+        /// <param name="filePath">Optional path to use as code source file</param>
+        /// <param name="force">Optional boolean to indicate to update documents that may contain too many lines</param>
+        void UpdateDocument(string filePath = "", bool force = false);
 
         void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor);
 
@@ -30,6 +35,6 @@ namespace CodeNav
 
         IDisposable? UpdateWhileTypingSubscription { get; set; }
 
-        IDisposable? FileActionOccuredSubscription { get; set; }
+        IDisposable? FileActionOccurredSubscription { get; set; }
     }
 }

@@ -231,7 +231,8 @@ namespace CodeNav.Helpers
             CodeDocumentViewModel codeDocumentViewModel,
             ColumnDefinition? column = null,
             RowDefinition? row = null,
-            string filePath = "")
+            string filePath = "",
+            bool force = false)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -242,7 +243,7 @@ namespace CodeNav.Helpers
 
             try
             {
-                if (await IsLargeDocument())
+                if (await IsLargeDocument() && !force)
                 {
                     codeDocumentViewModel.CodeDocument = PlaceholderHelper.CreateLineThresholdPassedItem();
                     return;
@@ -270,7 +271,7 @@ namespace CodeNav.Helpers
                 codeDocumentViewModel.SortOrder = (SortOrderEnum)general.SortOrder;
                 SortHelper.Sort(items, (SortOrderEnum)general.SortOrder);
 
-                // Set the new list of codeitems as DataContext
+                // Set the new list of code items as DataContext
                 codeDocumentViewModel.CodeDocument = items;
 
                 // Apply highlights

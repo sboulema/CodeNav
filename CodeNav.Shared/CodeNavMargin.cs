@@ -265,7 +265,7 @@ namespace CodeNav
             _control.CaretPositionChangedSubscription?.Dispose();
             _control.TextContentChangedSubscription?.Dispose();
             _control.UpdateWhileTypingSubscription?.Dispose();
-            _control.FileActionOccuredSubscription?.Dispose();
+            _control.FileActionOccurredSubscription?.Dispose();
 
             GC.SuppressFinalize(this);
             _isDisposed = true;

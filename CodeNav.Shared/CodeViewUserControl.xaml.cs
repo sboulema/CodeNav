@@ -27,7 +27,7 @@ namespace CodeNav
         public IDisposable? CaretPositionChangedSubscription { get; set; }
         public IDisposable? TextContentChangedSubscription { get; set; }
         public IDisposable? UpdateWhileTypingSubscription { get; set; }
-        public IDisposable? FileActionOccuredSubscription { get; set; }
+        public IDisposable? FileActionOccurredSubscription { get; set; }
 
         public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
@@ -35,7 +35,7 @@ namespace CodeNav
         {
             InitializeComponent();
 
-            // Setup viewmodel as datacontext
+            // Setup view model as data context
             CodeDocumentViewModel = new CodeDocumentViewModel();
             DataContext = CodeDocumentViewModel;
 
@@ -54,9 +54,9 @@ namespace CodeNav
             var textBuffer2 = documentView?.TextView?.TextBuffer as ITextBuffer2;
 
             // Subscribe to Document save events
-            if (document != null && FileActionOccuredSubscription == null)
+            if (document != null && FileActionOccurredSubscription == null)
             {
-                FileActionOccuredSubscription = Observable
+                FileActionOccurredSubscription = Observable
                     .FromEventPattern<TextDocumentFileActionEventArgs>(
                         h => document.FileActionOccurred += h,
                         h => document.FileActionOccurred -= h)
@@ -185,9 +185,10 @@ namespace CodeNav
         public void ToggleAll(bool isExpanded, List<CodeItem>? root = null)
             => OutliningHelper.ToggleAll(root ?? CodeDocumentViewModel.CodeDocument, isExpanded);
 
-        public void UpdateDocument(string filePath = "")
+        /// <inheritdoc/>
+        public void UpdateDocument(string filePath = "", bool force = false)
             => ThreadHelper.JoinableTaskFactory.RunAsync(async () => await DocumentHelper.UpdateDocument(this, CodeDocumentViewModel,
-                _column, null, filePath));
+                _column, null, filePath, force));
 
         public void HighlightCurrentItem(CaretPositionChangedEventArgs e, Color backgroundBrushColor)
             => HighlightHelper.HighlightCurrentItem(
