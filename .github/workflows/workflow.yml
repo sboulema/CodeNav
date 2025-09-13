@@ -1,4 +1,4 @@
-name: CodeNav
+﻿name: CodeNav
 
 on:
   push:
@@ -7,16 +7,16 @@ on:
       - 'feature/**'
 
 env:
-  version: '8.9.${{ github.run_number }}'
+  version: '9.0.${{ github.run_number }}'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:
   build:
-    name: Build
+    name: 🛠️ Build
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Update Assembly Version
         uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
@@ -56,17 +56,20 @@ jobs:
             readme.md
 
   release:
-    name: Release
+    if: github.ref_name == 'main'
+    name: 🚀 Release
     needs: build
     runs-on: windows-latest
     environment: Release
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
+        with:
+          merge-multiple: true
 
       - name: Tag release
         id: tag_release
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           custom_tag: '${{ env.version }}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -78,6 +81,7 @@ jobs:
           name: ${{ steps.tag_release.outputs.new_tag }}
           body: ${{ steps.tag_release.outputs.changelog }}
           artifacts: "**/*.vsix"
+          skipIfReleaseExists: true
 
       - name: Publish to Marketplace - VS2019
         uses: cezarypiatek/VsixPublisherAction@1.1

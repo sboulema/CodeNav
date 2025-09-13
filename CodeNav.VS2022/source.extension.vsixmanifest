@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="dcdbcca4-3a88-432f-ba04-eb4a4cb64437" Version="8.2" Language="en-US" Publisher="Samir Boulema" />
+        <Identity Id="dcdbcca4-3a88-432f-ba04-eb4a4cb64437" Version="8.3" Language="en-US" Publisher="Samir Boulema" />
         <DisplayName>CodeNav 2022</DisplayName>
         <Description xml:space="preserve">Show the code structure of your current document</Description>
         <MoreInfo>https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav</MoreInfo>
@@ -13,7 +13,7 @@
         <Tags>code, structure, navigation, map, codemap</Tags>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,19.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
     </Installation>
