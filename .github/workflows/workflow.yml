@@ -86,21 +86,21 @@ jobs:
       - name: Publish to Marketplace - VS2019
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: CodeNav/CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
-          publish-manifest-file: CodeNav/publish-manifest.VS2019.json
+          extension-file: ${{ github.workspace }}/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
+          publish-manifest-file: publish-manifest.VS2019.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
           
       - name: Publish to Marketplace - VS2022
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: CodeNav/CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
-          publish-manifest-file: CodeNav/publish-manifest.VS2022.json
+          extension-file: ${{ github.workspace }}/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
+          publish-manifest-file: publish-manifest.VS2022.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Open VSIX Gallery - VS2019
         run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix"'
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ github.workspace }}/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix"'
 
       - name: Publish to Open VSIX Gallery - VS2022
         run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"CodeNav/CodeNav/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix"'
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ github.workspace }}/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix"'
