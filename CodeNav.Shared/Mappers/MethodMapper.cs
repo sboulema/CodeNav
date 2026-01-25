@@ -54,7 +54,7 @@ namespace CodeNav.Mappers
             if (statementsCodeItems.Any(statement => statement.IsVisible == Visibility.Visible))
             {
                 // Map method as item containing statements
-                item = BaseMapper.MapBase<CodeClassItem>(node, identifier,modifiers, control, semanticModel);
+                item = BaseMapper.MapBase<CodeClassItem>(node, identifier, modifiers, control, semanticModel);
                 ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
                 ((CodeClassItem)item).BorderColor = Colors.DarkGray;
             }
@@ -70,8 +70,6 @@ namespace CodeNav.Mappers
             item.Id = IdMapper.MapId(item.FullName, parameterList);
             item.Kind = kind;
             item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-            item.StartLine = BaseMapper.GetStartLine(node, modifiers);
-            item.StartLinePosition = BaseMapper.GetStartLinePosition(node, modifiers);
 
             if (TriviaSummaryMapper.HasSummary(node) && SettingsHelper.UseXMLComments)
             {
