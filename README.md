@@ -20,10 +20,10 @@ Visual Studio extension to show the code structure of your current document
 - Hide, ignore or change opacity of items based on item kind (method, property), access (public, private), empty state
 - Bookmarks
 
-## Features broken
+### Features broken in v10
 - Synced collapsing/expanding ranges
 
-## Features dropped
+### Features dropped in v10
 - Top Margin
 - Toggle visibility by double-clicking the splitter bar
 - Show as an editor margin (left side / right side / top side / hidden) 
@@ -33,7 +33,7 @@ Visual Studio extension to show the code structure of your current document
 ## Language support
 - C#
 
-## Languages dropped
+### Languages dropped in v10
 - Visual Basic
 - JavaScript
 - CSS
@@ -46,7 +46,7 @@ Visual Studio extension to show the code structure of your current document
 [Open VSIX Gallery](https://www.vsixgallery.com/extension/CodeNav.dcdbcca4-3a88-432f-ba04-eb4a4cb64437)
 
 ## Screenshots
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview-dark.png)
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-light.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-dark.png)
 
 #### Filter window
 ![Filters](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Filters.png) 
@@ -57,7 +57,7 @@ Visual Studio extension to show the code structure of your current document
 #### Bookmarks
 ![Bookmarks](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Bookmarks.png)
 
-# Links
+## Links
 
 [DataTriggers in a XAML ItemsControl](https://github.com/microsoft/VSExtensibility/issues/456)
 

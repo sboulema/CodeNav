@@ -5,7 +5,6 @@ using CodeNav.ViewModels;
 using CodeNav.Constants;
 using CodeNav.Mappers;
 using CodeNav.Extensions;
-using Microsoft.VisualStudio.Extensibility.UI;
 
 namespace CodeNav.Languages.CSharp.Mappers;
 
