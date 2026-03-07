@@ -1,0 +1,44 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vs="http://schemas.microsoft.com/visualstudio/extensibility/2022/xaml"
+                    xmlns:styles="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+                    xmlns:colors="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0">
+
+    <Style x:Key="HighlightNameStyle" TargetType="Run">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.ToolWindowTextKey}}" />
+        <Style.Triggers>
+            <!-- Bold font weight for highlighted item -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=DataContext.IsHighlighted, RelativeSource={RelativeSource Self}}" Value="True"/>
+                    <Condition Binding="{Binding Path=DataContext.DataTemplateType, RelativeSource={RelativeSource Self}}" Value=""/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="FontWeight" Value="Bold" />
+            </MultiDataTrigger>
+            <!-- Regular font weight for normal item -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=DataContext.IsHighlighted, RelativeSource={RelativeSource Self}}" Value="False"/>
+                    <Condition Binding="{Binding Path=DataContext.DataTemplateType, RelativeSource={RelativeSource Self}}" Value=""/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="FontWeight" Value="Regular" />
+            </MultiDataTrigger>
+            <!-- Semi-Bold font weight for normal region item -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=DataContext.IsHighlighted, RelativeSource={RelativeSource Self}}" Value="False"/>
+                    <Condition Binding="{Binding Path=DataContext.DataTemplateType, RelativeSource={RelativeSource Self}}" Value="Region"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </MultiDataTrigger>
+            <!-- Black foreground for hovered items -->
+            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBlock}}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.ScreenTipTextKey}}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.ScreenTipTextKey}}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

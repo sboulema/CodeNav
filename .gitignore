@@ -1,21 +1,6 @@
+/src/bin
+/src/obj
 /.vs
-/CodeNav/*.user
-/CodeNav/bin
-/CodeNav/obj
-/packages
-/Backup
-/UpgradeLog.htm
-/*.user
-/CodeNav.Tests/bin
-/CodeNav.Tests/obj
-/CodeNav.Nunit/bin
-/CodeNav.Nunit/obj
-/CodeNav.Tests/*.user
-/CodeNav.Tests/Files/.vs
-/Visual Studio 2019
-/CodeNav.VS2019/obj
-/CodeNav.VS2019/bin
-/CodeNav.VS2022/obj
-/CodeNav.VS2022/bin
-/CodeNav.VS2022/*.user
-/CodeNav.VS2019/*.user
+/src/CodeNav.csproj.user
+/test/obj
+/test/bin

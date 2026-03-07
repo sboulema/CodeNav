@@ -1,4 +1,0 @@
-﻿namespace CodeNav.Tests.Files
-{
-
-}

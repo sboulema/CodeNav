@@ -1,0 +1,164 @@
+﻿<DataTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:vs="http://schemas.microsoft.com/visualstudio/extensibility/2022/xaml"
+              xmlns:styles="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+              xmlns:colors="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0">
+
+    <DataTemplate.Resources>
+        <!-- GridView Styles -->
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="{DynamicResource {x:Static styles:VsBrushes.GridLineKey}}"/>
+        </Style>
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="{DynamicResource {x:Static styles:VsBrushes.GridHeadingBackgroundKey}}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.GridHeadingTextKey}}"/>
+            <Setter Property="Margin" Value="-4,-2,0,0"/>
+            <Setter Property="Padding" Value="4,2,0,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <!-- General Styles -->
+        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogComboBoxStyleKey}}"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogTextBoxStyleKey}}"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </DataTemplate.Resources>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ListView ItemsSource="{Binding FilterRules}" SelectedItem="{Binding SelectedFilterRule}">
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="Kind" Width="150">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border 
+                                    BorderBrush="{DynamicResource {x:Static styles:VsBrushes.StartPageTextSubHeadingSelectedKey}}"
+                                    BorderThickness="0,0,1,0"
+                                    Margin="-6,-3,-6,-3">
+                                    <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
+                                        <ComboBox SelectedItem="{Binding Kind, Mode=TwoWay}" ItemsSource="{Binding KindArray}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Access" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox SelectedItem="{Binding Access}" ItemsSource="{Binding AccessArray}" IsEnabled="{Binding IsAccessEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Empty" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border 
+                                    BorderBrush="{DynamicResource {x:Static styles:VsBrushes.StartPageTextSubHeadingSelectedKey}}"
+                                    BorderThickness="0,0,1,0"
+                                    Margin="-6,-3,-6,-3">
+                                    <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
+                                        <CheckBox IsChecked="{Binding IsEmpty}" IsEnabled="{Binding IsEmptyEnabled}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Hide" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsHidden}" IsEnabled="{Binding IsHideEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Ignore" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsIgnored}" IsEnabled="{Binding IsIgnoreEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Opacity" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Opacity}" IsEnabled="{Binding IsOpacityEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal">
+            <Button
+                Command="{Binding Path=AddFilterCommand}"
+                ToolTip="Add filter"
+                Margin="0,0,4,0">
+                <Button.Content>
+                    <vs:Image Source="KnownMonikers.NewFilter" Width="16" Height="16" />
+                </Button.Content>
+            </Button>
+
+            <Button
+                Command="{Binding Path=DeleteFilterCommand}"
+                ToolTip="Delete filter">
+                <Button.Content>
+                    <vs:Image Source="KnownMonikers.DeleteFilter" Width="16" Height="16" />
+                </Button.Content>
+            </Button>
+        </StackPanel>
+
+        <GroupBox
+            Grid.Row="2"
+            Header="Filter help"
+            Margin="0,5"
+            Padding="5">
+            <StackPanel>
+                <TextBlock>
+                    A filter rule consists of three parts: A code item kind, modifiers and actions.
+                </TextBlock>
+                <TextBlock>
+                    <Run FontWeight="Bold">Kind</Run>
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Kind:</Run> Type of code item the filter rule should be applied to
+                </TextBlock>
+                <TextBlock>
+                    <Run FontWeight="Bold">Modifiers</Run>
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Access:</Run> Match code items with access modifier
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Empty:</Run> Match code items that do not have visible child items
+                </TextBlock>
+                <TextBlock>
+                    <Run FontWeight="Bold">Actions</Run>
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Hide:</Run> Code item, including any child items, will not be shown
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Ignore:</Run> Code item will not be shown, but its child items will be shown
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Opacity:</Run> Code items opacity, where 0 is transparent and 100 is opaque
+                </TextBlock>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+
+</DataTemplate>

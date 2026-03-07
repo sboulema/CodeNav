@@ -1,4 +1,4 @@
-﻿name: CodeNav
+name: CodeNav
 
 on:
   push:
@@ -7,8 +7,10 @@ on:
       - 'feature/**'
 
 env:
-  version: '9.0.${{ github.run_number }}'
+  version: '10.0.${{ github.run_number }}'
+  dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
+  vsixPath: ${{ github.workspace }}/src/bin/Release/net8.0-windows8.0/CodeNav.vsix
 
 jobs:
   build:
@@ -16,44 +18,27 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Update Assembly Version
-        uses: dannevesdantas/set-version-assemblyinfo@v.1.0.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
         with:
-          version: ${{ env.version }}
+          dotnet-version: ${{ env.dotnetVersion }}.x
 
-      - name: Update Vsix Version (VS2019)
-        uses: cezarypiatek/VsixVersionAction@1.2
-        with:
-          version: ${{ env.version }}
-          vsix-manifest-file: 'CodeNav.VS2019\source.extension.vsixmanifest'
-
-      - name: Update Vsix Version (VS2022)
-        uses: cezarypiatek/VsixVersionAction@1.2
-        with:
-          version: ${{ env.version }}
-          vsix-manifest-file: 'CodeNav.VS2022\source.extension.vsixmanifest'
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: NuGet restore
-        run: nuget restore CodeNav.sln -ConfigFile nuget.config
+      - name: Restore/Build/Test
+        run: dotnet test
 
       - name: Build VSIX
-        run: msbuild CodeNav.sln /t:Rebuild /p:Configuration=Release
-        env: 
-          DeployExtension: False
+        run: dotnet publish src -p:Version=${{ env.version }}
 
       - name: Publish Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: CodeNav
           path: |
-            **\*.vsix
-            publish-manifest.*.json
-            readme.md
+            ${{ env.vsixPath }}
+            publish-manifest.json
+            README.md
 
   release:
     if: github.ref_name == 'main'
@@ -61,11 +46,11 @@ jobs:
     needs: build
     runs-on: windows-latest
     environment: Release
+    permissions:
+        contents: write
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v5
-        with:
-          merge-multiple: true
+        uses: actions/download-artifact@v8
 
       - name: Tag release
         id: tag_release
@@ -80,27 +65,16 @@ jobs:
           tag: ${{ steps.tag_release.outputs.new_tag }}
           name: ${{ steps.tag_release.outputs.new_tag }}
           body: ${{ steps.tag_release.outputs.changelog }}
-          artifacts: "**/*.vsix"
+          artifacts: ${{ env.vsixPath }}
           skipIfReleaseExists: true
 
-      - name: Publish to Marketplace - VS2019
+      - name: Publish to Marketplace
         uses: cezarypiatek/VsixPublisherAction@1.1
         with:
-          extension-file: ${{ github.workspace }}/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix
-          publish-manifest-file: publish-manifest.VS2019.json
-          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          
-      - name: Publish to Marketplace - VS2022
-        uses: cezarypiatek/VsixPublisherAction@1.1
-        with:
-          extension-file: ${{ github.workspace }}/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix
-          publish-manifest-file: publish-manifest.VS2022.json
+          extension-file: ${{ env.vsixPath }}
+          publish-manifest-file: publish-manifest.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
-      - name: Publish to Open VSIX Gallery - VS2019
+      - name: Publish to Open VSIX Gallery
         run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ github.workspace }}/CodeNav.VS2019/bin/release/CodeNav.VS2019.vsix"'
-
-      - name: Publish to Open VSIX Gallery - VS2022
-        run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ github.workspace }}/CodeNav.VS2022/bin/release/CodeNav.VS2022.vsix"'
+           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ env.vsixPath }}"'
