@@ -21,6 +21,7 @@
 	
   <ItemGroup>
     <None Remove="Resources\Logo_90x90.png" />
+    <None Remove="Resources\Preview.png" />
     <None Remove="ToolWindows\CodeNavToolWindowControl.xaml" />
     <None Remove="ToolWindows\Templates\ItemContextMenu.xaml" />
     <None Remove="ToolWindows\Templates\HighlightNameStyle.xaml" />
@@ -31,6 +32,7 @@
 	
   <ItemGroup>
     <Content Include="Resources\Logo_90x90.png" />
+    <Content Include="Resources\Preview.png" />
   </ItemGroup>
 
   <ItemGroup>

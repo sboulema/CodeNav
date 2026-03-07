@@ -27,7 +27,7 @@ internal class CodeNavExtension : Extension
             // TODO: BUG? License file is missing
             //License = "Resources/License.txt",
             Icon = "Resources/Logo_90x90.png",
-            PreviewImage = "Resources/Screenshot.png",
+            PreviewImage = "Resources/Preview.png",
             InstallationTargetVersion = "[17.14,19.0)",
         },
     };

@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/DocumentOutline_256x.png" width="90"/>
+<img src="https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Logo_90x90.png" />
 
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
@@ -46,19 +46,16 @@ Visual Studio extension to show the code structure of your current document
 [Open VSIX Gallery](https://www.vsixgallery.com/extension/CodeNav.dcdbcca4-3a88-432f-ba04-eb4a4cb64437)
 
 ## Screenshots
-![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview-dark.png)
+![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Preview.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Preview-dark.png)
 
 #### Filter window
-![Filter window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Filters.png) 
+![Filters](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Filters.png) 
 
 #### Options window
-![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Options%20-%20General.png) ![Options window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Options%20-%20Fonts.png)
-
-#### Tool window
-![Tool window](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/ToolWindow.png) 
+![Settings](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Settings.png)
 
 #### Bookmarks
-![Bookmarks](https://i.imgur.com/SqLgsXw.png) ![Bookmark styles](https://raw.githubusercontent.com/sboulema/CodeNav/main/Resources/Bookmark%20styles.png)
+![Bookmarks](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Bookmarks.png)
 
 # Links
 
