@@ -55,7 +55,6 @@ jobs:
             readme.md
 
   release:
-    if: github.ref_name == 'main'
     name: 🚀 Release
     needs: build
     runs-on: windows-latest
