@@ -19,3 +19,8 @@
 /CodeNav.VS2022/bin
 /CodeNav.VS2022/*.user
 /CodeNav.VS2019/*.user
+/src/bin/Debug/net8.0-windows8.0
+/src/obj
+*.user
+/test/bin/Debug/net8.0-windows8.0
+/test/obj
