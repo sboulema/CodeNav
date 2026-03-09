@@ -52,7 +52,7 @@ jobs:
           path: |
             **\*.vsix
             publish-manifest.*.json
-            readme.md
+            readme.*.md
 
   release:
     name: 🚀 Release
