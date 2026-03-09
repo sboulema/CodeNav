@@ -27,18 +27,18 @@ public static class BaseMapper
     private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
     {
-        var element = Activator.CreateInstance<T>();
+        var codeItem = Activator.CreateInstance<T>();
 
-        element.Name = name;
-        element.FullName = GetFullName(source, name, semanticModel);
-        element.FilePath = string.IsNullOrEmpty(source.SyntaxTree.FilePath) ? null : new Uri(source.SyntaxTree.FilePath);
-        element.Id = element.FullName;
-        element.Tooltip = name;
-        element.Span = source.Span;
-        element.Access = MapAccess(modifiers, source);
-        element.CodeDocumentViewModel = codeDocumentViewModel;
+        codeItem.Name = name;
+        codeItem.FullName = GetFullName(source, name, semanticModel);
+        codeItem.FilePath = string.IsNullOrEmpty(source.SyntaxTree.FilePath) ? null : new Uri(source.SyntaxTree.FilePath);
+        codeItem.Id = codeItem.FullName;
+        codeItem.Tooltip = name;
+        codeItem.Span = source.Span;
+        codeItem.Access = MapAccess(modifiers, source);
+        codeItem.CodeDocumentViewModel = codeDocumentViewModel;
 
-        return element;
+        return codeItem;
     }
 
     private static string GetFullName(SyntaxNode source, string name, SemanticModel semanticModel)

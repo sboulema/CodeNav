@@ -22,6 +22,7 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
             IsEmptyEnabled = FilterRuleMapper.MapEmpty(value);
             IsHideEnabled = FilterRuleMapper.MapHide(value);
             IsIgnoreEnabled = FilterRuleMapper.MapIgnore(value);
+            IsOpacityEnabled = FilterRuleMapper.MapOpacity(Hide, Ignore);
         }
     }
 

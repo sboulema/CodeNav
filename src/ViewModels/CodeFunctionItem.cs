@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Text;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace CodeNav.ViewModels;
 
@@ -11,6 +10,4 @@ public class CodeFunctionItem : CodeItem
 
     [DataMember]
     public string ReturnType { get; set; } = string.Empty;
-
-    public TextSpan IdentifierSpan { get; set; }
 }

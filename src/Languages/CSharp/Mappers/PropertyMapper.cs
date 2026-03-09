@@ -12,36 +12,37 @@ public class PropertyMapper
     public static CodePropertyItem MapProperty(PropertyDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
-        item.ReturnType = TypeMapper.Map(member.Type);
+        var codeItem = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        codeItem.IdentifierSpan = member.Identifier.Span;
+        codeItem.ReturnType = TypeMapper.Map(member.Type);
 
         if (member.AccessorList != null)
         {
             if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.GetAccessorDeclaration))
             {
-                item.Parameters += "get";
+                codeItem.Parameters += "get";
             }
 
             if (member.AccessorList.Accessors.Any(a => a.Kind() == SyntaxKind.SetAccessorDeclaration))
             {
-                item.Parameters += string.IsNullOrEmpty(item.Parameters) ? "set" : ",set";
+                codeItem.Parameters += string.IsNullOrEmpty(codeItem.Parameters) ? "set" : ",set";
             }
 
-            if (!string.IsNullOrEmpty(item.Parameters))
+            if (!string.IsNullOrEmpty(codeItem.Parameters))
             {
-                item.Parameters = $" {{{item.Parameters}}}";
+                codeItem.Parameters = $" {{{codeItem.Parameters}}}";
             }
         }
 
-        item.Tooltip = TooltipMapper.Map(item.Access, item.ReturnType, item.Name, item.Parameters);
-        item.Kind = CodeItemKindEnum.Property;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, codeItem.ReturnType, codeItem.Name, codeItem.Parameters);
+        codeItem.Kind = CodeItemKindEnum.Property;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
         if (TriviaSummaryMapper.HasSummary(member))
         {
-            item.Tooltip = TriviaSummaryMapper.Map(member);
+            codeItem.Tooltip = TriviaSummaryMapper.Map(member);
         }
 
-        return item;
+        return codeItem;
     }
 }

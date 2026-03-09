@@ -48,6 +48,11 @@ public class CodeItem : NotifyPropertyChangedObject
     public TextSpan Span { get; set; }
 
     /// <summary>
+    /// Gets or sets the span of text represented by the identifier of this code item.
+    /// </summary>
+    public TextSpan IdentifierSpan { get; set; }
+
+    /// <summary>
     /// Icon showing the type (class, namespace, etc.) of the code item
     /// </summary>
     [DataMember]
@@ -190,8 +195,8 @@ public class CodeItem : NotifyPropertyChangedObject
     {
         HistoryHelper.AddItemToHistory(this);
 
-        var spanStart = Kind == CodeItemKindEnum.Method
-            ? ((CodeFunctionItem)this).IdentifierSpan.Start
+        var spanStart = IdentifierSpan.Start != 0
+            ? IdentifierSpan.Start
             : Span.Start;
 
         await ScrollToLine(spanStart, clientContext, cancellationToken);

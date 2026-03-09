@@ -46,7 +46,7 @@ public static class MethodMapper
             item = BaseMapper.MapBase<CodeFunctionItem>(node, identifier, modifiers, semanticModel, codeDocumentViewModel);
             ((CodeFunctionItem)item).ReturnType = TypeMapper.Map(returnType);
             ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(parameterList);
-            ((CodeFunctionItem)item).IdentifierSpan = identifier.Span;
+            item.IdentifierSpan = identifier.Span;
             item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).ReturnType, item.Name, parameterList);
         }
 
