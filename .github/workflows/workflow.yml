@@ -3,8 +3,7 @@
 on:
   push:
     branches:
-      - main
-      - 'feature/**'
+      - v9
 
 env:
   version: '9.0.${{ github.run_number }}'
