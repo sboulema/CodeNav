@@ -22,8 +22,13 @@ public static class TriviaSummaryMapper
         return string.Empty;
     }
 
-    public static bool HasSummary(SyntaxNode member)
+    public static bool HasSummary(SyntaxNode? member)
     {
+        if (member == null)
+        {
+            return false;
+        }
+
         var commentTrivia = GetCommentTrivia(member);
 
         return commentTrivia.RawKind != (int)SyntaxKind.None;

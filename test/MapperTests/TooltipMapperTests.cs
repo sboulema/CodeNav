@@ -12,7 +12,8 @@ public class TooltipMapperTests
         "Private System.Generic.Collection.List<Models.item> Helpers.Property")]
     public void ShouldMapMethodOk(CodeItemAccessEnum access, string type, string name, string extra, string expected)
     {
-        var tooltip = TooltipMapper.Map(access, type, name, extra);
+        var tooltip = TooltipMapper.Map(null, access, type, name, extra);
+
         Assert.That(tooltip, Is.EqualTo(expected));
     }
 }

@@ -8,32 +8,30 @@ internal class TestMethodsWithComments : BaseTest
     {
         var codeItems = await MapToCodeItems("TestMethodsWithComments.cs");
 
-        Assert.That(codeItems.Any(), Is.True);
-
         // First item should be a namespace
-        Assert.That(codeItems.First().Kind, Is.EqualTo(CodeItemKindEnum.Namespace));
+        var namespaceItem = GetNamespace(codeItems);
 
         // Inner item should be a class
-        var innerClass = (codeItems.First() as CodeNamespaceItem)?.Members.First() as CodeClassItem;
+        var classItem = GetFirstClass(namespaceItem);
 
         // Class should have a method
-        var methodWithComment = innerClass?.Members.First() as CodeFunctionItem;
+        var methodWithComment = GetMemberAtIndex(classItem, 0) as CodeFunctionItem;
 
-        Assert.That(methodWithComment?.Tooltip, Is.EqualTo("Super important summary"));
-
-        // Class should have a method
-        var methodWithoutComment = innerClass?.Members[1] as CodeFunctionItem;
-
-        Assert.That(methodWithoutComment?.Tooltip, Is.EqualTo("Public MethodWithoutComment ()"));
+        Assert.That(methodWithComment?.Tooltip, Is.EqualTo($"Public void MethodWithComment (){Environment.NewLine}{Environment.NewLine}Super important summary"));
 
         // Class should have a method
-        var methodWithMultipleComment = innerClass?.Members[2] as CodeFunctionItem;
+        var methodWithoutComment = GetMemberAtIndex(classItem, 1) as CodeFunctionItem;
 
-        Assert.That(methodWithMultipleComment?.Tooltip, Is.EqualTo("Multiple comment - summary"));
+        Assert.That(methodWithoutComment?.Tooltip, Is.EqualTo("Public void MethodWithoutComment ()"));
 
         // Class should have a method
-        var methodWithReorderedComment = innerClass?.Members[3] as CodeFunctionItem;
+        var methodWithMultipleComment = GetMemberAtIndex(classItem, 2) as CodeFunctionItem;
 
-        Assert.That(methodWithReorderedComment?.Tooltip, Is.EqualTo("Multiple comment - summary"));
+        Assert.That(methodWithMultipleComment?.Tooltip, Is.EqualTo($"Public void MethodWithMultipleComment (){Environment.NewLine}{Environment.NewLine}Multiple comment - summary"));
+
+        // Class should have a method
+        var methodWithReorderedComment = GetMemberAtIndex(classItem, 3) as CodeFunctionItem;
+
+        Assert.That(methodWithReorderedComment?.Tooltip, Is.EqualTo($"Public void MethodWithReorderedComment (){Environment.NewLine}{Environment.NewLine}Multiple comment - summary"));
     }
 }

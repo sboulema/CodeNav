@@ -103,7 +103,7 @@ public static class StatementMapper
         item.Name = $"Switch {item.Name}";
         item.Kind = CodeItemKindEnum.Switch;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-        item.Tooltip = TooltipMapper.Map(item.Access, string.Empty, item.Name, item.Parameters);
+        item.Tooltip = TooltipMapper.Map(statement, item.Access, string.Empty, item.Name, item.Parameters);
 
         // Map switch cases
         foreach (var section in statement.Sections)
@@ -130,7 +130,7 @@ public static class StatementMapper
         }
 
         var item = BaseMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString(), semanticModel, codeDocumentViewModel);
-        item.Tooltip = TooltipMapper.Map(item.Access, item.ReturnType, item.Name, string.Empty);
+        item.Tooltip = TooltipMapper.Map(section, item.Access, item.ReturnType, item.Name, string.Empty);
         item.Id = item.FullName;
         item.Kind = CodeItemKindEnum.SwitchSection;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);

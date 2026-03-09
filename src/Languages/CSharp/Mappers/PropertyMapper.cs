@@ -34,14 +34,9 @@ public class PropertyMapper
             }
         }
 
-        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, codeItem.ReturnType, codeItem.Name, codeItem.Parameters);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, codeItem.ReturnType, codeItem.Name, codeItem.Parameters);
         codeItem.Kind = CodeItemKindEnum.Property;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            codeItem.Tooltip = TriviaSummaryMapper.Map(member);
-        }
 
         return codeItem;
     }

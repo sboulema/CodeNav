@@ -14,21 +14,21 @@ public static class MethodMapper
     public static CodeItem MapMethod(MethodDeclarationSyntax member, SemanticModel semanticModel,
         CodeDocumentViewModel codeDocumentViewModel)
         => MapMethod(member, member.Identifier, member.Modifiers,
-            member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+            member.Body, member.ReturnType, member.ParameterList,
             CodeItemKindEnum.Method, semanticModel, codeDocumentViewModel);
 
     public static CodeItem MapMethod(LocalFunctionStatementSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
         => MapMethod(member, member.Identifier, member.Modifiers,
-            member.Body, member.ReturnType as ITypeSymbol, member.ParameterList,
+            member.Body, member.ReturnType, member.ParameterList,
             CodeItemKindEnum.LocalFunction, semanticModel, codeDocumentViewModel);
 
     private static CodeItem MapMethod(SyntaxNode node, SyntaxToken identifier,
-        SyntaxTokenList modifiers, BlockSyntax? body, ITypeSymbol? returnType,
+        SyntaxTokenList modifiers, BlockSyntax? body, TypeSyntax? returnType,
         ParameterListSyntax parameterList, CodeItemKindEnum kind,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        CodeItem item;
+        CodeItem codeItem;
 
         var statementsCodeItems = StatementMapper.MapStatement(body, semanticModel, codeDocumentViewModel);
 
@@ -37,42 +37,41 @@ public static class MethodMapper
         if (statementsCodeItems.Any(statement => statement.Visibility == Visibility.Visible))
         {
             // Map method as item containing statements
-            item = BaseMapper.MapBase<CodeClassItem>(node, identifier,modifiers, semanticModel, codeDocumentViewModel);
-            ((CodeClassItem)item).Members.AddRange(statementsCodeItems);
+            codeItem = BaseMapper.MapBase<CodeClassItem>(node, identifier,modifiers, semanticModel, codeDocumentViewModel);
+            ((CodeClassItem)codeItem).Members.AddRange(statementsCodeItems);
         }
         else
         {
             // Map method as single item
-            item = BaseMapper.MapBase<CodeFunctionItem>(node, identifier, modifiers, semanticModel, codeDocumentViewModel);
-            ((CodeFunctionItem)item).ReturnType = TypeMapper.Map(returnType);
-            ((CodeFunctionItem)item).Parameters = ParameterMapper.MapParameters(parameterList);
-            item.IdentifierSpan = identifier.Span;
-            item.Tooltip = TooltipMapper.Map(item.Access, ((CodeFunctionItem)item).ReturnType, item.Name, parameterList);
+            codeItem = BaseMapper.MapBase<CodeFunctionItem>(node, identifier, modifiers, semanticModel, codeDocumentViewModel);
+
+            var codeFunctionItem = codeItem as CodeFunctionItem;
+
+            codeFunctionItem!.ReturnType = TypeMapper.Map(returnType);
+            codeFunctionItem.Parameters = ParameterMapper.MapParameters(parameterList);
+            codeItem.IdentifierSpan = identifier.Span;
+            codeItem.Tooltip = TooltipMapper.Map(node, codeItem.Access, codeFunctionItem.ReturnType, codeItem.Name, parameterList);
         }
 
-        item.Id = IdMapper.MapId(item.FullName, parameterList);
-        item.Kind = kind;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+        codeItem.Id = IdMapper.MapId(codeItem.FullName, parameterList);
+        codeItem.Kind = kind;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
-        if (TriviaSummaryMapper.HasSummary(node))
-        {
-            item.Tooltip = TriviaSummaryMapper.Map(node);
-        }
-
-        return item;
+        return codeItem;
     }
 
     public static CodeItem MapConstructor(ConstructorDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
-        item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
-        item.Tooltip = TooltipMapper.Map(item.Access, item.ReturnType, item.Name, member.ParameterList);
-        item.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
-        item.Kind = CodeItemKindEnum.Constructor;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-        item.OverlayMoniker = ImageMoniker.KnownValues.Add;
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
 
-        return item;
+        codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, codeItem.ReturnType, codeItem.Name, member.ParameterList);
+        codeItem.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
+        codeItem.Kind = CodeItemKindEnum.Constructor;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.OverlayMoniker = ImageMoniker.KnownValues.Add;
+
+        return codeItem;
     }
 }

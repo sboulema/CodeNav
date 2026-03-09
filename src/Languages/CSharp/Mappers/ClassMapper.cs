@@ -18,12 +18,7 @@ public class ClassMapper
         codeItem.Kind = CodeItemKindEnum.Class;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
         codeItem.Parameters = MapInheritance(member);
-        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
-
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            codeItem.Tooltip = TriviaSummaryMapper.Map(member);
-        }
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
         var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
         var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, tree, codeDocumentViewModel);

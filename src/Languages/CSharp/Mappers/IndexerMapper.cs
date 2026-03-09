@@ -11,18 +11,14 @@ public class IndexerMapper
     public static CodeItem MapIndexer(IndexerDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.ThisKeyword, member.Modifiers, semanticModel, codeDocumentViewModel);
-        item.ReturnType = TypeMapper.Map(member.Type);
-        item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
-        item.Tooltip = TooltipMapper.Map(item.Access, item.ReturnType, item.Name, item.Parameters);
-        item.Kind = CodeItemKindEnum.Indexer;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, member.ThisKeyword, member.Modifiers, semanticModel, codeDocumentViewModel);
+        
+        codeItem.ReturnType = TypeMapper.Map(member.Type);
+        codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, codeItem.ReturnType, codeItem.Name, codeItem.Parameters);
+        codeItem.Kind = CodeItemKindEnum.Indexer;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            item.Tooltip = TriviaSummaryMapper.Map(member);
-        }
-
-        return item;
+        return codeItem;
     }
 }
