@@ -39,7 +39,7 @@ Visual Studio extension to show the code structure of your current document
 - CSS
 
 ## Installing
-[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav) [![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/v/SamirBoulema.CodeNav.svg?style=flat)](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav2026) [![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/v/SamirBoulema.CodeNav.svg?style=flat)](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav)
 
 [GitHub Releases](https://github.com/sboulema/CodeNav/releases)
 
