@@ -94,3 +94,5 @@ Visual Studio extension to show the code structure of your current document
 [Styling the ListView Column Header](https://matthiasshapiro.com/styling-the-listview-column-header/)
 
 [DataGrid in ToolWindow cannot be set to editmode](https://github.com/microsoft/VSExtensibility/issues/389)
+
+[Setting WPF border visible or not depending on ScrollViewer's VerticalScrollBarVisibility property](https://stackoverflow.com/questions/73199311/setting-wpf-border-visible-or-not-depending-on-scrollviewers-verticalscrollbarv/73199480#73199480)

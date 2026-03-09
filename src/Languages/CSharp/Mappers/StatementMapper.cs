@@ -9,10 +9,14 @@ using CodeNav.Extensions;
 namespace CodeNav.Languages.CSharp.Mappers;
 
 /// <summary>
-/// Used to map the body of a method
+/// Used to map the body of a method or global statements like in Program.cs
 /// </summary>
 public static class StatementMapper
 {
+    public static CodeItem? MapGlobalStatement(GlobalStatementSyntax globalStatement,
+        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
+        => MapStatement(globalStatement.Statement, semanticModel, codeDocumentViewModel).FirstOrDefault();
+
     public static IEnumerable<CodeItem> MapStatement(StatementSyntax? statement,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
