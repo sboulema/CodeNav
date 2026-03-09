@@ -6,12 +6,11 @@ Visual Studio extension to show the code structure of your current document
 [![Sponsor](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/sboulema)
 
 ## Features
-- Quickly see all the important methods and properties in your document.
-- Never get lost during a refactoring of a super long document.
+- Quickly see all the important methods and properties in your document
+- Never get lost during a refactoring of a super long document
 - Show/Dock as a separate tool window.
 - Cursor position will be reflected by highlighting the current method in the list
-- Clicking on an item in the list will take you to that location in the document.
-- Dark theme support
+- Light/Dark theme support
 - Collapse/Expand all ranges
 - History/edit indicators
 - Sort by file order or by name 
@@ -21,7 +20,8 @@ Visual Studio extension to show the code structure of your current document
 - Bookmarks
 
 ### Features broken in v10
-- Synced collapsing/expanding ranges
+- Synced collapsing/expanding ranges [VSExtensibility - #545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)
+- Clicking on an item in the list will take you to that location in the document [VSExtensibility - #554 - Feature request: Text Editor: Scroll to line](https://github.com/microsoft/VSExtensibility/issues/554)
 
 ### Features dropped in v10
 - Top Margin
