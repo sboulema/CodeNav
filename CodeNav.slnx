@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/CodeNav.csproj" />
+    <Project Path="src/CodeNav.OutOfProc/CodeNav.OutOfProc.csproj" Id="d8f3a6cb-7f59-44fd-b3c9-ce8a33486040" />
+    <Project Path="src/CodeNav/CodeNav.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/CodeNav.Test.csproj" />

@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <LangVersion>12</LangVersion>
+	  <NeutralLanguage>en-US</NeutralLanguage>
+
+	  <!-- The assemblies of this project are placed in the OutOfProc folder when packaged in the VSIX.
+         This avoids conflicts with assemblies from CompositeExtension having the same file name.
+         This is important because the two projects have similar dependencies but different target
+         frameworks. -->
+	  <AssemblyVSIXSubPath>OutOfProc</AssemblyVSIXSubPath>
+
+	  <!-- Disabling creation of the VSIX for this project since it is always installed as a part of
+         the composite extension. -->
+	  <CreateVsixContainer>false</CreateVsixContainer>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Dialogs\FilterDialog\FilterDialogControl.xaml" />
+    <None Remove="Dialogs\SettingsDialog\SettingsDialogControl.xaml" />
+    <None Remove="ToolWindows\CodeNavToolWindowControl.xaml" />
+    <None Remove="ToolWindows\Templates\CodeItemStyles.xaml" />
+    <None Remove="ToolWindows\Templates\ExpanderStyles.xaml" />
+    <None Remove="ToolWindows\Templates\HighlightNameStyle.xaml" />
+    <None Remove="ToolWindows\Templates\ItemContextMenu.xaml" />
+    <None Remove="ToolWindows\Templates\ToolbarStyles.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<!-- Include the OutOfProcComponent's brokered service interface so that this process can
+         communicate with it. -->
+		<Compile Include="..\CodeNav\Services\IInProcService.cs" Link="Services\IInProcService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Dialogs\FilterDialog\FilterDialogControl.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Dialogs\SettingsDialog\SettingsDialogControl.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\CodeNavToolWindowControl.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\Templates\CodeItemStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\Templates\ExpanderStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\Templates\HighlightNameStyle.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\Templates\ItemContextMenu.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="ToolWindows\Templates\ToolbarStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>

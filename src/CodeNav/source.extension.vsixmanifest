@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="CodeNav.dcdbcca4-3a88-432f-ba04-eb4a4cb64437" Version="1.0" Language="en-US" Publisher="Samir Boulema" />
+        <DisplayName>CodeNav</DisplayName>
+        <Description xml:space="preserve">Show the code structure of your current document.</Description>
+        <MoreInfo>https://github.com/sboulema/CodeNav</MoreInfo>
+        <License>Resources\LICENSE</License>
+        <ReleaseNotes>https://github.com/sboulema/Codenav/releases</ReleaseNotes>
+        <Icon>Resources\Logo_90x90.png</Icon>
+        <PreviewImage>Resources\Preview.png</PreviewImage>
+        <Tags>code, structure, navigation, map, codemap</Tags>
+    </Metadata>
+    <Installation ExtensionType="VSSDK+VisualStudio.Extensibility">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14,)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14,)">
+            <ProductArchitecture>arm64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+</PackageManifest>

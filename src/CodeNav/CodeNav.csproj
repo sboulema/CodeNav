@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
+    <UseWPF>true</UseWPF>
+	<NeutralLanguage>en-US</NeutralLanguage>
+
+    <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
+
+	  <RepoRootPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRootPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Resources\LICENSE" />
+    <None Remove="Resources\Logo_90x90.png" />
+    <None Remove="Resources\Preview.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<!-- Include the OutOfProcComponent's brokered service interface so that this process can
+         communicate with it. -->
+		<Compile Include="..\CodeNav.OutOfProc\Services\IOutOfProcService.cs" Link="Services\IOutOfProcService.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\LICENSE" />
+	  <Content Include="Resources\Logo_90x90.png">
+	    <IncludeInVSIX>true</IncludeInVSIX>
+	  </Content>
+	  <Content Include="Resources\Preview.png">
+	    <IncludeInVSIX>true</IncludeInVSIX>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Build OutOfProcComponent and include all files that belong in the VSIX into CompositeExtension's
+         VSIX. Explicitly set the target framework and avoid referencing the OutOfProcComponent's assembly
+         since the two projects have incompatible target frameworks. -->
+		<ProjectReference Include="..\CodeNav.OutOfProc\CodeNav.OutOfProc.csproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<IncludeOutputGroupsInVSIX>ExtensionFilesOutputGroup</IncludeOutputGroupsInVSIX>
+		</ProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Merge the extension.json from the OutOfProcComponent into the CompositeExtension's extenion.json. -->
+		<DependentExtensionJson Include="$(RepoRootPath)\src\CodeNav.OutOfProc\bin\$(Configuration)\net8.0-windows8.0\.vsextension\extension.json" />
+	</ItemGroup>
+</Project>

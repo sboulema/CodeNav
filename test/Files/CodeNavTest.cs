@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CodeNav.OutOfProc.ViewModels;
 
 #pragma warning disable
 

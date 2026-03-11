@@ -1,6 +1,11 @@
-/src/bin
-/src/obj
-/.vs
-/src/CodeNav.csproj.user
+/src/CodeNav/bin
+/src/CodeNav/obj
+/src/CodeNav.OutOfProc/bin
+/src/CodeNav.OutOfProc/obj
 /test/obj
 /test/bin
+/.vs
+/src/CodeNav/.vs
+/src/CodeNav.OutOfProc/.vs
+/src/CodeNav/CodeNav.csproj.user
+/src/CodeNav.OutOfProc/CodeNav.OutOfProc.csproj.user

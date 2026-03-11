@@ -46,9 +46,9 @@ internal class MapperTestInterface : BaseTest
         // Items should have proper start lines
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(implementedInterface.Members[0].Span.Start, Is.EqualTo(234));
-            Assert.That(implementedInterface.Members[1].Span.Start, Is.EqualTo(303));
-            Assert.That(implementedInterface.Members[2].Span.Start, Is.EqualTo(622));
+            Assert.That(implementedInterface.Members[0].Span.Start, Is.EqualTo(223));
+            Assert.That(implementedInterface.Members[1].Span.Start, Is.EqualTo(287));
+            Assert.That(implementedInterface.Members[2].Span.Start, Is.EqualTo(589));
         }
     }
 

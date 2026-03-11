@@ -8,6 +8,7 @@ Visual Studio extension to show the code structure of your current document
 ## Features
 - Quickly see all the important methods and properties in your document
 - Never get lost during a refactoring of a super long document
+- Clicking on an item in the list will take you to that location in the document
 - Show/Dock as a separate tool window.
 - Cursor position will be reflected by highlighting the current method in the list
 - Light/Dark theme support
@@ -21,7 +22,6 @@ Visual Studio extension to show the code structure of your current document
 
 ### Features broken in v10
 - Synced collapsing/expanding ranges [VSExtensibility - #545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)
-- Clicking on an item in the list will take you to that location in the document [VSExtensibility - #554 - Feature request: Text Editor: Scroll to line](https://github.com/microsoft/VSExtensibility/issues/554)
 
 ### Features dropped in v10
 - Top Margin
@@ -96,3 +96,9 @@ Visual Studio extension to show the code structure of your current document
 [DataGrid in ToolWindow cannot be set to editmode](https://github.com/microsoft/VSExtensibility/issues/389)
 
 [Setting WPF border visible or not depending on ScrollViewer's VerticalScrollBarVisibility property](https://stackoverflow.com/questions/73199311/setting-wpf-border-visible-or-not-depending-on-scrollviewers-verticalscrollbarv/73199480#73199480)
+
+[CommentRemover Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CommentRemover)
+
+[CompositeExtension Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CompositeExtension)
+
+[VSExtensibility - #554 - Feature request: Text Editor: Scroll to line](https://github.com/microsoft/VSExtensibility/issues/554)

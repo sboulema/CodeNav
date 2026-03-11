@@ -16,8 +16,12 @@
     <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
   </ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
+	</ItemGroup>
+	
   <ItemGroup>
-    <ProjectReference Include="..\src\CodeNav.csproj" />
+    <ProjectReference Include="..\src\CodeNav.OutOfProc\CodeNav.OutOfProc.csproj" />
   </ItemGroup>
 
 </Project>

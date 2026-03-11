@@ -1,4 +1,6 @@
-﻿namespace CodeNav.Test.MapperTests;
+﻿using CodeNav.OutOfProc.Constants;
+
+namespace CodeNav.Test.MapperTests;
 
 [TestFixture]
 internal class TestSealed : BaseTest
