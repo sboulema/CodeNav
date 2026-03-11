@@ -19,7 +19,7 @@ public static class TooltipMapper
 
         if (TriviaSummaryMapper.HasSummary(member))
         {
-            tooltip += $"{Environment.NewLine}{Environment.NewLine}{TriviaSummaryMapper.Map(member)}";
+            tooltip += $"{Environment.NewLine}{Environment.NewLine}{TriviaSummaryMapper.Map(member!)}";
         }
 
         return tooltip;

@@ -29,9 +29,11 @@ internal class MapperTestMethodsLocal : BaseTest
         // Method should have a local method
         var localMethod = method.Members.First() as CodeFunctionItem;
 
+        Assert.That(localMethod, Is.Not.Null);
+
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(localMethod?.Name, Is.EqualTo("LocalMethod"));
+            Assert.That(localMethod.Name, Is.EqualTo("LocalMethod"));
 
             // Local method should have a proper starting line
             Assert.That(localMethod.Span.Start, Is.EqualTo(179).Or.EqualTo(187));

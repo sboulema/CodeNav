@@ -29,7 +29,7 @@ jobs:
         run: dotnet test
 
       - name: Update Vsix Manifest Version
-        uses: cezarypiatek/VsixVersionAction@1.1
+        uses: cezarypiatek/VsixVersionAction@1.2
         with:
           version: ${{ env.version }}
           vsix-manifest-file: 'src/CodeNav/source.extension.vsixmanifest'
