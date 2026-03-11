@@ -59,20 +59,13 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
 
-      - name: Tag release
-        id: tag_release
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          custom_tag: '${{ env.version }}'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create a GitHub release
+      - name: Create and Tag release
         uses: ncipollo/release-action@v1.20.0
         with:
-          tag: ${{ steps.tag_release.outputs.new_tag }}
-          name: ${{ steps.tag_release.outputs.new_tag }}
-          body: ${{ steps.tag_release.outputs.changelog }}
+          commit: ${{ github.sha }}
+          tag: 'v${{ env.version }}'
           artifacts: ${{ env.vsixPath }}
+          generateReleaseNotes: true
           skipIfReleaseExists: true
 
       - name: Publish to Marketplace
