@@ -29,10 +29,11 @@ jobs:
         run: dotnet test
 
       - name: Update Vsix Manifest Version
-        uses: cezarypiatek/VsixVersionAction@1.2
+        id: vsix_version
+        uses: timheuer/vsix-version-stamp@v2
         with:
-          version: ${{ env.version }}
-          vsix-manifest-file: 'src/CodeNav/source.extension.vsixmanifest'
+          version-number: ${{ env.version }}
+          manifest-file: src/CodeNav/source.extension.vsixmanifest
 
       - name: Build VSIX
         run: dotnet publish src/CodeNav -p:Version=${{ env.version }} -c Release
@@ -66,7 +67,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: ${{ steps.tag_release.outputs.new_tag }}
           name: ${{ steps.tag_release.outputs.new_tag }}
@@ -82,5 +83,6 @@ jobs:
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Open VSIX Gallery
-        run: |
-           curl -L 'https://www.vsixgallery.com/api/upload?repo=${{ env.repoUrl }}&issuetracker=${{ env.repoUrl }}/issues' -F 'file=@"${{ env.vsixPath }}"'
+        uses: timheuer/openvsixpublish@v1
+        with:
+          vsix-file: ${{ env.vsixPath }}
