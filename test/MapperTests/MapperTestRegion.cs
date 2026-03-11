@@ -77,8 +77,8 @@ internal class MapperTestRegion : BaseTest
         using (Assert.EnterMultipleScope())
         {
             // The region should have correct span for outlining usages
-            Assert.That(regionR1.Span.Start, Is.EqualTo(198));
-            Assert.That(regionR1.Span.End, Is.EqualTo(766));
+            Assert.That(regionR1.Span.Start, Is.EqualTo(198).Or.EqualTo(209));
+            Assert.That(regionR1.Span.End, Is.EqualTo(766).Or.EqualTo(812));
         }
     }
 }

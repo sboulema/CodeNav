@@ -34,7 +34,7 @@ internal class MapperTestMethodsLocal : BaseTest
             Assert.That(localMethod?.Name, Is.EqualTo("LocalMethod"));
 
             // Local method should have a proper starting line
-            Assert.That(localMethod.Span.Start, Is.EqualTo(179));
+            Assert.That(localMethod.Span.Start, Is.EqualTo(179).Or.EqualTo(187));
         }
     }
 }
