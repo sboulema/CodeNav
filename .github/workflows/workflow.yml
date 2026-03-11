@@ -59,20 +59,20 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
 
-      - name: Generate Conventional Commits Changelog
-        id: changelog
-        uses: requarks/changelog-action@v1
+      - name: Tag release
+        id: tag_release
+        uses: mathieudutour/github-tag-action@v6.2
         with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
+          custom_tag: '${{ env.version }}'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create and Tag release
-        uses: ncipollo/release-action@v1.20.0
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@caacf56b56ba217c4eaf0a9deb59dbcdd12abfcd
         with:
-          commit: ${{ github.sha }}
-          tag: 'v${{ env.version }}'
+          tag: ${{ steps.tag_release.outputs.new_tag }}
+          name: ${{ steps.tag_release.outputs.new_tag }}
+          body: ${{ steps.tag_release.outputs.changelog }}
           artifacts: ${{ env.vsixPath }}
-          body: ${{ steps.changelog.outputs.changes }}
           skipIfReleaseExists: true
 
       - name: Publish to Marketplace
