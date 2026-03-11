@@ -59,21 +59,29 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v8
 
+      - name: Generate Conventional Commits Changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+
       - name: Create and Tag release
         uses: ncipollo/release-action@v1.20.0
         with:
           commit: ${{ github.sha }}
           tag: 'v${{ env.version }}'
           artifacts: ${{ env.vsixPath }}
-          generateReleaseNotes: true
+          body: ${{ steps.changelog.outputs.changes }}
           skipIfReleaseExists: true
 
       - name: Publish to Marketplace
-        uses: cezarypiatek/VsixPublisherAction@1.1
-        with:
-          extension-file: ${{ env.vsixPath }}
-          publish-manifest-file: publish-manifest.json
-          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
+        run: |
+          "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe" \
+            publish \
+            -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }} \
+            -payload ${{ env.vsixPath }} \
+            -publishManifest publish-manifest.json
 
       - name: Publish to Open VSIX Gallery
         uses: timheuer/openvsixpublish@v1
