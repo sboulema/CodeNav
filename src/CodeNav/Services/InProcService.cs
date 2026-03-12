@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace CodeNav.Services;
 
+[VisualStudioContribution]
 internal class InProcService : IInProcService
 {
     private readonly VisualStudioExtensibility _extensibility;
