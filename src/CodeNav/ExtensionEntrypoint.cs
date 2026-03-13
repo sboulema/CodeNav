@@ -14,6 +14,7 @@ namespace CodeNav
         public override ExtensionConfiguration ExtensionConfiguration => new()
         {
             RequiresInProcessHosting = true,
+            LoadedWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveEditorContentType, "csharp"),
         };
 
         /// <inheritdoc />
