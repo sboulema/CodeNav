@@ -8,6 +8,10 @@ public interface IInProcService
 
     Task TextViewScrollToSpan(int start, int length);
 
+    Task ExpandOutlineRegion(int start, int length);
+
+    Task CollapseOutlineRegion(int start, int length);
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.InProcService";

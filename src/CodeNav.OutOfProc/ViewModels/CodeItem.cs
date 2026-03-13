@@ -1,6 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
 using CodeNav.OutOfProc.Helpers;
-using CodeNav.OutOfProc.Services;
 using CodeNav.Services;
 using Microsoft;
 using Microsoft.CodeAnalysis.Text;
@@ -76,8 +75,20 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public string Tooltip { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Path to the file containing the code item
+    /// </summary>
+    /// <remarks>
+    /// Used for opening the file if it's different from the currently active one
+    /// </remarks>
     public Uri? FilePath { get; set; }
 
+    /// <summary>
+    /// Full name of the code item
+    /// </summary>
+    /// <remarks>
+    /// Used in constructing a unique id 
+    /// </remarks>
     internal string FullName = string.Empty;
 
     public CodeItemKindEnum Kind;
