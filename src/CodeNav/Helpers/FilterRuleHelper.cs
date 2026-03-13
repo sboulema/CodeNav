@@ -1,0 +1,60 @@
+﻿using CodeNav.Constants;
+using CodeNav.Interfaces;
+using CodeNav.ViewModels;
+using System.Windows;
+
+namespace CodeNav.Helpers;
+
+public static class FilterRuleHelper
+{
+    public static FilterRuleViewModel? GetFilterRule(IEnumerable<FilterRuleViewModel> filterRules, CodeItem item)
+    {
+        // Get the most specific filter rule for the item
+        var filterRule = filterRules
+            .Where(filterRule => filterRule.Access == item.Access ||
+                                 filterRule.Access == CodeItemAccessEnum.All)
+            .Where(filterRule => filterRule.Kind == item.Kind ||
+                                 filterRule.Kind == CodeItemKindEnum.All)
+            .Where(filterRule => filterRule.IsEmpty == IsEmpty(item))
+            .LastOrDefault();
+
+        return filterRule;
+    }
+
+    public static FilterRuleViewModel? GetFilterRule(CodeDocumentViewModel codeDocumentViewModel, CodeItemKindEnum codeItemKind)
+    {
+        // Check if we have any filters at all
+        if (codeDocumentViewModel?.FilterRules?.Any() != true)
+        {
+            return null;
+        }
+
+        // Get the most specific filter rule for the item
+        var filterRule = codeDocumentViewModel?.FilterRules
+            .LastOrDefault(filterRule => filterRule.Kind == codeItemKind || filterRule.Kind == CodeItemKindEnum.All);
+
+        return filterRule;
+    }
+
+    /// <summary>
+    /// Determines whether the specified code item contains no visible members.
+    /// </summary>
+    /// <remarks>A code item that does not implement IMembers or has a null Members collection is considered
+    /// not empty. Only members with Visibility.Visible are counted as visible.</remarks>
+    /// <param name="codeItem">The code item to evaluate for visible members. Must implement the IMembers interface to be considered.</param>
+    /// <returns>true if the code item has no members with Visibility.Visible; otherwise, false.</returns>
+    private static bool IsEmpty(CodeItem codeItem)
+    {
+        if (codeItem is not IMembers membersCodeItem)
+        {
+            return false;
+        }
+
+        if (membersCodeItem.Members == null)
+        {
+            return false;
+        }
+
+        return !membersCodeItem.Members.Any(member => member.Visibility == Visibility.Visible);
+    }
+}

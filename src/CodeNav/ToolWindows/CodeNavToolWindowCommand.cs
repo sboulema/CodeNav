@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 
-namespace CodeNav.OutOfProc.ToolWindows;
+namespace CodeNav.ToolWindows;
 
 [VisualStudioContribution]
 public class CodeNavToolWindowCommand : Command

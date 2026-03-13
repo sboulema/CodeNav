@@ -1,12 +1,12 @@
-﻿using CodeNav.OutOfProc.Services;
+﻿using CodeNav.Services;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.ToolWindows;
 using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 
-namespace CodeNav.OutOfProc.ToolWindows;
+namespace CodeNav.ToolWindows;
 
 [VisualStudioContribution]
-internal class CodeNavToolWindow(CodeDocumentService documentService) : ToolWindow
+public class CodeNavToolWindow(CodeDocumentService documentService) : ToolWindow
 {
     public override ToolWindowConfiguration ToolWindowConfiguration => new()
     {

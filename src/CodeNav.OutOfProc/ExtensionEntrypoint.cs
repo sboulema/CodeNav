@@ -19,6 +19,7 @@ internal class ExtensionEntrypoint : Extension
             publisherName: "Samir Boulema",
             displayName: "CodeNav",
             description: "Show the code structure of your current document."),
+        LoadedWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveEditorContentType, "csharp"),
     };
 
     /// <inheritdoc />

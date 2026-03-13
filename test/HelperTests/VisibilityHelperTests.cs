@@ -1,6 +1,4 @@
 ﻿using System.Windows;
-using CodeNav.OutOfProc.Constants;
-using CodeNav.OutOfProc.ViewModels;
 
 namespace CodeNav.Test.HelperTests;
 

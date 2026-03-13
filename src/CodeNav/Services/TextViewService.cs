@@ -1,8 +1,6 @@
 ﻿using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -11,33 +9,17 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace CodeNav.Services;
 
-[VisualStudioContribution]
-internal class InProcService : IInProcService
+public class TextViewService
 {
-    private readonly VisualStudioExtensibility _extensibility;
     private readonly MefInjection<IVsEditorAdaptersFactoryService> _editorAdaptersFactoryService;
     private readonly AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> _textManager;
 
-    public InProcService(
-        VisualStudioExtensibility extensibility,
+    public TextViewService(
         MefInjection<IVsEditorAdaptersFactoryService> editorAdaptersFactoryService,
         AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> textManager)
     {
-        _extensibility = extensibility;
         _editorAdaptersFactoryService = editorAdaptersFactoryService;
         _textManager = textManager;
-    }
-
-    [VisualStudioContribution]
-    public static BrokeredServiceConfiguration BrokeredServiceConfiguration
-        => new(IInProcService.Configuration.ServiceName, IInProcService.Configuration.ServiceVersion, typeof(InProcService))
-        {
-            ServiceAudience = BrokeredServiceAudience.Local | BrokeredServiceAudience.Public,
-        };
-
-    public async Task DoSomethingAsync(CancellationToken cancellationToken)
-    {
-        await _extensibility.Shell().ShowPromptAsync("Hello from out-of-proc! (Showing this message from (in-proc)", PromptOptions.OK, cancellationToken);
     }
 
     public async Task TextViewScrollToSpan(int start, int length)

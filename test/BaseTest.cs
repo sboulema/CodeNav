@@ -1,6 +1,4 @@
-﻿using CodeNav.OutOfProc.ViewModels;
-
-namespace CodeNav.Test;
+﻿namespace CodeNav.Test;
 
 internal abstract class BaseTest
 {

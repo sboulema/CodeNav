@@ -1,6 +1,4 @@
-﻿using CodeNav.OutOfProc.Constants;
-
-namespace CodeNav.Test.MapperTests;
+﻿namespace CodeNav.Test.MapperTests;
 
 [TestFixture]
 public class TooltipMapperTests
