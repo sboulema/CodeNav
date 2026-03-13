@@ -46,8 +46,7 @@ internal class TextViewEventListener(
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
             {
                 // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-                codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-                codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+                codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
 
                 return;
             }
@@ -91,8 +90,7 @@ internal class TextViewEventListener(
     {
         try
         {
-            codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-            codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateSelectDocumentItem());
+            codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
         }
         catch (Exception e)
         {
@@ -111,8 +109,7 @@ internal class TextViewEventListener(
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
             {
                 // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-                codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-                codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+                codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
 
                 return;
             }

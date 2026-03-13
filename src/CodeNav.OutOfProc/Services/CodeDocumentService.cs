@@ -42,8 +42,9 @@ public class CodeDocumentService
                 return CodeDocumentViewModel;
             }
 
+            // TODO: disable for now, causes flicker, should be delayed
             // Show loading item while we process the document
-            CodeDocumentViewModel.CodeItems = [.. PlaceholderHelper.CreateLoadingItem()];
+            //CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLoadingItem();
 
             // Get the new list of code items
             var codeItems = await DocumentMapper.MapDocument(
@@ -53,13 +54,19 @@ public class CodeDocumentService
                 extensibility,
                 cancellationToken);
 
-            // Sort the list of code items,
-            // And update the DataContext for the tool window
-            CodeDocumentViewModel.CodeItems = SortHelper.Sort(codeItems, CodeDocumentViewModel.SortOrder);
-
             // Set properties on the CodeDocumentViewModel that are needed for other features
             CodeDocumentViewModel.CodeDocumentService = this;
             CodeDocumentViewModel.FilePath = textView.FilePath ?? string.Empty;
+
+            if (!codeItems.Any())
+            {
+                CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateNoCodeItemsFound();
+                return CodeDocumentViewModel;
+            }
+
+            // Sort the list of code items,
+            // And update the DataContext for the tool window
+            CodeDocumentViewModel.CodeItems = SortHelper.Sort(codeItems, CodeDocumentViewModel.SortOrder);
 
             // Apply highlights
             HighlightHelper.UnHighlight(CodeDocumentViewModel);

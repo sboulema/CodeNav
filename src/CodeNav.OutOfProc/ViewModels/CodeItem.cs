@@ -179,11 +179,14 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _visibility, value);
     }
 
-    private double _opacity;
+    private double _opacity = 1;
 
     /// <summary>
     /// Level (0 - 1) of opacity of the code item based on the applied filter rules
     /// </summary>
+    /// <remarks>
+    /// 0 is transparent and 1 is opaque
+    /// </remarks>
     [DataMember]
     public double Opacity
     {
