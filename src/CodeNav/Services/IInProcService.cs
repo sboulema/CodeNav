@@ -14,7 +14,7 @@ public interface IInProcService
 
     public static class Configuration
     {
-        public const string ServiceName = "OutOfProcComponent.InProcService";
+        public const string ServiceName = "CodeNav.InProcService";
         public static readonly Version ServiceVersion = new(1, 0);
 
         public static readonly ServiceMoniker ServiceMoniker = new(ServiceName, ServiceVersion);

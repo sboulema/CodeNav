@@ -37,71 +37,91 @@ internal class TextViewEventListener(
     /// <inheritdoc />
     public async Task TextViewChangedAsync(TextViewChangedArgs args, CancellationToken cancellationToken)
     {
-        await codeDocumentService.LoadGlobalSettings();
-
-        // if the document is too large, skip processing to avoid performance issues
-        if (args.AfterTextView.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
-            codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
+        try
         {
-            // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-            codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-            codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+            await codeDocumentService.LoadGlobalSettings();
 
-            return;
+            // if the document is too large, skip processing to avoid performance issues
+            if (args.AfterTextView.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
+                codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
+            {
+                // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
+                codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
+                codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+
+                return;
+            }
+
+            // Document changed:
+            // - File path changed
+            // - Edits made in the document
+            // Action:
+            // - Update code items list
+            if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
+                args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            {
+                await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, args.AfterTextView, cancellationToken);
+            }
+
+            // Document changed - Update history indicators
+            if (args.Edits.Any() &&
+                codeDocumentService.SettingsDialogData.ShowHistoryIndicators)
+            {
+                HistoryHelper.AddItemToHistory(codeDocumentService.CodeDocumentViewModel, args.Edits);
+            }
+
+            // Selection changed - Update highlights
+            if (args.BeforeTextView.Selection.ActivePosition.GetContainingLine().LineNumber !=
+                args.AfterTextView.Selection.ActivePosition.GetContainingLine().LineNumber &&
+                codeDocumentService.SettingsDialogData.AutoHighlight)
+            {
+                HighlightHelper.HighlightCurrentItem(
+                    codeDocumentService.CodeDocumentViewModel,
+                    args.AfterTextView.Selection.ActivePosition.Offset);
+            }
         }
-
-        // Document changed:
-        // - File path changed
-        // - Edits made in the document
-        // Action:
-        // - Update code items list
-        if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
-            args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+        catch (Exception e)
         {
-            await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, args.AfterTextView, cancellationToken);
-        }
-
-        // Document changed - Update history indicators
-        if (args.Edits.Any() &&
-            codeDocumentService.SettingsDialogData.ShowHistoryIndicators)
-        {
-            HistoryHelper.AddItemToHistory(codeDocumentService.CodeDocumentViewModel, args.Edits);
-        }
-
-        // Selection changed - Update highlights
-        if (args.BeforeTextView.Selection.ActivePosition.GetContainingLine().LineNumber !=
-            args.AfterTextView.Selection.ActivePosition.GetContainingLine().LineNumber &&
-            codeDocumentService.SettingsDialogData.AutoHighlight)
-        {
-            HighlightHelper.HighlightCurrentItem(
-                codeDocumentService.CodeDocumentViewModel,
-                args.AfterTextView.Selection.ActivePosition.Offset);
+            LogHelper.Log("Error listening to TextViewChanged", e);
         }
     }
 
     /// <inheritdoc />
     public async Task TextViewClosedAsync(ITextViewSnapshot textViewSnapshot, CancellationToken cancellationToken)
     {
-        codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-        codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateSelectDocumentItem());
-        return;
+        try
+        {
+            codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
+            codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateSelectDocumentItem());
+        }
+        catch (Exception e)
+        {
+            LogHelper.Log("Error listening to TextViewClosed", e);
+        }
     }
 
     /// <inheritdoc />
     public async Task TextViewOpenedAsync(ITextViewSnapshot textViewSnapshot, CancellationToken cancellationToken)
     {
-        await codeDocumentService.LoadGlobalSettings();
-
-        if (textViewSnapshot.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
-            codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
+        try
         {
-            // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-            codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
-            codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+            await codeDocumentService.LoadGlobalSettings();
 
-            return;
+            if (textViewSnapshot.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
+                codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
+            {
+                // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
+                codeDocumentService.CodeDocumentViewModel.CodeItems.Clear();
+                codeDocumentService.CodeDocumentViewModel.CodeItems.AddRange(PlaceholderHelper.CreateLineThresholdPassedItem());
+
+                return;
+            }
+
+            await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, textViewSnapshot, cancellationToken);
         }
-
-        await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, textViewSnapshot, cancellationToken);
+        catch (Exception e)
+        {
+            LogHelper.Log("Error listening to TextViewOpened", e);
+        }
     }
 }
