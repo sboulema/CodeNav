@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.ApplicationInsights;
+using Microsoft.VisualStudio.ApplicationInsights.Channel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
@@ -12,39 +13,54 @@ public static class LogHelper
 
     public static void GetClient()
     {
-        _client = new TelemetryClient();
-        _client.Context.Session.Id = Guid.NewGuid().ToString();
-        _client.InstrumentationKey = InstrumentationKey;
+        _client = new TelemetryClient(new()
+        {
+            InstrumentationKey = InstrumentationKey,
+            TelemetryChannel = new InMemoryChannel(),
+        })
+        {
+            InstrumentationKey = InstrumentationKey,
+        };
+
         _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
     }
 
     public static void Log(string message, Exception? exception = null, 
         object? additional = null)
     {
-        if (_client == null)
+        try
         {
-            GetClient();
-        }
+            if (_client == null)
+            {
+                GetClient();
+            }
 
-        if (_client == null)
-        {
-            return;
-        }
+            if (_client == null)
+            {
+                return;
+            }
 
-        var properties = new Dictionary<string, string>
-        {
-            { "version", GetExecutingAssemblyVersion().ToString() },
-            { "message", JsonSerializer.Serialize(message) },
-            { "additional", JsonSerializer.Serialize(additional) }
-        };
+            var properties = new Dictionary<string, string>
+            {
+                { "version", GetExecutingAssemblyVersion().ToString() },
+                { "message", JsonSerializer.Serialize(message) },
+                { "additional", JsonSerializer.Serialize(additional) },
+            };
 
-        if (exception == null)
-        {
-            _client.TrackEvent(message, properties);
+            if (exception == null)
+            {
+                _client.TrackEvent(message, properties);
+            }
+            else
+            {
+                _client.TrackException(exception, properties);
+            }
+
+            _client.Flush();
         }
-        else
+        catch (Exception)
         {
-            _client.TrackException(exception, properties);
+            // Ignore errors while trying to log errors
         }
     }
 
