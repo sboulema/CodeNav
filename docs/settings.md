@@ -1,5 +1,7 @@
 # Settings
 
+![Settings](../art/Settings.png)
+
 **Show the filter toolbar**
 
 Enable or disable the filter toolbar in the CodeNav window

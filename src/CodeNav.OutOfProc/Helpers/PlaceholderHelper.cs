@@ -5,8 +5,20 @@ namespace CodeNav.OutOfProc.Helpers;
 
 public static class PlaceholderHelper
 {
-    public static List<CodeItem> CreateLoadingItem()
-        => CreateItem("Loading...", ImageMoniker.KnownValues.Refresh);
+    public static async Task CreateLoadingItem(
+        CodeDocumentViewModel codeDocumentViewModel,
+        int millisecondsDelay,
+        CancellationToken cancellationToken)
+    {
+        await Task.Delay(millisecondsDelay, cancellationToken);
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        codeDocumentViewModel.CodeItems = CreateItem("Loading...", ImageMoniker.KnownValues.Refresh);
+    }
 
     public static List<CodeItem> CreateSelectDocumentItem()
         => CreateItem("Waiting for active code document...", ImageMoniker.KnownValues.DocumentOutline);

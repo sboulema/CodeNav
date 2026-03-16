@@ -3,6 +3,8 @@
 You can customize how CodeNav shows the code items in a document by creatin filter rules.
 A filter rule consists of three parts: A code item kind, modifiers and actions.
 
+![Filters](../art/Filters.png)
+
 ## Kind
 First select the kind of code item a rule should apply to (classs, method, namespace, etc...).
 

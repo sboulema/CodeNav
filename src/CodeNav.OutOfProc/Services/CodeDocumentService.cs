@@ -42,9 +42,14 @@ public class CodeDocumentService
                 return CodeDocumentViewModel;
             }
 
-            // TODO: disable for now, causes flicker, should be delayed
             // Show loading item while we process the document
-            //CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLoadingItem();
+            var loadingCancellationTokenSource = new CancellationTokenSource();
+            var loadingCancellationToken = loadingCancellationTokenSource.Token;
+
+            _ = PlaceholderHelper.CreateLoadingItem(
+                CodeDocumentViewModel,
+                500,
+                loadingCancellationToken);
 
             // Get the new list of code items
             var codeItems = await DocumentMapper.MapDocument(
@@ -53,6 +58,9 @@ public class CodeDocumentService
                 CodeDocumentViewModel,
                 extensibility,
                 cancellationToken);
+
+            // Getting the new code items is done, cancel creating a loading placeholder
+            await loadingCancellationTokenSource.CancelAsync();
 
             // Set properties on the CodeDocumentViewModel that are needed for other features
             CodeDocumentViewModel.CodeDocumentService = this;
