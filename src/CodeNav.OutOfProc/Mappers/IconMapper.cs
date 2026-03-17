@@ -12,20 +12,23 @@ public static class IconMapper
 
         string monikerString = kind switch
         {
-            CodeItemKindEnum.Namespace => $"Namespace{accessString}",
+            CodeItemKindEnum.BaseClass => "ClassShortcut",
             CodeItemKindEnum.Class => $"Class{accessString}",
             CodeItemKindEnum.Constant => $"Constant{accessString}",
+            CodeItemKindEnum.Constructor or CodeItemKindEnum.Method => $"Method{accessString}",
             CodeItemKindEnum.Delegate => $"Delegate{accessString}",
             CodeItemKindEnum.Enum => $"Enumeration{accessString}",
             CodeItemKindEnum.EnumMember => $"EnumerationItem{accessString}",
             CodeItemKindEnum.Event => $"Event{accessString}",
+            CodeItemKindEnum.ImplementedInterface => "ImplementInterface",
             CodeItemKindEnum.Interface => $"Interface{accessString}",
-            CodeItemKindEnum.Constructor or CodeItemKindEnum.Method => $"Method{accessString}",
+            CodeItemKindEnum.Namespace => $"Namespace{accessString}",
             CodeItemKindEnum.Property or CodeItemKindEnum.Indexer => $"Property{accessString}",
+            CodeItemKindEnum.Region => $"ExpandRight",
             CodeItemKindEnum.Struct or CodeItemKindEnum.Record => $"Structure{accessString}",
-            CodeItemKindEnum.Variable => $"Field{accessString}",
             CodeItemKindEnum.Switch => "FlowSwitch",
             CodeItemKindEnum.SwitchSection => "FlowDecision",
+            CodeItemKindEnum.Variable => $"Field{accessString}",
             _ => $"Property{accessString}",
         };
 

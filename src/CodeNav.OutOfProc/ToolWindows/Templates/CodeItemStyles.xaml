@@ -213,10 +213,13 @@
                                     Opacity="{Binding Opacity}"
                                     HorizontalAlignment="Stretch">
                                 <Expander.Header>
-                                    <TextBlock
+                                    <StackPanel Orientation="Horizontal">
+                                        <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
+                                        <TextBlock
                                             Text="{Binding Name}"
                                             FontWeight="SemiBold"
                                             Style="{StaticResource {x:Static styles:VsResourceKeys.TextBlockEnvironment90PercentFontSizeStyleKey}}" />
+                                    </StackPanel>
                                 </Expander.Header>
                                 <ItemsControl 
                                             ItemsSource="{Binding Members}"

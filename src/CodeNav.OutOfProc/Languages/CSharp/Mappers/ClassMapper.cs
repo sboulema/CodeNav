@@ -104,6 +104,7 @@ public class ClassMapper
             Id = baseType.Name,
             Tooltip = baseType.Name,
             Kind = CodeItemKindEnum.BaseClass,
+            Moniker = IconMapper.MapMoniker(CodeItemKindEnum.BaseClass, CodeItemAccessEnum.Unknown),
         };
 
         regions.Add(baseRegion);

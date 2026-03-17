@@ -1,6 +1,7 @@
 ﻿using CodeNav.OutOfProc.Constants;
 using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Mappers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -110,7 +111,8 @@ public static class RegionMapper
             Id = name,
             Tooltip = name,
             Kind = CodeItemKindEnum.Region,
-            Span = new(regionStart.Span.Start, 0)
+            Span = new(regionStart.Span.Start, 0),
+            Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Region, CodeItemAccessEnum.Unknown),
         };
     }
 
