@@ -78,11 +78,10 @@
                             <StackPanel>
                                 <!-- Show namespace as expander when not ignored -->
                                 <Expander
-                                        IsExpanded="{Binding IsExpanded}"
-                                        ToolTip="{Binding Tooltip}"
-                                        Visibility="{Binding IgnoreVisibility}"
-                                        Opacity="{Binding Opacity}"
-                                        HorizontalAlignment="Stretch">
+                                    IsExpanded="{Binding IsExpanded}"
+                                    Visibility="{Binding IgnoreVisibility}"
+                                    Opacity="{Binding Opacity}"
+                                    HorizontalAlignment="Stretch">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
                                             <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
@@ -95,11 +94,11 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <ItemsControl 
-                                            ItemsSource="{Binding Members}"
-                                            Margin="3"
-                                            VirtualizingPanel.IsVirtualizing="True"
-                                            VirtualizingPanel.VirtualizationMode="Recycling"
-                                            ScrollViewer.CanContentScroll="False">
+                                        ItemsSource="{Binding Members}"
+                                        Margin="3"
+                                        VirtualizingPanel.IsVirtualizing="True"
+                                        VirtualizingPanel.VirtualizationMode="Recycling"
+                                        ScrollViewer.CanContentScroll="False">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <VirtualizingStackPanel />
@@ -122,11 +121,11 @@
 
                                 <!-- Show namespace as list of its members if ignored -->
                                 <ItemsControl 
-                                            ItemsSource="{Binding Members}"
-                                            Visibility="{Binding NotIgnoreVisibility}"
-                                            VirtualizingPanel.IsVirtualizing="True"
-                                            VirtualizingPanel.VirtualizationMode="Recycling"
-                                            ScrollViewer.CanContentScroll="False">
+                                    ItemsSource="{Binding Members}"
+                                    Visibility="{Binding NotIgnoreVisibility}"
+                                    VirtualizingPanel.IsVirtualizing="True"
+                                    VirtualizingPanel.VirtualizationMode="Recycling"
+                                    ScrollViewer.CanContentScroll="False">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <VirtualizingStackPanel />
@@ -157,27 +156,26 @@
                         <DataTemplate>
                             <StackPanel>
                                 <Expander
-                                        IsExpanded="{Binding IsExpanded}"
-                                        ToolTip="{Binding Tooltip}"
-                                        Opacity="{Binding Opacity}"
-                                        HorizontalAlignment="Stretch">
+                                    IsExpanded="{Binding IsExpanded}"
+                                    Opacity="{Binding Opacity}"
+                                    HorizontalAlignment="Stretch">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
                                             <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
                                             <TextBlock>
-                                                    <Run Text="{Binding Name}" 
-                                                         Style="{DynamicResource HighlightNameStyle}" />
-                                                    <Run Text="{Binding Parameters}" 
-                                                         Foreground="DarkGray" />
+                                                <Run Text="{Binding Name}" 
+                                                    Style="{DynamicResource HighlightNameStyle}" />
+                                                <Run Text="{Binding Parameters}" 
+                                                    Foreground="DarkGray" />
                                             </TextBlock>
                                         </StackPanel>
                                     </Expander.Header>
                                     <ItemsControl 
-                                            ItemsSource="{Binding Members}"
-                                            Margin="3"
-                                            VirtualizingPanel.IsVirtualizing="True"
-                                            VirtualizingPanel.VirtualizationMode="Recycling"
-                                            ScrollViewer.CanContentScroll="False">
+                                        ItemsSource="{Binding Members}"
+                                        Margin="3"
+                                        VirtualizingPanel.IsVirtualizing="True"
+                                        VirtualizingPanel.VirtualizationMode="Recycling"
+                                        ScrollViewer.CanContentScroll="False">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <VirtualizingStackPanel />
@@ -208,10 +206,9 @@
                     <Setter.Value>
                         <DataTemplate>
                             <Expander
-                                    IsExpanded="{Binding IsExpanded}"
-                                    ToolTip="{Binding Tooltip}"
-                                    Opacity="{Binding Opacity}"
-                                    HorizontalAlignment="Stretch">
+                                IsExpanded="{Binding IsExpanded}"
+                                Opacity="{Binding Opacity}"
+                                HorizontalAlignment="Stretch">
                                 <Expander.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
@@ -222,11 +219,11 @@
                                     </StackPanel>
                                 </Expander.Header>
                                 <ItemsControl 
-                                            ItemsSource="{Binding Members}"
-                                            Margin="3"
-                                            VirtualizingPanel.IsVirtualizing="True"
-                                            VirtualizingPanel.VirtualizationMode="Recycling"
-                                            ScrollViewer.CanContentScroll="False">
+                                    ItemsSource="{Binding Members}"
+                                    Margin="3"
+                                    VirtualizingPanel.IsVirtualizing="True"
+                                    VirtualizingPanel.VirtualizationMode="Recycling"
+                                    ScrollViewer.CanContentScroll="False">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <VirtualizingStackPanel />
