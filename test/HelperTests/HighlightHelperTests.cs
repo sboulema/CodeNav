@@ -8,7 +8,7 @@ internal class HighlightHelperTests : BaseTest
     {
         var document = await MapToCodeDocumentViewModel("TestProperties.cs");
 
-        HighlightHelper.HighlightCurrentItem(document, 263); // linenumber 13
+        await HighlightHelper.HighlightCurrentItem(document, 263); // linenumber 13
 
         var highlightedClass = (document.CodeItems.First() as IMembers)?.Members.First() as CodeClassItem;
         var highlightedItem = highlightedClass?.Members[2];
@@ -21,9 +21,9 @@ internal class HighlightHelperTests : BaseTest
     {
         var document = await MapToCodeDocumentViewModel("TestProperties.cs");
 
-        HighlightHelper.HighlightCurrentItem(document, 296); // linenumber 15
+        await HighlightHelper.HighlightCurrentItem(document, 296); // linenumber 15
 
-        HighlightHelper.HighlightCurrentItem(document, 369); // linenumber 20
+        await HighlightHelper.HighlightCurrentItem(document, 369); // linenumber 20
 
 
         var highlightedItems = new List<CodeItem>();

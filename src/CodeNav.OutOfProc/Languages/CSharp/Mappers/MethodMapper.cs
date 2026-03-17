@@ -32,7 +32,7 @@ public static class MethodMapper
 
         var statementsCodeItems = StatementMapper.MapStatement(body, semanticModel, codeDocumentViewModel);
 
-        VisibilityHelper.SetCodeItemVisibility(statementsCodeItems, codeDocumentViewModel.FilterRules);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, statementsCodeItems, codeDocumentViewModel.FilterRules);
 
         if (statementsCodeItems.Any(statement => statement.Visibility == Visibility.Visible))
         {

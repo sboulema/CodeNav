@@ -66,7 +66,7 @@ internal class TextViewEventListener(
             if (args.Edits.Any() &&
                 codeDocumentService.SettingsDialogData.ShowHistoryIndicators)
             {
-                HistoryHelper.AddItemToHistory(codeDocumentService.CodeDocumentViewModel, args.Edits);
+                await HistoryHelper.AddItemToHistory(codeDocumentService.CodeDocumentViewModel, args.Edits);
             }
 
             // Selection changed - Update highlights
@@ -74,14 +74,14 @@ internal class TextViewEventListener(
                 args.AfterTextView.Selection.ActivePosition.GetContainingLine().LineNumber &&
                 codeDocumentService.SettingsDialogData.AutoHighlight)
             {
-                HighlightHelper.HighlightCurrentItem(
+                await HighlightHelper.HighlightCurrentItem(
                     codeDocumentService.CodeDocumentViewModel,
                     args.AfterTextView.Selection.ActivePosition.Offset);
             }
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error listening to TextViewChanged", e);
+            await LogHelper.LogException(codeDocumentService, "Error listening to TextViewChanged", e);
         }
     }
 
@@ -94,7 +94,7 @@ internal class TextViewEventListener(
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error listening to TextViewClosed", e);
+            await LogHelper.LogException(codeDocumentService, "Error listening to TextViewClosed", e);
         }
     }
 
@@ -118,7 +118,7 @@ internal class TextViewEventListener(
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error listening to TextViewOpened", e);
+            await LogHelper.LogException(codeDocumentService, "Error listening to TextViewOpened", e);
         }
     }
 }

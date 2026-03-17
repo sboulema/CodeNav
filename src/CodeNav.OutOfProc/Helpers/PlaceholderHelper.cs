@@ -10,8 +10,15 @@ public static class PlaceholderHelper
         int millisecondsDelay,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(millisecondsDelay, cancellationToken);
-
+        try
+        {
+            await Task.Delay(millisecondsDelay, cancellationToken);
+        }
+        catch (Exception)
+        {
+            // Ignore delay task being cancelled
+        }
+        
         if (cancellationToken.IsCancellationRequested)
         {
             return;

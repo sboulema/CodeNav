@@ -1,6 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
 using CodeNav.OutOfProc.Helpers;
-using CodeNav.OutOfProc.Services;
 using CodeNav.Services;
 using Microsoft;
 using Microsoft.CodeAnalysis.Text;
@@ -199,11 +198,13 @@ public class CodeItem : NotifyPropertyChangedObject
     public AsyncCommand ClickItemCommand { get; }
     public async Task ClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        HistoryHelper.AddItemToHistory(this);
+        await LogHelper.LogInfo(this, $"Clicking item '{Name}'");
 
         var span = IdentifierSpan.Start != 0
             ? IdentifierSpan
             : Span;
+
+        await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");
 
         var inProcService = await clientContext.Extensibility
             .ServiceBroker
@@ -219,7 +220,13 @@ public class CodeItem : NotifyPropertyChangedObject
             (inProcService as IDisposable)?.Dispose();
         }
 
+        await LogHelper.LogInfo(this, $"Moving caret to position '{span.Start}'");
+
         await MoveCaretToPosition(span.Start, clientContext, cancellationToken);
+
+        await LogHelper.LogInfo(this, $"Adding item '{Name}' to history");
+
+        HistoryHelper.AddItemToHistory(this);
     }
 
     [DataMember]

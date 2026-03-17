@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace CodeNav.OutOfProc.Services;
 
-public class CodeDocumentService
+public class CodeDocumentService(OutputWindowService logService)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -28,6 +28,8 @@ public class CodeDocumentService
     public FilterDialogData FilterDialogData { get; set; } = new();
 
     public GlobalSettings? GlobalSettings { get; set; }
+
+    public OutputWindowService LogService => logService;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
@@ -59,6 +61,8 @@ public class CodeDocumentService
                 extensibility,
                 cancellationToken);
 
+            await logService.WriteInfo(textView, $"Found '{codeItems.Count}' code items");
+
             // Getting the new code items is done, cancel creating a loading placeholder
             await loadingCancellationTokenSource.CancelAsync();
 
@@ -76,27 +80,39 @@ public class CodeDocumentService
             // And update the DataContext for the tool window
             CodeDocumentViewModel.CodeItems = SortHelper.Sort(codeItems, CodeDocumentViewModel.SortOrder);
 
+            await logService.WriteInfo(textView, $"Sorted code items on '{CodeDocumentViewModel.SortOrder}'");
+
             // Apply highlights
             HighlightHelper.UnHighlight(CodeDocumentViewModel);
 
+            await logService.WriteInfo(textView, $"Remove highlight from all code items");
+
             // Apply current visibility settings to the document
-            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+
+            await logService.WriteInfo(textView, $"Set code item visibility");
 
             // Apply history items
             HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
 
+            await logService.WriteInfo(textView, $"Apply history indicators");
+
             // Apply bookmarks
             BookmarkHelper.ApplyBookmarkIndicator(CodeDocumentViewModel);
+
+            await logService.WriteInfo(textView, $"Apply bookmark indicators");
 
             // TODO: If we get support for OutliningManager in the future,
             // we should consider not expanding by default
             OutliningHelper.ExpandAll(CodeDocumentViewModel);
 
+            await logService.WriteInfo(textView, $"Expanding all code items");
+
             return CodeDocumentViewModel;
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error updating CodeDocumentViewModel", e);
+            await LogHelper.LogException(this, "Error updating CodeDocumentViewModel", e);
         }
 
         return CodeDocumentViewModel;
@@ -111,7 +127,7 @@ public class CodeDocumentService
                 GlobalSettings = null;
             }
 
-            GlobalSettings ??= await SettingsHelper.LoadGlobalSettings();
+            GlobalSettings ??= await SettingsHelper.LoadGlobalSettings(this);
 
             SettingsDialogData = new()
             {
@@ -120,6 +136,7 @@ public class CodeDocumentService
                 ShowFilterToolbar = GlobalSettings.ShowFilterToolbar,
                 ShowHistoryIndicators = GlobalSettings.ShowHistoryIndicators,
                 UpdateWhileTyping = GlobalSettings.UpdateWhileTyping,
+                EnableCrashAnalytics = GlobalSettings.EnableCrashAnalytics,
             };
 
             var filterRules = GlobalSettings
@@ -159,14 +176,14 @@ public class CodeDocumentService
             }
 
             // Update the view model with the filter rules
-            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
 
             // Update the view model with the sort order
             SortHelper.ApplySort(CodeDocumentViewModel, GlobalSettings.SortOrder);
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error loading global settings", e);
+            await LogHelper.LogException(this, "Error loading global settings", e);
         }
     }
 }

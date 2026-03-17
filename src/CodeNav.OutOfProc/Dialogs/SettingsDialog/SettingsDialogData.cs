@@ -34,4 +34,10 @@ public class SettingsDialogData
     /// </summary>
     [DataMember]
     public int AutoLoadLineThreshold { get; set; } = 0;
+
+    /// <summary>
+    /// Setting if CodeNav should sent crash analytics to Application Insights
+    /// </summary>
+    [DataMember]
+    public bool EnableCrashAnalytics { get; set; }
 }

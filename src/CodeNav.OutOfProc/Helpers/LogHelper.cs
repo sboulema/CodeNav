@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.ApplicationInsights;
+﻿using CodeNav.OutOfProc.Services;
+using CodeNav.OutOfProc.ViewModels;
+using Microsoft.VisualStudio.ApplicationInsights;
 using Microsoft.VisualStudio.ApplicationInsights.Channel;
 using System.Diagnostics;
 using System.Reflection;
@@ -25,8 +27,50 @@ public static class LogHelper
         _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
     }
 
-    public static void Log(string message, Exception? exception = null, 
-        object? additional = null)
+    public static async Task LogException(
+        CodeDocumentViewModel codeDocumentViewModel,
+        string message,
+        Exception exception)
+        => await LogException(codeDocumentViewModel.CodeDocumentService, message, exception);
+
+    public static async Task LogException(
+        CodeDocumentService? codeDocumentService,
+        string message,
+        Exception exception)
+    {
+        await WriteException(codeDocumentService, message, exception);
+
+        if (codeDocumentService?.GlobalSettings?.EnableCrashAnalytics != true)
+        {
+            return;
+        }
+
+        LogToApplicationInsights(message, exception);
+    }
+
+    public async static Task LogInfo(CodeItem codeItem, string text)
+    {
+        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.LogService == null)
+        {
+            return;
+        }
+
+        await codeItem.CodeDocumentViewModel.CodeDocumentService.LogService.WriteInfo(codeItem.FilePath, text);
+    }
+
+    private async static Task WriteException(CodeDocumentService? codeDocumentService, string text, Exception exception)
+    {
+        if (codeDocumentService?.LogService == null)
+        {
+            return;
+        }
+
+        await codeDocumentService.LogService.WriteException(text, exception);
+    }
+
+    private static void LogToApplicationInsights(
+        string message,
+        Exception? exception = null)
     {
         try
         {
@@ -44,7 +88,6 @@ public static class LogHelper
             {
                 { "version", GetExecutingAssemblyVersion().ToString() },
                 { "message", JsonSerializer.Serialize(message) },
-                { "additional", JsonSerializer.Serialize(additional) },
             };
 
             if (exception == null)

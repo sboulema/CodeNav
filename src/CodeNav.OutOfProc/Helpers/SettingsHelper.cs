@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Services;
 using Newtonsoft.Json;
 
 namespace CodeNav.OutOfProc.Helpers;
@@ -14,7 +15,7 @@ public static class SettingsHelper
     /// <summary>
     /// Save global settings to disk.
     /// </summary>
-    public static async Task SaveGlobalSettings(GlobalSettings settings)
+    public static async Task SaveGlobalSettings(CodeDocumentService codeDocumentService)
     {
         try
         {
@@ -23,7 +24,7 @@ public static class SettingsHelper
                 Directory.CreateDirectory(_globalSettingsFolder);
             }
 
-            var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(codeDocumentService.GlobalSettings, Formatting.Indented);
 
             using var writer = new StreamWriter(_globalSettingsFile, false);
 
@@ -31,7 +32,7 @@ public static class SettingsHelper
         }
         catch (Exception e)
         {
-            LogHelper.Log($"Failed to save global settings", e);
+            await LogHelper.LogException(codeDocumentService, $"Failed to save global settings", e);
         }
     }
 
@@ -39,7 +40,7 @@ public static class SettingsHelper
     /// <summary>
     /// Loads saved global settings from disk.
     /// </summary>
-    public static async Task<GlobalSettings> LoadGlobalSettings()
+    public static async Task<GlobalSettings> LoadGlobalSettings(CodeDocumentService codeDocumentService)
     {
         try
         {
@@ -56,7 +57,7 @@ public static class SettingsHelper
         }
         catch (Exception e)
         {
-            LogHelper.Log($"Failed to load global settings", e);
+            await LogHelper.LogException(codeDocumentService, $"Failed to load global settings", e);
             return new();
         }
     }
@@ -88,6 +89,11 @@ public class GlobalSettings
     /// Settings dialog - Setting to not update CodeNav for files over a certain line threshold
     /// </summary>
     public int AutoLoadLineThreshold { get; set; } = 0;
+
+    /// <summary>
+    /// Settings dialog - Setting if CodeNav should sent crash analytics to Application Insights
+    /// </summary>
+    public bool EnableCrashAnalytics { get; set; }
 
     /// <summary>
     /// Main toolbar - Setting to store the selected sort order for code items

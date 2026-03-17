@@ -84,7 +84,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         set
         {
             SetProperty(ref _filterText, value);
-            VisibilityHelper.SetCodeItemVisibility(CodeItems, FilterRules, value);
+            VisibilityHelper.SetCodeItemVisibility(this, CodeItems, FilterRules, value);
             RaiseNotifyPropertyChangedEvent(nameof(ShowClearFilterTextButtonVisibility));
         }
     }
@@ -175,7 +175,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
 
         await CodeDocumentService.LoadGlobalSettings();
         CodeDocumentService.GlobalSettings!.SortOrder = SortOrderEnum.SortByName;
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService.GlobalSettings);
+        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
         SortHelper.ApplySort(CodeDocumentService.CodeDocumentViewModel, SortOrderEnum.SortByName);
 
@@ -200,7 +200,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
 
         await CodeDocumentService.LoadGlobalSettings();
         CodeDocumentService.GlobalSettings!.SortOrder = SortOrderEnum.SortByFile;
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService.GlobalSettings);
+        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
         SortHelper.ApplySort(CodeDocumentService.CodeDocumentViewModel, SortOrderEnum.SortByFile);
 
@@ -248,8 +248,9 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         CodeDocumentService.GlobalSettings.ShowFilterToolbar = CodeDocumentService.SettingsDialogData.ShowFilterToolbar;
         CodeDocumentService.GlobalSettings.ShowHistoryIndicators = CodeDocumentService.SettingsDialogData.ShowHistoryIndicators;
         CodeDocumentService.GlobalSettings.UpdateWhileTyping = CodeDocumentService.SettingsDialogData.UpdateWhileTyping;
+        CodeDocumentService.GlobalSettings.EnableCrashAnalytics = CodeDocumentService.SettingsDialogData.EnableCrashAnalytics;
 
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService.GlobalSettings);
+        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
         // Refresh the tool window with the new settings
         await CodeDocumentService.LoadGlobalSettings(readFromDisk: true);
@@ -300,7 +301,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
                 Opacity = filterRule.Opacity,
             })];
 
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService.GlobalSettings);
+        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
         // Save new filter rules to view model
         FilterRules = [.. CodeDocumentService.FilterDialogData.FilterRules];
@@ -313,7 +314,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand FilterOnBookmarksCommand { get; }
     private async Task FilterOnBookmarks(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        VisibilityHelper.SetCodeItemVisibility(CodeItems, FilterRules, FilterText, BookmarkIds);
+        VisibilityHelper.SetCodeItemVisibility(this, CodeItems, FilterRules, FilterText, BookmarkIds);
     }
 
     #endregion
