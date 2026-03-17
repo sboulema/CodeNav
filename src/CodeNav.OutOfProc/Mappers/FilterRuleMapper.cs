@@ -26,6 +26,7 @@ public static class FilterRuleMapper
             CodeItemKindEnum.Namespace
                 or CodeItemKindEnum.Class
                 or CodeItemKindEnum.Region
+                or CodeItemKindEnum.ImplementedInterface
                 or CodeItemKindEnum.Interface
                 or CodeItemKindEnum.Method
                 or CodeItemKindEnum.BaseClass => true,
