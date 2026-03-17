@@ -35,7 +35,7 @@
                 <ControlTemplate TargetType="RadioButton">
                     <Border
                             x:Name="ToolbarRadioButtonBorder"
-                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ToolWindowButtonDownBorderKey}}"
+                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ToolWindowButtonDownKey}}"
                             BorderThickness="0"
                             Padding="4"
                             CornerRadius="4">
