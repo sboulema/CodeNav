@@ -119,7 +119,7 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
-                        Command="{Binding Path=ClearFilterTextCommand}"
+                        Command="{Binding ClearFilterTextCommand}"
                         Visibility="{Binding ShowClearFilterTextButtonVisibility}"
                         ToolTip="Click to clear text filter contents"
                         Style="{DynamicResource ToolbarButtonStyle}">
@@ -128,21 +128,22 @@
                         </Button.Content>
                     </Button>
 
-                    <Button
-                        Command="{Binding Path=FilterOnBookmarksCommand}"
+                    <ToggleButton
+                        Command="{Binding FilterOnBookmarksCommand}"
+                        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                         Visibility="{Binding ShowFilterOnBookmarksButtonVisibility}"
                         ToolTip="Click to filter by bookmarks"
-                        Style="{DynamicResource ToolbarButtonStyle}">
-                        <Button.Content>
+                        Style="{DynamicResource ToolbarToggleButtonStyle}">
+                        <ToggleButton.Content>
                             <Grid Width="16" Height="16">
                                 <vs:Image Source="KnownMonikers.Filter" />
                                 <vs:Image Source="KnownMonikers.Bookmark" Width="8" Height="8" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                             </Grid>
-                        </Button.Content>
-                    </Button>
+                        </ToggleButton.Content>
+                    </ToggleButton>
 
                     <Button
-                        Command="{Binding Path=FilterCommand}"
+                        Command="{Binding FilterCommand}"
                         ToolTip="Click to filter by item kind"
                         Style="{DynamicResource ToolbarButtonStyle}">
                         <Button.Content>

@@ -314,7 +314,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand FilterOnBookmarksCommand { get; }
     private async Task FilterOnBookmarks(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        VisibilityHelper.SetCodeItemVisibility(this, CodeItems, FilterRules, FilterText, BookmarkIds);
+        VisibilityHelper.SetCodeItemVisibility(this, CodeItems, FilterRules, FilterText, (bool)commandParameter! ? BookmarkIds : []);
     }
 
     #endregion

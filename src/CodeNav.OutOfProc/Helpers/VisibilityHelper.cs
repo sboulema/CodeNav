@@ -91,7 +91,7 @@ public static class VisibilityHelper
         }
 
         // If we filter on bookmarks, only show items that are in the bookmark list
-        if (bookmarkIds != null &&
+        if (bookmarkIds?.Any() == true &&
             bookmarkIds.Contains(codeItem.Id) == false)
         {
             visible = false;
