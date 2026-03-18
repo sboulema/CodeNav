@@ -10,7 +10,9 @@ using System.Windows;
 
 namespace CodeNav.OutOfProc.Services;
 
-public class CodeDocumentService(OutputWindowService logService)
+public class CodeDocumentService(
+    OutputWindowService logService,
+    OutliningHelper outliningHelper)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -30,6 +32,8 @@ public class CodeDocumentService(OutputWindowService logService)
     public GlobalSettings? GlobalSettings { get; set; }
 
     public OutputWindowService LogService => logService;
+
+    public OutliningHelper OutliningHelper => outliningHelper;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,

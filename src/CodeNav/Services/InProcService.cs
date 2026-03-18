@@ -53,6 +53,9 @@ internal class InProcService : IInProcService
 
             var outliningManager = await GetOutliningManager(textView);
 
+            // Switch to the UI thread to ensure we can interact with the outline regions.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, start, length);
 
             // Check if the outline region is collapsed before expanding
@@ -79,6 +82,9 @@ internal class InProcService : IInProcService
 
             var outliningManager = await GetOutliningManager(textView);
 
+            // Switch to the UI thread to ensure we can interact with the outline regions.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, start, length);
 
             outliningManager.TryCollapse(outlineRegion);
@@ -98,8 +104,10 @@ internal class InProcService : IInProcService
 
         var outlineRegions = outliningManager.GetAllRegions(span);
 
-        // Get the first outline region that has the same span start
-        return outlineRegions.FirstOrDefault(outlineRegion => GetSpan(outlineRegion).Start == start);
+        // Get the first outline region that has the same span start or end
+        return outlineRegions.FirstOrDefault(outlineRegion
+            => GetSpan(outlineRegion).Start == start ||
+               GetSpan(outlineRegion).End == start + length);
     }
 
     private SnapshotSpan GetSpan(ICollapsible outlineRegion)
