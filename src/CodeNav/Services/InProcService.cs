@@ -1,4 +1,5 @@
-﻿using Microsoft;
+﻿using CodeNav.OutOfProc.Services;
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Extensibility;
@@ -42,6 +43,62 @@ internal class InProcService : IInProcService
     public async Task DoSomethingAsync(CancellationToken cancellationToken)
     {
         await _extensibility.Shell().ShowPromptAsync("Hello from out-of-proc! (Showing this message from (in-proc)", PromptOptions.OK, cancellationToken);
+    }
+
+    public async Task SubscribeToRegionEvents()
+    {
+        // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
+        var textView = await GetCurrentTextViewAsync();
+
+        var outliningManager = await GetOutliningManager(textView);
+
+        outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
+        outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
+
+        outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
+        outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+    }
+
+    private async void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e)
+    {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
+        try
+        {
+            Assumes.NotNull(outOfProcService);
+
+            foreach (var region in e.ExpandedRegions)
+            {
+                var span = GetSpan(region);
+                await outOfProcService.SetCodeItemIsExpanded(span.Start, span.End, isExpanded: true);
+            }
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
+        }
+    }
+
+    private async void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)
+    {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
+        try
+        {
+            Assumes.NotNull(outOfProcService);
+
+            foreach (var region in e.CollapsedRegions)
+            {
+                var span = GetSpan(region);
+                await outOfProcService.SetCodeItemIsExpanded(span.Start, span.End, isExpanded: false);
+            }
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
+        }
     }
 
     public async Task ExpandOutlineRegion(int start, int length)

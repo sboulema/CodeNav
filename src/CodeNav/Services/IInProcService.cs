@@ -12,6 +12,8 @@ public interface IInProcService
 
     Task CollapseOutlineRegion(int start, int length);
 
+    Task SubscribeToRegionEvents();
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.InProcService";

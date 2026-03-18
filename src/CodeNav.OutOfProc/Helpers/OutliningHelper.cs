@@ -20,6 +20,19 @@ public class OutliningHelper : DisposableObject
         _initializationTask = Task.Run(InitializeAsync);
     }
 
+    public async Task SubscribeToRegionEvents()
+    {
+        try
+        {
+            Assumes.NotNull(_inProcService);
+            await _inProcService.SubscribeToRegionEvents();
+        }
+        catch (Exception e)
+        {
+            // TODO: Add logging
+        }
+    }
+
     public async Task CollapseOutlineRegion(int start, int length)
     {
         try
@@ -67,20 +80,34 @@ public class OutliningHelper : DisposableObject
     }
 
     /// <summary>
-    /// Collapses all nodes in the specified code document view model.
+    /// Set IsExpanded property to false on all code items
     /// </summary>
     /// <remarks>Used in the main toolbar and in the code item context menu</remarks>
     /// <param name="codeDocumentViewModel">The code document view model whose nodes will be collapsed.</param>
     public static void CollapseAll(CodeDocumentViewModel? codeDocumentViewModel)
-        => SetIsExpanded(codeDocumentViewModel, isExpanded: false);
+        => SetAllIsExpanded(codeDocumentViewModel, isExpanded: false);
 
     /// <summary>
-    /// Expands all nodes in the specified code document view model.
+    /// Set IsExpanded property to true on all code items
     /// </summary>
     /// <remarks>Used in the main toolbar and in the code item context menu</remarks>
     /// <param name="codeDocumentViewModel">The code document view model whose nodes will be expanded.</param>
     public static void ExpandAll(CodeDocumentViewModel? codeDocumentViewModel)
-        => SetIsExpanded(codeDocumentViewModel, isExpanded: true);
+        => SetAllIsExpanded(codeDocumentViewModel, isExpanded: true);
+
+    public static void SetIsExpanded(CodeDocumentViewModel? codeDocumentViewModel, int spanStart, int spanEnd, bool isExpanded)
+    {
+        codeDocumentViewModel?
+            .CodeItems
+            .Flatten()
+            .FilterNull()
+            .Where(item => item is IMembers)
+            .Where(codeItem => codeItem.Span.Start == spanStart ||
+                               codeItem.Span.End == spanEnd)
+            .Cast<IMembers>()
+            .ToList()
+            .ForEach(codeItem => codeItem.IsExpanded = isExpanded);
+    }
 
     /// <summary>
     /// Sets the expanded state for all member items within the specified code document view model.
@@ -89,7 +116,7 @@ public class OutliningHelper : DisposableObject
     /// <param name="codeDocumentViewModel">The code document view model containing the code items to update. If null, no action is taken.</param>
     /// <param name="isExpanded">A value indicating whether the member items should be expanded (<see langword="true"/>) or collapsed (<see
     /// langword="false"/>).</param>
-    private static void SetIsExpanded(CodeDocumentViewModel? codeDocumentViewModel, bool isExpanded)
+    private static void SetAllIsExpanded(CodeDocumentViewModel? codeDocumentViewModel, bool isExpanded)
     {
         codeDocumentViewModel?
             .CodeItems
