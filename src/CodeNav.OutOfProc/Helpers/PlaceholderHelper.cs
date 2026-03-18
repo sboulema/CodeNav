@@ -5,16 +5,38 @@ namespace CodeNav.OutOfProc.Helpers;
 
 public static class PlaceholderHelper
 {
-    public static IEnumerable<CodeItem> CreateLoadingItem()
-        => CreateItem("Loading...", ImageMoniker.KnownValues.Refresh);
+    public static async Task CreateLoadingItem(
+        CodeDocumentViewModel codeDocumentViewModel,
+        int millisecondsDelay,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(millisecondsDelay, cancellationToken);
+        }
+        catch (Exception)
+        {
+            // Ignore delay task being cancelled
+        }
+        
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
 
-    public static IEnumerable<CodeItem> CreateSelectDocumentItem()
+        codeDocumentViewModel.CodeItems = CreateItem("Loading...", ImageMoniker.KnownValues.Refresh);
+    }
+
+    public static List<CodeItem> CreateSelectDocumentItem()
         => CreateItem("Waiting for active code document...", ImageMoniker.KnownValues.DocumentOutline);
 
-    public static IEnumerable<CodeItem> CreateLineThresholdPassedItem()
+    public static List<CodeItem> CreateLineThresholdPassedItem()
         => CreateItem("File exceeds line threshold...", ImageMoniker.KnownValues.DocumentError);
 
-    private static IEnumerable<CodeItem> CreateItem(string name, ImageMoniker moniker)
+    public static List<CodeItem> CreateNoCodeItemsFound()
+        => CreateItem("No code items found...", ImageMoniker.KnownValues.DocumentOutline);
+
+    private static List<CodeItem> CreateItem(string name, ImageMoniker moniker)
         => [
             new CodeItem
             {

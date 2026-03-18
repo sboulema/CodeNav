@@ -26,6 +26,7 @@ public static class FilterRuleMapper
             CodeItemKindEnum.Namespace
                 or CodeItemKindEnum.Class
                 or CodeItemKindEnum.Region
+                or CodeItemKindEnum.ImplementedInterface
                 or CodeItemKindEnum.Interface
                 or CodeItemKindEnum.Method
                 or CodeItemKindEnum.BaseClass => true,
@@ -48,6 +49,6 @@ public static class FilterRuleMapper
             _ => true,
         };
 
-    public static bool MapOpacity(bool hide, bool ignore)
+    public static bool MapBasedOnHideIgnore(bool hide, bool ignore)
         => !(hide || ignore);
 }

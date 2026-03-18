@@ -10,7 +10,7 @@ public static class HighlightHelper
     /// </summary>
     /// <param name="codeDocumentViewModel">Code document</param>
     /// <param name="offset">Cursor position as a numeric offset from the start of the document</param>
-    public static void HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel,
+    public static async Task HighlightCurrentItem(CodeDocumentViewModel codeDocumentViewModel,
         int offset)
     {
         if (codeDocumentViewModel == null)
@@ -25,7 +25,7 @@ public static class HighlightHelper
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error highlighting current item", e);
+            await LogHelper.LogException(codeDocumentViewModel, "Error highlighting current item", e);
         }
     }
 

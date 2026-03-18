@@ -74,7 +74,10 @@
                                     BorderThickness="0,0,1,0"
                                     Margin="-6,-3,-6,-3">
                                     <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
-                                        <CheckBox IsChecked="{Binding IsEmpty}" IsEnabled="{Binding IsEmptyEnabled}" />
+                                        <CheckBox
+                                            IsThreeState="True"
+                                            IsChecked="{Binding IsEmpty}"
+                                            IsEnabled="{Binding IsEmptyEnabled}" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -101,6 +104,22 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding Opacity}" IsEnabled="{Binding IsOpacityEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Italic" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Italic}" IsEnabled="{Binding IsItalicEnabled}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Font scale" Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding FontScale}" IsEnabled="{Binding IsFontScaleEnabled}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -146,7 +165,10 @@
                     <LineBreak/>
                     <Run FontWeight="Bold">Access:</Run> Match code items with access modifier
                     <LineBreak/>
-                    <Run FontWeight="Bold">Empty:</Run> Match code items that do not have visible child items
+                    <Run FontWeight="Bold">Empty:</Run> Match code items that:
+                    <LineBreak/>Checked: do not have visible child items
+                    <LineBreak/>Unchecked: do have visible child items
+                    <LineBreak/>Indeterminate: either do or do not have visible child items
                 </TextBlock>
                 <TextBlock>
                     <Run FontWeight="Bold">Actions</Run>
@@ -156,6 +178,10 @@
                     <Run FontWeight="Bold">Ignore:</Run> Code item will not be shown, but its child items will be shown
                     <LineBreak/>
                     <Run FontWeight="Bold">Opacity:</Run> Code items opacity, where 0 is transparent and 100 is opaque
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Italic:</Run> Code item will be shown with italic font style
+                    <LineBreak/>
+                    <Run FontWeight="Bold">Font scale:</Run> Code item will be shown with a percentage of the default environment font size               
                 </TextBlock>
             </StackPanel>
         </GroupBox>

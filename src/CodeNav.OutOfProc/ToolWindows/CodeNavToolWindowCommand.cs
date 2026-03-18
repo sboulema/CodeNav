@@ -8,7 +8,7 @@ public class CodeNavToolWindowCommand : Command
 {
     public override CommandConfiguration CommandConfiguration => new("%CodeNav.CodeNavToolWindowCommand.DisplayName%")
     {
-        Placements = [CommandPlacement.KnownPlacements.ViewOtherWindowsMenu],
+        Placements = [CommandPlacement.KnownPlacements.ExtensionsMenu],
         Icon = new(ImageMoniker.KnownValues.DocumentOutline, IconSettings.IconAndText),
     };
 

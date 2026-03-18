@@ -54,6 +54,17 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
+
+        <GroupBox
+            Header="Analytics"
+            Margin="5"
+            Padding="5">
+            <StackPanel>
+                <CheckBox IsChecked="{Binding EnableCrashAnalytics, Mode=TwoWay}">
+                    Enable sending crash analytics to Application Insights
+                </CheckBox>
+            </StackPanel>
+        </GroupBox>
     </StackPanel>
 
 </DataTemplate>

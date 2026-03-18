@@ -17,6 +17,7 @@ public static class VisibilityHelper
     /// <param name="document">List of code items</param>
     /// <param name="filterText">Text that should be contained in the code items name</param>
     public static IEnumerable<CodeItem> SetCodeItemVisibility(
+        CodeDocumentViewModel codeDocumentViewModel,
         IEnumerable<CodeItem> codeItems,
         IEnumerable<FilterRuleViewModel> filterRules,
         string filterText = "",
@@ -33,7 +34,7 @@ public static class VisibilityHelper
                     if (codeItem is IMembers hasMembersItem &&
                         hasMembersItem.Members.Any())
                     {
-                        SetCodeItemVisibility(hasMembersItem.Members, filterRules, filterText, bookmarkIds);
+                        SetCodeItemVisibility(codeDocumentViewModel, hasMembersItem.Members, filterRules, filterText, bookmarkIds);
                     }
 
                     codeItem.Visibility = ShouldBeVisible(codeItem, filterRules, filterText, bookmarkIds)
@@ -50,7 +51,7 @@ public static class VisibilityHelper
         }
         catch (Exception e)
         {
-            LogHelper.Log("Error during setting visibility", e);
+            _ = LogHelper.LogException(codeDocumentViewModel, "Error during setting visibility", e);
         }
 
         return codeItems;
@@ -90,7 +91,7 @@ public static class VisibilityHelper
         }
 
         // If we filter on bookmarks, only show items that are in the bookmark list
-        if (bookmarkIds != null &&
+        if (bookmarkIds?.Any() == true &&
             bookmarkIds.Contains(codeItem.Id) == false)
         {
             visible = false;

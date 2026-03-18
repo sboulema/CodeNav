@@ -7,7 +7,7 @@ on:
       - 'feature/**'
 
 env:
-  version: '10.1.${{ github.run_number }}'
+  version: '10.2.${{ github.run_number }}'
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
   vsixPath: ${{ github.workspace }}/src/CodeNav/bin/Release/net472/CodeNav.vsix
@@ -67,7 +67,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
-        uses: ncipollo/release-action@caacf56b56ba217c4eaf0a9deb59dbcdd12abfcd
+        uses: ncipollo/release-action@v1.21.0
         with:
           tag: ${{ steps.tag_release.outputs.new_tag }}
           name: ${{ steps.tag_release.outputs.new_tag }}

@@ -31,13 +31,6 @@
                 </MultiDataTrigger.Conditions>
                 <Setter Property="FontWeight" Value="SemiBold" />
             </MultiDataTrigger>
-            <!-- Black foreground for hovered items -->
-            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType=TextBlock}}" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.ScreenTipTextKey}}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.ScreenTipTextKey}}" />
-            </DataTrigger>
         </Style.Triggers>
     </Style>
 

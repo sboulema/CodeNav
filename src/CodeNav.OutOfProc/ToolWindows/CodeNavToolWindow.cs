@@ -11,7 +11,9 @@ internal class CodeNavToolWindow(CodeDocumentService documentService) : ToolWind
     public override ToolWindowConfiguration ToolWindowConfiguration => new()
     {
         Placement = ToolWindowPlacement.Floating,
-        VisibleWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveSelectionFileName, @"\.cs$"),
+        // TODO: Bug: This breaks a synchronous loaded hybrid extension and freezes VS during startup
+        // https://github.com/sboulema/CodeNav/issues/157
+        //VisibleWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveSelectionFileName, @"\.cs$"),
     };
 
     public override Task InitializeAsync(CancellationToken cancellationToken)

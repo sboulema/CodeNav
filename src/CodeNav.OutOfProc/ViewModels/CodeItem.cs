@@ -190,11 +190,14 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _visibility, value);
     }
 
-    private double _opacity;
+    private double _opacity = 1;
 
     /// <summary>
     /// Level (0 - 1) of opacity of the code item based on the applied filter rules
     /// </summary>
+    /// <remarks>
+    /// 0 is transparent and 1 is opaque
+    /// </remarks>
     [DataMember]
     public double Opacity
     {
@@ -202,16 +205,42 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _opacity, value);
     }
 
+    private bool _IsItalic;
+
+    /// <summary>
+    /// Indicator if the item should be italic
+    /// </summary>
+    [DataMember]
+    public bool IsItalic
+    {
+        get => _IsItalic;
+        set => SetProperty(ref _IsItalic, value);
+    }
+
+    private double _fontSize;
+
+    /// <summary>
+    /// Font size of the code item based on the applied filter rules
+    /// </summary>
+    [DataMember]
+    public double FontSize
+    {
+        get => _fontSize;
+        set => SetProperty(ref _fontSize, value);
+    }
+
     #region Commands
     [DataMember]
     public AsyncCommand ClickItemCommand { get; }
     public async Task ClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        HistoryHelper.AddItemToHistory(this);
+        await LogHelper.LogInfo(this, $"Clicking item '{Name}'");
 
         var span = IdentifierSpan.Start != 0
             ? IdentifierSpan
             : Span;
+
+        await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");
 
         var inProcService = await clientContext.Extensibility
             .ServiceBroker
@@ -227,7 +256,13 @@ public class CodeItem : NotifyPropertyChangedObject
             (inProcService as IDisposable)?.Dispose();
         }
 
+        await LogHelper.LogInfo(this, $"Moving caret to position '{span.Start}'");
+
         await MoveCaretToPosition(span.Start, clientContext, cancellationToken);
+
+        await LogHelper.LogInfo(this, $"Adding item '{Name}' to history");
+
+        HistoryHelper.AddItemToHistory(this);
     }
 
     [DataMember]

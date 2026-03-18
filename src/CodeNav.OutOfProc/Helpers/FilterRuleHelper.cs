@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
 using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.ViewModels;
 using System.Windows;
@@ -7,15 +8,22 @@ namespace CodeNav.OutOfProc.Helpers;
 
 public static class FilterRuleHelper
 {
-    public static FilterRuleViewModel? GetFilterRule(IEnumerable<FilterRuleViewModel> filterRules, CodeItem item)
+    /// <summary>
+    /// Get the last matching filter rule for a given code item
+    /// </summary>
+    /// <param name="filterRules">List of filter rules</param>
+    /// <param name="codeItem">Code item</param>
+    /// <returns>Matching filter rule</returns>
+    public static FilterRuleViewModel? GetFilterRule(IEnumerable<FilterRuleViewModel> filterRules, CodeItem codeItem)
     {
         // Get the most specific filter rule for the item
         var filterRule = filterRules
-            .Where(filterRule => filterRule.Access == item.Access ||
+            .Where(filterRule => filterRule.Access == codeItem.Access ||
                                  filterRule.Access == CodeItemAccessEnum.All)
-            .Where(filterRule => filterRule.Kind == item.Kind ||
+            .Where(filterRule => filterRule.Kind == codeItem.Kind ||
                                  filterRule.Kind == CodeItemKindEnum.All)
-            .Where(filterRule => filterRule.IsEmpty == IsEmpty(item))
+            .Where(filterRule => filterRule.IsEmpty == null ||
+                                 filterRule.IsEmpty == IsEmpty(codeItem))
             .LastOrDefault();
 
         return filterRule;
@@ -34,6 +42,45 @@ public static class FilterRuleHelper
             .LastOrDefault(filterRule => filterRule.Kind == codeItemKind || filterRule.Kind == CodeItemKindEnum.All);
 
         return filterRule;
+    }
+
+    public static IEnumerable<CodeItem> ApplyFilterRules(
+        CodeDocumentViewModel codeDocumentViewModel,
+        IEnumerable<CodeItem> codeItems,
+        IEnumerable<FilterRuleViewModel> filterRules)
+    {
+        try
+        {
+            codeItems
+                .Flatten()
+                .FilterNull()
+                .ToList()
+                .ForEach(codeItem =>
+                {
+                    if (codeItem is IMembers hasMembersItem &&
+                        hasMembersItem.Members.Any())
+                    {
+                        ApplyFilterRules(codeDocumentViewModel, hasMembersItem.Members, filterRules);
+                    }
+
+                    var filterRule = GetFilterRule(filterRules, codeItem);
+
+                    codeItem.IsItalic = filterRule?.Italic == true;
+
+                    if (filterRule != null &&
+                        filterRule.FontScale != 100)
+                    {
+                        codeItem.FontSize = 9 * (filterRule.FontScale / 100d);
+                    }
+                });
+        }
+        catch (Exception e)
+        {
+            _ = LogHelper.LogException(codeDocumentViewModel, "Error during applying filter rules", e);
+        }
+
+        return codeItems;
+
     }
 
     /// <summary>

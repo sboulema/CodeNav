@@ -93,7 +93,8 @@ public static class InterfaceMapper
             Id = name,
             Tooltip = name,
             Kind = CodeItemKindEnum.ImplementedInterface,
-            IsExpanded = true
+            IsExpanded = true,
+            Moniker = IconMapper.MapMoniker(CodeItemKindEnum.ImplementedInterface, CodeItemAccessEnum.Unknown),
         };
 
         foreach (var member in members)

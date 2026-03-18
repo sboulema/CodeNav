@@ -1,6 +1,4 @@
 ﻿using System.Windows;
-using CodeNav.OutOfProc.Constants;
-using CodeNav.OutOfProc.ViewModels;
 
 namespace CodeNav.Test.HelperTests;
 
@@ -29,7 +27,7 @@ internal class VisibilityHelperTests : BaseTest
 
         codeDocumentViewModel = await MapToCodeDocumentViewModel("Visibility/TestVisibility.cs", codeDocumentViewModel);
 
-        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules);
 
         var firstClass = (codeDocumentViewModel.CodeItems.First() as IMembers)?.Members.First() as CodeClassItem;          
 
@@ -57,7 +55,7 @@ internal class VisibilityHelperTests : BaseTest
 
         codeDocumentViewModel.FilterText = filterText;
 
-        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules, codeDocumentViewModel.FilterText);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules, codeDocumentViewModel.FilterText);
 
         var namespaceItem = GetNamespace(codeDocumentViewModel.CodeItems);
 
@@ -95,7 +93,7 @@ internal class VisibilityHelperTests : BaseTest
 
         codeDocumentViewModel = await MapToCodeDocumentViewModel("Visibility/TestVisibility.cs", codeDocumentViewModel);
 
-        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, codeDocumentViewModel.CodeItems, codeDocumentViewModel.FilterRules);
 
         var namespaceItem = GetNamespace(codeDocumentViewModel.CodeItems);
 

@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.ApplicationInsights;
+﻿using CodeNav.OutOfProc.Services;
+using CodeNav.OutOfProc.ViewModels;
+using Microsoft.VisualStudio.ApplicationInsights;
+using Microsoft.VisualStudio.ApplicationInsights.Channel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
@@ -12,39 +15,95 @@ public static class LogHelper
 
     public static void GetClient()
     {
-        _client = new TelemetryClient();
-        _client.Context.Session.Id = Guid.NewGuid().ToString();
-        _client.InstrumentationKey = InstrumentationKey;
+        _client = new TelemetryClient(new()
+        {
+            InstrumentationKey = InstrumentationKey,
+            TelemetryChannel = new InMemoryChannel(),
+        })
+        {
+            InstrumentationKey = InstrumentationKey,
+        };
+
         _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
     }
 
-    public static void Log(string message, Exception? exception = null, 
-        object? additional = null)
-    {
-        if (_client == null)
-        {
-            GetClient();
-        }
+    public static async Task LogException(
+        CodeDocumentViewModel codeDocumentViewModel,
+        string message,
+        Exception exception)
+        => await LogException(codeDocumentViewModel.CodeDocumentService, message, exception);
 
-        if (_client == null)
+    public static async Task LogException(
+        CodeDocumentService? codeDocumentService,
+        string message,
+        Exception exception)
+    {
+        await WriteException(codeDocumentService, message, exception);
+
+        if (codeDocumentService?.GlobalSettings?.EnableCrashAnalytics != true)
         {
             return;
         }
 
-        var properties = new Dictionary<string, string>
-        {
-            { "version", GetExecutingAssemblyVersion().ToString() },
-            { "message", JsonSerializer.Serialize(message) },
-            { "additional", JsonSerializer.Serialize(additional) }
-        };
+        LogToApplicationInsights(message, exception);
+    }
 
-        if (exception == null)
+    public async static Task LogInfo(CodeItem codeItem, string text)
+    {
+        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.LogService == null)
         {
-            _client.TrackEvent(message, properties);
+            return;
         }
-        else
+
+        await codeItem.CodeDocumentViewModel.CodeDocumentService.LogService.WriteInfo(codeItem.FilePath, text);
+    }
+
+    private async static Task WriteException(CodeDocumentService? codeDocumentService, string text, Exception exception)
+    {
+        if (codeDocumentService?.LogService == null)
         {
-            _client.TrackException(exception, properties);
+            return;
+        }
+
+        await codeDocumentService.LogService.WriteException(text, exception);
+    }
+
+    private static void LogToApplicationInsights(
+        string message,
+        Exception? exception = null)
+    {
+        try
+        {
+            if (_client == null)
+            {
+                GetClient();
+            }
+
+            if (_client == null)
+            {
+                return;
+            }
+
+            var properties = new Dictionary<string, string>
+            {
+                { "version", GetExecutingAssemblyVersion().ToString() },
+                { "message", JsonSerializer.Serialize(message) },
+            };
+
+            if (exception == null)
+            {
+                _client.TrackEvent(message, properties);
+            }
+            else
+            {
+                _client.TrackException(exception, properties);
+            }
+
+            _client.Flush();
+        }
+        catch (Exception)
+        {
+            // Ignore errors while trying to log errors
         }
     }
 

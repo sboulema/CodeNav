@@ -16,16 +16,6 @@
          the composite extension. -->
 	  <CreateVsixContainer>false</CreateVsixContainer>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Dialogs\FilterDialog\FilterDialogControl.xaml" />
-    <None Remove="Dialogs\SettingsDialog\SettingsDialogControl.xaml" />
-    <None Remove="ToolWindows\CodeNavToolWindowControl.xaml" />
-    <None Remove="ToolWindows\Templates\CodeItemStyles.xaml" />
-    <None Remove="ToolWindows\Templates\ExpanderStyles.xaml" />
-    <None Remove="ToolWindows\Templates\HighlightNameStyle.xaml" />
-    <None Remove="ToolWindows\Templates\ItemContextMenu.xaml" />
-    <None Remove="ToolWindows\Templates\ToolbarStyles.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
 	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
@@ -40,29 +30,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Dialogs\FilterDialog\FilterDialogControl.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Dialogs\SettingsDialog\SettingsDialogControl.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\CodeNavToolWindowControl.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\Templates\CodeItemStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\Templates\ExpanderStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\Templates\HighlightNameStyle.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\Templates\ItemContextMenu.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="ToolWindows\Templates\ToolbarStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </EmbeddedResource>
+    <None Remove="Dialogs\FilterDialog\FilterDialogControl.xaml" />
+    <None Remove="Dialogs\SettingsDialog\SettingsDialogControl.xaml" />
+    <None Remove="ToolWindows\CodeNavToolWindowControl.xaml" />
+    <None Remove="ToolWindows\Templates\CodeItemStyles.xaml" />
+    <None Remove="ToolWindows\Templates\ExpanderStyles.xaml" />
+    <None Remove="ToolWindows\Templates\HighlightNameStyle.xaml" />
+    <None Remove="ToolWindows\Templates\ItemContextMenu.xaml" />
+    <None Remove="ToolWindows\Templates\ToolbarStyles.xaml" />
+	  <EmbeddedResource Include="Dialogs\FilterDialog\FilterDialogControl.xaml" />
+	  <EmbeddedResource Include="Dialogs\SettingsDialog\SettingsDialogControl.xaml" />
+	  <EmbeddedResource Include="ToolWindows\CodeNavToolWindowControl.xaml" />
+	  <EmbeddedResource Include="ToolWindows\Templates\CodeItemStyles.xaml" />
+	  <EmbeddedResource Include="ToolWindows\Templates\ExpanderStyles.xaml" />
+	  <EmbeddedResource Include="ToolWindows\Templates\HighlightNameStyle.xaml" />
+	  <EmbeddedResource Include="ToolWindows\Templates\ItemContextMenu.xaml" />
+	  <EmbeddedResource Include="ToolWindows\Templates\ToolbarStyles.xaml" />
 	</ItemGroup>
 </Project>

@@ -35,7 +35,7 @@
                 <ControlTemplate TargetType="RadioButton">
                     <Border
                             x:Name="ToolbarRadioButtonBorder"
-                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ToolWindowButtonDownBorderKey}}"
+                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ToolWindowButtonDownKey}}"
                             BorderThickness="0"
                             Padding="4"
                             CornerRadius="4">
@@ -53,6 +53,38 @@
                         </Trigger>
                         <Trigger Property="IsChecked" Value="False">
                             <Setter TargetName="ToolbarRadioButtonBorder" Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToolbarToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border
+                            x:Name="ToolbarToggleButtonBorder"
+                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ToolWindowButtonDownKey}}"
+                            BorderThickness="0"
+                            Padding="4"
+                            CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ToolbarToggleButtonBorder" Property="Background" Value="{DynamicResource {x:Static styles:VsBrushes.ToolWindowTabBorderKey}}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ToolbarToggleButtonBorder" Property="Background" Value="Transparent"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="ToolbarToggleButtonBorder" Property="BorderThickness" Value="1"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="ToolbarToggleButtonBorder" Property="BorderThickness" Value="0"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

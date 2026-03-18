@@ -16,13 +16,13 @@ public class HistoryHelper
     /// <remarks>Used when adding item to history based on text changes</remarks>
     /// <param name="model">Document holding all code items</param>
     /// <param name="textEdits">List of text edits made</param>
-    public static void AddItemToHistory(CodeDocumentViewModel model, IEnumerable<TextEdit> textEdits)
+    public static async Task AddItemToHistory(CodeDocumentViewModel codeDocumentViewModel, IEnumerable<TextEdit> textEdits)
     {
         foreach (var textEdit in textEdits)
         {
             try
             {
-                var item = model
+                var item = codeDocumentViewModel
                     .CodeItems
                     .Flatten()
                     .FilterNull()
@@ -33,7 +33,7 @@ public class HistoryHelper
             }
             catch (Exception e)
             {
-                LogHelper.Log("Error adding item to history", e);
+                await LogHelper.LogException(codeDocumentViewModel, "Error adding item to history", e);
             }
         }
     }

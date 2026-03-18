@@ -5,12 +5,11 @@
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
     <UseWPF>true</UseWPF>
-	<NeutralLanguage>en-US</NeutralLanguage>
-
+		<NeutralLanguage>en-US</NeutralLanguage>
     <VssdkCompatibleExtension>true</VssdkCompatibleExtension>
-
 	  <RepoRootPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRootPath>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Remove="Resources\LICENSE" />
     <None Remove="Resources\Logo_90x90.png" />
