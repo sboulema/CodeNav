@@ -24,3 +24,4 @@ Here is a list of links to helpful pages I needed when developing this extension
 - [CommentRemover Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CommentRemover)
 - [CompositeExtension Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CompositeExtension)
 - [VSExtensibility - #554 - Feature request: Text Editor: Scroll to line](https://github.com/microsoft/VSExtensibility/issues/554)
+- [The CheckBox control](https://wpf-tutorial.com/basic-controls/the-checkbox-control/)

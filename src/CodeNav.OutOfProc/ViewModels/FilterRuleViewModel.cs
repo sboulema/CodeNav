@@ -36,7 +36,7 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
     }
 
     [DataMember]
-    public bool IsEmpty { get; set; }
+    public bool? IsEmpty { get; set; } = false;
 
     private bool _hide;
 

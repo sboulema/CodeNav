@@ -74,7 +74,10 @@
                                     BorderThickness="0,0,1,0"
                                     Margin="-6,-3,-6,-3">
                                     <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
-                                        <CheckBox IsChecked="{Binding IsEmpty}" IsEnabled="{Binding IsEmptyEnabled}" />
+                                        <CheckBox
+                                            IsThreeState="True"
+                                            IsChecked="{Binding IsEmpty}"
+                                            IsEnabled="{Binding IsEmptyEnabled}" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -146,7 +149,10 @@
                     <LineBreak/>
                     <Run FontWeight="Bold">Access:</Run> Match code items with access modifier
                     <LineBreak/>
-                    <Run FontWeight="Bold">Empty:</Run> Match code items that do not have visible child items
+                    <Run FontWeight="Bold">Empty:</Run> Match code items that:
+                    <LineBreak/>Checked: do not have visible child items
+                    <LineBreak/>Unchecked: do have visible child items
+                    <LineBreak/>Indeterminate: either do or do not have visible child items
                 </TextBlock>
                 <TextBlock>
                     <Run FontWeight="Bold">Actions</Run>

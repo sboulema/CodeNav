@@ -7,15 +7,22 @@ namespace CodeNav.OutOfProc.Helpers;
 
 public static class FilterRuleHelper
 {
-    public static FilterRuleViewModel? GetFilterRule(IEnumerable<FilterRuleViewModel> filterRules, CodeItem item)
+    /// <summary>
+    /// Get the last matching filter rule for a given code item
+    /// </summary>
+    /// <param name="filterRules">List of filter rules</param>
+    /// <param name="codeItem">Code item</param>
+    /// <returns>Matching filter rule</returns>
+    public static FilterRuleViewModel? GetFilterRule(IEnumerable<FilterRuleViewModel> filterRules, CodeItem codeItem)
     {
         // Get the most specific filter rule for the item
         var filterRule = filterRules
-            .Where(filterRule => filterRule.Access == item.Access ||
+            .Where(filterRule => filterRule.Access == codeItem.Access ||
                                  filterRule.Access == CodeItemAccessEnum.All)
-            .Where(filterRule => filterRule.Kind == item.Kind ||
+            .Where(filterRule => filterRule.Kind == codeItem.Kind ||
                                  filterRule.Kind == CodeItemKindEnum.All)
-            .Where(filterRule => filterRule.IsEmpty == IsEmpty(item))
+            .Where(filterRule => filterRule.IsEmpty == null ||
+                                 filterRule.IsEmpty == IsEmpty(codeItem))
             .LastOrDefault();
 
         return filterRule;

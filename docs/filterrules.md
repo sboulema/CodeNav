@@ -15,7 +15,10 @@ Secondly select a number of modifiers to narrow down the rule.
 Match code items by access (public, private, etc...)
 
 ### Empty
-Match code items that do not have visible child items
+Match code items that:
+- Checked: do not have visible child items
+- Unchecked: do have visible child items
+- Indeterminate: either do or do not have visible child items
 
 ## Action
 Finally select then action to should be applied to the code item.

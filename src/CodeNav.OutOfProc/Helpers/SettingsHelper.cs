@@ -112,7 +112,7 @@ public class FilterRule
 
     public CodeItemAccessEnum Access { get; set; }
 
-    public bool IsEmpty { get; set; }
+    public bool? IsEmpty { get; set; } = false;
 
     public bool Hide { get; set; }
 
