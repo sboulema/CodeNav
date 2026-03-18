@@ -87,6 +87,7 @@
                                         ContentTemplate="{TemplateBinding HeaderTemplate}"
                                         ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
                                         Content="{TemplateBinding Header}"
+                                        Style="{DynamicResource CodeItemButtonStyle}"
                                         Background="Transparent"
                                         Foreground="{TemplateBinding Foreground}"
                                         FontWeight="{TemplateBinding FontWeight}"

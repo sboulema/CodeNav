@@ -4,6 +4,29 @@
                     xmlns:styles="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
                     xmlns:colors="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0">
 
+    <Style x:Key="CodeItemButtonStyle" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Padding="{TemplateBinding Padding}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static styles:VsBrushes.AccentMediumKey}}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid Background="Transparent">
+                            <ContentPresenter></ContentPresenter>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ContentControl">
         <!-- CodeItem Template -->
         <Setter Property="ContentTemplate">
@@ -15,6 +38,7 @@
                             Visibility="{Binding Visibility}"
                             ContextMenu="{DynamicResource ItemContextMenu}"
                             Opacity="{Binding Opacity}"
+                            Style="{StaticResource CodeItemButtonStyle}"
                             Background="Transparent"
                             BorderThickness="0" 
                             HorizontalContentAlignment="Stretch"
