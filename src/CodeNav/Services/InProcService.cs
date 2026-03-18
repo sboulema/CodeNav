@@ -120,17 +120,13 @@ internal class InProcService : IInProcService
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
             var textView = await GetCurrentTextViewAsync();
 
-<<<<<<< feature/outlining
-            var span = new SnapshotSpan(textView.TextSnapshot, start, length);
-=======
             if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
             {
                 // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
                 return;
             }
 
-            var span = new SnapshotSpan(textView.TextSnapshot, new Span(start, length));
->>>>>>> main
+            var span = new SnapshotSpan(textView.TextSnapshot, start, length);
 
             // Switch to the UI thread to ensure we can interact with the view scroller.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
