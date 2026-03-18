@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
 using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.ViewModels;
 using System.Windows;
@@ -41,6 +42,45 @@ public static class FilterRuleHelper
             .LastOrDefault(filterRule => filterRule.Kind == codeItemKind || filterRule.Kind == CodeItemKindEnum.All);
 
         return filterRule;
+    }
+
+    public static IEnumerable<CodeItem> ApplyFilterRules(
+        CodeDocumentViewModel codeDocumentViewModel,
+        IEnumerable<CodeItem> codeItems,
+        IEnumerable<FilterRuleViewModel> filterRules)
+    {
+        try
+        {
+            codeItems
+                .Flatten()
+                .FilterNull()
+                .ToList()
+                .ForEach(codeItem =>
+                {
+                    if (codeItem is IMembers hasMembersItem &&
+                        hasMembersItem.Members.Any())
+                    {
+                        ApplyFilterRules(codeDocumentViewModel, hasMembersItem.Members, filterRules);
+                    }
+
+                    var filterRule = GetFilterRule(filterRules, codeItem);
+
+                    codeItem.IsItalic = filterRule?.Italic == true;
+
+                    if (filterRule != null &&
+                        filterRule.FontScale != 100)
+                    {
+                        codeItem.FontSize = 9 * (filterRule.FontScale / 100d);
+                    }
+                });
+        }
+        catch (Exception e)
+        {
+            _ = LogHelper.LogException(codeDocumentViewModel, "Error during applying filter rules", e);
+        }
+
+        return codeItems;
+
     }
 
     /// <summary>

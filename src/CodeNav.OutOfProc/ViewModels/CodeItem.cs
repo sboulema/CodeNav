@@ -193,6 +193,30 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _opacity, value);
     }
 
+    private bool _IsItalic;
+
+    /// <summary>
+    /// Indicator if the item should be italic
+    /// </summary>
+    [DataMember]
+    public bool IsItalic
+    {
+        get => _IsItalic;
+        set => SetProperty(ref _IsItalic, value);
+    }
+
+    private double _fontSize;
+
+    /// <summary>
+    /// Font size of the code item based on the applied filter rules
+    /// </summary>
+    [DataMember]
+    public double FontSize
+    {
+        get => _fontSize;
+        set => SetProperty(ref _fontSize, value);
+    }
+
     #region Commands
     [DataMember]
     public AsyncCommand ClickItemCommand { get; }

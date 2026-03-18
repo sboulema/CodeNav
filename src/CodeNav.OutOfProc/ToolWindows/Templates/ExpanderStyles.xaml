@@ -153,6 +153,9 @@
                         <DataTrigger Binding="{Binding Path=DataContext.DataTemplateType, RelativeSource={RelativeSource Self}}" Value="Region">
                             <Setter Property="StrokeDashArray" TargetName="ExpanderBorderBrush" Value="5 3" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=DataContext.IsItalic, RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter Property="FontStyle" Value="Italic" />
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -92,6 +92,11 @@ public class CodeDocumentService(OutputWindowService logService)
 
             await logService.WriteInfo(textView, $"Set code item visibility");
 
+            // Apply filter rules
+            FilterRuleHelper.ApplyFilterRules(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+
+            await logService.WriteInfo(textView, $"Set code item filter rules");
+
             // Apply history items
             HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
 
@@ -149,6 +154,8 @@ public class CodeDocumentService(OutputWindowService logService)
                     IsEmpty = filterRule.IsEmpty,
                     Kind = filterRule.Kind,
                     Opacity = filterRule.Opacity,
+                    Italic = filterRule.Italic,
+                    FontScale = filterRule.FontScale,
                 });
 
             FilterDialogData = new()
@@ -177,6 +184,9 @@ public class CodeDocumentService(OutputWindowService logService)
 
             // Update the view model with the filter rules
             VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+
+            // Apply filter rules
+            FilterRuleHelper.ApplyFilterRules(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
 
             // Update the view model with the sort order
             SortHelper.ApplySort(CodeDocumentViewModel, GlobalSettings.SortOrder);

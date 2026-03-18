@@ -49,6 +49,6 @@ public static class FilterRuleMapper
             _ => true,
         };
 
-    public static bool MapOpacity(bool hide, bool ignore)
+    public static bool MapBasedOnHideIgnore(bool hide, bool ignore)
         => !(hide || ignore);
 }

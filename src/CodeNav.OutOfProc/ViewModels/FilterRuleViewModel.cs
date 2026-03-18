@@ -22,7 +22,9 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
             IsEmptyEnabled = FilterRuleMapper.MapEmpty(value);
             IsHideEnabled = FilterRuleMapper.MapHide(value);
             IsIgnoreEnabled = FilterRuleMapper.MapIgnore(value);
-            IsOpacityEnabled = FilterRuleMapper.MapOpacity(Hide, Ignore);
+            IsOpacityEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsItalicEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsFontScaleEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
         }
     }
 
@@ -47,7 +49,9 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
         set
         {
             SetProperty(ref _hide, value);
-            IsOpacityEnabled = FilterRuleMapper.MapOpacity(Hide, Ignore);
+            IsOpacityEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsItalicEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsFontScaleEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
         }
     }
 
@@ -60,7 +64,9 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
         set
         {
             SetProperty(ref _ignore, value);
-            IsOpacityEnabled = FilterRuleMapper.MapOpacity(Hide, Ignore);
+            IsOpacityEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsItalicEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
+            IsFontScaleEnabled = FilterRuleMapper.MapBasedOnHideIgnore(Hide, Ignore);
         }
     }
 
@@ -71,6 +77,24 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
     {
         get => _opacity;
         set => SetProperty(ref _opacity, value);
+    }
+
+    private bool _italic;
+
+    [DataMember]
+    public bool Italic
+    {
+        get => _italic;
+        set => SetProperty(ref _italic, value);
+    }
+
+    private int _fontScale = 100;
+
+    [DataMember]
+    public int FontScale
+    {
+        get => _fontScale;
+        set => SetProperty(ref _fontScale, value);
     }
 
     #region IsEnabled
@@ -133,6 +157,30 @@ public class FilterRuleViewModel : NotifyPropertyChangedObject
     {
         get => _isOpacityEnabled;
         set => SetProperty(ref _isOpacityEnabled, value);
+    }
+
+    private bool _isItalicEnabled;
+
+    /// <summary>
+    /// Indicator if the Italic action filter is enabled for this rule
+    /// </summary>
+    [DataMember]
+    public bool IsItalicEnabled
+    {
+        get => _isItalicEnabled;
+        set => SetProperty(ref _isItalicEnabled, value);
+    }
+
+    private bool _isFontScaleEnabled;
+
+    /// <summary>
+    /// Indicator if the Font Scale action filter is enabled for this rule
+    /// </summary>
+    [DataMember]
+    public bool IsFontScaleEnabled
+    {
+        get => _isFontScaleEnabled;
+        set => SetProperty(ref _isFontScaleEnabled, value);
     }
 
     #endregion

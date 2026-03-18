@@ -14,7 +14,7 @@ namespace CodeNav.OutOfProc;
 /// </remarks>
 /// <param name="extension">Extension instance.</param>
 /// <param name="extensibility">Extensibility object.</param>
-/// <param name="diagnosticsProvider">Local diagnostics provider service instance.</param>
+/// <param name="codeDocumentService">CodeDocumentService object.</param>
 [VisualStudioContribution]
 internal class TextViewEventListener(
     ExtensionEntrypoint extension,

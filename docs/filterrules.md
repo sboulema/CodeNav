@@ -32,5 +32,11 @@ Code item will not be shown, but its child items will be shown
 ### Opacity
 Code items will be shown with the selected opacity, where 0 is transparent and 100 is opaque
 
+### Italic
+Code items will be shown with italic font style
+
+### Font scale
+Code items will be shown with a percentage of the default environment font size  
+
 ## Notes
 - Not all modifiers and/or actions are available for each kind, the filter dialog will respond and enable the correct list of modifiers

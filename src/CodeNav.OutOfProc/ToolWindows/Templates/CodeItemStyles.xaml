@@ -22,6 +22,11 @@
                             <ContentPresenter></ContentPresenter>
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=DataContext.IsItalic, RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter Property="FontStyle" Value="Italic" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -39,6 +44,7 @@
                             ContextMenu="{DynamicResource ItemContextMenu}"
                             Opacity="{Binding Opacity}"
                             Style="{StaticResource CodeItemButtonStyle}"
+                            FontSize="{Binding FontSize}"
                             Background="Transparent"
                             BorderThickness="0" 
                             HorizontalContentAlignment="Stretch"
@@ -109,7 +115,8 @@
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
                                             <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
-                                            <TextBlock>
+                                            <TextBlock
+                                                FontSize="{Binding FontSize}">
                                                     <Run Text="{Binding Name}" 
                                                          Style="{DynamicResource HighlightNameStyle}"/>
                                                     <Run Text="{Binding Parameters}" 
@@ -186,7 +193,8 @@
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
                                             <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
-                                            <TextBlock>
+                                            <TextBlock
+                                                FontSize="{Binding FontSize}">
                                                 <Run Text="{Binding Name}" 
                                                     Style="{DynamicResource HighlightNameStyle}" />
                                                 <Run Text="{Binding Parameters}" 
@@ -238,6 +246,7 @@
                                         <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
                                         <TextBlock
                                             Text="{Binding Name}"
+                                            FontSize="{Binding FontSize}"
                                             FontWeight="SemiBold"
                                             Style="{StaticResource {x:Static styles:VsResourceKeys.TextBlockEnvironment90PercentFontSizeStyleKey}}" />
                                     </StackPanel>

@@ -19,7 +19,6 @@ Last but not least everything is written with async programming in mind.
 - Toggle visibility by double-clicking the splitter bar
 - Show as an editor margin (left side / right side / top side / hidden) 
 - Visual studio 2017, 2019 support
-- Customizable fonts
 
 ## Languages dropped in v10
 - Visual Basic

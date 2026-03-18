@@ -18,6 +18,7 @@ Visual Studio extension to show the code structure of your current document
 - Regions
 - Filter/search items by name
 - Hide, ignore or change opacity of items based on item kind (method, property), access (public, private), empty state
+- Customizable fonts
 - Bookmarks
 
 ## Supported Visual Studio versions

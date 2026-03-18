@@ -119,4 +119,8 @@ public class FilterRule
     public bool Ignore { get; set; }
 
     public int Opacity { get; set; }
+
+    public bool Italic { get; set; }
+
+    public int FontScale { get; set; }
 }

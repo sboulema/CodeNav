@@ -299,6 +299,8 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
                 IsEmpty = filterRule.IsEmpty,
                 Kind = filterRule.Kind,
                 Opacity = filterRule.Opacity,
+                Italic = filterRule.Italic,
+                FontScale = filterRule.FontScale,
             })];
 
         await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
