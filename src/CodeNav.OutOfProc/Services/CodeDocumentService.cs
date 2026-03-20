@@ -115,6 +115,9 @@ public class CodeDocumentService(
             // we should consider not expanding by default
             OutliningHelper.ExpandAll(CodeDocumentViewModel);
 
+            // TODO: test
+            await OutliningHelper.SubscribeToRegionEvents();
+
             await logService.WriteInfo(textView, $"Expanding all code items");
 
             return CodeDocumentViewModel;
