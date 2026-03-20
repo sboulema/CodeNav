@@ -139,9 +139,27 @@
 
             <Button
                 Command="{Binding Path=DeleteFilterCommand}"
-                ToolTip="Delete filter">
+                ToolTip="Delete filter"
+                Margin="0,0,4,0">
                 <Button.Content>
                     <vs:Image Source="KnownMonikers.DeleteFilter" Width="16" Height="16" />
+                </Button.Content>
+            </Button>
+
+            <Button
+                Command="{Binding Path=MoveFilterUpCommand}"
+                ToolTip="Move up"
+                Margin="0,0,4,0">
+                <Button.Content>
+                    <vs:Image Source="KnownMonikers.MoveUp" Width="16" Height="16" />
+                </Button.Content>
+            </Button>
+
+            <Button
+                Command="{Binding Path=MoveFilterDownCommand}"
+                ToolTip="Move down">
+                <Button.Content>
+                    <vs:Image Source="KnownMonikers.MoveDown" Width="16" Height="16" />
                 </Button.Content>
             </Button>
         </StackPanel>

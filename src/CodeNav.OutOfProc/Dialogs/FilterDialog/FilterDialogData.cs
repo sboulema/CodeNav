@@ -12,6 +12,8 @@ public class FilterDialogData : NotifyPropertyChangedObject
     {
         AddFilterCommand = new(AddFilter);
         DeleteFilterCommand = new(DeleteFilter);
+        MoveFilterUpCommand = new(MoveFilterUp);
+        MoveFilterDownCommand = new(MoveFilterDown);
     }
 
     /// <summary>
@@ -41,5 +43,44 @@ public class FilterDialogData : NotifyPropertyChangedObject
         }
 
         FilterRules.Remove(SelectedFilterRule);
+    }
+
+    [DataMember]
+    public AsyncCommand MoveFilterUpCommand { get; }
+    private async Task MoveFilterUp(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        if (SelectedFilterRule == null)
+        {
+            return;
+        }
+
+        int currentIndex = FilterRules.IndexOf(SelectedFilterRule);
+        if (currentIndex == 0)
+        {
+            return;
+        }
+
+        FilterRules.Move(currentIndex, --currentIndex);
+    }
+
+    [DataMember]
+    public AsyncCommand MoveFilterDownCommand
+    {
+        get;
+    }
+    private async Task MoveFilterDown(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        if (SelectedFilterRule == null)
+        {
+            return;
+        }
+
+        int currentIndex = FilterRules.IndexOf(SelectedFilterRule);
+        if (currentIndex == FilterRules.Count - 1)
+        {
+            return;
+        }
+
+        FilterRules.Move(currentIndex, ++currentIndex);
     }
 }
