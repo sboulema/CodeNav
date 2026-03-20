@@ -101,7 +101,7 @@ internal class InProcService : IInProcService
         }
     }
 
-    public async Task ExpandOutlineRegion(int start, int length)
+    public async Task ExpandOutlineRegion(int spanStart, int spanLength)
     {
         try
         {
@@ -113,7 +113,7 @@ internal class InProcService : IInProcService
             // Switch to the UI thread to ensure we can interact with the outline regions.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, start, length);
+            var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, spanStart, spanLength);
 
             // Check if the outline region is collapsed before expanding
             if (outlineRegion?.IsCollapsed != true ||

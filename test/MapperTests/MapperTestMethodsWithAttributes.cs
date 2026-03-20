@@ -17,13 +17,15 @@ internal class MapperTestMethodsWithAttributes : BaseTest
         // Class should have a method
         var methodWithAttribute = GetMemberAtIndex(classItem, 0) as CodeFunctionItem;
 
+        Assert.That(methodWithAttribute, Is.Not.Null);
+
         using (Assert.EnterMultipleScope())
         {
             // Span start should be at the start of the method including attributes
-            Assert.That(methodWithAttribute?.Span.Start, Is.EqualTo(76).Or.EqualTo(80));
+            Assert.That(methodWithAttribute.Span.Start, Is.EqualTo(76).Or.EqualTo(80));
 
             // Identifier span start should be at the start of the method identifier excluding attributes
-            Assert.That(methodWithAttribute?.IdentifierSpan.Start, Is.EqualTo(103).Or.EqualTo(108));
+            Assert.That(methodWithAttribute.IdentifierSpan?.Start, Is.EqualTo(103).Or.EqualTo(108));
         }
     }
 }

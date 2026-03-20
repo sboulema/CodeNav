@@ -52,7 +52,12 @@ public class CodeItem : NotifyPropertyChangedObject
     /// <summary>
     /// Gets or sets the span of text represented by the identifier of this code item.
     /// </summary>
-    public TextSpan IdentifierSpan { get; set; }
+    public TextSpan? IdentifierSpan { get; set; }
+
+    /// <summary>
+    /// Gets or sets the span of text represented by the outline region of this code item.
+    /// </summary>
+    public TextSpan OutlineSpan { get; set; }
 
     /// <summary>
     /// Icon showing the type (class, namespace, etc.) of the code item
@@ -236,8 +241,8 @@ public class CodeItem : NotifyPropertyChangedObject
     {
         await LogHelper.LogInfo(this, $"Clicking item '{Name}'");
 
-        var span = IdentifierSpan.Start != 0
-            ? IdentifierSpan
+        var span = IdentifierSpan != null
+            ? IdentifierSpan.Value
             : Span;
 
         await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");
