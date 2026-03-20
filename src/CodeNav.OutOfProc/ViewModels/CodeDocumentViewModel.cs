@@ -36,6 +36,8 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
 
     public List<string> HistoryItemIds = [];
 
+    public object HistoryLock = new();
+
     public List<string> BookmarkIds = [];
 
     public List<FilterRuleViewModel> FilterRules = [];

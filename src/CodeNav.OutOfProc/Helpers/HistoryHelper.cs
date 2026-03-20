@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace CodeNav.OutOfProc.Helpers;
 
-public class HistoryHelper
+public static class HistoryHelper
 {
     private const int MaxHistoryItems = 5;
 
@@ -42,63 +42,72 @@ public class HistoryHelper
     /// Add code item to history items based on its code item
     /// </summary>
     /// <remarks>Used when adding item to history based on clicking a code item</remarks>
-    /// <param name="item">Code item that was clicked</param>
-    public static void AddItemToHistory(CodeItem? item)
+    /// <param name="codeItem">Code item that was clicked</param>
+    public static void AddItemToHistory(CodeItem? codeItem)
     {
-        if (item == null)
+        if (codeItem == null)
         {
             return;
         }
 
-        var model = item.CodeDocumentViewModel;
+        var codeDocumentViewModel = codeItem.CodeDocumentViewModel;
 
-        if (model == null)
+        if (codeDocumentViewModel == null)
         {
             return;
         }
 
-        if (model.CodeDocumentService?.SettingsDialogData.ShowHistoryIndicators == false)
+        if (codeDocumentViewModel.CodeDocumentService?.SettingsDialogData.ShowHistoryIndicators == false)
         {
             return;
         }
 
-        // Remove all entries with item id to prevent duplicates
-        model.HistoryItemIds
-            .RemoveAll(id => id == item.Id);
+        lock (codeDocumentViewModel.HistoryLock)
+        {
+            // Remove all entries with item id to prevent duplicates
+            codeDocumentViewModel.HistoryItemIds
+                .RemoveAll(id => id == codeItem.Id);
 
-        // Insert the new item id
-        model.HistoryItemIds.Insert(0, item.Id);
+            // Insert the new item id
+            codeDocumentViewModel.HistoryItemIds
+                .Insert(0, codeItem.Id);
 
-        // Only keep the max number of item ids
-        model.HistoryItemIds = [.. model.HistoryItemIds.Take(MaxHistoryItems)];
+            // Only keep the max number of item ids
+            codeDocumentViewModel.HistoryItemIds = [.. codeDocumentViewModel.HistoryItemIds.Take(MaxHistoryItems)];
+        }
 
-        ApplyHistoryIndicator(model);
+        ApplyHistoryIndicator(codeDocumentViewModel);
     }
 
     /// <summary>
     /// Apply history indicator to all code items in the history list
     /// </summary>
     /// <remarks>Uses Flatten() to do this recursively for child code items</remarks>
-    /// <param name="model">Document holding all code items</param>
-    public static void ApplyHistoryIndicator(CodeDocumentViewModel model)
+    /// <param name="codeDocumentViewModel">Document holding all code items</param>
+    public static void ApplyHistoryIndicator(CodeDocumentViewModel codeDocumentViewModel)
     {
         // Clear old indicators
-        model
+        codeDocumentViewModel
             .CodeItems
             .Flatten()
             .Where(item => item != null)
             .ToList()
             .ForEach(item => item.StatusMonikerVisibility = Visibility.Collapsed);
 
-        // Apply new indicators
-        var rankedHistoryItemIds = model
-            .HistoryItemIds
-            .Where(id => !string.IsNullOrEmpty(id))
-            .Select((historyItemId, index) => (historyItemId, index));
+        IEnumerable<(string, int)> rankedHistoryItemIds = [];
+
+        lock (codeDocumentViewModel.HistoryLock)
+        {
+            // Apply new indicators
+            rankedHistoryItemIds = codeDocumentViewModel
+                .HistoryItemIds
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Select((historyItemId, index) => (historyItemId, index));
+        }
 
         foreach (var (historyItemId, index) in rankedHistoryItemIds)
         {
-            var codeItem = model.CodeItems
+            var codeItem = codeDocumentViewModel.CodeItems
                 .Flatten()
                 .Where(item => item != null)
                 .FirstOrDefault(item => item.Id == historyItemId);

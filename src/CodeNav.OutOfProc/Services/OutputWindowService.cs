@@ -39,7 +39,7 @@ public class OutputWindowService : DisposableObject
     }
 
     public async Task WriteException(string message, Exception exception)
-        => await WriteLine($"[Exception] {message} {exception.Message} {exception.StackTrace}");
+        => await WriteLine($"[Exception] {message}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace}");
 
     private async Task InitializeAsync()
     {
