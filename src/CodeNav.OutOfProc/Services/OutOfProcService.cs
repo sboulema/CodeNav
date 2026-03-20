@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceHub.Framework;
+﻿using CodeNav.OutOfProc.Helpers;
+using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
 
@@ -7,11 +8,15 @@ namespace CodeNav.OutOfProc.Services;
 [VisualStudioContribution]
 internal class OutOfProcService : IOutOfProcService, IBrokeredService
 {
-    private readonly VisualStudioExtensibility extensibility;
+    private readonly VisualStudioExtensibility _extensibility;
+    private readonly CodeDocumentService _codeDocumentService;
 
-    public OutOfProcService(VisualStudioExtensibility extensibility)
+    public OutOfProcService(
+        VisualStudioExtensibility extensibility,
+        CodeDocumentService codeDocumentService)
     {
-        this.extensibility = extensibility;
+        _extensibility = extensibility;
+        _codeDocumentService = codeDocumentService;
     }
 
     public static BrokeredServiceConfiguration BrokeredServiceConfiguration
@@ -22,8 +27,13 @@ internal class OutOfProcService : IOutOfProcService, IBrokeredService
 
     public static ServiceRpcDescriptor ServiceDescriptor => IOutOfProcService.Configuration.ServiceDescriptor;
 
+    public async Task SetCodeItemIsExpanded(int spanStart, int spanEnd, bool isExpanded)
+    {
+        OutliningHelper.SetIsExpanded(_codeDocumentService.CodeDocumentViewModel, spanStart, spanEnd, isExpanded);
+    }
+
     public async Task DoSomethingAsync(CancellationToken cancellationToken)
     {
-        await this.extensibility.Shell().ShowPromptAsync("Hello from in-proc! (Showing this message from (out-of-proc)", PromptOptions.OK, cancellationToken);
+        await _extensibility.Shell().ShowPromptAsync("Hello from in-proc! (Showing this message from (out-of-proc)", PromptOptions.OK, cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
-﻿using CodeNav.OutOfProc.Interfaces;
+﻿using CodeNav.OutOfProc.Helpers;
+using CodeNav.OutOfProc.Interfaces;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.UI;
 using System.Runtime.Serialization;
@@ -35,8 +36,18 @@ public class CodeClassItem : CodeItem, IMembers, ICodeCollapsible
         {
             if (_isExpanded != value)
             {
-                SetProperty(ref _isExpanded, value);   
+                SetProperty(ref _isExpanded, value);
+
                 IsExpandedChanged?.Invoke(this, EventArgs.Empty);
+                
+                if (value)
+                {
+                    _ = OutliningHelper.ExpandOutlineRegion(this);
+                }
+                else
+                {
+                    _ = OutliningHelper.CollapseOutlineRegion(this);
+                }
             }
         }
     }
@@ -51,6 +62,10 @@ public class CodeClassItem : CodeItem, IMembers, ICodeCollapsible
             ? Visibility.Visible
             : Visibility.Collapsed;
 
+    /// <summary>
+    /// Command use to collapse and expand class/region/namespace code items
+    /// when double-clicking on the expander header
+    /// </summary>
     [DataMember]
     public AsyncCommand ToggleExpandCollapseCommand { get; }
     public async Task ToggleExpandCollapse(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)

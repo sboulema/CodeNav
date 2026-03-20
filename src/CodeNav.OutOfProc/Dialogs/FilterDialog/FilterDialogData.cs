@@ -55,6 +55,7 @@ public class FilterDialogData : NotifyPropertyChangedObject
         }
 
         int currentIndex = FilterRules.IndexOf(SelectedFilterRule);
+
         if (currentIndex == 0)
         {
             return;
@@ -64,10 +65,7 @@ public class FilterDialogData : NotifyPropertyChangedObject
     }
 
     [DataMember]
-    public AsyncCommand MoveFilterDownCommand
-    {
-        get;
-    }
+    public AsyncCommand MoveFilterDownCommand { get; }
     private async Task MoveFilterDown(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
         if (SelectedFilterRule == null)
@@ -76,6 +74,7 @@ public class FilterDialogData : NotifyPropertyChangedObject
         }
 
         int currentIndex = FilterRules.IndexOf(SelectedFilterRule);
+
         if (currentIndex == FilterRules.Count - 1)
         {
             return;

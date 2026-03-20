@@ -52,7 +52,12 @@ public class CodeItem : NotifyPropertyChangedObject
     /// <summary>
     /// Gets or sets the span of text represented by the identifier of this code item.
     /// </summary>
-    public TextSpan IdentifierSpan { get; set; }
+    public TextSpan? IdentifierSpan { get; set; }
+
+    /// <summary>
+    /// Gets or sets the span of text represented by the outline region of this code item.
+    /// </summary>
+    public TextSpan OutlineSpan { get; set; }
 
     /// <summary>
     /// Icon showing the type (class, namespace, etc.) of the code item
@@ -75,8 +80,20 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public string Tooltip { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Path to the file containing the code item
+    /// </summary>
+    /// <remarks>
+    /// Used for opening the file if it's different from the currently active one
+    /// </remarks>
     public Uri? FilePath { get; set; }
 
+    /// <summary>
+    /// Full name of the code item
+    /// </summary>
+    /// <remarks>
+    /// Used in constructing a unique id 
+    /// </remarks>
     internal string FullName = string.Empty;
 
     public CodeItemKindEnum Kind;
@@ -224,8 +241,8 @@ public class CodeItem : NotifyPropertyChangedObject
     {
         await LogHelper.LogInfo(this, $"Clicking item '{Name}'");
 
-        var span = IdentifierSpan.Start != 0
-            ? IdentifierSpan
+        var span = IdentifierSpan != null
+            ? IdentifierSpan.Value
             : Span;
 
         await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");

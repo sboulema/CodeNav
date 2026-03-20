@@ -10,7 +10,9 @@ using System.Windows;
 
 namespace CodeNav.OutOfProc.Services;
 
-public class CodeDocumentService(OutputWindowService logService)
+public class CodeDocumentService(
+    OutputWindowService logService,
+    OutliningHelper outliningHelper)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -30,6 +32,8 @@ public class CodeDocumentService(OutputWindowService logService)
     public GlobalSettings? GlobalSettings { get; set; }
 
     public OutputWindowService LogService => logService;
+
+    public OutliningHelper OutliningHelper => outliningHelper;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
@@ -110,6 +114,9 @@ public class CodeDocumentService(OutputWindowService logService)
             // TODO: If we get support for OutliningManager in the future,
             // we should consider not expanding by default
             OutliningHelper.ExpandAll(CodeDocumentViewModel);
+
+            // TODO: test
+            await OutliningHelper.SubscribeToRegionEvents();
 
             await logService.WriteInfo(textView, $"Expanding all code items");
 
