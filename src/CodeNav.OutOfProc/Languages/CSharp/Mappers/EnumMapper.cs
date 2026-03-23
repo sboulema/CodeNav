@@ -12,7 +12,7 @@ public class EnumMapper
     public static CodeItem MapEnumMember(EnumMemberDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Identifier);
         item.Kind = CodeItemKindEnum.EnumMember;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 
@@ -22,7 +22,7 @@ public class EnumMapper
     public static CodeClassItem MapEnum(EnumDeclarationSyntax member,
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeClassItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         item.Kind = CodeItemKindEnum.Enum;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
         item.Parameters = MapMembersToString(member.Members);

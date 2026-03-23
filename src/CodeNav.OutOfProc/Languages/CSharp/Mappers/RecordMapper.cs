@@ -11,7 +11,7 @@ public static class RecordMapper
     public static CodeFunctionItem? MapRecord(RecordDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeFunctionItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         item.Kind = CodeItemKindEnum.Record;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
         item.Parameters = ParameterMapper.MapParameters(member.ParameterList);

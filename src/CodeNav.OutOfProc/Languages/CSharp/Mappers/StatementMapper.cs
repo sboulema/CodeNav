@@ -99,7 +99,7 @@ public static class StatementMapper
             return null;
         }
 
-        var item = BaseMapper.MapBase<CodeClassItem>(statement, statement.Expression.ToString(), semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeClassItem>(statement, semanticModel, codeDocumentViewModel, name: statement.Expression.ToString());
         item.Name = $"Switch {item.Name}";
         item.Kind = CodeItemKindEnum.Switch;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
@@ -129,7 +129,7 @@ public static class StatementMapper
             return null;
         }
 
-        var item = BaseMapper.MapBase<CodePropertyItem>(section, section.Labels.First().ToString(), semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodePropertyItem>(section, semanticModel, codeDocumentViewModel, name: section.Labels.First().ToString());
         item.Tooltip = TooltipMapper.Map(section, item.Access, item.ReturnType, item.Name, string.Empty);
         item.Id = item.FullName;
         item.Kind = CodeItemKindEnum.SwitchSection;

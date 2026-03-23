@@ -12,7 +12,7 @@ public static class StructMapper
     public static CodeClassItem MapStruct(StructDeclarationSyntax member,
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeClassItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         item.Kind = CodeItemKindEnum.Struct;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
 

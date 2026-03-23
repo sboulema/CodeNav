@@ -113,10 +113,10 @@ public class CodeDocumentService(
 
             // TODO: If we get support for OutliningManager in the future,
             // we should consider not expanding by default
-            OutliningHelper.ExpandAll(CodeDocumentViewModel);
+            //OutliningHelper.ExpandAll(CodeDocumentViewModel);
 
             // TODO: test
-            await OutliningHelper.SubscribeToRegionEvents();
+            await OutliningHelper.SubscribeToRegionEvents(CodeDocumentViewModel);
 
             await logService.WriteInfo(textView, $"Expanding all code items");
 

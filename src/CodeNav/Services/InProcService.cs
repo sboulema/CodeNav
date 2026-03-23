@@ -1,4 +1,5 @@
-﻿using CodeNav.OutOfProc.Services;
+﻿using CodeNav.Models;
+using CodeNav.OutOfProc.Services;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.TextManager.Interop;
+using System.Text.Json;
 
 namespace CodeNav.Services;
 
@@ -45,20 +47,51 @@ internal class InProcService : IInProcService
         await _extensibility.Shell().ShowPromptAsync("Hello from out-of-proc! (Showing this message from (in-proc)", PromptOptions.OK, cancellationToken);
     }
 
-    public async Task SubscribeToRegionEvents()
+    /// <summary>
+    /// Subscribe to outline events, so we will be notified if an outline region is changed.
+    /// Get the current state of all regions
+    /// </summary>
+    /// <remarks>Used by the outproc service when mapping a document</remarks>
+    /// <returns>JSON string with list of regions</returns>
+    public async Task<string> SubscribeToRegionEvents()
     {
         // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
         var textView = await GetCurrentTextViewAsync();
 
         var outliningManager = await GetOutliningManager(textView);
 
+        // Subscribing to outline events
         outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
         outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
 
         outliningManager.RegionsCollapsed -= OutliningManager_RegionsCollapsed;
         outliningManager.RegionsCollapsed += OutliningManager_RegionsCollapsed;
+
+        var textViewSpan = new SnapshotSpan(textView.TextSnapshot, 0, textView.TextSnapshot.Length);
+
+        // Switch to the UI thread to ensure we can interact with the outline regions.
+        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+        // Get state of all current outline regions
+        var outlineRegions = outliningManager.GetAllRegions(textViewSpan);
+
+        var results = outlineRegions
+            .Select(outlineRegion => new OutlineRegion
+            {
+                SpanStart = GetSpan(outlineRegion).Span.Start,
+                SpanEnd = GetSpan(outlineRegion).Span.End,
+                IsExpanded = !outlineRegion.IsCollapsed,
+            });
+
+        return JsonSerializer.Serialize(results);
     }
 
+    /// <summary>
+    /// Event handler triggered when an outline region is expanded
+    /// </summary>
+    /// <remarks>Used to set the matching code item to expanded</remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e)
     {
         var outOfProcService = await _extensibility.ServiceBroker
@@ -80,6 +113,12 @@ internal class InProcService : IInProcService
         }
     }
 
+    /// <summary>
+    /// Event handler triggered when an outline region is collapsed
+    /// </summary>
+    /// <remarks>Used to set the matching code item to collapsed</remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)
     {
         var outOfProcService = await _extensibility.ServiceBroker
@@ -101,6 +140,13 @@ internal class InProcService : IInProcService
         }
     }
 
+    /// <summary>
+    /// Expand the outline region which has a matching span start and span end
+    /// </summary>
+    /// <remarks>Used when a code item is being expanded</remarks>
+    /// <param name="spanStart">Start of the span being expanded</param>
+    /// <param name="spanLength">Length of the span being expanded</param>
+    /// <returns>Awaitable Task</returns>
     public async Task ExpandOutlineRegion(int spanStart, int spanLength)
     {
         try
@@ -130,7 +176,14 @@ internal class InProcService : IInProcService
         }
     }
 
-    public async Task CollapseOutlineRegion(int start, int length)
+    /// <summary>
+    /// Collapse the outline region which has a matching span start and span end
+    /// </summary>
+    /// <remarks>Used when a code item is being collapsed</remarks>
+    /// <param name="spanStart">Start of the span being collapsed</param>
+    /// <param name="spanLength">Length of the span being collapsed</param>
+    /// <returns>Awaitable Task</returns>
+    public async Task CollapseOutlineRegion(int spanStart, int spanLength)
     {
         try
         {
@@ -142,7 +195,7 @@ internal class InProcService : IInProcService
             // Switch to the UI thread to ensure we can interact with the outline regions.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, start, length);
+            var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, spanStart, spanLength);
 
             outliningManager.TryCollapse(outlineRegion);
         }
@@ -152,6 +205,14 @@ internal class InProcService : IInProcService
         }
     }
 
+    /// <summary>
+    /// Get the outline region for a given span
+    /// </summary>
+    /// <param name="textView">Current IWpfTextView</param>
+    /// <param name="outliningManager">Outliningmanager</param>
+    /// <param name="start">Start of the span</param>
+    /// <param name="length">Length of the span</param>
+    /// <returns></returns>
     private async Task<ICollapsible?> GetOutlineRegionForSpan(
         IWpfTextView textView, IOutliningManager outliningManager,
         int start, int length)
@@ -167,6 +228,11 @@ internal class InProcService : IInProcService
                GetSpan(outlineRegion).End == start + length);
     }
 
+    /// <summary>
+    /// Get the span for a given outline region
+    /// </summary>
+    /// <param name="outlineRegion">Outline region</param>
+    /// <returns>SnapshotSpan for the region</returns>
     private SnapshotSpan GetSpan(ICollapsible outlineRegion)
         => outlineRegion.Extent.GetSpan(outlineRegion.Extent.TextBuffer.CurrentSnapshot);
 

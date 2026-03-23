@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace CodeNav.Extensions;
+namespace CodeNav.OutOfProc.Extensions;
 
 public static class EnumExtensions
 {

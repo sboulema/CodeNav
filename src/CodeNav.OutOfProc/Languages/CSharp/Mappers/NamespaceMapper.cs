@@ -12,7 +12,7 @@ public static class NamespaceMapper
     public static CodeNamespaceItem MapNamespace(BaseNamespaceDeclarationSyntax member,
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeNamespaceItem>(member, semanticModel, codeDocumentViewModel, name: member.Name.ToString());
         codeItem.Kind = CodeItemKindEnum.Namespace;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 

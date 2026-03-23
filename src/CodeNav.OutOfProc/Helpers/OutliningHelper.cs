@@ -1,10 +1,12 @@
 ﻿using CodeNav.OutOfProc.Extensions;
 using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using CodeNav.Services;
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Helpers;
+using System.Text.Json;
 
 namespace CodeNav.OutOfProc.Helpers;
 
@@ -20,12 +22,32 @@ public class OutliningHelper : DisposableObject
         _initializationTask = Task.Run(InitializeAsync);
     }
 
-    public async Task SubscribeToRegionEvents()
+    /// <summary>
+    /// Subscribe to region events and retrieve the current state of all regions.
+    /// </summary>
+    /// <remarks>
+    /// Uses the InProc service.
+    /// </remarks>
+    /// <returns></returns>
+    public async Task SubscribeToRegionEvents(CodeDocumentViewModel codeDocumentViewModel)
     {
         try
         {
             Assumes.NotNull(_inProcService);
-            await _inProcService.SubscribeToRegionEvents();
+
+            // Subscribe to outline region events and get all outline regions
+            var outlineRegionsJsonString = await _inProcService.SubscribeToRegionEvents();
+
+            // Synchronize all outline regions with the code items
+            var outlineRegions = JsonSerializer.Deserialize<List<OutlineRegion>>(outlineRegionsJsonString);
+
+            if (outlineRegions!.Any() != true)
+            {
+                return;
+            }
+
+            outlineRegions!.ForEach(outlineRegion =>
+                SetIsExpanded(codeDocumentViewModel, outlineRegion.SpanStart, outlineRegion.SpanEnd, outlineRegion.IsExpanded));
         }
         catch (Exception e)
         {
@@ -66,7 +88,11 @@ public class OutliningHelper : DisposableObject
             return;
         }
 
-        await codeItem.CodeDocumentViewModel.CodeDocumentService.OutliningHelper.CollapseOutlineRegion(codeItem.Span.Start, codeItem.Span.Length);
+        await codeItem
+            .CodeDocumentViewModel
+            .CodeDocumentService
+            .OutliningHelper
+            .CollapseOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
     }
 
     public static async Task ExpandOutlineRegion(CodeItem codeItem)
@@ -76,7 +102,11 @@ public class OutliningHelper : DisposableObject
             return;
         }
 
-        await codeItem.CodeDocumentViewModel.CodeDocumentService.OutliningHelper.ExpandOutlineRegion(codeItem.Span.Start, codeItem.Span.Length);
+        await codeItem
+            .CodeDocumentViewModel
+            .CodeDocumentService
+            .OutliningHelper
+            .ExpandOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
     }
 
     /// <summary>

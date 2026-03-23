@@ -12,8 +12,8 @@ public static class FieldMapper
     public static CodeItem MapField(FieldDeclarationSyntax member, SemanticModel semanticModel,
         CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier,
-            member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Declaration.Variables.First().Identifier,
+            modifiers: member.Modifiers);
 
         item.Kind = IsConstant(member.Modifiers)
             ? CodeItemKindEnum.Constant

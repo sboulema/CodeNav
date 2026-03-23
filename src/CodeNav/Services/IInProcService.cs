@@ -12,7 +12,7 @@ public interface IInProcService
 
     Task CollapseOutlineRegion(int start, int length);
 
-    Task SubscribeToRegionEvents();
+    Task<string> SubscribeToRegionEvents();
 
     public static class Configuration
     {

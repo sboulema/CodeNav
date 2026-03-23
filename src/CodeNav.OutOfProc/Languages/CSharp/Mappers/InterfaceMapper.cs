@@ -156,8 +156,8 @@ public static class InterfaceMapper
             return null;
         }
 
-        var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier,
-            member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeInterfaceItem>(member, semanticModel, codeDocumentViewModel, member.Identifier,
+            modifiers: member.Modifiers);
 
         item.Kind = CodeItemKindEnum.Interface;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);

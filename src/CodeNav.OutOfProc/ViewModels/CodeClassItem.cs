@@ -8,7 +8,7 @@ using System.Windows;
 namespace CodeNav.OutOfProc.ViewModels;
 
 [DataContract]
-public class CodeClassItem : CodeItem, IMembers, ICodeCollapsible
+public class CodeClassItem : CodeItem, IMembers
 {
     public CodeClassItem()
     {
@@ -16,14 +16,19 @@ public class CodeClassItem : CodeItem, IMembers, ICodeCollapsible
         ToggleExpandCollapseCommand = new(ToggleExpandCollapse);
     }
 
+    /// <summary>
+    /// List of code items that are members of this parent code item
+    /// </summary>
     [DataMember]
     public List<CodeItem> Members { get; set; } = [];
 
+    /// <summary>
+    /// Parameters of this code item as a string
+    /// </summary>
     [DataMember]
     public string Parameters { get; set; } = string.Empty;
 
-    public event EventHandler? IsExpandedChanged;
-    private bool _isExpanded;
+    private bool _isExpanded = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the item is expanded in the tool window.
@@ -37,8 +42,6 @@ public class CodeClassItem : CodeItem, IMembers, ICodeCollapsible
             if (_isExpanded != value)
             {
                 SetProperty(ref _isExpanded, value);
-
-                IsExpandedChanged?.Invoke(this, EventArgs.Empty);
                 
                 if (value)
                 {
