@@ -12,20 +12,16 @@ public static class FieldMapper
     public static CodeItem MapField(FieldDeclarationSyntax member, SemanticModel semanticModel,
         CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Declaration.Variables.First().Identifier,
+        var codeItem = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Declaration.Variables.First().Identifier,
             modifiers: member.Modifiers);
 
-        item.Kind = IsConstant(member.Modifiers)
+        codeItem.Kind = IsConstant(member.Modifiers)
             ? CodeItemKindEnum.Constant
             : CodeItemKindEnum.Variable;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, string.Empty);
 
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            item.Tooltip = TriviaSummaryMapper.Map(member);
-        }
-
-        return item;
+        return codeItem;
     }
 
     private static bool IsConstant(SyntaxTokenList modifiers)

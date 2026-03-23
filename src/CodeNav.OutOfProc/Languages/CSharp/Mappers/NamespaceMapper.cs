@@ -15,11 +15,7 @@ public static class NamespaceMapper
         var codeItem = BaseMapper.MapBase<CodeNamespaceItem>(member, semanticModel, codeDocumentViewModel, name: member.Name.ToString());
         codeItem.Kind = CodeItemKindEnum.Namespace;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            codeItem.Tooltip = TriviaSummaryMapper.Map(member);
-        }
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
         var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
 

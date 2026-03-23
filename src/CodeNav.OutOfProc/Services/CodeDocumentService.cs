@@ -112,14 +112,10 @@ public class CodeDocumentService(
 
             await logService.WriteInfo(textView, $"Apply bookmark indicators");
 
-            // TODO: If we get support for OutliningManager in the future,
-            // we should consider not expanding by default
-            //OutliningHelper.ExpandAll(CodeDocumentViewModel);
-
-            // TODO: test
+            // Apply outlining
             await OutliningHelper.SubscribeToRegionEvents(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Expanding all code items");
+            await logService.WriteInfo(textView, $"Apply outlining");
 
             return CodeDocumentViewModel;
         }

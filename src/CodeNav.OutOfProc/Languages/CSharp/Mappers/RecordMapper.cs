@@ -11,16 +11,12 @@ public static class RecordMapper
     public static CodeFunctionItem? MapRecord(RecordDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeFunctionItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
-        item.Kind = CodeItemKindEnum.Record;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-        item.Parameters = ParameterMapper.MapParameters(member.ParameterList);
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
+        codeItem.Kind = CodeItemKindEnum.Record;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            item.Tooltip = TriviaSummaryMapper.Map(member);
-        }
-
-        return item;
+        return codeItem;
     }
 }
