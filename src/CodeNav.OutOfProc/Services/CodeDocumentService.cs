@@ -2,6 +2,7 @@
 using CodeNav.OutOfProc.Dialogs.SettingsDialog;
 using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Languages.CSharp.Mappers;
+using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;

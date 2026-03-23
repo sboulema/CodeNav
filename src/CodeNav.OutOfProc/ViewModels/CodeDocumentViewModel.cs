@@ -2,6 +2,7 @@
 using CodeNav.OutOfProc.Dialogs.FilterDialog;
 using CodeNav.OutOfProc.Dialogs.SettingsDialog;
 using CodeNav.OutOfProc.Helpers;
+using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.Services;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.UI;

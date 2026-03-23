@@ -125,6 +125,14 @@ public class OutliningHelper : DisposableObject
     public static void ExpandAll(CodeDocumentViewModel? codeDocumentViewModel)
         => SetAllIsExpanded(codeDocumentViewModel, isExpanded: true);
 
+    /// <summary>
+    /// Set IsExpanded property for a matching code item
+    /// </summary>
+    /// <remarks>A code item matches when its outline span has the same start and end as the outline region that changed</remarks>
+    /// <param name="codeDocumentViewModel"></param>
+    /// <param name="spanStart"></param>
+    /// <param name="spanEnd"></param>
+    /// <param name="isExpanded"></param>
     public static void SetIsExpanded(CodeDocumentViewModel? codeDocumentViewModel, int spanStart, int spanEnd, bool isExpanded)
     {
         codeDocumentViewModel?
@@ -132,8 +140,8 @@ public class OutliningHelper : DisposableObject
             .Flatten()
             .FilterNull()
             .Where(item => item is IMembers)
-            .Where(codeItem => codeItem.Span.Start == spanStart ||
-                               codeItem.Span.End == spanEnd)
+            .Where(codeItem => codeItem.OutlineSpan.Start == spanStart &&
+                               codeItem.OutlineSpan.End == spanEnd)
             .Cast<IMembers>()
             .ToList()
             .ForEach(codeItem => codeItem.IsExpanded = isExpanded);
