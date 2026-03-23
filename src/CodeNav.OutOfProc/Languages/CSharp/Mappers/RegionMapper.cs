@@ -45,7 +45,7 @@ public static class RegionMapper
             .Where(syntaxTrivia => syntaxTrivia.IsKind(SyntaxKind.RegionDirectiveTrivia))
             .Where(syntaxTrivia => span.Contains(syntaxTrivia.Span));
 
-        regionList.AddRange(regionStarts.Select(MapRegion));
+        regionList.AddRange(regionStarts.Select(regionStart => MapRegion(regionStart, codeDocumentViewModel)));
 
         // Find all region end trivia
         var regionEnds = root
@@ -66,6 +66,7 @@ public static class RegionMapper
             }
 
             region.Span = new(region.Span.Start, regionEnd.Span.End - region.Span.Start);
+            region.OutlineSpan = new(region.OutlineSpan.Start, regionEnd.Span.End - region.Span.Start);
         }
 
         var regions = ToHierarchy(regionList, span);
@@ -100,7 +101,7 @@ public static class RegionMapper
         return nestedRegions;
     }
 
-    private static CodeRegionItem MapRegion(SyntaxTrivia regionStart)
+    private static CodeRegionItem MapRegion(SyntaxTrivia regionStart, CodeDocumentViewModel codeDocumentViewModel)
     {
         var name = MapRegionName(regionStart);
 
@@ -112,13 +113,16 @@ public static class RegionMapper
             Tooltip = name,
             Kind = CodeItemKindEnum.Region,
             Span = new(regionStart.Span.Start, 0),
+            OutlineSpan = new(regionStart.Span.Start, 0),
             Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Region, CodeItemAccessEnum.Unknown),
+            CodeDocumentViewModel = codeDocumentViewModel,
         };
     }
 
     private static string MapRegionName(SyntaxTrivia source)
     {
         const string defaultRegionName = "Region";
+
         var syntaxNode = source.GetStructure();
         var name = "#";
 
@@ -145,11 +149,11 @@ public static class RegionMapper
     /// Add a CodeItem to the list of Regions, will recursively find the right region to add the item
     /// </summary>
     /// <param name="regions"></param>
-    /// <param name="item"></param>
+    /// <param name="codeItem"></param>
     /// <returns></returns>
-    public static bool AddToRegion(List<CodeRegionItem> regions, CodeItem item)
+    public static bool AddToRegion(List<CodeRegionItem> regions, CodeItem codeItem)
     {
-        if (item?.Span == null)
+        if (codeItem?.Span == null)
         {
             return false;
         }
@@ -161,15 +165,15 @@ public static class RegionMapper
                 continue;
             }
 
-            if (AddToRegion(region.Members, item))
+            if (AddToRegion(region.Members, codeItem))
             {
                 return true;
             }
 
-            if (item.Span.Start >= region.Span.Start &&
-                item.Span.Start <= region.Span.End)
+            if (codeItem.Span.Start >= region.Span.Start &&
+                codeItem.Span.Start <= region.Span.End)
             {
-                region.Members.Add(item);
+                region.Members.Add(codeItem);
                 return true;
             }
         }
@@ -181,9 +185,9 @@ public static class RegionMapper
     /// Help add a CodeItem to an inner Region structure
     /// </summary>
     /// <param name="members"></param>
-    /// <param name="item"></param>
+    /// <param name="codeItem"></param>
     /// <returns></returns>
-    private static bool AddToRegion(List<CodeItem> members, CodeItem item)
+    private static bool AddToRegion(List<CodeItem> members, CodeItem codeItem)
     {
         foreach (var member in members)
         {
@@ -192,15 +196,15 @@ public static class RegionMapper
                 continue;
             }
 
-            if (member is IMembers memberItem && AddToRegion(memberItem.Members, item))
+            if (member is IMembers memberItem && AddToRegion(memberItem.Members, codeItem))
             {
                 return true;
             }
 
             if (member is CodeRegionItem regionItem &&
-                member.Span.Contains(item.Span))
+                member.Span.Contains(codeItem.Span))
             {
-                regionItem.Members.Add(item);
+                regionItem.Members.Add(codeItem);
                 return true;
             }
         }
