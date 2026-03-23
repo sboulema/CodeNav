@@ -16,8 +16,8 @@ internal class MapperTestSpans : BaseTest
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(outlineClass.Span.Start, Is.EqualTo(33));
-            Assert.That(outlineClass.Span.End, Is.EqualTo(93));
+            Assert.That(outlineClass.Span.Start, Is.EqualTo(60));
+            Assert.That(outlineClass.Span.End, Is.EqualTo(120));
         }
     }
 
@@ -36,8 +36,8 @@ internal class MapperTestSpans : BaseTest
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(outlineClass.IdentifierSpan.Value.Start, Is.EqualTo(48));
-            Assert.That(outlineClass.IdentifierSpan.Value.End, Is.EqualTo(57));
+            Assert.That(outlineClass.IdentifierSpan.Value.Start, Is.EqualTo(75));
+            Assert.That(outlineClass.IdentifierSpan.Value.End, Is.EqualTo(84));
         }
     }
 
@@ -54,8 +54,8 @@ internal class MapperTestSpans : BaseTest
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(outlineClass.OutlineSpan.Start, Is.EqualTo(57));
-            Assert.That(outlineClass.OutlineSpan.End, Is.EqualTo(93));
+            Assert.That(outlineClass.OutlineSpan.Start, Is.EqualTo(84));
+            Assert.That(outlineClass.OutlineSpan.End, Is.EqualTo(120));
         }
     }
 
@@ -72,8 +72,8 @@ internal class MapperTestSpans : BaseTest
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(outlineClass.OutlineSpan.Start, Is.EqualTo(122));
-            Assert.That(outlineClass.OutlineSpan.End, Is.EqualTo(173));
+            Assert.That(outlineClass.OutlineSpan.Start, Is.EqualTo(149));
+            Assert.That(outlineClass.OutlineSpan.End, Is.EqualTo(200));
         }
     }
 }

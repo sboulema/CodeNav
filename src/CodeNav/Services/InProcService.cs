@@ -92,7 +92,9 @@ internal class InProcService : IInProcService
     /// <remarks>Used to set the matching code item to expanded</remarks>
     /// <param name="sender"></param>
     /// <param name="e"></param>
+#pragma warning disable VSTHRD100 // Avoid async void methods
     private async void OutliningManager_RegionsExpanded(object sender, RegionsExpandedEventArgs e)
+#pragma warning restore VSTHRD100 // Avoid async void methods
     {
         var outOfProcService = await _extensibility.ServiceBroker
             .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
@@ -119,7 +121,9 @@ internal class InProcService : IInProcService
     /// <remarks>Used to set the matching code item to collapsed</remarks>
     /// <param name="sender"></param>
     /// <param name="e"></param>
+#pragma warning disable VSTHRD100 // Avoid async void methods
     private async void OutliningManager_RegionsCollapsed(object sender, RegionsCollapsedEventArgs e)
+#pragma warning restore VSTHRD100 // Avoid async void methods
     {
         var outOfProcService = await _extensibility.ServiceBroker
             .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);

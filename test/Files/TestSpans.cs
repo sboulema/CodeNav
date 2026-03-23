@@ -1,4 +1,6 @@
-﻿namespace CodeNav.Test.Files;
+﻿#pragma warning disable
+
+namespace CodeNav.Test.Files;
 
 internal class TestSpans
 {
@@ -9,3 +11,5 @@ internal class TestSpans2(int parameter)
 {
     private int Counter = 0;
 }
+
+#pragma warning restore
