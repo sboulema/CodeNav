@@ -7,7 +7,7 @@ on:
       - 'feature/**'
 
 env:
-  version: '10.2.${{ github.run_number }}'
+  version: '10.3.${{ github.run_number }}'
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
   vsixPath: ${{ github.workspace }}/src/CodeNav/bin/Release/net472/CodeNav.vsix

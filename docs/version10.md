@@ -11,9 +11,6 @@ developing the extension.
 
 Last but not least everything is written with async programming in mind.
 
-## Features (currently) broken in v10
-- Synced collapsing/expanding ranges [VSExtensibility - #545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)
-
 ## Features dropped in v10
 - Top Margin
 - Toggle visibility by double-clicking the splitter bar
