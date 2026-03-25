@@ -94,7 +94,7 @@ jobs:
           name: CodeNav2022
           path: |
             ${{ github.workspace }}/${{ env.vsixPath }}
-            publish-manifest.json
+            publish-manifest-2022.json
             README.md
 
   release:
@@ -152,7 +152,7 @@ jobs:
           publish
           -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
           -payload ${{ github.workspace }}/CodeNav2022/${{ env.vsixPath }}
-          -publishManifest CodeNav2022/publish-manifest.json
+          -publishManifest CodeNav2022/publish-manifest-2022.json
 
       - name: Publish to Open VSIX Gallery
         uses: timheuer/openvsixpublish@v1
