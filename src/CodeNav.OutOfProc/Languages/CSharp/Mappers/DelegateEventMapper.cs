@@ -10,7 +10,7 @@ public static class DelegateEventMapper
 {
     public static CodeItem MapDelegate(DelegateDeclarationSyntax member, SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         item.Kind = CodeItemKindEnum.Delegate;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
         return item;
@@ -18,8 +18,8 @@ public static class DelegateEventMapper
 
     public static CodeItem MapEvent(EventFieldDeclarationSyntax member, SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = BaseMapper.MapBase<CodeItem>(member, member.Declaration.Variables.First().Identifier,
-            member.Modifiers, semanticModel, codeDocumentViewModel);
+        var item = BaseMapper.MapBase<CodeItem>(member, semanticModel, codeDocumentViewModel, member.Declaration.Variables.First().Identifier,
+            modifiers: member.Modifiers);
         item.Kind = CodeItemKindEnum.Event;
         item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
         return item;

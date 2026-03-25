@@ -12,7 +12,7 @@ public class PropertyMapper
     public static CodePropertyItem MapProperty(PropertyDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodePropertyItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodePropertyItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         codeItem.IdentifierSpan = member.Identifier.Span;
         codeItem.ReturnType = TypeMapper.Map(member.Type);
 

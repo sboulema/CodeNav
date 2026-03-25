@@ -12,14 +12,10 @@ public static class NamespaceMapper
     public static CodeNamespaceItem MapNamespace(BaseNamespaceDeclarationSyntax member,
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodeNamespaceItem>(member, member.Name, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeNamespaceItem>(member, semanticModel, codeDocumentViewModel, nameSyntax: member.Name);
         codeItem.Kind = CodeItemKindEnum.Namespace;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            codeItem.Tooltip = TriviaSummaryMapper.Map(member);
-        }
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
         var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
 

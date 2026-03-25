@@ -1,5 +1,5 @@
-﻿using CodeNav.Extensions;
-using CodeNav.OutOfProc.Constants;
+﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
 using Microsoft.VisualStudio.Extensibility;
 
 namespace CodeNav.OutOfProc.Mappers;

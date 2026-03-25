@@ -3,45 +3,87 @@ using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace CodeNav.OutOfProc.Languages.CSharp.Mappers;
 
 public static class BaseMapper
 {
-    public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier, SyntaxTokenList modifiers,
-        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
-        => MapBase<T>(source, identifier.Text, modifiers, semanticModel, codeDocumentViewModel);
-
-    public static T MapBase<T>(SyntaxNode source, NameSyntax name,
-        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
-        => MapBase<T>(source, name.ToString(), [], semanticModel, codeDocumentViewModel);
-
-    public static T MapBase<T>(SyntaxNode source, string name,
-        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
-        => MapBase<T>(source, name, [], semanticModel, codeDocumentViewModel);
-
-    public static T MapBase<T>(SyntaxNode source, SyntaxToken identifier,
-        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
-        => MapBase<T>(source, identifier.Text, [], semanticModel, codeDocumentViewModel);
-
-    private static T MapBase<T>(SyntaxNode source, string name, SyntaxTokenList modifiers,
-        SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel) where T : CodeItem
+    /// <summary>
+    /// Map commonly shared code item properties based on the syntaxt token that is been mapped
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source">Syntax node of the code member</param>
+    /// <param name="semanticModel">Semantic model used during compilation</param>
+    /// <param name="codeDocumentViewModel">Code document view model used in the CodeNav tool window</param>
+    /// <param name="identifier">Syntax token of the code member identifier</param>
+    /// <param name="nameSyntax">Syntax token of the code member name</param>
+    /// <param name="name">Name of the code member</param>
+    /// <param name="modifiers">Accessibility modifiers of the code member</param>
+    /// <returns>Code item class or othe code class derived from code item</returns>
+    public static T MapBase<T>(
+        SyntaxNode source,
+        SemanticModel semanticModel,
+        CodeDocumentViewModel codeDocumentViewModel,
+        SyntaxToken? identifier = null,
+        NameSyntax? nameSyntax = null,
+        string name = "",
+        SyntaxTokenList? modifiers = null) where T : CodeItem
     {
         var codeItem = Activator.CreateInstance<T>();
 
-        codeItem.Name = name;
-        codeItem.FullName = GetFullName(source, name, semanticModel);
-        codeItem.FilePath = string.IsNullOrEmpty(source.SyntaxTree.FilePath) ? null : new Uri(source.SyntaxTree.FilePath);
+        var codeItemName = MapName(identifier, nameSyntax, name);
+
+        codeItem.Name = codeItemName;
+        codeItem.FullName = MapFullName(source, codeItemName, semanticModel);
+        codeItem.FilePath = string.IsNullOrEmpty(source.SyntaxTree.FilePath)
+            ? null
+            : new Uri(source.SyntaxTree.FilePath);
         codeItem.Id = codeItem.FullName;
-        codeItem.Tooltip = name;
-        codeItem.Span = source.Span;
+        codeItem.Tooltip = codeItemName;
         codeItem.Access = MapAccess(modifiers, source);
         codeItem.CodeDocumentViewModel = codeDocumentViewModel;
+
+        codeItem.Span = source.Span;
+        codeItem.IdentifierSpan = identifier?.Span;
+        codeItem.OutlineSpan = MapOutlineSpan(codeItem.Span, codeItem.IdentifierSpan, nameSyntax?.Span); 
 
         return codeItem;
     }
 
-    private static string GetFullName(SyntaxNode source, string name, SemanticModel semanticModel)
+    /// <summary>
+    /// Map the span that is used for expanding/collapsing outline regions
+    /// </summary>
+    /// <param name="span">Normal span of the syntax node</param>
+    /// <param name="identifierSpan">Identifier span of the syntax node</param>
+    /// <param name="name">Name of the syntax node</param>
+    /// <returns>TextSpan usable for outlining</returns>
+    private static TextSpan MapOutlineSpan(TextSpan span, TextSpan? identifierSpan, TextSpan? nameSpan)
+    {
+        var outlineSpanStart = 0;
+
+        if (nameSpan != null)
+        {
+            outlineSpanStart = nameSpan.Value.End;
+        }
+
+        if (identifierSpan != null)
+        {
+            outlineSpanStart = identifierSpan.Value.End;
+        }
+
+        return new TextSpan(outlineSpanStart, span.End - outlineSpanStart);
+    }
+
+    /// <summary>
+    /// Map the full name of a code item
+    /// </summary>
+    /// <remarks>Used to create a unique id for the code item</remarks>
+    /// <param name="source">Syntax node of the code item</param>
+    /// <param name="name">Display name of the code item</param>
+    /// <param name="semanticModel">Semantic model used during compilation</param>
+    /// <returns>String full name</returns>
+    private static string MapFullName(SyntaxNode source, string name, SemanticModel semanticModel)
     {
         try
         {
@@ -54,25 +96,51 @@ public static class BaseMapper
         }
     }
 
-    private static CodeItemAccessEnum MapAccess(SyntaxTokenList modifiers, SyntaxNode source)
+    /// <summary>
+    /// Map the display name of a code item
+    /// </summary>
+    /// <param name="identifier">Identifier syntax token of the code item</param>
+    /// <param name="nameSyntax">Name syntax token of the code item</param>
+    /// <returns>String display name</returns>
+    private static string MapName(SyntaxToken? identifier, NameSyntax? nameSyntax, string name = "")
     {
-        if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.SealedKeyword))
+        if (identifier != null)
+        {
+            return identifier.Value.Text;
+        }
+
+        if (nameSyntax != null)
+        {
+            return nameSyntax.ToString();
+        }
+
+        return name;
+    }
+
+    private static CodeItemAccessEnum MapAccess(SyntaxTokenList? modifiers, SyntaxNode source)
+    {
+        if (modifiers == null)
+        {
+            return MapDefaultAccess(source);
+        }
+
+        if (modifiers.Value.Any(m => m.RawKind == (int)SyntaxKind.SealedKeyword))
         {
             return CodeItemAccessEnum.Sealed;
         }
-        if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.PublicKeyword))
+        if (modifiers.Value.Any(m => m.RawKind == (int)SyntaxKind.PublicKeyword))
         {
             return CodeItemAccessEnum.Public;
         }
-        if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.PrivateKeyword))
+        if (modifiers.Value.Any(m => m.RawKind == (int)SyntaxKind.PrivateKeyword))
         {
             return CodeItemAccessEnum.Private;
         }
-        if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.ProtectedKeyword))
+        if (modifiers.Value.Any(m => m.RawKind == (int)SyntaxKind.ProtectedKeyword))
         {
             return CodeItemAccessEnum.Protected;
         }
-        if (modifiers.Any(m => m.RawKind == (int)SyntaxKind.InternalKeyword))
+        if (modifiers.Value.Any(m => m.RawKind == (int)SyntaxKind.InternalKeyword))
         {
             return CodeItemAccessEnum.Internal;
         }

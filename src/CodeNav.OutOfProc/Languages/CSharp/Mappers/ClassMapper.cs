@@ -14,7 +14,7 @@ public class ClassMapper
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel,
         bool mapBaseClass)
     {
-        var codeItem = BaseMapper.MapBase<CodeClassItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeClassItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
         codeItem.Kind = CodeItemKindEnum.Class;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
         codeItem.Parameters = MapInheritance(member);

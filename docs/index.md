@@ -8,6 +8,9 @@ Read all on how to modify the appearance of code items usin [filter rules](filte
 ## Settings
 Read all on the [settings](settings.md) available to further customize CodeNav
 
+## Spans
+Read all about the different kind of [spans](spans.md) that are being used in CodeNav
+
 ## Version 10
 Read all about the new [version 10](version10.md) of CodeNav
 

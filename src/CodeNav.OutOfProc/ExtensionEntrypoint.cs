@@ -1,4 +1,5 @@
-﻿using CodeNav.OutOfProc.Services;
+﻿using CodeNav.OutOfProc.Helpers;
+using CodeNav.OutOfProc.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Extensibility;
 
@@ -36,5 +37,6 @@ internal class ExtensionEntrypoint : Extension
         // As of now, any instance that ingests VisualStudioExtensibility is required to be added as a scoped
         // service.
         serviceCollection.AddScoped<OutputWindowService>();
+        serviceCollection.AddScoped<OutliningHelper>();
     }
 }

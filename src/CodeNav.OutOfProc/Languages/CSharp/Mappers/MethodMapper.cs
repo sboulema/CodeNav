@@ -37,13 +37,13 @@ public static class MethodMapper
         if (statementsCodeItems.Any(statement => statement.Visibility == Visibility.Visible))
         {
             // Map method as item containing statements
-            codeItem = BaseMapper.MapBase<CodeClassItem>(node, identifier,modifiers, semanticModel, codeDocumentViewModel);
+            codeItem = BaseMapper.MapBase<CodeClassItem>(node, semanticModel, codeDocumentViewModel, identifier, modifiers: modifiers);
             ((CodeClassItem)codeItem).Members.AddRange(statementsCodeItems);
         }
         else
         {
             // Map method as single item
-            codeItem = BaseMapper.MapBase<CodeFunctionItem>(node, identifier, modifiers, semanticModel, codeDocumentViewModel);
+            codeItem = BaseMapper.MapBase<CodeFunctionItem>(node, semanticModel, codeDocumentViewModel, identifier, modifiers: modifiers);
 
             var codeFunctionItem = codeItem as CodeFunctionItem;
 
@@ -63,7 +63,7 @@ public static class MethodMapper
     public static CodeItem MapConstructor(ConstructorDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, member.Identifier, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, semanticModel, codeDocumentViewModel, member.Identifier, modifiers: member.Modifiers);
 
         codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);
         codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, codeItem.ReturnType, codeItem.Name, member.ParameterList);

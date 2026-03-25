@@ -11,7 +11,7 @@ public class IndexerMapper
     public static CodeItem MapIndexer(IndexerDeclarationSyntax member,
         SemanticModel semanticModel, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, member.ThisKeyword, member.Modifiers, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeFunctionItem>(member, semanticModel, codeDocumentViewModel, member.ThisKeyword, modifiers: member.Modifiers);
         
         codeItem.ReturnType = TypeMapper.Map(member.Type);
         codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);

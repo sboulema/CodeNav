@@ -20,6 +20,8 @@ Visual Studio extension to show the code structure of your current document
 - Hide, ignore or change opacity of items based on item kind (method, property), access (public, private), empty state
 - Customizable fonts
 - Bookmarks
+- Synced collapsing/expanding outline regions
+
 
 ## Supported Visual Studio versions
 

@@ -6,6 +6,8 @@ public interface IOutOfProcService
 {
     Task DoSomethingAsync(CancellationToken cancellationToken);
 
+    Task SetCodeItemIsExpanded(int spanStart, int spanEnd, bool isExpanded);
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.OutOfProcService";

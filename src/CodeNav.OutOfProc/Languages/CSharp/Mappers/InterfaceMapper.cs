@@ -156,16 +156,12 @@ public static class InterfaceMapper
             return null;
         }
 
-        var item = BaseMapper.MapBase<CodeInterfaceItem>(member, member.Identifier,
-            member.Modifiers, semanticModel, codeDocumentViewModel);
+        var codeItem = BaseMapper.MapBase<CodeInterfaceItem>(member, semanticModel, codeDocumentViewModel, member.Identifier,
+            modifiers: member.Modifiers);
 
-        item.Kind = CodeItemKindEnum.Interface;
-        item.Moniker = IconMapper.MapMoniker(item.Kind, item.Access);
-
-        if (TriviaSummaryMapper.HasSummary(member))
-        {
-            item.Tooltip = TriviaSummaryMapper.Map(member);
-        }
+        codeItem.Kind = CodeItemKindEnum.Interface;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
         var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
 
@@ -174,7 +170,7 @@ public static class InterfaceMapper
             var memberItem = DocumentMapper.MapMember(interfaceMember, tree, semanticModel, codeDocumentViewModel);
             if (memberItem != null && !RegionMapper.AddToRegion(regions, memberItem))
             {
-                item.Members.Add(memberItem);
+                codeItem.Members.Add(memberItem);
             }
         }
 
@@ -185,11 +181,11 @@ public static class InterfaceMapper
             {
                 if (region?.Members.Any() == true)
                 {
-                    item.Members.Add(region);
+                    codeItem.Members.Add(region);
                 }
             }
         }
 
-        return item;
+        return codeItem;
     }
 }

@@ -2,6 +2,7 @@
 using CodeNav.OutOfProc.Dialogs.SettingsDialog;
 using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Languages.CSharp.Mappers;
+using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
@@ -10,7 +11,9 @@ using System.Windows;
 
 namespace CodeNav.OutOfProc.Services;
 
-public class CodeDocumentService(OutputWindowService logService)
+public class CodeDocumentService(
+    OutputWindowService logService,
+    OutliningHelper outliningHelper)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -30,6 +33,8 @@ public class CodeDocumentService(OutputWindowService logService)
     public GlobalSettings? GlobalSettings { get; set; }
 
     public OutputWindowService LogService => logService;
+
+    public OutliningHelper OutliningHelper => outliningHelper;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
@@ -107,11 +112,10 @@ public class CodeDocumentService(OutputWindowService logService)
 
             await logService.WriteInfo(textView, $"Apply bookmark indicators");
 
-            // TODO: If we get support for OutliningManager in the future,
-            // we should consider not expanding by default
-            OutliningHelper.ExpandAll(CodeDocumentViewModel);
+            // Apply outlining
+            await OutliningHelper.SubscribeToRegionEvents(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Expanding all code items");
+            await logService.WriteInfo(textView, $"Apply outlining");
 
             return CodeDocumentViewModel;
         }
