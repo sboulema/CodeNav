@@ -37,9 +37,7 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Button Command="{Binding Path=ClickItemCommand}"
-                            CommandParameter="{Binding StartLine}"
-                            ToolTip="{Binding Tooltip}"
+                    <Button ToolTip="{Binding Tooltip}"
                             Visibility="{Binding Visibility}"
                             ContextMenu="{DynamicResource ItemContextMenu}"
                             Opacity="{Binding Opacity}"
@@ -51,6 +49,10 @@
                             HorizontalAlignment="Stretch"
                             Margin="-3,-3,-3,0"
                             Padding="3">
+                        <Button.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding ClickItemCommand}" />
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DoubleClickItemCommand}" />
+                        </Button.InputBindings>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />

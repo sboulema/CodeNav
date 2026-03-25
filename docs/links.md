@@ -29,3 +29,4 @@ Here is a list of links to helpful pages I needed when developing this extension
 ## VSExtensibility Issues
 - [#545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)
 - [#554 - Feature request: Text Editor: Scroll to line](https://github.com/microsoft/VSExtensibility/issues/554)
+- [#340 - Changing caret position](https://github.com/microsoft/VSExtensibility/issues/340)

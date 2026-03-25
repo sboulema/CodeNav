@@ -8,6 +8,8 @@ public interface IInProcService
 
     Task TextViewScrollToSpan(int start, int length);
 
+    Task TextViewMoveCaretToPosition(int position);
+
     Task ExpandOutlineRegion(int start, int length);
 
     Task CollapseOutlineRegion(int start, int length);

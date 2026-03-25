@@ -274,6 +274,33 @@ internal class InProcService : IInProcService
         }
     }
 
+    public async Task TextViewMoveCaretToPosition(int position)
+    {
+        try
+        {
+            // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
+            var textView = await GetCurrentTextViewAsync();
+
+            if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
+            {
+                // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
+                return;
+            }
+
+            var snapShotPoint = new SnapshotPoint(textView.TextSnapshot, position);
+
+            // Switch to the UI thread to ensure we can interact with the view scroller.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            textView.Caret.MoveTo(snapShotPoint);
+            textView.VisualElement.Focus();
+        }
+        catch (Exception)
+        {
+            // TODO: Implement in-proc error logging
+        }
+    }
+
     private async Task<IWpfTextView> GetCurrentTextViewAsync()
     {
         var editorAdapter = await _editorAdaptersFactoryService.GetServiceAsync();

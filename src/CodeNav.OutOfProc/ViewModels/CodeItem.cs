@@ -17,6 +17,7 @@ public class CodeItem : NotifyPropertyChangedObject
     public CodeItem()
     {
         ClickItemCommand = new(ClickItem);
+        DoubleClickItemCommand = new(DoubleClickItem);
         GoToDefinitionCommand = new(GoToDefinition);
         GoToEndCommand = new(GoToEnd);
         SelectInCodeCommand = new(SelectInCode);
@@ -263,7 +264,7 @@ public class CodeItem : NotifyPropertyChangedObject
 
         await LogHelper.LogInfo(this, $"Moving caret to position '{span.Start}'");
 
-        await MoveCaretToPosition(span.Start, clientContext, cancellationToken);
+        await SetSelectionToPosition(span.Start, clientContext, cancellationToken);
 
         await LogHelper.LogInfo(this, $"Adding item '{Name}' to history");
 
@@ -273,7 +274,7 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToDefinitionCommand { get; }
     private async Task GoToDefinition(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => await MoveCaretToPosition(Span.Start, clientContext, cancellationToken);
+        => await SetSelectionToPosition(Span.Start, clientContext, cancellationToken);
 
     [DataMember]
     public AsyncCommand ClearHistoryCommand { get; }
@@ -283,12 +284,31 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToEndCommand { get; }
     public async Task GoToEnd(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => await MoveCaretToPosition(Span.End, clientContext, cancellationToken);
+        => await SetSelectionToPosition(Span.End, clientContext, cancellationToken);
 
     [DataMember]
     public AsyncCommand SelectInCodeCommand { get; }
     public async Task SelectInCode(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
         => await SelectLines(clientContext, cancellationToken);
+
+    [DataMember]
+    public AsyncCommand DoubleClickItemCommand { get; }
+    public async Task DoubleClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        var inProcService = await clientContext.Extensibility
+            .ServiceBroker
+            .GetProxyAsync<IInProcService>(IInProcService.Configuration.ServiceDescriptor, cancellationToken: cancellationToken);
+
+        try
+        {
+            Assumes.NotNull(inProcService);
+            await inProcService.TextViewMoveCaretToPosition(OutlineSpan.Start);
+        }
+        finally
+        {
+            (inProcService as IDisposable)?.Dispose();
+        }
+    }
 
     [DataMember]
     public AsyncCommand CopyNameCommand { get; }
@@ -349,7 +369,7 @@ public class CodeItem : NotifyPropertyChangedObject
 
     #endregion
 
-    private async Task MoveCaretToPosition(
+    private async Task SetSelectionToPosition(
         int position,
         IClientContext clientContext,
         CancellationToken cancellationToken)
