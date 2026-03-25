@@ -47,10 +47,59 @@ jobs:
             publish-manifest.json
             README.md
 
+  build2022:
+    name: 🛠️ Build 2022
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.dotnetVersion }}.x
+
+      - name: Restore/Build/Test
+        run: dotnet test
+
+      - name: Update Vsix DisplayName and Id
+        run: |
+          [xml]$vsixXml = Get-Content ${{ inputs.manifest-file }}
+
+          $ns = New-Object System.Xml.XmlNamespaceManager $vsixXml.NameTable
+          $ns.AddNamespace("ns", $vsixXml.DocumentElement.NamespaceURI) | Out-Null
+
+          $attrId = $vsixXml.SelectSingleNode("//ns:Identity", $ns).Attributes["Id"]
+          $attrId.InnerText = "dcdbcca4-3a88-432f-ba04-eb4a4cb64437"
+
+          $nodeDisplayName = $vsixXml.SelectSingleNode("//ns:DisplayName", $ns)
+          $nodeDisplayName.InnerText = "CodeNav 2022"
+
+          $vsixXml.Save("${{ inputs.manifest-file }}") | Out-Null
+
+      - name: Update Vsix Manifest Version
+        id: vsix_version
+        uses: timheuer/vsix-version-stamp@v2
+        with:
+          version-number: ${{ env.version }}
+          manifest-file: src/CodeNav/source.extension.vsixmanifest
+
+      - name: Build VSIX
+        run: dotnet publish src/CodeNav -p:Version=${{ env.version }} -c Release
+
+      - name: Publish Build Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: CodeNav2022
+          path: |
+            ${{ env.vsixPath }}
+            publish-manifest.json
+            README.md
+
   release:
     if: github.ref_name == 'main'
-    name: 🚀 Release
-    needs: build
+    name: 🚚 Release
+    needs: [build, build2022]
     runs-on: windows-latest
     environment: Release
     permissions:
@@ -58,6 +107,8 @@ jobs:
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v8
+        with:
+          name: CodeNav
 
       - name: Tag release
         id: tag_release
@@ -75,15 +126,35 @@ jobs:
           artifacts: ${{ env.vsixPath }}
           skipIfReleaseExists: true
 
+  publish:
+    if: github.ref_name == 'main'
+    name: 🚀 Publish
+    needs: release
+    runs-on: windows-latest
+    environment: Release
+    permissions:
+        contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+
       - name: Publish to Marketplace
         run: >
           & 'C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
           publish
           -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          -payload ${{ env.vsixPath }}
-          -publishManifest publish-manifest.json
+          -payload CodeNav/${{ env.vsixPath }}
+          -publishManifest CodeNav/publish-manifest.json
+
+      - name: Publish to Marketplace 2022
+        run: >
+          & 'C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
+          publish
+          -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
+          -payload CodeNav2022/${{ env.vsixPath }}
+          -publishManifest CodeNav2022/publish-manifest.json
 
       - name: Publish to Open VSIX Gallery
         uses: timheuer/openvsixpublish@v1
         with:
-          vsix-file: ${{ env.vsixPath }}
+          vsix-file: CodeNav/${{ env.vsixPath }}
