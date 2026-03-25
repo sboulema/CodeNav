@@ -24,6 +24,7 @@ Here is a list of links to helpful pages I needed when developing this extension
 - [CommentRemover Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CommentRemover)
 - [CompositeExtension Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CompositeExtension)
 - [The CheckBox control](https://wpf-tutorial.com/basic-controls/the-checkbox-control/)
+- [Sorting enum by a custom attribute](https://stackoverflow.com/questions/61091166/sorting-enum-by-a-custom-attribute)
 
 ## VSExtensibility Issues
 - [#545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)

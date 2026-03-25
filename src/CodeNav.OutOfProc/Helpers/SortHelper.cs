@@ -1,11 +1,49 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
 using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Services;
 using CodeNav.OutOfProc.ViewModels;
+using Microsoft.VisualStudio.Extensibility;
 
 namespace CodeNav.OutOfProc.Helpers;
 
 public static class SortHelper
 {
+    /// <summary>
+    /// Change the current sort order and apply the new sort to the view model
+    /// </summary>
+    /// <remarks>Used in the main toolbar sort buttons</remarks>
+    /// <param name="clientContext">ClientContext</param>
+    /// <param name="codeDocumentService">CodeDocumentService</param>
+    /// <param name="cancellationToken">CancellationToken</param>
+    /// <returns>Awaitable Task</returns>
+    public static async Task ChangeSort(
+        IClientContext clientContext,
+        CodeDocumentService? codeDocumentService,
+        SortOrderEnum sortOrder,
+        CancellationToken cancellationToken)
+    {
+        var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
+
+        if (textViewSnapshot == null)
+        {
+            return;
+        }
+
+        if (codeDocumentService == null)
+        {
+            return;
+        }
+
+        await codeDocumentService.LoadGlobalSettings();
+        codeDocumentService.GlobalSettings!.SortOrder = sortOrder;
+        await SettingsHelper.SaveGlobalSettings(codeDocumentService);
+
+        ApplySort(codeDocumentService.CodeDocumentViewModel, sortOrder);
+
+        await codeDocumentService.UpdateCodeDocumentViewModel(clientContext.Extensibility, textViewSnapshot, cancellationToken);
+    }
+
     /// <summary>
     /// Apply a sort order to all needed fields on the view model
     /// </summary>
@@ -20,6 +58,7 @@ public static class SortHelper
         codeDocumentViewModel.SortOrder = sortOrder;
         codeDocumentViewModel.IsSortByFileChecked = sortOrder == SortOrderEnum.SortByFile;
         codeDocumentViewModel.IsSortByNameChecked = sortOrder == SortOrderEnum.SortByName;
+        codeDocumentViewModel.IsSortByTypeChecked = sortOrder == SortOrderEnum.SortByType;
         return codeDocumentViewModel;
     }
 
@@ -35,12 +74,15 @@ public static class SortHelper
         {
             SortOrderEnum.SortByFile => SortByFile(codeItems),
             SortOrderEnum.SortByName => SortByName(codeItems),
+            SortOrderEnum.SortByType => SortByType(codeItems),
             _ => codeItems,
         };
 
     private static List<CodeItem> SortByName(List<CodeItem> codeItems)
     {
-        codeItems = [.. codeItems.OrderBy(codeItem => codeItem.Name)];
+        codeItems = [.. codeItems
+            .OrderBy(codeItem => codeItem.Name)
+            .ThenBy(codeItem => codeItem.Span.Start)];
 
         foreach (var item in codeItems)
         {
@@ -62,6 +104,24 @@ public static class SortHelper
             if (item is IMembers membersItem)
             {
                 membersItem.Members = SortByFile(membersItem.Members);
+            }
+        }
+
+        return codeItems;
+    }
+
+    private static List<CodeItem> SortByType(List<CodeItem> codeItems)
+    {
+        codeItems = [.. codeItems
+            .OrderBy(codeItem => codeItem.Kind.GetEnumOrder())
+            .ThenBy(codeItem => codeItem.Name)
+            .ThenBy(codeItem => codeItem.Span.Start)];
+
+        foreach (var item in codeItems)
+        {
+            if (item is IMembers membersItem)
+            {
+                membersItem.Members = SortByType(membersItem.Members);
             }
         }
 

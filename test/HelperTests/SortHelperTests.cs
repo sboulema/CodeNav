@@ -3,22 +3,29 @@
 [TestFixture]
 internal class SortHelperTests : BaseTest
 {
-    [TestCase(SortOrderEnum.SortByFile, new string[] { "C", "B", "A" })]
-    [TestCase(SortOrderEnum.SortByName, new string[] { "A", "B", "C" })]
+    [TestCase(SortOrderEnum.SortByFile, new string[] { "C", "D", "B", "A" })]
+    [TestCase(SortOrderEnum.SortByName, new string[] { "A", "B", "C", "D" })]
+    [TestCase(SortOrderEnum.SortByType, new string[] { "A", "B", "D", "C" })]
     public async Task ItemsSorting(SortOrderEnum sortOrder, string[] methodNames)
     {
-        var document = await MapToCodeDocumentViewModel("TestSorting.cs");
+        var codeDocumentViewModel = await MapToCodeDocumentViewModel("Sorting/TestSorting.cs");
 
-        document.SortOrder = sortOrder;
+        codeDocumentViewModel.SortOrder = sortOrder;
 
-        document.CodeItems = SortHelper.Sort(document.CodeItems, sortOrder);
+        codeDocumentViewModel.CodeItems = SortHelper.Sort(codeDocumentViewModel.CodeItems, sortOrder);
 
-        var sortingClass = (document.CodeItems.First() as IMembers)?.Members.First() as CodeClassItem;
+        var namespaceItem = GetNamespace(codeDocumentViewModel.CodeItems);
 
-        Assert.That(sortingClass?.Members.First().Name, Is.EqualTo(methodNames[0]));
-        Assert.That(sortingClass.Members[1].Name, Is.EqualTo(methodNames[1]));
-        Assert.That(sortingClass.Members.Last().Name, Is.EqualTo(methodNames[2]));
+        var classItem = GetFirstClass(namespaceItem);
 
-        Assert.That(document.SortOrder, Is.EqualTo(sortOrder));
+        Assert.That(codeDocumentViewModel.SortOrder, Is.EqualTo(sortOrder));
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(GetMemberAtIndex(classItem, 0).Name, Is.EqualTo(methodNames[0]));
+            Assert.That(GetMemberAtIndex(classItem, 1).Name, Is.EqualTo(methodNames[1]));
+            Assert.That(GetMemberAtIndex(classItem, 2).Name, Is.EqualTo(methodNames[2]));
+            Assert.That(GetMemberAtIndex(classItem, 3).Name, Is.EqualTo(methodNames[3]));
+        }
     }
 }

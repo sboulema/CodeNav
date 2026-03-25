@@ -21,6 +21,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         RefreshCommand = new(Refresh);
         SortByFileCommand = new(SortByFile);
         SortByNameCommand = new(SortByName);
+        SortByTypeCommand = new(SortByType);
         ExpandAllCommand = new(ExpandAll);
         CollapseAllCommand = new(CollapseAll);
         SettingsCommand = new(Settings);
@@ -137,6 +138,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         set => SetProperty(ref _isSortByFileChecked, value);
     }
 
+    private bool _isSortByTypeChecked;
+
+    /// <summary>
+    /// Indicator if the main toolbar radio button should be checked.
+    /// </summary>
+    [DataMember]
+    public bool IsSortByTypeChecked
+    {
+        get => _isSortByTypeChecked;
+        set => SetProperty(ref _isSortByTypeChecked, value);
+    }
+
     #endregion
 
     #region Commands
@@ -164,50 +177,21 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand SortByNameCommand { get; }
     private async Task SortByName(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
-
-        if (textViewSnapshot == null)
-        {
-            return;
-        }
-
-        if (CodeDocumentService == null)
-        {
-            return;
-        }
-
-        await CodeDocumentService.LoadGlobalSettings();
-        CodeDocumentService.GlobalSettings!.SortOrder = SortOrderEnum.SortByName;
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
-
-        SortHelper.ApplySort(CodeDocumentService.CodeDocumentViewModel, SortOrderEnum.SortByName);
-
-        await CodeDocumentService.UpdateCodeDocumentViewModel(clientContext.Extensibility, textViewSnapshot, cancellationToken);
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByName, cancellationToken);
     }
 
     [DataMember]
     public AsyncCommand SortByFileCommand { get; }
     private async Task SortByFile(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByFile, cancellationToken);
+    }
 
-        if (textViewSnapshot == null)
-        {
-            return;
-        }
-
-        if (CodeDocumentService == null)
-        {
-            return;
-        }
-
-        await CodeDocumentService.LoadGlobalSettings();
-        CodeDocumentService.GlobalSettings!.SortOrder = SortOrderEnum.SortByFile;
-        await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
-
-        SortHelper.ApplySort(CodeDocumentService.CodeDocumentViewModel, SortOrderEnum.SortByFile);
-
-        await CodeDocumentService.UpdateCodeDocumentViewModel(clientContext.Extensibility, textViewSnapshot, cancellationToken);
+    [DataMember]
+    public AsyncCommand SortByTypeCommand { get; }
+    private async Task SortByType(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByType, cancellationToken);
     }
 
     [DataMember]

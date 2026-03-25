@@ -33,8 +33,18 @@
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="2,0" />
 
                 <RadioButton
+                    Command="{Binding Path=SortByNameCommand}"
+                    ToolTip="Sort By Name"
+                    Style="{DynamicResource ToolbarRadioButtonStyle}"
+                    IsChecked="{Binding IsSortByNameChecked}">
+                    <RadioButton.Content>
+                        <vs:Image Source="KnownMonikers.SortAscending" Width="16" Height="16" />
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton
                     Command="{Binding Path=SortByFileCommand}"
-                    ToolTip="Sort by file order"
+                    ToolTip="Sort By Order"
                     Style="{DynamicResource ToolbarRadioButtonStyle}"
                     IsChecked="{Binding IsSortByFileChecked}">
                     <RadioButton.Content>
@@ -43,12 +53,12 @@
                 </RadioButton>
 
                 <RadioButton
-                    Command="{Binding Path=SortByNameCommand}"
-                    ToolTip="Sort by name"
+                    Command="{Binding Path=SortByTypeCommand}"
+                    ToolTip="Sort By Type"
                     Style="{DynamicResource ToolbarRadioButtonStyle}"
-                    IsChecked="{Binding IsSortByNameChecked}">
+                    IsChecked="{Binding IsSortByTypeChecked}">
                     <RadioButton.Content>
-                        <vs:Image Source="KnownMonikers.SortAscending" Width="16" Height="16" />
+                        <vs:Image Source="KnownMonikers.SortByType" Width="16" Height="16" />
                     </RadioButton.Content>
                 </RadioButton>
 

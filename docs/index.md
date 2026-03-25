@@ -5,6 +5,9 @@ Welcome to the CodeNav documentation. Browse the sections below to learn more ab
 ## Filter rules
 Read all on how to modify the appearance of code items usin [filter rules](filterrules.md)
 
+## Sorting
+Read all about the different kinds of [sorting](sorting.md) that can be used in CodeNav
+
 ## Settings
 Read all on the [settings](settings.md) available to further customize CodeNav
 

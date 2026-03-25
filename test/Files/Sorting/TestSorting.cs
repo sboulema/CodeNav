@@ -1,8 +1,10 @@
-﻿namespace CodeNav.Test.Files;
+﻿namespace CodeNav.Test.Files.Sorting;
 
 class TestSorting
 {
-    void C()
+    private const int C = 0; 
+
+    void D()
     {
 
     }
