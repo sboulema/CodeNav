@@ -10,7 +10,7 @@ env:
   version: '10.4.${{ github.run_number }}'
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
-  vsixPath: ${{ github.workspace }}/src/CodeNav/bin/Release/net472/CodeNav.vsix
+  vsixPath: src/CodeNav/bin/Release/net472/CodeNav.vsix
   vsixManifestPath: ${{ github.workspace }}/src/CodeNav/source.extension.vsixmanifest
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
         with:
           name: CodeNav
           path: |
-            ${{ env.vsixPath }}
+            ${{ github.workspace }}/${{ env.vsixPath }}
             publish-manifest.json
             README.md
 
@@ -93,7 +93,7 @@ jobs:
         with:
           name: CodeNav2022
           path: |
-            ${{ env.vsixPath }}
+            ${{ github.workspace }}/${{ env.vsixPath }}
             publish-manifest.json
             README.md
 
@@ -124,7 +124,7 @@ jobs:
           tag: ${{ steps.tag_release.outputs.new_tag }}
           name: ${{ steps.tag_release.outputs.new_tag }}
           body: ${{ steps.tag_release.outputs.changelog }}
-          artifacts: ${{ env.vsixPath }}
+          artifacts: ${{ github.workspace }}/${{ env.vsixPath }}
           skipIfReleaseExists: true
 
   publish:
@@ -132,7 +132,6 @@ jobs:
     name: 🚀 Publish
     needs: release
     runs-on: windows-latest
-    environment: Release
     permissions:
         contents: write
     steps:
@@ -144,7 +143,7 @@ jobs:
           & 'C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
           publish
           -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          -payload CodeNav/${{ env.vsixPath }}
+          -payload ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}
           -publishManifest CodeNav/publish-manifest.json
 
       - name: Publish to Marketplace 2022
@@ -152,10 +151,10 @@ jobs:
           & 'C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
           publish
           -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          -payload CodeNav2022/${{ env.vsixPath }}
+          -payload ${{ github.workspace }}/CodeNav2022/${{ env.vsixPath }}
           -publishManifest CodeNav2022/publish-manifest.json
 
       - name: Publish to Open VSIX Gallery
         uses: timheuer/openvsixpublish@v1
         with:
-          vsix-file: CodeNav/${{ env.vsixPath }}
+          vsix-file: ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}
