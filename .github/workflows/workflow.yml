@@ -11,6 +11,7 @@ env:
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
   vsixPath: ${{ github.workspace }}/src/CodeNav/bin/Release/net472/CodeNav.vsix
+  vsixManifestPath: ${{ github.workspace }}/src/CodeNav/source.extension.vsixmanifest
 
 jobs:
   build:
@@ -33,7 +34,7 @@ jobs:
         uses: timheuer/vsix-version-stamp@v2
         with:
           version-number: ${{ env.version }}
-          manifest-file: src/CodeNav/source.extension.vsixmanifest
+          manifest-file: ${{ env.vsixManifestPath }}
 
       - name: Build VSIX
         run: dotnet publish src/CodeNav -p:Version=${{ env.version }} -c Release
@@ -64,7 +65,7 @@ jobs:
 
       - name: Update Vsix DisplayName and Id
         run: |
-          [xml]$vsixXml = Get-Content ${{ inputs.manifest-file }}
+          [xml]$vsixXml = Get-Content ${{ env.vsixManifestPath }}
 
           $ns = New-Object System.Xml.XmlNamespaceManager $vsixXml.NameTable
           $ns.AddNamespace("ns", $vsixXml.DocumentElement.NamespaceURI) | Out-Null
@@ -75,14 +76,14 @@ jobs:
           $nodeDisplayName = $vsixXml.SelectSingleNode("//ns:DisplayName", $ns)
           $nodeDisplayName.InnerText = "CodeNav 2022"
 
-          $vsixXml.Save("${{ inputs.manifest-file }}") | Out-Null
+          $vsixXml.Save("${{ env.vsixManifestPath }}") | Out-Null
 
       - name: Update Vsix Manifest Version
         id: vsix_version
         uses: timheuer/vsix-version-stamp@v2
         with:
           version-number: ${{ env.version }}
-          manifest-file: src/CodeNav/source.extension.vsixmanifest
+          manifest-file: ${{ env.vsixManifestPath }}
 
       - name: Build VSIX
         run: dotnet publish src/CodeNav -p:Version=${{ env.version }} -c Release
