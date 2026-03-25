@@ -12,12 +12,12 @@ The main span is used when determining if a code item is part of a region or imp
 And when selecting the code from the code item context menu.
 
 <pre>
-<b>namespace CodeNav.Test.Files;
+<b>[[namespace CodeNav.Test.Files;
 
 internal class TestSpans
 {
     private int Counter = 0;
-}</b>
+}]]</b>
 </pre>
 
 ## Identifier span
@@ -31,7 +31,7 @@ member in the text view.
 <pre>
 namespace CodeNav.Test.Files;
 
-internal class <b>TestSpans</b>
+internal class <b>[[TestSpans]]</b>
 {
     private int Counter = 0;
 }
@@ -48,27 +48,18 @@ to find the matching outline region in the text view.
 namespace CodeNav.Test.Files;
 
 internal class TestSpans<b>
-{
+[[{
     private int Counter = 0;
-}</b>
+}]]</b>
 </pre>
 
 <pre>
 namespace CodeNav.Test.Files;
 
-<b>#region Classes
+<b>[[#region Classes
 internal class TestSpans
 {
     private int Counter = 0;
 }
-#endregion</b>
+#endregion]]</b>
 </pre>
-
-namespace CodeNav.Test.Files;
-
-$\color{green}{\textsf{#region Classes}}$<br/>
-$\color{green}{\textsf{internal class TestSpans}}$<br/>
-$\color{green}{\textsf{{}}$<br/>
-$\color{green}{\textsf{private int Counter = 0;}}$<br/>
-$\color{green}{\textsf{}}}$<br/>
-$\color{green}{\textsf{#endregion}}$<br/>
