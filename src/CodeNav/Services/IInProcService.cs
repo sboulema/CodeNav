@@ -16,6 +16,8 @@ public interface IInProcService
 
     Task<string> SubscribeToRegionEvents();
 
+    Task SubscribeToWindowFrameEvents();
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.InProcService";

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -16,22 +17,25 @@ using System.Text.Json;
 namespace CodeNav.Services;
 
 [VisualStudioContribution]
-internal class InProcService : IInProcService
+internal class InProcService : IInProcService, IVsWindowFrameEvents
 {
     private readonly VisualStudioExtensibility _extensibility;
     private readonly MefInjection<IVsEditorAdaptersFactoryService> _editorAdaptersFactoryService;
     private readonly MefInjection<IOutliningManagerService> _outliningManagerFactoryService;
+    private readonly AsyncServiceProviderInjection<SVsUIShell, IVsUIShell7> _vsUIShell;
     private readonly AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> _textManager;
 
     public InProcService(
         VisualStudioExtensibility extensibility,
         MefInjection<IVsEditorAdaptersFactoryService> editorAdaptersFactoryService,
         MefInjection<IOutliningManagerService> outliningManagerFactoryService,
+        AsyncServiceProviderInjection<SVsUIShell, IVsUIShell7> vsUIShell,
         AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> textManager)
     {
         _extensibility = extensibility;
         _editorAdaptersFactoryService = editorAdaptersFactoryService;
         _outliningManagerFactoryService = outliningManagerFactoryService;
+        _vsUIShell = vsUIShell;
         _textManager = textManager;
     }
 
@@ -332,6 +336,57 @@ internal class InProcService : IInProcService
         var textManager = await _textManager.GetServiceAsync();
         ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out IVsTextView activeView));
         return activeView;
+    }
+
+    #endregion
+
+    #region Window Frame Events
+
+    public async Task SubscribeToWindowFrameEvents()
+    {
+        var vsUIShell = await _vsUIShell.GetServiceAsync();
+
+        // Switch to the UI thread to ensure we can interact with the window frames.
+        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+        vsUIShell.AdviseWindowFrameEvents(this);
+    }
+
+    public void OnFrameCreated(IVsWindowFrame frame)
+    {
+        // Ignore
+    }
+
+    public void OnFrameDestroyed(IVsWindowFrame frame)
+    {
+        // Ignore
+    }
+
+    public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible)
+    {
+        // Ignore
+    }
+
+    public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen)
+    {
+        // Ignore
+    }
+
+    public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame)
+    {
+        // Check if the new frame is different from the old frame
+
+        // Check if the new frame has a document view
+
+        // If it does have a document view:
+
+        // Send the file path of the document to OutOfProc
+
+        // If it does NOT have a document view:
+
+        // Send an empty string to OutOfProc so that we can clear the list of code items?
+
+        // Or directly call new OutOfProc method to clear the list of code items?
     }
 
     #endregion

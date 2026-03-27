@@ -38,5 +38,6 @@ internal class ExtensionEntrypoint : Extension
         // service.
         serviceCollection.AddScoped<OutputWindowService>();
         serviceCollection.AddScoped<OutliningHelper>();
+        serviceCollection.AddScoped<WindowFrameService>();
     }
 }
