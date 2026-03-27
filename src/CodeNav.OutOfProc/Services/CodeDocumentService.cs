@@ -13,7 +13,7 @@ namespace CodeNav.OutOfProc.Services;
 
 public class CodeDocumentService(
     OutputWindowService logService,
-    OutliningHelper outliningHelper)
+    OutliningService outliningService)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -34,7 +34,7 @@ public class CodeDocumentService(
 
     public OutputWindowService LogService => logService;
 
-    public OutliningHelper OutliningHelper => outliningHelper;
+    public OutliningService OutliningService => outliningService;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
@@ -113,7 +113,7 @@ public class CodeDocumentService(
             await logService.WriteInfo(textView, $"Apply bookmark indicators");
 
             // Apply outlining
-            await OutliningHelper.SubscribeToRegionEvents(CodeDocumentViewModel);
+            await OutliningService.SubscribeToRegionEvents(CodeDocumentViewModel);
 
             await logService.WriteInfo(textView, $"Apply outlining");
 

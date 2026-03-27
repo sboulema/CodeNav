@@ -1,5 +1,6 @@
 ﻿using CodeNav.OutOfProc.Constants;
 using CodeNav.OutOfProc.Helpers;
+using CodeNav.OutOfProc.Services;
 using CodeNav.Services;
 using Microsoft;
 using Microsoft.CodeAnalysis.Text;
@@ -345,12 +346,12 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand ExpandAllCommand { get; }
     public async Task ExpandAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => OutliningHelper.ExpandAll(CodeDocumentViewModel!);
+        => OutliningService.ExpandAll(CodeDocumentViewModel!);
 
     [DataMember]
     public AsyncCommand CollapseAllCommand { get; }
     public async Task CollapseAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => OutliningHelper.CollapseAll(CodeDocumentViewModel!);
+        => OutliningService.CollapseAll(CodeDocumentViewModel!);
 
     [DataMember]
     public AsyncCommand AddBookmarkCommand { get; }

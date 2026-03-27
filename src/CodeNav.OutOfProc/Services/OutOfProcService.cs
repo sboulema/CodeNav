@@ -1,5 +1,4 @@
-﻿using CodeNav.OutOfProc.Helpers;
-using Microsoft.ServiceHub.Framework;
+﻿using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
 
@@ -29,7 +28,7 @@ internal class OutOfProcService : IOutOfProcService, IBrokeredService
 
     public async Task SetCodeItemIsExpanded(int spanStart, int spanEnd, bool isExpanded)
     {
-        OutliningHelper.SetIsExpanded(_codeDocumentService.CodeDocumentViewModel, spanStart, spanEnd, isExpanded);
+        OutliningService.SetIsExpanded(_codeDocumentService.CodeDocumentViewModel, spanStart, spanEnd, isExpanded);
     }
 
     public async Task DoSomethingAsync(CancellationToken cancellationToken)
