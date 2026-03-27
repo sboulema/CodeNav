@@ -1,5 +1,6 @@
 ﻿using CodeNav.OutOfProc.Constants;
 using CodeNav.OutOfProc.Extensions;
+using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Mappers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
@@ -20,8 +21,11 @@ public class ClassMapper
         codeItem.Parameters = MapInheritance(member);
         codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
-        var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
+        // Map implemented interfaces
         var implementedInterfaces = InterfaceMapper.MapImplementedInterfaces(member, semanticModel, tree, codeDocumentViewModel);
+
+        // Map regions
+        var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
 
         // Map members from the base class
         if (mapBaseClass)
@@ -33,35 +37,81 @@ public class ClassMapper
         foreach (var classMember in member.Members)
         {
             var memberItem = DocumentMapper.MapMember(classMember, tree, semanticModel, codeDocumentViewModel);
-            if (memberItem != null && !InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem)
-                && !RegionMapper.AddToRegion(regions, memberItem))
+
+            if (memberItem == null)
             {
-                codeItem.Members.Add(memberItem);
+                continue;
             }
+
+            // Skip member if it is part of an implemented interface
+            if (InterfaceMapper.IsPartOfImplementedInterface(implementedInterfaces, memberItem))
+            {
+                continue;
+            }
+
+            // Add member to region if it is part of one
+            if (RegionMapper.AddToRegion(regions, memberItem))
+            {
+                continue;
+            }
+
+            // Still here? Add the member to the class
+            codeItem.Members.Add(memberItem);
         }
 
         // Add implemented interfaces to class or region if they have a interface member inside them
-        if (implementedInterfaces.Any())
+        foreach (var implementedInterfaceItem in implementedInterfaces
+            .Where(implementedInterface => implementedInterface.Members.Any()))
         {
-            foreach (var interfaceItem in implementedInterfaces)
+            foreach (var implementedInterfaceItemMember in implementedInterfaceItem.Members)
             {
-                if (interfaceItem.Members.Any())
+                // Check if the implemented interfaces is part of a region or not
+                if (RegionMapper.IsPartOfRegion(regions, implementedInterfaceItemMember))
                 {
-                    if (!RegionMapper.AddToRegion(regions, interfaceItem))
-                    {
-                        codeItem.Members.Add(interfaceItem);
-                    }
+                    // If it is part of a region, add the implemented interface item to the region, add the member to the interface item
+                    var regionItem = RegionMapper.GetRegion(regions, implementedInterfaceItemMember);
+                    AddImplementedInterfaceMember(regionItem, implementedInterfaceItem, implementedInterfaceItemMember);
+                }
+                else
+                {
+                    // If it is not part of a region, add the implemented interface item tot the class, add the member to the interface item 
+                    AddImplementedInterfaceMember(codeItem, implementedInterfaceItem, implementedInterfaceItemMember);
                 }
             }
         }
 
         // Add regions to class
-        if (regions.Any())
-        {
-            codeItem.Members.AddRange(regions);
-        }
+        codeItem.Members.AddRange(regions);
 
         return codeItem;
+    }
+
+    /// <summary>
+    /// Check if the containing code item already has a Implemented interface item
+    /// if not: Create an empty implemented interface item
+    /// Add code item to implemented interface item
+    /// </summary>
+    /// <param name="membersItem"></param>
+    /// <param name="implementedInterfaceItem"></param>
+    /// <param name="codeItem"></param>
+    private static void AddImplementedInterfaceMember(
+        IMembers membersItem,
+        CodeImplementedInterfaceItem implementedInterfaceItem,
+        CodeItem codeItem)
+    {
+        if (!membersItem.Members.Any(memberItem => memberItem.Id == implementedInterfaceItem.Id))
+        {
+            var implementedInterfaceStub = implementedInterfaceItem.Clone() as CodeImplementedInterfaceItem;
+            implementedInterfaceStub!.Members = [];
+
+            membersItem.Members.Add(implementedInterfaceStub);
+        }
+
+        var implementedInterfaceItemMember = membersItem
+            .Members
+            .First(memberItem => memberItem.Id == implementedInterfaceItem.Id) as CodeImplementedInterfaceItem;
+
+        implementedInterfaceItemMember!.Members.Add(codeItem);
     }
 
     private static string MapInheritance(ClassDeclarationSyntax member)

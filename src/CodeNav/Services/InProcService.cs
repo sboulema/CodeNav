@@ -47,6 +47,8 @@ internal class InProcService : IInProcService
         await _extensibility.Shell().ShowPromptAsync("Hello from out-of-proc! (Showing this message from (in-proc)", PromptOptions.OK, cancellationToken);
     }
 
+    #region Outlining
+
     /// <summary>
     /// Subscribe to outline events, so we will be notified if an outline region is changed.
     /// Get the current state of all regions
@@ -248,6 +250,17 @@ internal class InProcService : IInProcService
         return outliningManager;
     }
 
+    #endregion
+
+    #region Text View
+
+    /// <summary>
+    /// Scroll to a given span in the text view
+    /// </summary>
+    /// <remarks>Caret will remain at its original position</remarks>
+    /// <param name="start">Start position of the span</param>
+    /// <param name="length">Length of the span</param>
+    /// <returns></returns>
     public async Task TextViewScrollToSpan(int start, int length)
     {
         try
@@ -274,6 +287,11 @@ internal class InProcService : IInProcService
         }
     }
 
+    /// <summary>
+    /// Move the caret in the text view to the given position and keep the keyboard focus on the text view
+    /// </summary>
+    /// <param name="position">Position in the text view</param>
+    /// <returns>Awaitable Task</returns>
     public async Task TextViewMoveCaretToPosition(int position)
     {
         try
@@ -315,4 +333,6 @@ internal class InProcService : IInProcService
         ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out IVsTextView activeView));
         return activeView;
     }
+
+    #endregion
 }

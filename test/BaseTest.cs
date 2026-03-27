@@ -59,6 +59,16 @@ internal abstract class BaseTest
         return classItem;
     }
 
+    internal static CodeRegionItem GetRegionAtIndex(CodeClassItem classItem, int index)
+    {
+        var regionItem = classItem.Members[index] as CodeRegionItem;
+
+        Assert.That(regionItem, Is.Not.Null);
+        Assert.That(regionItem.Kind, Is.EqualTo(CodeItemKindEnum.Region));
+
+        return regionItem;
+    }
+
     internal static CodeItem GetMemberAtIndex(CodeClassItem classItem, int index)
     {
         var memberItem = classItem.Members[index];

@@ -13,9 +13,9 @@ public static class InterfaceMapper
 {
     public static bool IsPartOfImplementedInterface(
         IEnumerable<CodeImplementedInterfaceItem> implementedInterfaces,
-        CodeItem item)
-        => item != null &&
-           implementedInterfaces.SelectMany(i => i.Members.Select(m => m.Id)).Contains(item.Id);
+        CodeItem codeItem)
+        => codeItem != null &&
+           implementedInterfaces.SelectMany(implementedInterface => implementedInterface.Members.Select(member => member.Id)).Contains(codeItem.Id);
 
     public static List<CodeImplementedInterfaceItem> MapImplementedInterfaces(SyntaxNode member,
         SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)

@@ -9,6 +9,7 @@ Visual Studio extension to show the code structure of your current document
 - Quickly see all the important methods and properties in your document
 - Never get lost during a refactoring of a super long document
 - Clicking on an item in the list will take you to that location in the document
+- Double-clicking on an item in the list will move the caret to that location in the document
 - Show/Dock as a separate tool window.
 - Cursor position will be reflected by highlighting the current method in the list
 - Light/Dark theme support

@@ -8,6 +8,7 @@ public class CodeInterfaceItem : CodeClassItem
 }
 
 [DataContract]
-public class CodeImplementedInterfaceItem : CodeRegionItem
+public class CodeImplementedInterfaceItem : CodeRegionItem, ICloneable
 {
+    public object Clone() => MemberwiseClone();
 }

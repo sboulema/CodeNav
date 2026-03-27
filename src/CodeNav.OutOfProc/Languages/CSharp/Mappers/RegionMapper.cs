@@ -227,4 +227,45 @@ public static class RegionMapper
     public static bool StrictContains(TextSpan bigSpan, TextSpan smallSpan)
         => smallSpan.Start > bigSpan.Start &&
            smallSpan.End < bigSpan.End;
+
+    /// <summary>
+    /// Check if a code item is part of any region
+    /// </summary>
+    /// <remarks>Check is based on if the code item span is contained in any of the regions spans</remarks>
+    /// <param name="regions">List of regions</param>
+    /// <param name="codeItem">Code item</param>
+    /// <returns></returns>
+    public static bool IsPartOfRegion(IEnumerable<CodeRegionItem> regions, CodeItem codeItem)
+        => regions.Any(region => region.Span.Contains(codeItem.Span));
+
+    public static CodeRegionItem? GetRegion(
+        IEnumerable<CodeItem> regions,
+        CodeItem codeItem)
+    {
+        foreach (var region in regions)
+        {
+            if (region.Kind != CodeItemKindEnum.Region)
+            {
+                continue; // Skip non regions
+            }
+
+            if (!region.Span.Contains(codeItem.Span))
+            {
+                continue; // Skip non-matching regions
+            }
+
+            // Try to find a more specific nested region first
+            if (region is IMembers regionMembersItem)
+            {
+                var nestedMatch = GetRegion(regionMembersItem.Members, codeItem);
+
+                // If a deeper match exists, prefer it; otherwise this region is the smallest match
+                return nestedMatch ?? region as CodeRegionItem;
+            }
+
+            return region as CodeRegionItem;
+        }
+
+        return null;
+    }
 }

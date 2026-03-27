@@ -8,13 +8,11 @@ internal class MapperTestInterface : BaseTest
     {
         var codeItems = await MapToCodeItems("Interface/TestInterface.cs");
 
-        Assert.That(codeItems.Any(), Is.True);
-
         // First item should be a namespace
-        Assert.That(codeItems.First().Kind, Is.EqualTo(CodeItemKindEnum.Namespace));
+        var namespaceItem = GetNamespace(codeItems);
 
         // Namespace item should have 3 members
-        Assert.That((codeItems.First() as IMembers)?.Members, Has.Count.EqualTo(3));
+        Assert.That(namespaceItem.Members, Has.Count.EqualTo(3));
 
         // First item should be an interface
         var innerInterface = (codeItems.First() as IMembers)?.Members.First() as CodeInterfaceItem;
@@ -22,15 +20,8 @@ internal class MapperTestInterface : BaseTest
         Assert.That(innerInterface?.Members, Has.Count.EqualTo(3));
 
         // Second item should be the implementing class
-        var implementingClass = (codeItems.First() as IMembers)?.Members[1] as CodeClassItem;
-
-        Assert.That(implementingClass, Is.Not.Null);
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(implementingClass.Kind, Is.EqualTo(CodeItemKindEnum.Class));
-            Assert.That(implementingClass.Members, Has.Count.EqualTo(3));
-        }
+        var implementingClass = GetSecondClass(namespaceItem);
+        Assert.That(implementingClass.Members, Has.Count.EqualTo(3));
 
         var implementedInterface = implementingClass.Members.Last() as CodeImplementedInterfaceItem;
 
@@ -57,28 +48,21 @@ internal class MapperTestInterface : BaseTest
     {
         var codeItems = await MapToCodeItems("Interface/TestInterface.cs");
 
-        Assert.That(codeItems.Any(), Is.True);
-
         // First item should be a namespace
-        Assert.That(codeItems.First().Kind, Is.EqualTo(CodeItemKindEnum.Namespace));
+        var namespaceItem = GetNamespace(codeItems);
 
         // Namespace item should have 3 members
-        Assert.That((codeItems.First() as IMembers)?.Members, Has.Count.EqualTo(3));
+        Assert.That(namespaceItem.Members, Has.Count.EqualTo(3));
 
         // Third item should be the second implementing class
-        var implementingClass = (codeItems.First() as IMembers)?.Members.Last() as CodeClassItem;
+        var implementingClass = GetClassAtIndex(namespaceItem, 2);
 
-        Assert.That(implementingClass, Is.Not.Null);
+        // Implementing class should have 3 members
+        Assert.That(implementingClass.Members, Has.Count.EqualTo(3));
 
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(implementingClass.Kind, Is.EqualTo(CodeItemKindEnum.Class));
-            Assert.That(implementingClass.Members, Has.Count.EqualTo(3));
-        }
+        var regionItem = GetRegionAtIndex(implementingClass, 2);
 
-        var region = implementingClass.Members.Last() as CodeRegionItem;
-
-        var implementedInterface = region?.Members.First() as CodeImplementedInterfaceItem;
+        var implementedInterface = regionItem.Members.First() as CodeImplementedInterfaceItem;
 
         Assert.That(implementedInterface, Is.Not.Null);
 
@@ -94,13 +78,11 @@ internal class MapperTestInterface : BaseTest
     {
         var codeItems = await MapToCodeItems("Interface/TestInterfaceRegion.cs");
 
-        Assert.That(codeItems.Any(), Is.True);
-
         // First item should be a namespace
-        Assert.That(codeItems.First().Kind, Is.EqualTo(CodeItemKindEnum.Namespace));
+        var namespaceItem = GetNamespace(codeItems);
 
         // Namespace item should have 1 member
-        Assert.That((codeItems.First() as IMembers)?.Members, Has.Count.EqualTo(1));
+        Assert.That(namespaceItem.Members, Has.Count.EqualTo(1));
 
         // First item should be an interface
         var innerInterface = (codeItems.First() as IMembers)?.Members.First() as CodeInterfaceItem;
