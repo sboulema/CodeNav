@@ -8,15 +8,15 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Helpers;
 using System.Text.Json;
 
-namespace CodeNav.OutOfProc.Helpers;
+namespace CodeNav.OutOfProc.Services;
 
-public class OutliningHelper : DisposableObject
+public class OutliningService : DisposableObject
 {
     private readonly VisualStudioExtensibility _extensibility;
     private readonly Task _initializationTask;
     private IInProcService? _inProcService;
 
-    public OutliningHelper(VisualStudioExtensibility extensibility)
+    public OutliningService(VisualStudioExtensibility extensibility)
     {
         _extensibility = extensibility;
         _initializationTask = Task.Run(InitializeAsync);
@@ -83,7 +83,7 @@ public class OutliningHelper : DisposableObject
 
     public static async Task CollapseOutlineRegion(CodeItem codeItem)
     {
-        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.OutliningHelper == null)
+        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.OutliningService == null)
         {
             return;
         }
@@ -91,13 +91,13 @@ public class OutliningHelper : DisposableObject
         await codeItem
             .CodeDocumentViewModel
             .CodeDocumentService
-            .OutliningHelper
+            .OutliningService
             .CollapseOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
     }
 
     public static async Task ExpandOutlineRegion(CodeItem codeItem)
     {
-        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.OutliningHelper == null)
+        if (codeItem.CodeDocumentViewModel?.CodeDocumentService?.OutliningService == null)
         {
             return;
         }
@@ -105,7 +105,7 @@ public class OutliningHelper : DisposableObject
         await codeItem
             .CodeDocumentViewModel
             .CodeDocumentService
-            .OutliningHelper
+            .OutliningService
             .ExpandOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
     }
 

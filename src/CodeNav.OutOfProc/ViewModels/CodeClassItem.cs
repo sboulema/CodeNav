@@ -1,5 +1,5 @@
-﻿using CodeNav.OutOfProc.Helpers;
-using CodeNav.OutOfProc.Interfaces;
+﻿using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Services;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.UI;
 using System.Runtime.Serialization;
@@ -45,11 +45,11 @@ public class CodeClassItem : CodeItem, IMembers
                 
                 if (value)
                 {
-                    _ = OutliningHelper.ExpandOutlineRegion(this);
+                    _ = OutliningService.ExpandOutlineRegion(this);
                 }
                 else
                 {
-                    _ = OutliningHelper.CollapseOutlineRegion(this);
+                    _ = OutliningService.CollapseOutlineRegion(this);
                 }
             }
         }
