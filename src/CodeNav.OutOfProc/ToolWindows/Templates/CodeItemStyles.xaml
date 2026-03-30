@@ -248,9 +248,7 @@
                                         <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
                                         <TextBlock
                                             Text="{Binding Name}"
-                                            FontSize="{Binding FontSize}"
-                                            FontWeight="SemiBold"
-                                            Style="{StaticResource {x:Static styles:VsResourceKeys.TextBlockEnvironment90PercentFontSizeStyleKey}}" />
+                                            FontSize="{Binding FontSize}" />
                                     </StackPanel>
                                 </Expander.Header>
                                 <ItemsControl 

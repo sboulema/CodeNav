@@ -124,25 +124,20 @@ public static class RegionMapper
         const string defaultRegionName = "Region";
 
         var syntaxNode = source.GetStructure();
-        var name = "#";
 
         if (syntaxNode is not RegionDirectiveTriviaSyntax regionSyntax)
         {
-            name += defaultRegionName;
-            return name;
+            return defaultRegionName;
         }
 
         var endDirectiveToken = regionSyntax.EndOfDirectiveToken;
+
         if (endDirectiveToken.HasLeadingTrivia)
         {
-            name += endDirectiveToken.LeadingTrivia.First().ToString();
-        }
-        else
-        {
-            name += defaultRegionName;
+            return endDirectiveToken.LeadingTrivia.First().ToString();
         }
 
-        return name;
+        return defaultRegionName;
     }
 
     /// <summary>
