@@ -203,6 +203,11 @@ internal class InProcService : IInProcService
 
             var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, spanStart, spanLength);
 
+            if (outlineRegion == null)
+            {
+                return;
+            }
+
             outliningManager.TryCollapse(outlineRegion);
         }
         catch (Exception)
@@ -279,7 +284,7 @@ internal class InProcService : IInProcService
             // Switch to the UI thread to ensure we can interact with the view scroller.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            textView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
+            textView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.ShowStart);
         }
         catch (Exception)
         {

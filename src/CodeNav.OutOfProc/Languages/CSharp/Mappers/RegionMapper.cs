@@ -114,30 +114,55 @@ public static class RegionMapper
             Kind = CodeItemKindEnum.Region,
             Span = new(regionStart.Span.Start, 0),
             OutlineSpan = new(regionStart.Span.Start, 0),
+            IdentifierSpan = MapIdentifierSpan(regionStart),
             Moniker = IconMapper.MapMoniker(CodeItemKindEnum.Region, CodeItemAccessEnum.Unknown),
             CodeDocumentViewModel = codeDocumentViewModel,
         };
     }
 
-    private static string MapRegionName(SyntaxTrivia source)
+    private static TextSpan MapIdentifierSpan(SyntaxTrivia regionStart)
+    {
+        var regionLeadingTrivia = GetFirstLeadingTrivia(regionStart);
+
+        if (regionLeadingTrivia == null)
+        {
+            return regionStart.Span;
+        }
+
+        return regionLeadingTrivia.Value.Span;
+    }
+
+    private static string MapRegionName(SyntaxTrivia regionStart)
     {
         const string defaultRegionName = "Region";
 
-        var syntaxNode = source.GetStructure();
+        var regionLeadingTrivia = GetFirstLeadingTrivia(regionStart);
+
+        if (regionLeadingTrivia == null)
+        {
+            return defaultRegionName;
+        }
+
+        return regionLeadingTrivia.Value.ToString();
+    }
+
+    private static SyntaxTrivia? GetFirstLeadingTrivia(SyntaxTrivia regionStart)
+    {
+        var syntaxNode = regionStart.GetStructure();
 
         if (syntaxNode is not RegionDirectiveTriviaSyntax regionSyntax)
         {
-            return defaultRegionName;
+            return null;
         }
 
         var endDirectiveToken = regionSyntax.EndOfDirectiveToken;
 
         if (endDirectiveToken.HasLeadingTrivia)
         {
-            return endDirectiveToken.LeadingTrivia.First().ToString();
+            return endDirectiveToken.LeadingTrivia.First();
         }
 
-        return defaultRegionName;
+        return null;
     }
 
     /// <summary>
