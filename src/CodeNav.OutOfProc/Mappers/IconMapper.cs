@@ -24,7 +24,7 @@ public static class IconMapper
             CodeItemKindEnum.Interface => $"Interface{accessString}",
             CodeItemKindEnum.Namespace => $"Namespace{accessString}",
             CodeItemKindEnum.Property or CodeItemKindEnum.Indexer => $"Property{accessString}",
-            CodeItemKindEnum.Region => $"ExpandRight",
+            CodeItemKindEnum.Region => $"Numeric",
             CodeItemKindEnum.Struct or CodeItemKindEnum.Record => $"Structure{accessString}",
             CodeItemKindEnum.Switch => "FlowSwitch",
             CodeItemKindEnum.SwitchSection => "FlowDecision",

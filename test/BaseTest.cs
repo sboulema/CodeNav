@@ -59,9 +59,12 @@ internal abstract class BaseTest
         return classItem;
     }
 
-    internal static CodeRegionItem GetRegionAtIndex(CodeClassItem classItem, int index)
+    internal static CodeRegionItem GetFirstRegion(IMembers codeMembersItem)
+        => GetRegionAtIndex(codeMembersItem, 0);
+
+    internal static CodeRegionItem GetRegionAtIndex(IMembers codeMembersItem, int index)
     {
-        var regionItem = classItem.Members[index] as CodeRegionItem;
+        var regionItem = codeMembersItem.Members[index] as CodeRegionItem;
 
         Assert.That(regionItem, Is.Not.Null);
         Assert.That(regionItem.Kind, Is.EqualTo(CodeItemKindEnum.Region));
@@ -74,6 +77,16 @@ internal abstract class BaseTest
         var memberItem = classItem.Members[index];
 
         Assert.That(memberItem, Is.Not.Null);
+
+        return memberItem;
+    }
+
+    internal static T GetMemberByName<T>(IMembers codeMembersItem, string name)
+        where T : CodeItem
+    {
+        var memberItem = codeMembersItem.Members.FirstOrDefault(m => m.Name.Equals(name)) as T;
+
+        Assert.That(memberItem, Is.Not.Null, $"Member item '{name}' not found");
 
         return memberItem;
     }
