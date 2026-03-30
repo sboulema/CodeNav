@@ -24,7 +24,9 @@ namespace CodeNav
 
             base.InitializeServices(serviceCollection);
 
-            // You can configure dependency injection here by adding services to the serviceCollection.
+            // As of now, any instance that ingests VisualStudioExtensibility is required to be added as a scoped
+            // service.
+            serviceCollection.AddScoped<TextViewService>();
         }
     }
 }

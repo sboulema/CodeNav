@@ -13,7 +13,8 @@ namespace CodeNav.OutOfProc.Services;
 
 public class CodeDocumentService(
     OutputWindowService logService,
-    OutliningService outliningService)
+    OutliningService outliningService,
+    WindowFrameService windowFrameService)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -116,6 +117,8 @@ public class CodeDocumentService(
             await OutliningService.SubscribeToRegionEvents(CodeDocumentViewModel);
 
             await logService.WriteInfo(textView, $"Apply outlining");
+
+            await windowFrameService.SubscribeToWindowFrameEvents();
 
             return CodeDocumentViewModel;
         }
