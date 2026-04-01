@@ -201,6 +201,11 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             var outlineRegion = await GetOutlineRegionForSpan(textView, outliningManager, spanStart, spanLength);
 
+            if (outlineRegion == null)
+            {
+                return;
+            }
+
             outliningManager.TryCollapse(outlineRegion);
         }
         catch (Exception)

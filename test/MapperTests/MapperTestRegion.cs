@@ -67,6 +67,10 @@ internal class MapperTestRegion : BaseTest
             // The region should have correct span for outlining usages
             Assert.That(regionR1.Span.Start, Is.EqualTo(198).Or.EqualTo(209));
             Assert.That(regionR1.Span.End, Is.EqualTo(766).Or.EqualTo(812));
+
+            // The region should have correct identifier span for navigation usages
+            Assert.That(regionR1.IdentifierSpan?.Start, Is.EqualTo(217));
+            Assert.That(regionR1.IdentifierSpan?.End, Is.EqualTo(219));
         }
     }
 }
