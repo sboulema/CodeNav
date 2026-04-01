@@ -140,8 +140,13 @@ public class TextViewService
     /// Gets the text view from the window frame.
     /// </summary>
     /// <returns><see langword="null"/> if the window isn't a document window.</returns>
-    private async Task<IWpfTextView?> GetTextView(IVsWindowFrame windowFrame)
+    private async Task<IWpfTextView?> GetTextView(IVsWindowFrame? windowFrame)
     {
+        if (windowFrame == null)
+        {
+            return null;
+        }
+
         try
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
