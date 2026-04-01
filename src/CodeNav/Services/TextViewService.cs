@@ -106,6 +106,12 @@ public class TextViewService
         return activeView;
     }
 
+    /// <summary>
+    /// Get the document view from the window frame
+    /// </summary>
+    /// <remarks>Document view is a combination of the file path and the text of a text document for a given frame</remarks>
+    /// <param name="windowFrame"></param>
+    /// <returns></returns>
     public async Task<DocumentView?> GetDocumentView(IVsWindowFrame windowFrame)
     {
         var textView = await GetTextView(windowFrame);
@@ -126,7 +132,7 @@ public class TextViewService
         {
             FilePath = textDocument?.FilePath ?? string.Empty,
             Text = textView.TextBuffer.CurrentSnapshot.GetText(),
-            IsDirty = textDocument?.IsDirty ?? false
+            IsDocumentFrame = true,
         };
     }
 
@@ -134,20 +140,35 @@ public class TextViewService
     /// Gets the text view from the window frame.
     /// </summary>
     /// <returns><see langword="null"/> if the window isn't a document window.</returns>
-    private async Task<IWpfTextView> GetTextView(IVsWindowFrame windowFrame)
+    private async Task<IWpfTextView?> GetTextView(IVsWindowFrame windowFrame)
     {
-        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+        try
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        // Force the loading of a document that may be pending initialization.
-        // See https://docs.microsoft.com/en-us/visualstudio/extensibility/internals/delayed-document-loading
-        windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out _);
+            // Force the loading of a document that may be pending initialization.
+            // See https://docs.microsoft.com/en-us/visualstudio/extensibility/internals/delayed-document-loading
+            windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out _);
 
-        var nativeView = VsShellUtilities.GetTextView(windowFrame);
+            var nativeView = VsShellUtilities.GetTextView(windowFrame);
 
-        var editorAdapter = await _editorAdaptersFactoryService.GetServiceAsync();
-        var view = editorAdapter.GetWpfTextView(nativeView);
-        Assumes.Present(view);
-        return view;
+            if (nativeView == null)
+            {
+                return null;
+            }
+
+            var editorAdapter = await _editorAdaptersFactoryService.GetServiceAsync();
+
+            var view = editorAdapter.GetWpfTextView(nativeView);
+
+            return view;
+        }
+        catch (Exception)
+        {
+            // TODO: Implement in-proc error logging
+        }
+
+        return null;
     }
 
     /// <summary>

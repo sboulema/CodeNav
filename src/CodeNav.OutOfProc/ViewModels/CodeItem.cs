@@ -337,10 +337,20 @@ public class CodeItem : NotifyPropertyChangedObject
     public AsyncCommand RefreshCommand { get; }
     public async Task Refresh(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        var textView = await clientContext.GetActiveTextViewAsync(cancellationToken);
+        var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
+
+        if (textViewSnapshot == null)
+        {
+            return;
+        }
+
         await CodeDocumentViewModel!
             .CodeDocumentService!
-            .UpdateCodeDocumentViewModel(clientContext.Extensibility, textView, cancellationToken);
+            .UpdateCodeDocumentViewModel(
+            clientContext.Extensibility,
+            textViewSnapshot.FilePath,
+            textViewSnapshot.Document.Text.CopyToString(),
+            cancellationToken);
     }
 
     [DataMember]

@@ -8,27 +8,43 @@ namespace CodeNav.OutOfProc.Services;
 public class WindowFrameService : DisposableObject
 {
     private readonly VisualStudioExtensibility _extensibility;
+    private readonly OutputWindowService _outputWindowService;
     private readonly Task _initializationTask;
     private IInProcService? _inProcService;
+    
+    private bool _isSubscribed;
 
-    public WindowFrameService(VisualStudioExtensibility extensibility)
+    public WindowFrameService(
+        VisualStudioExtensibility extensibility,
+        OutputWindowService outputWindowService)
     {
         _extensibility = extensibility;
         _initializationTask = Task.Run(InitializeAsync);
+        _outputWindowService = outputWindowService;
     }
 
     public async Task SubscribeToWindowFrameEvents()
     {
+        if (_isSubscribed)
+        {
+            await _outputWindowService.WriteLine("[Info] Already subscribed to window frame events.");
+            return;
+        }
+
         try
         {
             Assumes.NotNull(_inProcService);
 
             // Subscribe to window frame events
             await _inProcService.SubscribeToWindowFrameEvents();
+
+            await _outputWindowService.WriteLine("[Info] Subscribed to window frame events.");
+
+            _isSubscribed = true;
         }
         catch (Exception e)
         {
-            // TODO: Add logging
+            await _outputWindowService.WriteException("Exception subscribing to window frame events", e);
         }
     }
 

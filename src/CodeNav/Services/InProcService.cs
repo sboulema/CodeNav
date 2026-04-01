@@ -318,7 +318,6 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
             // Check if the new frame is different from the old frame
             if (oldFrame == newFrame)
             {
-                await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(new DocumentView { IsFrameChange = false }));
                 return;
             }
 
@@ -327,14 +326,11 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
             // Check if the new frame has a document view
             if (documentView == null)
             {
-                await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(new DocumentView { IsFrameChange = true, IsDocumentFrame = false }));
+                await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(new DocumentView { IsDocumentFrame = false }));
                 return;
             }
 
-            // Notify about new document fram e with text, filepath and isDirty marker
-            documentView.IsFrameChange = true;
-            documentView.IsDocumentFrame = true;
-
+            // Notify about new document frame with text, filepath
             await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(documentView));
         }
         finally

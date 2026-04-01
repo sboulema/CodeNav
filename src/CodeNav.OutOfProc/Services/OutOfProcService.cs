@@ -1,5 +1,4 @@
-﻿using CodeNav.OutOfProc.Helpers;
-using CodeNav.OutOfProc.Models;
+﻿using CodeNav.OutOfProc.Models;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
@@ -29,21 +28,23 @@ internal class OutOfProcService(
     {
         var documentView = JsonSerializer.Deserialize<DocumentView>(documentViewJsonString);
 
-        // Frame is null or not a frame change, so we do not have to do anything
-        if (documentView?.IsFrameChange != true)
+        // Conditions:
+        // - Frame is null
+        // - Frame did not change
+        // - Frame is not a document frame
+        // Actions:
+        // - Do nothing
+        if (documentView?.IsDocumentFrame != true)
         {
-            return;
-        }
-
-        if (!documentView.IsDocumentFrame != true)
-        {
-            // Frame is not a document frame, so we have to clear the list of code items
-            codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
             return;
         }
 
         // Frame has changed and has a text document, so we need to update the list of code items
-        // TODO: Update the list of code items with the new document view
+        await codeDocumentService.UpdateCodeDocumentViewModel(
+            extensibility,
+            documentView.FilePath,
+            documentView.Text,
+            default);
     }
 
     public async Task DoSomethingAsync(CancellationToken cancellationToken)
