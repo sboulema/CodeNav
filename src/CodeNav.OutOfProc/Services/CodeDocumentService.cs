@@ -5,6 +5,7 @@ using CodeNav.OutOfProc.Languages.CSharp.Mappers;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.ToolWindows;
 using Microsoft.VisualStudio.Extensibility.UI;
 using System.Windows;
 
@@ -35,6 +36,8 @@ public class CodeDocumentService(
     public OutputWindowService LogService => logService;
 
     public OutliningService OutliningService => outliningService;
+
+    public ToolWindow? ToolWindow { get; set; }
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
@@ -80,8 +83,15 @@ public class CodeDocumentService(
             if (!codeItems.Any())
             {
                 CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateNoCodeItemsFound();
+
+                // No code items found, hide the tool window after showing the "No code items found" message
+                await HideToolWindow(cancellationToken);
+                
                 return CodeDocumentViewModel;
             }
+
+            // Code items were found, make sure the tool window is visible
+            await ShowToolWindow(cancellationToken);
 
             // Sort the list of code items,
             // And update the DataContext for the tool window
@@ -203,5 +213,25 @@ public class CodeDocumentService(
         {
             await LogHelper.LogException(this, "Error loading global settings", e);
         }
+    }
+
+    private async Task HideToolWindow(CancellationToken cancellationToken)
+    {
+        if (ToolWindow == null)
+        {
+            return;
+        }
+
+        await ToolWindow.HideAsync(cancellationToken);
+    }
+
+    private async Task ShowToolWindow(CancellationToken cancellationToken)
+    {
+        if (ToolWindow == null)
+        {
+            return;
+        }
+
+        await ToolWindow.ShowAsync(activate: false, cancellationToken);
     }
 }
