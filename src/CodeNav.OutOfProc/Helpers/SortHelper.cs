@@ -4,6 +4,7 @@ using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Services;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
 
 namespace CodeNav.OutOfProc.Helpers;
 
@@ -41,7 +42,11 @@ public static class SortHelper
 
         ApplySort(codeDocumentService.CodeDocumentViewModel, sortOrder);
 
-        await codeDocumentService.UpdateCodeDocumentViewModel(clientContext.Extensibility, textViewSnapshot, cancellationToken);
+        await codeDocumentService.UpdateCodeDocumentViewModel(
+            clientContext.Extensibility, 
+            textViewSnapshot.FilePath,
+            textViewSnapshot.Document.Text.CopyToString(),
+            cancellationToken);
     }
 
     /// <summary>

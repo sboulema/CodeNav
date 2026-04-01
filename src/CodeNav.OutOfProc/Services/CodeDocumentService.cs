@@ -5,7 +5,6 @@ using CodeNav.OutOfProc.Languages.CSharp.Mappers;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.UI;
 using System.Windows;
 
@@ -13,7 +12,8 @@ namespace CodeNav.OutOfProc.Services;
 
 public class CodeDocumentService(
     OutputWindowService logService,
-    OutliningHelper outliningHelper)
+    OutliningService outliningService,
+    WindowFrameService windowFrameService)
 {
     /// <summary>
     /// DataContext for the tool window.
@@ -34,17 +34,19 @@ public class CodeDocumentService(
 
     public OutputWindowService LogService => logService;
 
-    public OutliningHelper OutliningHelper => outliningHelper;
+    public OutliningService OutliningService => outliningService;
 
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
-        ITextViewSnapshot? textView,
+        string? filePath,
+        string? text,
         CancellationToken cancellationToken)
     {
         try
         {
             if (extensibility == null ||
-                textView == null)
+                string.IsNullOrEmpty(filePath) ||
+                string.IsNullOrEmpty(text))
             {
                 return CodeDocumentViewModel;
             }
@@ -60,20 +62,20 @@ public class CodeDocumentService(
 
             // Get the new list of code items
             var codeItems = await DocumentMapper.MapDocument(
-                textView.Document,
-                textView.FilePath,
+                text,
+                filePath,
                 CodeDocumentViewModel,
                 extensibility,
                 cancellationToken);
 
-            await logService.WriteInfo(textView, $"Found '{codeItems.Count}' code items");
+            await logService.WriteInfo(filePath, $"Found '{codeItems.Count}' code items");
 
             // Getting the new code items is done, cancel creating a loading placeholder
             await loadingCancellationTokenSource.CancelAsync();
 
             // Set properties on the CodeDocumentViewModel that are needed for other features
             CodeDocumentViewModel.CodeDocumentService = this;
-            CodeDocumentViewModel.FilePath = textView.FilePath ?? string.Empty;
+            CodeDocumentViewModel.FilePath = filePath ?? string.Empty;
 
             if (!codeItems.Any())
             {
@@ -85,37 +87,39 @@ public class CodeDocumentService(
             // And update the DataContext for the tool window
             CodeDocumentViewModel.CodeItems = SortHelper.Sort(codeItems, CodeDocumentViewModel.SortOrder);
 
-            await logService.WriteInfo(textView, $"Sorted code items on '{CodeDocumentViewModel.SortOrder}'");
+            await logService.WriteInfo(filePath, $"Sorted code items on '{CodeDocumentViewModel.SortOrder}'");
 
             // Apply highlights
             HighlightHelper.UnHighlight(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Remove highlight from all code items");
+            await logService.WriteInfo(filePath, $"Remove highlight from all code items");
 
             // Apply current visibility settings to the document
             VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
 
-            await logService.WriteInfo(textView, $"Set code item visibility");
+            await logService.WriteInfo(filePath, $"Set code item visibility");
 
             // Apply filter rules
             FilterRuleHelper.ApplyFilterRules(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
 
-            await logService.WriteInfo(textView, $"Set code item filter rules");
+            await logService.WriteInfo(filePath, $"Set code item filter rules");
 
             // Apply history items
             HistoryHelper.ApplyHistoryIndicator(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Apply history indicators");
+            await logService.WriteInfo(filePath, $"Apply history indicators");
 
             // Apply bookmarks
             BookmarkHelper.ApplyBookmarkIndicator(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Apply bookmark indicators");
+            await logService.WriteInfo(filePath, $"Apply bookmark indicators");
 
             // Apply outlining
-            await OutliningHelper.SubscribeToRegionEvents(CodeDocumentViewModel);
+            await OutliningService.SubscribeToRegionEvents(CodeDocumentViewModel);
 
-            await logService.WriteInfo(textView, $"Apply outlining");
+            await logService.WriteInfo(filePath, $"Apply outlining");
+
+            await windowFrameService.SubscribeToWindowFrameEvents();
 
             return CodeDocumentViewModel;
         }

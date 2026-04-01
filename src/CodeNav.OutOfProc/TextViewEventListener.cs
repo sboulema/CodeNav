@@ -59,7 +59,11 @@ internal class TextViewEventListener(
             if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
                 args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
             {
-                await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, args.AfterTextView, cancellationToken);
+                await codeDocumentService.UpdateCodeDocumentViewModel(
+                    Extensibility,
+                    args.AfterTextView.FilePath,
+                    args.AfterTextView.Document.Text.CopyToString(),
+                    cancellationToken);
             }
 
             // Document changed - Update history indicators
@@ -114,7 +118,11 @@ internal class TextViewEventListener(
                 return;
             }
 
-            await codeDocumentService.UpdateCodeDocumentViewModel(Extensibility, textViewSnapshot, cancellationToken);
+            await codeDocumentService.UpdateCodeDocumentViewModel(
+                Extensibility,
+                textViewSnapshot.FilePath,
+                textViewSnapshot.Document.Text.CopyToString(),
+                cancellationToken);
         }
         catch (Exception e)
         {

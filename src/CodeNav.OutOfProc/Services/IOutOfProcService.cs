@@ -8,6 +8,8 @@ public interface IOutOfProcService
 
     Task SetCodeItemIsExpanded(int spanStart, int spanEnd, bool isExpanded);
 
+    Task ProcessActiveFrameChanged(string documentViewJsonString);
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.OutOfProcService";

@@ -1,38 +1,36 @@
 ﻿using CodeNav.Models;
 using CodeNav.OutOfProc.Services;
 using Microsoft;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
-using Microsoft.VisualStudio.TextManager.Interop;
 using System.Text.Json;
 
 namespace CodeNav.Services;
 
 [VisualStudioContribution]
-internal class InProcService : IInProcService
+internal class InProcService : IInProcService, IVsWindowFrameEvents
 {
     private readonly VisualStudioExtensibility _extensibility;
-    private readonly MefInjection<IVsEditorAdaptersFactoryService> _editorAdaptersFactoryService;
+    private readonly TextViewService _textViewService;
     private readonly MefInjection<IOutliningManagerService> _outliningManagerFactoryService;
-    private readonly AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> _textManager;
+    private readonly AsyncServiceProviderInjection<SVsUIShell, IVsUIShell7> _vsUIShell;
 
     public InProcService(
         VisualStudioExtensibility extensibility,
-        MefInjection<IVsEditorAdaptersFactoryService> editorAdaptersFactoryService,
+        TextViewService textViewService,
         MefInjection<IOutliningManagerService> outliningManagerFactoryService,
-        AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> textManager)
+        AsyncServiceProviderInjection<SVsUIShell, IVsUIShell7> vsUIShell)
     {
         _extensibility = extensibility;
-        _editorAdaptersFactoryService = editorAdaptersFactoryService;
+        _textViewService = textViewService;
         _outliningManagerFactoryService = outliningManagerFactoryService;
-        _textManager = textManager;
+        _vsUIShell = vsUIShell;
     }
 
     [VisualStudioContribution]
@@ -58,7 +56,7 @@ internal class InProcService : IInProcService
     public async Task<string> SubscribeToRegionEvents()
     {
         // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
-        var textView = await GetCurrentTextViewAsync();
+        var textView = await _textViewService.GetCurrentTextViewAsync();
 
         var outliningManager = await GetOutliningManager(textView);
 
@@ -158,7 +156,7 @@ internal class InProcService : IInProcService
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
-            var textView = await GetCurrentTextViewAsync();
+            var textView = await _textViewService.GetCurrentTextViewAsync();
 
             var outliningManager = await GetOutliningManager(textView);
 
@@ -194,7 +192,7 @@ internal class InProcService : IInProcService
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
-            var textView = await GetCurrentTextViewAsync();
+            var textView = await _textViewService.GetCurrentTextViewAsync();
 
             var outliningManager = await GetOutliningManager(textView);
 
@@ -267,30 +265,7 @@ internal class InProcService : IInProcService
     /// <param name="length">Length of the span</param>
     /// <returns></returns>
     public async Task TextViewScrollToSpan(int start, int length)
-    {
-        try
-        {
-            // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
-            var textView = await GetCurrentTextViewAsync();
-
-            if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
-            {
-                // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
-                return;
-            }
-
-            var span = new SnapshotSpan(textView.TextSnapshot, start, length);
-
-            // Switch to the UI thread to ensure we can interact with the view scroller.
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-            textView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.ShowStart);
-        }
-        catch (Exception)
-        {
-            // TODO: Implement in-proc error logging
-        }
-    }
+        => await _textViewService.ScrollToSpan(start, length);
 
     /// <summary>
     /// Move the caret in the text view to the given position and keep the keyboard focus on the text view
@@ -298,45 +273,75 @@ internal class InProcService : IInProcService
     /// <param name="position">Position in the text view</param>
     /// <returns>Awaitable Task</returns>
     public async Task TextViewMoveCaretToPosition(int position)
+        => await _textViewService.MoveCaretToPosition(position);
+
+    #endregion
+
+    #region Window Frame Events
+
+    public async Task SubscribeToWindowFrameEvents()
     {
+        var vsUIShell = await _vsUIShell.GetServiceAsync();
+
+        // Switch to the UI thread to ensure we can interact with the window frames.
+        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+        vsUIShell.AdviseWindowFrameEvents(this);
+    }
+
+    public void OnFrameCreated(IVsWindowFrame frame)
+    {
+        // Ignore
+    }
+
+    public void OnFrameDestroyed(IVsWindowFrame frame)
+    {
+        // Ignore
+    }
+
+    public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible)
+    {
+        // Ignore
+    }
+
+    public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen)
+    {
+        // Ignore
+    }
+
+#pragma warning disable VSTHRD100 // Avoid async void methods
+    public async void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame)
+#pragma warning restore VSTHRD100 // Avoid async void methods
+    {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
-            // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
-            var textView = await GetCurrentTextViewAsync();
+            Assumes.NotNull(outOfProcService);
 
-            if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
+            // Check if the new frame is different from the old frame
+            if (oldFrame == newFrame)
             {
-                // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
                 return;
             }
 
-            var snapShotPoint = new SnapshotPoint(textView.TextSnapshot, position);
+            var documentView = await _textViewService.GetDocumentView(newFrame);
 
-            // Switch to the UI thread to ensure we can interact with the view scroller.
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            // Check if the new frame has a document view
+            if (documentView == null)
+            {
+                await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(new DocumentView { IsDocumentFrame = false }));
+                return;
+            }
 
-            textView.Caret.MoveTo(snapShotPoint);
-            textView.VisualElement.Focus();
+            // Notify about new document frame with text, filepath
+            await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(documentView));
         }
-        catch (Exception)
+        finally
         {
-            // TODO: Implement in-proc error logging
+            (outOfProcService as IDisposable)?.Dispose();
         }
-    }
-
-    private async Task<IWpfTextView> GetCurrentTextViewAsync()
-    {
-        var editorAdapter = await _editorAdaptersFactoryService.GetServiceAsync();
-        var view = editorAdapter.GetWpfTextView(await GetCurrentNativeTextViewAsync());
-        Assumes.Present(view);
-        return view;
-    }
-
-    private async Task<IVsTextView> GetCurrentNativeTextViewAsync()
-    {
-        var textManager = await _textManager.GetServiceAsync();
-        ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out IVsTextView activeView));
-        return activeView;
     }
 
     #endregion

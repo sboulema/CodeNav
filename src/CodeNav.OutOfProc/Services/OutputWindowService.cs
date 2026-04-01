@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Documents;
-using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.Helpers;
 
 namespace CodeNav.OutOfProc.Services;
@@ -19,14 +18,11 @@ public class OutputWindowService : DisposableObject
         _initializationTask = Task.Run(InitializeAsync);
     }
 
-    public async Task WriteInfo(ITextViewSnapshot textView, string text)
-        => await WriteInfo(Path.GetFileName(textView.FilePath), text);
-
     public async Task WriteInfo(Uri? FilePath, string text)
         => await WriteInfo(Path.GetFileName(FilePath?.AbsolutePath), text);
 
-    public async Task WriteInfo(string? fileName, string text)
-        => await WriteLine($"[Info] [{fileName}] {text}");
+    public async Task WriteInfo(string? filePath, string text)
+        => await WriteLine($"[Info] [{Path.GetFileName(filePath)}] {text}");
 
     public async Task WriteLine(string text)
     {

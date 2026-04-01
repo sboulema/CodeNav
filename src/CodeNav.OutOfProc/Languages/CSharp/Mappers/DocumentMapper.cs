@@ -3,30 +3,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.ProjectSystem.Query;
 
 namespace CodeNav.OutOfProc.Languages.CSharp.Mappers;
 
 public class DocumentMapper
 {
-    /// <summary>
-    /// Map text document to list of code items.
-    /// </summary>
-    /// <param name="documentSnapshot">Document snapshot with latest version of text</param>
-    /// <param name="excludeFilePath">File path of the document snaphot, used to exclude the saved version of the text</param>
-    /// <param name="codeDocumentViewModel">Current view model connected to the CodeNav tool window</param>
-    /// <param name="extensibility">Visual Studio extensibility used to retrieve all solution files for compilation</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>List of code items</returns>
-    public static async Task<List<CodeItem>> MapDocument(
-        ITextDocumentSnapshot documentSnapshot,
-        string? excludeFilePath,
-        CodeDocumentViewModel codeDocumentViewModel,
-        VisualStudioExtensibility extensibility,
-        CancellationToken cancellationToken)
-        => await MapDocument(documentSnapshot.Text.CopyToString(), excludeFilePath, codeDocumentViewModel, extensibility, cancellationToken);
-
     /// <summary>
     /// Map text document to list of code items.
     /// </summary>

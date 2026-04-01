@@ -25,6 +25,10 @@ Here is a list of links to helpful pages I needed when developing this extension
 - [CompositeExtension Sample](https://github.com/microsoft/VSExtensibility/tree/main/New_Extensibility_Model/Samples/CompositeExtension)
 - [The CheckBox control](https://wpf-tutorial.com/basic-controls/the-checkbox-control/)
 - [Sorting enum by a custom attribute](https://stackoverflow.com/questions/61091166/sorting-enum-by-a-custom-attribute)
+- [TextView methods](https://github.com/llvm-mirror/clang/blob/master/tools%2Fclang-format-vs%2FClangFormat%2FVsix.cs#L34)
+- [TextView methods 2](https://github.com/msomeone/PeasyMotion/blob/466eaad0f0e731928c645b10f5f43f3519631ea0/Shared/VsMethodExtensions.cs#L115)
+- [TextView methods 3](https://github.com/VsixCommunity/Community.VisualStudio.Toolkit/blob/8624a25f504d7fc0bab5fa3434ce95be2466f438/src/toolkit/Community.VisualStudio.Toolkit.Shared/Windows/WindowFrame.cs#L232)
+- [Get Path of the document from IWpfTextView for non cs files](https://stackoverflow.com/questions/48068134/get-path-of-the-document-from-iwpftextview-for-non-cs-files)
 
 ## VSExtensibility Issues
 - [#545 - Feature request: Text Editor: Collapse/Expand ranges](https://github.com/microsoft/VSExtensibility/issues/545)

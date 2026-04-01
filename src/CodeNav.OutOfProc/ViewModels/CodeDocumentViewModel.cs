@@ -5,6 +5,7 @@ using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.Services;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.UI;
 using Microsoft.VisualStudio.RpcContracts.Notifications;
 using System.Runtime.Serialization;
@@ -170,7 +171,11 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
             return;
         }
 
-        await CodeDocumentService.UpdateCodeDocumentViewModel(clientContext.Extensibility, textViewSnapshot, cancellationToken);
+        await CodeDocumentService.UpdateCodeDocumentViewModel(
+            clientContext.Extensibility,
+            textViewSnapshot.FilePath,
+            textViewSnapshot.Document.Text.CopyToString(),
+            cancellationToken);
     }
 
     [DataMember]
@@ -198,14 +203,14 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand ExpandAllCommand { get; }
     private async Task ExpandAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        OutliningHelper.ExpandAll(CodeDocumentService?.CodeDocumentViewModel);
+        OutliningService.ExpandAll(CodeDocumentService?.CodeDocumentViewModel);
     }
 
     [DataMember]
     public AsyncCommand CollapseAllCommand { get; }
     private async Task CollapseAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        OutliningHelper.CollapseAll(CodeDocumentService?.CodeDocumentViewModel);
+        OutliningService.CollapseAll(CodeDocumentService?.CodeDocumentViewModel);
     }
 
     [DataMember]
