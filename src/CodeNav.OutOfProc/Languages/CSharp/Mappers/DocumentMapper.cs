@@ -135,4 +135,7 @@ public class DocumentMapper
                     => StructMapper.MapStruct(structSyntax, semanticModel, tree, codeDocumentViewModel),
                 _ => null,
             };
+
+    public static bool CanMapDocument(string filePath) 
+        => filePath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase);
 }

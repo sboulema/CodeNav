@@ -51,6 +51,12 @@ public class CodeDocumentService(
                 return CodeDocumentViewModel;
             }
 
+            if (!DocumentMapper.CanMapDocument(filePath))
+            {
+                CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateNoCodeItemsFound();
+                return CodeDocumentViewModel;
+            }
+
             // Show loading item while we process the document
             var loadingCancellationTokenSource = new CancellationTokenSource();
             var loadingCancellationToken = loadingCancellationTokenSource.Token;
