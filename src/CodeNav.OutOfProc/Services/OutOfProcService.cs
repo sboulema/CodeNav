@@ -1,4 +1,5 @@
-﻿using CodeNav.OutOfProc.Models;
+﻿using CodeNav.OutOfProc.Helpers;
+using CodeNav.OutOfProc.Models;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Shell;
@@ -31,11 +32,20 @@ internal class OutOfProcService(
         // Conditions:
         // - Frame is null
         // - Frame did not change
+        // Actions:
+        // - Do nothing
+        if (documentView == null)
+        {
+            return;
+        }
+
+        // Conditions:
         // - Frame is not a document frame
         // Actions:
         // - Do nothing
-        if (documentView?.IsDocumentFrame != true)
+        if (documentView.IsDocumentFrame != true)
         {
+            codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
             return;
         }
 

@@ -326,6 +326,15 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
                 return;
             }
 
+            var windowCaption = await GetWindowCaption(newFrame);
+
+            // Check if the new frame is the CodeNav tool window,
+            // if so ignore it since we don't want to trigger updates when CodeNav is focused
+            if (windowCaption == "CodeNav")
+            {
+                return;
+            }
+
             var documentView = await _textViewService.GetDocumentView(newFrame);
 
             // Check if the new frame has a document view
@@ -342,6 +351,24 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
         {
             (outOfProcService as IDisposable)?.Dispose();
         }
+    }
+
+    private async Task<string> GetWindowCaption(IVsWindowFrame windowFrame)
+    {
+        try
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            var window = VsShellUtilities.GetWindowObject(windowFrame);
+
+            return window?.Caption ?? string.Empty;
+        }
+        catch (Exception)
+        {
+            // TODO: Implement in-proc error logging
+        }
+
+        return string.Empty;
     }
 
     #endregion
