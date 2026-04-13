@@ -57,6 +57,10 @@ public class CodeDocumentService(
             if (!DocumentMapper.CanMapDocument(filePath))
             {
                 CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateNoCodeItemsFound();
+
+                // No code items found, hide the tool window after showing the "No code items found" message
+                await HideToolWindow(cancellationToken);
+
                 return CodeDocumentViewModel;
             }
 
@@ -221,7 +225,7 @@ public class CodeDocumentService(
         }
     }
 
-    private async Task HideToolWindow(CancellationToken cancellationToken)
+    public async Task HideToolWindow(CancellationToken cancellationToken)
     {
         if (ToolWindow == null)
         {

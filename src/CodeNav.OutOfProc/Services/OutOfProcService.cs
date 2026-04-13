@@ -42,10 +42,14 @@ internal class OutOfProcService(
         // Conditions:
         // - Frame is not a document frame
         // Actions:
-        // - Do nothing
+        // - Show placeholder item prompting the user to select a document
+        // - Hide the tool window since there is no document to show
         if (documentView.IsDocumentFrame != true)
         {
             codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
+
+            await codeDocumentService.HideToolWindow(default);
+
             return;
         }
 

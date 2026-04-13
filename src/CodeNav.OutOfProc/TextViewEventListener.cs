@@ -95,6 +95,8 @@ internal class TextViewEventListener(
         try
         {
             codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
+
+            await codeDocumentService.HideToolWindow(cancellationToken);
         }
         catch (Exception e)
         {
