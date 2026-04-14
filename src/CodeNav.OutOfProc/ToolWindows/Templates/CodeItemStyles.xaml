@@ -47,8 +47,8 @@
                             BorderThickness="0" 
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch"
-                            Margin="-3,-3,-3,0"
-                            Padding="3">
+                            Margin="-3,0,-3,0"
+                            Padding="3,0,3,0">
                         <Button.InputBindings>
                             <MouseBinding Gesture="LeftClick" Command="{Binding ClickItemCommand}" />
                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DoubleClickItemCommand}" />
@@ -128,7 +128,7 @@
                                     </Expander.Header>
                                     <ItemsControl 
                                         ItemsSource="{Binding Members}"
-                                        Margin="3"
+                                        Margin="3,0,3,0"
                                         VirtualizingPanel.IsVirtualizing="True"
                                         VirtualizingPanel.VirtualizationMode="Recycling"
                                         ScrollViewer.CanContentScroll="False">
@@ -146,7 +146,7 @@
                                         <ItemsControl.ItemContainerStyle>
                                             <Style>
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
                                             </Style>
                                         </ItemsControl.ItemContainerStyle>
                                     </ItemsControl>
@@ -173,7 +173,7 @@
                                     <ItemsControl.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
                                         </Style>
                                     </ItemsControl.ItemContainerStyle>
                                 </ItemsControl>
@@ -206,7 +206,7 @@
                                     </Expander.Header>
                                     <ItemsControl 
                                         ItemsSource="{Binding Members}"
-                                        Margin="3"
+                                        Margin="3,0,3,0"
                                         VirtualizingPanel.IsVirtualizing="True"
                                         VirtualizingPanel.VirtualizationMode="Recycling"
                                         ScrollViewer.CanContentScroll="False">
@@ -224,7 +224,7 @@
                                         <ItemsControl.ItemContainerStyle>
                                             <Style>
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
                                             </Style>
                                         </ItemsControl.ItemContainerStyle>
                                     </ItemsControl>
@@ -253,7 +253,7 @@
                                 </Expander.Header>
                                 <ItemsControl 
                                     ItemsSource="{Binding Members}"
-                                    Margin="3"
+                                    Margin="3,0,3,0"
                                     VirtualizingPanel.IsVirtualizing="True"
                                     VirtualizingPanel.VirtualizationMode="Recycling"
                                     ScrollViewer.CanContentScroll="False">
@@ -271,7 +271,7 @@
                                     <ItemsControl.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,3"/>
+                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
                                         </Style>
                                     </ItemsControl.ItemContainerStyle>
                                 </ItemsControl>
