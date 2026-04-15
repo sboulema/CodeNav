@@ -14,6 +14,10 @@ Enable or disable showing which items you have visited in CodeNav
 
 Enable or disable highlighting the item in CodeNav based on caret position
 
+**Show the tool window for unsupported files and files without code items**
+
+Enable or disable showing the CodeNav tool window for unsupported files and files without code items
+
 **Update CodeNav while typing**
 
 Enable of disable updating the list of code items in CodeNav while typing in the text editor

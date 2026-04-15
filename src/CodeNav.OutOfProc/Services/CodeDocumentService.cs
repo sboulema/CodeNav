@@ -170,6 +170,7 @@ public class CodeDocumentService(
                 ShowHistoryIndicators = GlobalSettings.ShowHistoryIndicators,
                 UpdateWhileTyping = GlobalSettings.UpdateWhileTyping,
                 EnableCrashAnalytics = GlobalSettings.EnableCrashAnalytics,
+                ShowToolWindowForUnsupportedFiles = GlobalSettings.ShowToolWindowForUnsupportedFiles,
             };
 
             var filterRules = GlobalSettings
@@ -232,12 +233,22 @@ public class CodeDocumentService(
             return;
         }
 
+        if (GlobalSettings!.ShowToolWindowForUnsupportedFiles)
+        {
+            return;
+        }
+
         await ToolWindow.HideAsync(cancellationToken);
     }
 
     private async Task ShowToolWindow(CancellationToken cancellationToken)
     {
         if (ToolWindow == null)
+        {
+            return;
+        }
+
+        if (GlobalSettings!.ShowToolWindowForUnsupportedFiles)
         {
             return;
         }

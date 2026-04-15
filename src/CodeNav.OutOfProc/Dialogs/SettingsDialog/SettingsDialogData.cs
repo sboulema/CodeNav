@@ -40,4 +40,10 @@ public class SettingsDialogData
     /// </summary>
     [DataMember]
     public bool EnableCrashAnalytics { get; set; }
+
+    /// <summary>
+    /// Setting if CodeNav should be shown or hidden for unsupported files and files without code items
+    /// </summary>
+    [DataMember]
+    public bool ShowToolWindowForUnsupportedFiles { get; set; } = true;
 }
