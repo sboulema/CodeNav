@@ -35,6 +35,10 @@
                 <CheckBox IsChecked="{Binding ShowToolWindowForUnsupportedFiles, Mode=TwoWay}">
                     Show the tool window for unsupported files and files without code items
                 </CheckBox>
+
+                <CheckBox IsChecked="{Binding UseCompactMode, Mode=TwoWay}">
+                    Use compact mode with less spacing
+                </CheckBox>
             </StackPanel>
         </GroupBox>
 

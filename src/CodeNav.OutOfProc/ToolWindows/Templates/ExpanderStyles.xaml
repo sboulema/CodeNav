@@ -157,7 +157,7 @@
                         <DataTrigger Binding="{Binding Path=DataContext.IsItalic, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="FontStyle" Value="Italic" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Path=DataContext.ShowCompact, RelativeSource={RelativeSource Self}}" Value="True">
+                        <DataTrigger Binding="{Binding Path=DataContext.UseCompactMode, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="Padding" TargetName="ExpanderHeaderButton" Value="3 0" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>

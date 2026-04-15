@@ -18,6 +18,10 @@ Enable or disable highlighting the item in CodeNav based on caret position
 
 Enable or disable showing the CodeNav tool window for unsupported files and files without code items
 
+**Use compact mode with less spacing**
+
+Enable or disable showing items in a condensed form with less vertical spacing optimizing screen real estate
+
 **Update CodeNav while typing**
 
 Enable of disable updating the list of code items in CodeNav while typing in the text editor

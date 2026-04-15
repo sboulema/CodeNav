@@ -100,7 +100,7 @@
                         </Grid>
                     </Button>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                        <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                             <Setter Property="Padding" TargetName="CodeItemButton" Value="3 0" />
                             <Setter Property="Margin" TargetName="CodeItemButton" Value="-3 0" />
                         </DataTrigger>
@@ -162,7 +162,7 @@
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
                                                 <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                         <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -171,7 +171,7 @@
                                         <ItemsControl.Style>
                                             <Style>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                         <Setter Property="FrameworkElement.Margin" Value="3 0" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -203,7 +203,7 @@
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
                                             <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                     <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -212,7 +212,7 @@
                                 </ItemsControl>
                             </StackPanel>
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                     <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
@@ -271,7 +271,7 @@
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
                                                 <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                         <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -280,7 +280,7 @@
                                         <ItemsControl.Style>
                                             <Style>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                         <Setter Property="FrameworkElement.Margin" Value="3 0" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -290,7 +290,7 @@
                                 </Expander>
                             </StackPanel>
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                     <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
@@ -344,7 +344,7 @@
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
                                             <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                                     <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -353,7 +353,7 @@
                                 </ItemsControl>
                             </Expander>
                             <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                <DataTrigger Binding="{Binding UseCompactMode}" Value="True">
                                     <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>

@@ -46,4 +46,10 @@ public class SettingsDialogData
     /// </summary>
     [DataMember]
     public bool ShowToolWindowForUnsupportedFiles { get; set; } = true;
+
+    /// <summary>
+    /// Setting if CodeNav should use a compact mode with less vertical margins
+    /// </summary>
+    [DataMember]
+    public bool UseCompactMode { get; set; }
 }

@@ -236,11 +236,13 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _fontSize, value);
     }
 
+    /// <summary>
+    /// If the code item should use less vertical space based on the settings
+    /// </summary>
     [DataMember]
-    public bool ShowCompact
+    public bool UseCompactMode
     {
-        //get => CodeDocumentViewModel.CodeDocumentService.GlobalSettings.ShowCompact;
-        get => true;
+        get => CodeDocumentViewModel?.CodeDocumentService?.GlobalSettings?.UseCompactMode == true;
     }
 
     #region Commands

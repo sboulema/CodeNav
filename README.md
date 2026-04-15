@@ -1,11 +1,11 @@
-<img src="https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Logo_90x90.png" />
+﻿<img src="https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Logo_90x90.png" />
 
 # CodeNav 
 Visual Studio extension to show the code structure of your current document
 
 [![Sponsor](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/sboulema)
 
-## Features
+# ✨ Features
 - Quickly see all the important methods and properties in your document
 - Never get lost during a refactoring of a super long document
 - Clicking on an item in the list will take you to that location in the document
@@ -23,27 +23,28 @@ Visual Studio extension to show the code structure of your current document
 - Bookmarks
 - Synced collapsing/expanding outline regions
 - Option to hide the tool window for unsupported files and files without code items
+- Compact mode with less spacing optimizing screen real estate
 
 
-## Supported Visual Studio versions
+# 💻 Supported Visual Studio versions
 
 - Visual Studio 2022 (Untested)
 - Visual Studio 2026
 
-## Language support
+# 🔤 Language support
 - C#
 
-## Installing
-[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav2026) [![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/v/SamirBoulema.CodeNav2026.svg?style=flat)](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav2026)
+# ⬇️ Installing
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav2026)
 
 [GitHub Releases](https://github.com/sboulema/CodeNav/releases)
 
 [Open VSIX Gallery](https://www.vsixgallery.com/extension/CodeNav.dcdbcca4-3a88-432f-ba04-eb4a4cb64437)
 
-## Usage
+# 🤲 Usage
 The CodeNav tool window can be opened via the entry in the `Extensions` menu.
 
-## Screenshots
+# 🖼️ Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-light.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-dark.png)
 
 #### Filter window
@@ -55,5 +56,8 @@ The CodeNav tool window can be opened via the entry in the `Extensions` menu.
 #### Bookmarks
 ![Bookmarks](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Bookmarks.png)
 
-## Documentation
+#### Compact mode
+![Compact](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Compact.png)
+
+# 📄 Documentation
 Looking for more info? Read the full [Documentation](https://github.com/sboulema/CodeNav/blob/main/docs/index.md) with links, guides, troubleshooting, and tips. 
