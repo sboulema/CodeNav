@@ -16,8 +16,8 @@
         <Style TargetType="GridViewColumnHeader">
             <Setter Property="Background" Value="{DynamicResource {x:Static styles:VsBrushes.GridHeadingBackgroundKey}}"/>
             <Setter Property="Foreground" Value="{DynamicResource {x:Static styles:VsBrushes.GridHeadingTextKey}}"/>
-            <Setter Property="Margin" Value="-4,-2,0,0"/>
-            <Setter Property="Padding" Value="4,2,0,0"/>
+            <Setter Property="Margin" Value="-4 -2 0 0"/>
+            <Setter Property="Padding" Value="4 2 0 0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
@@ -25,7 +25,7 @@
         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogComboBoxStyleKey}}"/>
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogTextBoxStyleKey}}"/>
         <Style TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Margin" Value="0 0 0 8" />
         </Style>
         <Style TargetType="CheckBox">
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -48,9 +48,9 @@
                             <DataTemplate>
                                 <Border 
                                     BorderBrush="{DynamicResource {x:Static styles:VsBrushes.StartPageTextSubHeadingSelectedKey}}"
-                                    BorderThickness="0,0,1,0"
-                                    Margin="-6,-3,-6,-3">
-                                    <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
+                                    BorderThickness="0 0 1 0"
+                                    Margin="-6 -3 -6 -3">
+                                    <StackPanel Margin="6 2 6 2" VerticalAlignment="Center">
                                         <ComboBox SelectedItem="{Binding Kind, Mode=TwoWay}" ItemsSource="{Binding KindArray}" />
                                     </StackPanel>
                                 </Border>
@@ -71,9 +71,9 @@
                             <DataTemplate>
                                 <Border 
                                     BorderBrush="{DynamicResource {x:Static styles:VsBrushes.StartPageTextSubHeadingSelectedKey}}"
-                                    BorderThickness="0,0,1,0"
-                                    Margin="-6,-3,-6,-3">
-                                    <StackPanel Margin="6,2,6,2" VerticalAlignment="Center">
+                                    BorderThickness="0 0 1 0"
+                                    Margin="-6 -3 -6 -3">
+                                    <StackPanel Margin="6 2 6 2" VerticalAlignment="Center">
                                         <CheckBox
                                             IsThreeState="True"
                                             IsChecked="{Binding IsEmpty}"
@@ -127,11 +127,11 @@
             </ListView.View>
         </ListView>
 
-        <StackPanel Grid.Row="1" Margin="0,5,0,0" Orientation="Horizontal">
+        <StackPanel Grid.Row="1" Margin="0 5 0 0" Orientation="Horizontal">
             <Button
                 Command="{Binding Path=AddFilterCommand}"
                 ToolTip="Add filter"
-                Margin="0,0,4,0">
+                Margin="0 0 4 0">
                 <Button.Content>
                     <vs:Image Source="KnownMonikers.NewFilter" Width="16" Height="16" />
                 </Button.Content>
@@ -140,7 +140,7 @@
             <Button
                 Command="{Binding Path=DeleteFilterCommand}"
                 ToolTip="Delete filter"
-                Margin="0,0,4,0">
+                Margin="0 0 4 0">
                 <Button.Content>
                     <vs:Image Source="KnownMonikers.DeleteFilter" Width="16" Height="16" />
                 </Button.Content>
@@ -149,7 +149,7 @@
             <Button
                 Command="{Binding Path=MoveFilterUpCommand}"
                 ToolTip="Move up"
-                Margin="0,0,4,0">
+                Margin="0 0 4 0">
                 <Button.Content>
                     <vs:Image Source="KnownMonikers.MoveUp" Width="16" Height="16" />
                 </Button.Content>
@@ -167,7 +167,7 @@
         <GroupBox
             Grid.Row="2"
             Header="Filter help"
-            Margin="0,5"
+            Margin="0 5"
             Padding="5">
             <StackPanel>
                 <TextBlock>

@@ -74,7 +74,7 @@
                         </Border.BorderBrush>
 
                         <StackPanel Orientation="Vertical">
-                            <Grid Background="Transparent" SnapsToDevicePixels="False" Margin="0,0,4,0">
+                            <Grid Background="Transparent" SnapsToDevicePixels="False" Margin="0 0 4 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="17"/>
@@ -83,7 +83,8 @@
                                 <Border x:Name="ExpanderHeaderBorder"
                                     BorderThickness="0"
                                     BorderBrush="{StaticResource ExpanderHeaderGradientBrush}">
-                                    <Button Command="{Binding Path=ClickItemCommand}" 
+                                    <Button x:Name="ExpanderHeaderButton" 
+                                        Command="{Binding Path=ClickItemCommand}" 
                                         ContentTemplate="{TemplateBinding HeaderTemplate}"
                                         ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
                                         Content="{TemplateBinding Header}"
@@ -101,7 +102,7 @@
                                         FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}"
                                         DockPanel.Dock="Top"
                                         BorderThickness="0"
-                                        Padding="3,0,3,0"
+                                        Padding="3"
                                         ContextMenu="{DynamicResource ItemContextMenu}"
                                         ToolTip="{Binding Tooltip}">
                                         <Button.InputBindings>
@@ -136,7 +137,7 @@
                                 <Condition Binding="{Binding Path=DataContext.HasMembersVisibility, RelativeSource={RelativeSource Self}}" Value="Visible"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
-                            <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0,0,0,1" />
+                            <Setter Property="BorderThickness" TargetName="ExpanderHeaderBorder" Value="0 0 0 1" />
                         </MultiDataTrigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
@@ -155,6 +156,9 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Path=DataContext.IsItalic, RelativeSource={RelativeSource Self}}" Value="True">
                             <Setter Property="FontStyle" Value="Italic" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=DataContext.ShowCompact, RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter Property="Padding" TargetName="ExpanderHeaderButton" Value="3 0" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
