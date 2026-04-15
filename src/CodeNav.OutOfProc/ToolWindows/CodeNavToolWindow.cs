@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 namespace CodeNav.OutOfProc.ToolWindows;
 
 [VisualStudioContribution]
-internal class CodeNavToolWindow(CodeDocumentService documentService) : ToolWindow
+internal class CodeNavToolWindow(CodeDocumentService codeDocumentService) : ToolWindow
 {
     public override ToolWindowConfiguration ToolWindowConfiguration => new()
     {
@@ -20,9 +20,11 @@ internal class CodeNavToolWindow(CodeDocumentService documentService) : ToolWind
     {
         Title = "CodeNav";
 
+        codeDocumentService.ToolWindow = this;
+
         return Task.CompletedTask;
     }
 
     public override Task<IRemoteUserControl> GetContentAsync(CancellationToken cancellationToken)
-        => Task.FromResult<IRemoteUserControl>(new CodeNavToolWindowControl(documentService.CodeDocumentViewModel));
+        => Task.FromResult<IRemoteUserControl>(new CodeNavToolWindowControl(codeDocumentService.CodeDocumentViewModel));
 }

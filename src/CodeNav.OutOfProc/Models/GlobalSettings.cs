@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using System.Runtime.Serialization;
 
 namespace CodeNav.OutOfProc.Models;
 
@@ -33,6 +34,12 @@ public class GlobalSettings
     /// Settings dialog - Setting if CodeNav should sent crash analytics to Application Insights
     /// </summary>
     public bool EnableCrashAnalytics { get; set; }
+
+    /// <summary>
+    /// Setting if CodeNav should be shown or hidden for unsupported files and files without code items
+    /// </summary>
+    [DataMember]
+    public bool ShowToolWindowForUnsupportedFiles { get; set; } = true;
 
     /// <summary>
     /// Main toolbar - Setting to store the selected sort order for code items

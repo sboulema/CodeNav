@@ -70,7 +70,7 @@ public class ClassMapper
                 {
                     // If it is part of a region, add the implemented interface item to the region, add the member to the interface item
                     var regionItem = RegionMapper.GetRegion(regions, implementedInterfaceItemMember);
-                    AddImplementedInterfaceMember(regionItem, implementedInterfaceItem, implementedInterfaceItemMember);
+                    AddImplementedInterfaceMember(regionItem!, implementedInterfaceItem, implementedInterfaceItemMember);
                 }
                 else
                 {

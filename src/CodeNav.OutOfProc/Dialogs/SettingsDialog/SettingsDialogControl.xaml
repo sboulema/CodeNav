@@ -31,6 +31,10 @@
                 <CheckBox IsChecked="{Binding AutoHighlight, Mode=TwoWay}">
                     Auto-highlight active code item
                 </CheckBox>
+
+                <CheckBox IsChecked="{Binding ShowToolWindowForUnsupportedFiles, Mode=TwoWay}">
+                    Show the tool window for unsupported files and files without code items
+                </CheckBox>
             </StackPanel>
         </GroupBox>
 

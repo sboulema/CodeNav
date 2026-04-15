@@ -22,6 +22,7 @@ Visual Studio extension to show the code structure of your current document
 - Customizable fonts
 - Bookmarks
 - Synced collapsing/expanding outline regions
+- Option to hide the tool window for unsupported files and files without code items
 
 
 ## Supported Visual Studio versions
