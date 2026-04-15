@@ -236,6 +236,13 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _fontSize, value);
     }
 
+    [DataMember]
+    public bool ShowCompact
+    {
+        //get => CodeDocumentViewModel.CodeDocumentService.GlobalSettings.ShowCompact;
+        get => true;
+    }
+
     #region Commands
     [DataMember]
     public AsyncCommand ClickItemCommand { get; }

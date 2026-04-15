@@ -37,7 +37,8 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Button ToolTip="{Binding Tooltip}"
+                    <Button x:Name="CodeItemButton"
+                            ToolTip="{Binding Tooltip}"
                             Visibility="{Binding Visibility}"
                             ContextMenu="{DynamicResource ItemContextMenu}"
                             Opacity="{Binding Opacity}"
@@ -47,8 +48,8 @@
                             BorderThickness="0" 
                             HorizontalContentAlignment="Stretch"
                             HorizontalAlignment="Stretch"
-                            Margin="-3,0,-3,0"
-                            Padding="3,0,3,0">
+                            Margin="-3 -3 -3 0"
+                            Padding="3">
                         <Button.InputBindings>
                             <MouseBinding Gesture="LeftClick" Command="{Binding ClickItemCommand}" />
                             <MouseBinding Gesture="LeftDoubleClick" Command="{Binding DoubleClickItemCommand}" />
@@ -61,7 +62,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid Margin="0,0,3,0" Width="16" Height="16">
+                            <Grid Margin="0 0 3 0" Width="16" Height="16">
                                 <vs:Image Source="{Binding Moniker}" />
                                 <vs:Image Source="{Binding OverlayMoniker}" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
                             </Grid>
@@ -78,7 +79,7 @@
                             <vs:Image 
                                 Grid.Column="2"
                                 Source="KnownMonikers.History"
-                                Margin="3,0,0,0"
+                                Margin="3 0 0 0"
                                 Width="10"
                                 Height="10"
                                 HorizontalAlignment="Center"
@@ -90,7 +91,7 @@
                             <vs:Image 
                                 Grid.Column="3"
                                 Source="KnownMonikers.Bookmark"
-                                Margin="3,0,0,0"
+                                Margin="3 0 0 0"
                                 Width="10"
                                 Height="10"
                                 HorizontalAlignment="Center"
@@ -98,6 +99,12 @@
                                 Visibility="{Binding BookmarkVisibility}" />
                         </Grid>
                     </Button>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                            <Setter Property="Padding" TargetName="CodeItemButton" Value="3 0" />
+                            <Setter Property="Margin" TargetName="CodeItemButton" Value="-3 0" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -116,9 +123,15 @@
                                     HorizontalAlignment="Stretch">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
-                                            <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
+                                            <vs:Image
+                                                Source="{Binding Moniker}"
+                                                Width="16"
+                                                Height="16"
+                                                Margin="0,0,3,0"
+                                                VerticalAlignment="Center" />
                                             <TextBlock
-                                                FontSize="{Binding FontSize}">
+                                                FontSize="{Binding FontSize}"
+                                                VerticalAlignment="Center">
                                                     <Run Text="{Binding Name}" 
                                                          Style="{DynamicResource HighlightNameStyle}"/>
                                                     <Run Text="{Binding Parameters}" 
@@ -126,9 +139,10 @@
                                             </TextBlock>
                                         </StackPanel>
                                     </Expander.Header>
-                                    <ItemsControl 
+                                    <ItemsControl
+                                        x:Name="MembersItemsControl"
                                         ItemsSource="{Binding Members}"
-                                        Margin="3,0,3,0"
+                                        Margin="3"
                                         VirtualizingPanel.IsVirtualizing="True"
                                         VirtualizingPanel.VirtualizationMode="Recycling"
                                         ScrollViewer.CanContentScroll="False">
@@ -146,9 +160,23 @@
                                         <ItemsControl.ItemContainerStyle>
                                             <Style>
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
+                                                <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                        <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
                                         </ItemsControl.ItemContainerStyle>
+                                        <ItemsControl.Style>
+                                            <Style>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                        <Setter Property="FrameworkElement.Margin" Value="3 0" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ItemsControl.Style>
                                     </ItemsControl>
                                 </Expander>
 
@@ -173,11 +201,21 @@
                                     <ItemsControl.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
+                                            <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </ItemsControl.ItemContainerStyle>
                                 </ItemsControl>
                             </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -194,9 +232,15 @@
                                     HorizontalAlignment="Stretch">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
-                                            <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
+                                            <vs:Image
+                                                Source="{Binding Moniker}"
+                                                Width="16"
+                                                Height="16"
+                                                Margin="0 0 3 0"
+                                                VerticalAlignment="Center" />
                                             <TextBlock
-                                                FontSize="{Binding FontSize}">
+                                                FontSize="{Binding FontSize}"
+                                                VerticalAlignment="Center">
                                                 <Run Text="{Binding Name}" 
                                                     Style="{DynamicResource HighlightNameStyle}" />
                                                 <Run Text="{Binding Parameters}" 
@@ -204,9 +248,10 @@
                                             </TextBlock>
                                         </StackPanel>
                                     </Expander.Header>
-                                    <ItemsControl 
+                                    <ItemsControl
+                                        x:Name="MembersItemsControl"
                                         ItemsSource="{Binding Members}"
-                                        Margin="3,0,3,0"
+                                        Margin="3"
                                         VirtualizingPanel.IsVirtualizing="True"
                                         VirtualizingPanel.VirtualizationMode="Recycling"
                                         ScrollViewer.CanContentScroll="False">
@@ -224,12 +269,31 @@
                                         <ItemsControl.ItemContainerStyle>
                                             <Style>
                                                 <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
+                                                <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                        <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
                                             </Style>
                                         </ItemsControl.ItemContainerStyle>
+                                        <ItemsControl.Style>
+                                            <Style>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                        <Setter Property="FrameworkElement.Margin" Value="3 0" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ItemsControl.Style>
                                     </ItemsControl>
                                 </Expander>
                             </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
@@ -245,15 +309,22 @@
                                 HorizontalAlignment="Stretch">
                                 <Expander.Header>
                                     <StackPanel Orientation="Horizontal">
-                                        <vs:Image Source="{Binding Moniker}" Width="16" Height="16" Margin="0,0,3,0" />
+                                        <vs:Image
+                                            Source="{Binding Moniker}"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0 0 3 0"
+                                            VerticalAlignment="Center" />
                                         <TextBlock
                                             Text="{Binding Name}"
-                                            FontSize="{Binding FontSize}" />
+                                            FontSize="{Binding FontSize}"
+                                            VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Expander.Header>
-                                <ItemsControl 
+                                <ItemsControl
+                                    x:Name="MembersItemsControl"
                                     ItemsSource="{Binding Members}"
-                                    Margin="3,0,3,0"
+                                    Margin="3"
                                     VirtualizingPanel.IsVirtualizing="True"
                                     VirtualizingPanel.VirtualizationMode="Recycling"
                                     ScrollViewer.CanContentScroll="False">
@@ -271,11 +342,21 @@
                                     <ItemsControl.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0,0,0,1"/>
+                                            <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                                    <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
                                         </Style>
                                     </ItemsControl.ItemContainerStyle>
                                 </ItemsControl>
                             </Expander>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding ShowCompact}" Value="True">
+                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
