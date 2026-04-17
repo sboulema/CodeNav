@@ -171,6 +171,7 @@ public class CodeDocumentService(
                 UpdateWhileTyping = GlobalSettings.UpdateWhileTyping,
                 EnableCrashAnalytics = GlobalSettings.EnableCrashAnalytics,
                 ShowToolWindowForUnsupportedFiles = GlobalSettings.ShowToolWindowForUnsupportedFiles,
+                UseCompactMode = GlobalSettings.UseCompactMode,
             };
 
             var filterRules = GlobalSettings

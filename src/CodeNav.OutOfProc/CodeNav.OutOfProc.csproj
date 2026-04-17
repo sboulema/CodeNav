@@ -38,6 +38,7 @@
     <None Remove="ToolWindows\Templates\HighlightNameStyle.xaml" />
     <None Remove="ToolWindows\Templates\ItemContextMenu.xaml" />
     <None Remove="ToolWindows\Templates\ToolbarStyles.xaml" />
+    <None Remove="ViewModels\CodeItem.cs~RF32119e8.TMP" />
 	  <EmbeddedResource Include="Dialogs\FilterDialog\FilterDialogControl.xaml" />
 	  <EmbeddedResource Include="Dialogs\SettingsDialog\SettingsDialogControl.xaml" />
 	  <EmbeddedResource Include="ToolWindows\CodeNavToolWindowControl.xaml" />

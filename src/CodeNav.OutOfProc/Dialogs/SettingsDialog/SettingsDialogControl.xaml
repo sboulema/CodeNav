@@ -7,10 +7,10 @@
     <DataTemplate.Resources>
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogTextBoxStyleKey}}" />
         <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogCheckBoxStyleKey}}">
-            <Setter Property="Margin" Value="0,5" />
+            <Setter Property="Margin" Value="0 5" />
         </Style>
         <Style TargetType="Label" BasedOn="{StaticResource {x:Static styles:VsResourceKeys.ThemedDialogLabelStyleKey}}">
-            <Setter Property="Margin" Value="-5,0,0,0" />
+            <Setter Property="Margin" Value="-5 0 0 0" />
         </Style>
     </DataTemplate.Resources>
 
@@ -34,6 +34,10 @@
 
                 <CheckBox IsChecked="{Binding ShowToolWindowForUnsupportedFiles, Mode=TwoWay}">
                     Show the tool window for unsupported files and files without code items
+                </CheckBox>
+
+                <CheckBox IsChecked="{Binding UseCompactMode, Mode=TwoWay}">
+                    Use compact mode with less spacing
                 </CheckBox>
             </StackPanel>
         </GroupBox>

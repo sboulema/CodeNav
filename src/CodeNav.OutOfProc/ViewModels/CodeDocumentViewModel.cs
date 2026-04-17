@@ -242,6 +242,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         CodeDocumentService.GlobalSettings.UpdateWhileTyping = CodeDocumentService.SettingsDialogData.UpdateWhileTyping;
         CodeDocumentService.GlobalSettings.EnableCrashAnalytics = CodeDocumentService.SettingsDialogData.EnableCrashAnalytics;
         CodeDocumentService.GlobalSettings.ShowToolWindowForUnsupportedFiles = CodeDocumentService.SettingsDialogData.ShowToolWindowForUnsupportedFiles;
+        CodeDocumentService.GlobalSettings.UseCompactMode = CodeDocumentService.SettingsDialogData.UseCompactMode;
 
         await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
