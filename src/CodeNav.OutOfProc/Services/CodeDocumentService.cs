@@ -115,7 +115,12 @@ public class CodeDocumentService(
             await logService.WriteInfo(filePath, $"Remove highlight from all code items");
 
             // Apply current visibility settings to the document
-            VisibilityHelper.SetCodeItemVisibility(CodeDocumentViewModel, CodeDocumentViewModel.CodeItems, CodeDocumentViewModel.FilterRules);
+            VisibilityHelper.SetCodeItemVisibility(
+                CodeDocumentViewModel,
+                CodeDocumentViewModel.CodeItems,
+                CodeDocumentViewModel.FilterRules,
+                CodeDocumentViewModel.FilterText,
+                CodeDocumentViewModel.BookmarkIds);
 
             await logService.WriteInfo(filePath, $"Set code item visibility");
 
