@@ -39,6 +39,14 @@ public class CodeDocumentService(
 
     public ToolWindow? ToolWindow { get; set; }
 
+    /// <summary>
+    /// Update the view model
+    /// </summary>
+    /// <param name="extensibility">Visual Studio extensibility</param>
+    /// <param name="filePath">The path to the file</param>
+    /// <param name="text">The text of the file</param>
+    /// <param name="cancellationToken">The cancellation token</param>
+    /// <returns>The updated code document view model</returns>
     public async Task<CodeDocumentViewModel> UpdateCodeDocumentViewModel(
         VisualStudioExtensibility? extensibility,
         string? filePath,
@@ -200,10 +208,13 @@ public class CodeDocumentService(
 
             CodeDocumentViewModel.FilterRules = [.. FilterDialogData.FilterRules];
 
-            //Update the filter toolbar visibility
+            // Update the filter toolbar visibility
             CodeDocumentViewModel.ShowFilterToolbarVisibility = SettingsDialogData.ShowFilterToolbar
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+            // Update the usage of compact mode
+            CodeDocumentViewModel.UseCompactMode = SettingsDialogData.UseCompactMode;
 
             // Clear any history indicators if the setting was turned off
             if (SettingsDialogData.ShowHistoryIndicators == false)

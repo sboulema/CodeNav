@@ -151,6 +151,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         set => SetProperty(ref _isSortByTypeChecked, value);
     }
 
+    private bool _useCompactMode;
+
+    /// <summary>
+    /// Indicator if the compact mode with less vertical margins should be used.
+    /// </summary>
+    [DataMember]
+    public bool UseCompactMode
+    {
+        get => _useCompactMode;
+        set => SetProperty(ref _useCompactMode, value);
+    }
+
     #endregion
 
     #region Commands

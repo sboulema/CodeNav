@@ -32,6 +32,10 @@ public class CodeItem : NotifyPropertyChangedObject
         ClearBookmarksCommand = new(ClearBookmarks);
     }
 
+    /// <summary>
+    /// The parent view model of the code item
+    /// </summary>
+    [DataMember]
     public CodeDocumentViewModel? CodeDocumentViewModel { get; set; }
 
     /// <summary>
@@ -234,15 +238,6 @@ public class CodeItem : NotifyPropertyChangedObject
     {
         get => _fontSize;
         set => SetProperty(ref _fontSize, value);
-    }
-
-    /// <summary>
-    /// If the code item should use less vertical space based on the settings
-    /// </summary>
-    [DataMember]
-    public bool UseCompactMode
-    {
-        get => CodeDocumentViewModel?.CodeDocumentService?.GlobalSettings?.UseCompactMode == true;
     }
 
     #region Commands
