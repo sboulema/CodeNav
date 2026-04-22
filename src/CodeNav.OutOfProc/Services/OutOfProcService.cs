@@ -54,6 +54,8 @@ internal class OutOfProcService(
         }
 
         // Frame has changed and has a text document, so we need to update the list of code items
+        await codeDocumentService.LoadGlobalSettings();
+
         await codeDocumentService.UpdateCodeDocumentViewModel(
             extensibility,
             documentView.FilePath,
