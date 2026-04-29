@@ -6,6 +6,9 @@ on:
       - main
       - 'feature/**'
 
+permissions:
+  contents: read
+
 env:
   version: '10.8.${{ github.run_number }}'
   dotnetVersion: '8'
