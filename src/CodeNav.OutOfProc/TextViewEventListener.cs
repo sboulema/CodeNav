@@ -1,5 +1,6 @@
 ﻿using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Services;
+using DebounceThrottle;
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
@@ -23,6 +24,8 @@ internal class TextViewEventListener(
     : ExtensionPart(extension, extensibility), ITextViewOpenClosedListener, ITextViewChangedListener
 {
     private readonly CodeDocumentService codeDocumentService = Requires.NotNull(codeDocumentService, nameof(codeDocumentService));
+
+    private readonly DebounceDispatcher debounceDispatcher = new(TimeSpan.FromMilliseconds(300));
 
     /// <inheritdoc/>
     public TextViewExtensionConfiguration TextViewExtensionConfiguration => new()
@@ -59,11 +62,17 @@ internal class TextViewEventListener(
             if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
                 args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
             {
-                await codeDocumentService.UpdateCodeDocumentViewModel(
-                    Extensibility,
-                    args.AfterTextView.FilePath,
-                    args.AfterTextView.Document.Text.CopyToString(),
-                    cancellationToken);
+#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
+                await debounceDispatcher.DebounceAsync(async () =>
+                {
+                    await codeDocumentService.UpdateCodeDocumentViewModel(
+                        Extensibility,
+                        args.AfterTextView.FilePath,
+                        args.AfterTextView.Document.Text.CopyToString(),
+                        cancellationToken);
+                },
+                cancellationToken);
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
             }
 
             // Document changed - Update history indicators

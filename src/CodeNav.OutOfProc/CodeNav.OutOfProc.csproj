@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <PackageReference Include="DebounceThrottle" Version="3.0.1" />
 	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.14.40608" PrivateAssets="all" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.14.40608" PrivateAssets="all" />

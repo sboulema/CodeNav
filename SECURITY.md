@@ -22,6 +22,7 @@ CodeNav has minimal dependencies:
 - **Microsoft.VisualStudio.SDK 17.14.40265** - Used for extending Visual Studio (In-Proc)
 - **Microsoft.VisualStudio.Extensibility.Build 17.14.40608** - Used for building the extension
 - **Microsoft.CodeAnalysis.CSharp 5.0.0** - Used for parsing C# code
+- **DebounceThrottle** - Used for debouncing text editor events
 
 All dependencies are from trusted sources and regularly updated.
 

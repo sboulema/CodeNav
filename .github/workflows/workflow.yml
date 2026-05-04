@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  version: '10.8.${{ github.run_number }}'
+  version: '10.9.${{ github.run_number }}'
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
   vsixPath: src/CodeNav/bin/Release/net472/CodeNav.vsix
