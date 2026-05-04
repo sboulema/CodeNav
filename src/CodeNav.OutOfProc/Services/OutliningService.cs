@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Extensions;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
@@ -51,11 +52,11 @@ public class OutliningService : DisposableObject
         }
         catch (Exception e)
         {
-            // TODO: Add logging
+            await LogHelper.LogException(codeDocumentViewModel, "Failed to subscribe to outlining region events", e);
         }
     }
 
-    public async Task CollapseOutlineRegion(int start, int length)
+    public async Task CollapseOutlineRegion(CodeDocumentViewModel codeDocumentViewModel, int start, int length)
     {
         try
         {
@@ -64,11 +65,11 @@ public class OutliningService : DisposableObject
         }
         catch (Exception e)
         {
-            // TODO: Add logging
+            await LogHelper.LogException(codeDocumentViewModel, $"Failed to collapse outlining region ({start}, {length})", e);
         }
     }
 
-    public async Task ExpandOutlineRegion(int start, int length)
+    public async Task ExpandOutlineRegion(CodeDocumentViewModel codeDocumentViewModel, int start, int length)
     {
         try
         {
@@ -77,7 +78,7 @@ public class OutliningService : DisposableObject
         }
         catch (Exception e)
         {
-            // TODO: Add logging
+            await LogHelper.LogException(codeDocumentViewModel, $"Failed to expand outlining region ({start}, {length})", e);
         }
     }
 
@@ -92,7 +93,10 @@ public class OutliningService : DisposableObject
             .CodeDocumentViewModel
             .CodeDocumentService
             .OutliningService
-            .CollapseOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
+            .CollapseOutlineRegion(
+                codeItem.CodeDocumentViewModel,
+                codeItem.OutlineSpan.Start,
+                codeItem.OutlineSpan.Length);
     }
 
     public static async Task ExpandOutlineRegion(CodeItem codeItem)
@@ -106,7 +110,10 @@ public class OutliningService : DisposableObject
             .CodeDocumentViewModel
             .CodeDocumentService
             .OutliningService
-            .ExpandOutlineRegion(codeItem.OutlineSpan.Start, codeItem.OutlineSpan.Length);
+            .ExpandOutlineRegion(
+                codeItem.CodeDocumentViewModel,
+                codeItem.OutlineSpan.Start,
+                codeItem.OutlineSpan.Length);
     }
 
     /// <summary>

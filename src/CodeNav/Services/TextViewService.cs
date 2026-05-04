@@ -1,7 +1,9 @@
 ﻿using CodeNav.Models;
+using CodeNav.OutOfProc.Services;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -13,15 +15,18 @@ namespace CodeNav.Services;
 
 public class TextViewService
 {
+    private readonly VisualStudioExtensibility _extensibility;
     private readonly MefInjection<IVsEditorAdaptersFactoryService> _editorAdaptersFactoryService;
     private readonly AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> _textManager;
 
 #pragma warning disable IDE0290 // Use primary constructor
     public TextViewService(
 #pragma warning restore IDE0290 // Use primary constructor
+        VisualStudioExtensibility extensibility,
         MefInjection<IVsEditorAdaptersFactoryService> editorAdaptersFactoryService,
         AsyncServiceProviderInjection<SVsTextManager, IVsTextManager> textManager)
     {
+        _extensibility = extensibility;
         _editorAdaptersFactoryService = editorAdaptersFactoryService;
         _textManager = textManager;
     }
@@ -35,6 +40,9 @@ public class TextViewService
     /// <returns></returns>
     public async Task ScrollToSpan(int start, int length)
     {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
@@ -42,7 +50,14 @@ public class TextViewService
 
             if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
             {
-                // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
+                if (outOfProcService == null)
+                {
+                    return;
+                }
+
+                // Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
+                await outOfProcService.LogException($"Active text view is not in a C# editor. '{textView.TextBuffer.ContentType.TypeName}'");
+
                 return;
             }
 
@@ -53,9 +68,18 @@ public class TextViewService
 
             textView.ViewScroller.EnsureSpanVisible(span, EnsureSpanVisibleOptions.AlwaysCenter);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return;
+            }
+
+            await outOfProcService.LogException($"Failed to scroll to span ({start}, {length}). '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
     }
 
@@ -66,6 +90,9 @@ public class TextViewService
     /// <returns>Awaitable Task</returns>
     public async Task MoveCaretToPosition(int position)
     {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
@@ -73,7 +100,14 @@ public class TextViewService
 
             if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
             {
-                // TODO: Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
+                if (outOfProcService == null)
+                {
+                    return;
+                }
+
+                // Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
+                await outOfProcService.LogException($"Active text view is not in a C# editor. '{textView.TextBuffer.ContentType.TypeName}'");
+                
                 return;
             }
 
@@ -85,9 +119,18 @@ public class TextViewService
             textView.Caret.MoveTo(snapShotPoint);
             textView.VisualElement.Focus();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return;
+            }
+
+            await outOfProcService.LogException($"Failed to move caret to position {position}. '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
     }
 
@@ -147,6 +190,9 @@ public class TextViewService
             return null;
         }
 
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -168,9 +214,18 @@ public class TextViewService
 
             return view;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return null;
+            }
+
+            await outOfProcService.LogException($"Failed to get text view from window frame. '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
 
         return null;

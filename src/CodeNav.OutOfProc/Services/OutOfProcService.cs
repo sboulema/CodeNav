@@ -63,6 +63,12 @@ internal class OutOfProcService(
             default);
     }
 
+    public Task LogException(string message)
+        => LogHelper.LogException(codeDocumentService, message, new Exception());
+
+    public Task LogWarning(string message)
+        => LogHelper.LogWarning(codeDocumentService, message);
+
     public async Task DoSomethingAsync(CancellationToken cancellationToken)
     {
         await extensibility.Shell().ShowPromptAsync("Hello from in-proc! (Showing this message from (out-of-proc)", PromptOptions.OK, cancellationToken);

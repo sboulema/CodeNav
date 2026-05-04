@@ -58,6 +58,18 @@ public static class LogHelper
         await codeItem.CodeDocumentViewModel.CodeDocumentService.LogService.WriteInfo(codeItem.FilePath, text);
     }
 
+    public async static Task LogWarning(
+        CodeDocumentService? codeDocumentService,
+        string message)
+    {
+        if (codeDocumentService?.LogService == null)
+        {
+            return;
+        }
+
+        await codeDocumentService.LogService.WriteWarning(message);
+    }
+
     private async static Task WriteException(CodeDocumentService? codeDocumentService, string text, Exception exception)
     {
         if (codeDocumentService?.LogService == null)

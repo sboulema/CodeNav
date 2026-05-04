@@ -10,6 +10,10 @@ public interface IOutOfProcService
 
     Task ProcessActiveFrameChanged(string documentViewJsonString);
 
+    Task LogException(string message);
+
+    Task LogWarning(string message);
+
     public static class Configuration
     {
         public const string ServiceName = "CodeNav.OutOfProcService";

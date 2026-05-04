@@ -18,11 +18,17 @@ public class OutputWindowService : DisposableObject
         _initializationTask = Task.Run(InitializeAsync);
     }
 
-    public async Task WriteInfo(Uri? FilePath, string text)
-        => await WriteInfo(Path.GetFileName(FilePath?.AbsolutePath), text);
+    public Task WriteInfo(Uri? FilePath, string text)
+        => WriteInfo(Path.GetFileName(FilePath?.AbsolutePath), text);
 
-    public async Task WriteInfo(string? filePath, string text)
-        => await WriteLine($"[Info] [{Path.GetFileName(filePath)}] {text}");
+    public Task WriteInfo(string? filePath, string text)
+        => WriteLine($"[Info] [{Path.GetFileName(filePath)}] {text}");
+
+    public Task WriteWarning(string message)
+        => WriteLine($"[Warning] {message}");
+
+    public Task WriteException(string message, Exception exception)
+        => WriteLine($"[Exception] {message}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace}");
 
     public async Task WriteLine(string text)
     {
@@ -33,9 +39,6 @@ public class OutputWindowService : DisposableObject
 
         await _outputChannel.WriteLineAsync(text);
     }
-
-    public async Task WriteException(string message, Exception exception)
-        => await WriteLine($"[Exception] {message}{Environment.NewLine}{exception.Message}{Environment.NewLine}{exception.StackTrace}");
 
     private async Task InitializeAsync()
     {

@@ -60,6 +60,11 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
         var outliningManager = await GetOutliningManager(textView);
 
+        if (outliningManager == null)
+        {
+            return string.Empty;
+        }
+
         // Subscribing to outline events
         outliningManager.RegionsExpanded -= OutliningManager_RegionsExpanded;
         outliningManager.RegionsExpanded += OutliningManager_RegionsExpanded;
@@ -153,6 +158,9 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
     /// <returns>Awaitable Task</returns>
     public async Task ExpandOutlineRegion(int spanStart, int spanLength)
     {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
@@ -174,9 +182,18 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             outliningManager.Expand(collapsedOutlineRegion);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return;
+            }
+
+            await outOfProcService.LogException($"Failed to expand outline region. '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
     }
 
@@ -189,6 +206,9 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
     /// <returns>Awaitable Task</returns>
     public async Task CollapseOutlineRegion(int spanStart, int spanLength)
     {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support outlining yet.
@@ -208,9 +228,18 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             outliningManager.TryCollapse(outlineRegion);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return;
+            }
+
+            await outOfProcService.LogException($"Failed to collapse outline region. '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
     }
 
@@ -245,12 +274,33 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
     private SnapshotSpan GetSpan(ICollapsible outlineRegion)
         => outlineRegion.Extent.GetSpan(outlineRegion.Extent.TextBuffer.CurrentSnapshot);
 
-    private async Task<IOutliningManager> GetOutliningManager(IWpfTextView textView)
+    private async Task<IOutliningManager?> GetOutliningManager(IWpfTextView textView)
     {
-        var outliningManagerService = await _outliningManagerFactoryService.GetServiceAsync();
-        var outliningManager = outliningManagerService.GetOutliningManager(textView);
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
 
-        return outliningManager;
+        try
+        {
+            var outliningManagerService = await _outliningManagerFactoryService.GetServiceAsync();
+            var outliningManager = outliningManagerService.GetOutliningManager(textView);
+
+            if (outliningManager == null)
+            {
+                if (outOfProcService == null)
+                {
+                    return null;
+                }
+
+                await outOfProcService.LogWarning("Failed to get outlining manager. outlining manager is null.");
+                return null;
+            }
+
+            return outliningManager;
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
+        }
     }
 
     #endregion
@@ -355,6 +405,9 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
     private async Task<string> GetWindowCaption(IVsWindowFrame windowFrame)
     {
+        var outOfProcService = await _extensibility.ServiceBroker
+            .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
+
         try
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -363,9 +416,18 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             return window?.Caption ?? string.Empty;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: Implement in-proc error logging
+            if (outOfProcService == null)
+            {
+                return string.Empty;
+            }
+
+            await outOfProcService.LogException($"Failed to get window caption. '{e.Message}'");
+        }
+        finally
+        {
+            (outOfProcService as IDisposable)?.Dispose();
         }
 
         return string.Empty;
