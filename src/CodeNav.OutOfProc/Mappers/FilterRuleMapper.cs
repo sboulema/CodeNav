@@ -15,7 +15,8 @@ public static class FilterRuleMapper
                 or CodeItemKindEnum.ImplementedInterface
                 or CodeItemKindEnum.Constructor 
                 or CodeItemKindEnum.LocalFunction
-                or CodeItemKindEnum.BaseClass => [CodeItemAccessEnum.All],
+                or CodeItemKindEnum.BaseClass
+                or CodeItemKindEnum.ExtensionBlock => [CodeItemAccessEnum.All],
             CodeItemKindEnum.Struct => [CodeItemAccessEnum.Public, CodeItemAccessEnum.Internal, CodeItemAccessEnum.Private, CodeItemAccessEnum.All],
             _ => [.. Enum.GetValues<CodeItemAccessEnum>().Except([CodeItemAccessEnum.Unknown])],
         };
@@ -29,7 +30,8 @@ public static class FilterRuleMapper
                 or CodeItemKindEnum.ImplementedInterface
                 or CodeItemKindEnum.Interface
                 or CodeItemKindEnum.Method
-                or CodeItemKindEnum.BaseClass => true,
+                or CodeItemKindEnum.BaseClass
+                or CodeItemKindEnum.ExtensionBlock => true,
             _ => false,
         };
 

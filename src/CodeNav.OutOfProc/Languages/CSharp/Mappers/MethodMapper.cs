@@ -55,7 +55,9 @@ public static class MethodMapper
 
         codeItem.Id = IdMapper.MapId(codeItem.FullName, parameterList);
         codeItem.Kind = kind;
-        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Moniker = IsExtensionMethod(node, semanticModel)
+            ? ImageMoniker.KnownValues.ExtensionMethod
+            : IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
         return codeItem;
     }
@@ -70,8 +72,13 @@ public static class MethodMapper
         codeItem.Id = IdMapper.MapId(member.Identifier, member.ParameterList);
         codeItem.Kind = CodeItemKindEnum.Constructor;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-        codeItem.OverlayMoniker = ImageMoniker.KnownValues.Add;
 
         return codeItem;
     }
+
+    private static bool IsExtensionMethod(SyntaxNode node, SemanticModel semanticModel)
+{
+    var symbol = semanticModel.GetDeclaredSymbol(node);
+    return symbol is IMethodSymbol { IsExtensionMethod: true };
+}
 }
