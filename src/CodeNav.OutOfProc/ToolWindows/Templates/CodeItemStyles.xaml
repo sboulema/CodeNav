@@ -232,12 +232,16 @@
                                     HorizontalAlignment="Stretch">
                                     <Expander.Header>
                                         <StackPanel Orientation="Horizontal">
-                                            <vs:Image
-                                                Source="{Binding Moniker}"
-                                                Width="16"
-                                                Height="16"
-                                                Margin="0 0 3 0"
-                                                VerticalAlignment="Center" />
+                                            <Grid Width="17" Height="17">
+                                                <vs:Image Source="{Binding Moniker}"
+                                                  Width="16" Height="16"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                  Panel.ZIndex="0" />
+                                                <vs:Image Source="{Binding OverlayMoniker}"
+                                                  Width="14" Height="14"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                  Panel.ZIndex="1" />
+                                            </Grid>
                                             <TextBlock
                                                 FontSize="{Binding FontSize}"
                                                 VerticalAlignment="Center">

@@ -16,7 +16,7 @@ public class ExtensionBlockMapper
             member.Identifier, modifiers: member.Modifiers, name: "Extension");
         codeItem.Kind = CodeItemKindEnum.ExtensionBlock;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-        codeItem.OverlayMoniker = ImageMoniker.KnownValues.Fetch;
+        codeItem.OverlayMoniker = ImageMoniker.KnownValues.OverlayLoginDisabled;
         codeItem.Parameters = ParameterMapper.MapParameters(member.ParameterList);
         codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
 
