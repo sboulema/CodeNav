@@ -133,6 +133,8 @@ public class DocumentMapper
                     => RecordMapper.MapRecord(recordSyntax, semanticModel, codeDocumentViewModel),
                 SyntaxKind.StructDeclaration when member is StructDeclarationSyntax structSyntax
                     => StructMapper.MapStruct(structSyntax, semanticModel, tree, codeDocumentViewModel),
+                SyntaxKind.ExtensionBlockDeclaration when member is ExtensionBlockDeclarationSyntax extensionBlockSyntax
+                    => ExtensionBlockMapper.MapExtensionBlock(extensionBlockSyntax, semanticModel, tree, codeDocumentViewModel),
                 _ => null,
             };
 

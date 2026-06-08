@@ -32,6 +32,9 @@ public enum CodeItemKindEnum
     [EnumOrder(16)]
     Event,
 
+    [EnumOrder(22)]
+    ExtensionBlock,
+
     [EnumOrder(10)]
     ImplementedInterface,
 

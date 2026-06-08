@@ -104,7 +104,8 @@ public static class BaseMapper
     /// <returns>String display name</returns>
     private static string MapName(SyntaxToken? identifier, NameSyntax? nameSyntax, string name = "")
     {
-        if (identifier != null)
+        if (identifier != null &&
+            !identifier.Value.IsKind(SyntaxKind.None))
         {
             return identifier.Value.Text;
         }
