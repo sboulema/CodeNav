@@ -174,17 +174,9 @@ public static class InterfaceMapper
             }
         }
 
-        // Add regions to interface if they have a region member inside them
-        if (regions.Any())
-        {
-            foreach (var region in regions)
-            {
-                if (region?.Members.Any() == true)
-                {
-                    codeItem.Members.Add(region);
-                }
-            }
-        }
+        // Add regions to interface, but skip any that are already nested inside
+        // a member that maps its own regions
+        RegionMapper.AddRegionsIfNotPresent(codeItem.Members, regions);
 
         return codeItem;
     }

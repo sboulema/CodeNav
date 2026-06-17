@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
 using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Mappers;
@@ -7,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using System.Drawing;
 
 namespace CodeNav.OutOfProc.Languages.CSharp.Mappers;
 
@@ -287,5 +289,38 @@ public static class RegionMapper
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Add regions to the given list of members, but only if a region with the same
+    /// <see cref="CodeItem.Id"/> is not already present somewhere within those members.
+    /// </summary>
+    /// <remarks>
+    /// A region can be discovered more than once: a container (class, interface,
+    /// namespace, extension block) scans its entire span for regions, which also
+    /// picks up regions that live inside a nested member (e.g. a nested class or an
+    /// extension block) that maps its own regions independently. That nested member
+    /// already nests its region correctly, so the outer scan's copy is a duplicate
+    /// (and ends up empty, since none of its members could be matched to it) and
+    /// should not be added again. Regions that are genuinely empty and not nested
+    /// inside another member (e.g. an intentionally empty `#region` directly in a
+    /// class) are still added, since no item with their Id exists elsewhere.
+    /// </remarks>
+    /// <param name="members">The list of members regions should be added to</param>
+    /// <param name="regions">The regions found for this scope</param>
+    public static void AddRegionsIfNotPresent(List<CodeItem> members, List<CodeRegionItem> regions)
+    {
+        foreach (var region in regions)
+        {
+            var alreadyPresent = members
+                .Flatten()
+                .FilterNull()
+                .Any(item => item.Id == region?.Id);
+
+            if (!alreadyPresent)
+            {
+                members.AddIfNotNull(region);
+            }
+        }
     }
 }
