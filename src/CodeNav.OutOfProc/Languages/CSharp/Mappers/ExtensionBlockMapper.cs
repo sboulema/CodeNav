@@ -43,8 +43,10 @@ public class ExtensionBlockMapper
             codeItem.Members.Add(memberItem);
         }
 
-        // Add regions to block
-        codeItem.Members.AddRange(regions);
+        // Add regions to block, but skip any that are already nested inside
+        // a member that maps its own regions
+        RegionMapper.AddRegionsIfNotPresent(codeItem.Members, regions);
+
 
         return codeItem;
     }

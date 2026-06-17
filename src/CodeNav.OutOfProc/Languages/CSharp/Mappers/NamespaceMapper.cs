@@ -29,16 +29,7 @@ public static class NamespaceMapper
         }
 
         // Add regions to namespace if they are not present in any children of the namespace
-        if (regions.Any())
-        {
-            foreach (var region in regions)
-            {
-                if (codeItem.Members.Flatten().FilterNull().Any(i => i.Id == region?.Id) == false)
-                {
-                    codeItem.Members.AddIfNotNull(region);
-                }
-            }
-        }
+        RegionMapper.AddRegionsIfNotPresent(codeItem.Members, regions);
 
         return codeItem;
     }

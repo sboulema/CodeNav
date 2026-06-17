@@ -80,8 +80,9 @@ public class ClassMapper
             }
         }
 
-        // Add regions to class
-        codeItem.Members.AddRange(regions);
+        // Add regions to class, but skip any that are already nested inside
+        // a member that maps its own regions (e.g. a nested extension block)
+        RegionMapper.AddRegionsIfNotPresent(codeItem.Members, regions);
 
         return codeItem;
     }
