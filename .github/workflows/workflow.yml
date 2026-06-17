@@ -142,20 +142,18 @@ jobs:
         uses: actions/download-artifact@v8
 
       - name: Publish to Marketplace
-        run: >
-          & 'C:/Program Files/Microsoft Visual Studio/2026/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
-          publish
-          -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          -payload ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}
-          -publishManifest CodeNav/publish-manifest.json
+        uses: cezarypiatek/VsixPublisherAction@1.2
+        with:
+          extension-file: ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}
+          publish-manifest-file: CodeNav/publish-manifest.json
+          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Marketplace 2022
-        run: >
-          & 'C:/Program Files/Microsoft Visual Studio/2026/Enterprise/VSSDK/VisualStudioIntegration/Tools/Bin/VsixPublisher.exe'
-          publish
-          -personalAccessToken ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
-          -payload ${{ github.workspace }}/CodeNav2022/${{ env.vsixPath }}
-          -publishManifest CodeNav2022/publish-manifest-2022.json
+        uses: cezarypiatek/VsixPublisherAction@1.2
+        with:
+          extension-file: ${{ github.workspace }}/CodeNav2022/${{ env.vsixPath }}
+          publish-manifest-file: CodeNav2022/publish-manifest-2022.json
+          personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Open VSIX Gallery
         uses: timheuer/openvsixpublish@v1
