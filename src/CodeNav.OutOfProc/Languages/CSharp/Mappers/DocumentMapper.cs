@@ -1,3 +1,5 @@
+using CodeNav.OutOfProc.Interfaces;
+using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -7,7 +9,7 @@ using Microsoft.VisualStudio.ProjectSystem.Query;
 
 namespace CodeNav.OutOfProc.Languages.CSharp.Mappers;
 
-public class DocumentMapper
+public class DocumentMapper : IDocumentMapper
 {
     /// <summary>
     /// Map text document to list of code items.
@@ -18,7 +20,7 @@ public class DocumentMapper
     /// <param name="extensibility">Visual Studio extensibility used to retrieve all solution files for compilation</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of code items</returns>
-    public static async Task<List<CodeItem>> MapDocument(
+    public async Task<List<CodeItem>> MapDocument(
         string text,
         string? excludeFilePath,
         CodeDocumentViewModel codeDocumentViewModel,
@@ -138,6 +140,9 @@ public class DocumentMapper
                 _ => null,
             };
 
-    public static bool CanMapDocument(string filePath) 
-        => filePath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase);
+    public bool CanMapDocument(
+        string filePath,
+        GlobalSettings settings)
+        => settings.EnableCSharp &&
+           filePath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase);
 }

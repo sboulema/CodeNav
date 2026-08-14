@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using CodeNav.OutOfProc.Constants;
+using System.Runtime.Serialization;
 
 namespace CodeNav.OutOfProc.Dialogs.SettingsDialog;
 
@@ -52,4 +53,16 @@ public class SettingsDialogData
     /// </summary>
     [DataMember]
     public bool UseCompactMode { get; set; }
+
+    /// <summary>
+    /// Setting which languages are enabled for CodeNav.
+    /// </summary>
+    [DataMember]
+    public bool EnableCSharp { get; set; } = true;
+
+    /// <summary>
+    /// Setting which languages are enabled for CodeNav.
+    /// </summary>
+    [DataMember]
+    public bool EnableVisualBasic { get; set; } = false;
 }

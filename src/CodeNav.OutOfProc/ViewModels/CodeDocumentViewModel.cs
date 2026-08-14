@@ -255,11 +255,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         CodeDocumentService.GlobalSettings.EnableCrashAnalytics = CodeDocumentService.SettingsDialogData.EnableCrashAnalytics;
         CodeDocumentService.GlobalSettings.ShowToolWindowForUnsupportedFiles = CodeDocumentService.SettingsDialogData.ShowToolWindowForUnsupportedFiles;
         CodeDocumentService.GlobalSettings.UseCompactMode = CodeDocumentService.SettingsDialogData.UseCompactMode;
+        CodeDocumentService.GlobalSettings.EnableCSharp = CodeDocumentService.SettingsDialogData.EnableCSharp;
+        CodeDocumentService.GlobalSettings.EnableVisualBasic = CodeDocumentService.SettingsDialogData.EnableVisualBasic;
 
         await SettingsHelper.SaveGlobalSettings(CodeDocumentService);
 
         // Refresh the tool window with the new settings
         await CodeDocumentService.LoadGlobalSettings(readFromDisk: true);
+
+        await Refresh(
+            commandParameter,
+            clientContext,
+            cancellationToken);
     }
 
     [DataMember]

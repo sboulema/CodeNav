@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  version: '10.10.${{ github.run_number }}'
+  version: '10.11.${{ github.run_number }}'
   dotnetVersion: '8'
   repoUrl: ${{ github.server_url }}/${{ github.repository }}
   vsixPath: src/CodeNav/bin/Release/net472/CodeNav.vsix
@@ -142,20 +142,20 @@ jobs:
         uses: actions/download-artifact@v8
 
       - name: Publish to Marketplace
-        uses: cezarypiatek/VsixPublisherAction@1.2
+        uses: madskristensen/publish-marketplace@v2
         with:
           extension-file: ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}
           publish-manifest-file: CodeNav/publish-manifest.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Marketplace 2022
-        uses: cezarypiatek/VsixPublisherAction@1.2
+        uses: madskristensen/publish-marketplace@v2
         with:
           extension-file: ${{ github.workspace }}/CodeNav2022/${{ env.vsixPath }}
           publish-manifest-file: CodeNav2022/publish-manifest-2022.json
           personal-access-code: ${{ secrets.VS_PUBLISHER_ACCESS_TOKEN }}
 
       - name: Publish to Open VSIX Gallery
-        uses: timheuer/openvsixpublish@v1
+        uses: madskristensen/publish-vsixgallery@v1
         with:
           vsix-file: ${{ github.workspace }}/CodeNav/${{ env.vsixPath }}

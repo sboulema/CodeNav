@@ -32,8 +32,7 @@ internal class TextViewEventListener(
     {
         AppliesTo =
         [
-            DocumentFilter.FromDocumentType("CSharp"),
-            DocumentFilter.FromGlobPattern("**/*.cs", true),
+            DocumentFilter.FromGlobPattern("**/*.{cs,vb}", true),
         ],
     };
 
