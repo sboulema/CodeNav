@@ -33,6 +33,7 @@ Visual Studio extension to show the code structure of your current document
 
 # 🔤 Language support
 - C#
+- Visual Basic (enable it in the CodeNav settings)
 
 # ⬇️ Installing
 [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SamirBoulema.CodeNav2026)
@@ -60,4 +61,4 @@ The CodeNav tool window can be opened via the entry in the `Extensions` menu.
 ![Compact](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Compact.png)
 
 # 📄 Documentation
-Looking for more info? Read the full [Documentation](https://github.com/sboulema/CodeNav/blob/main/docs/index.md) with links, guides, troubleshooting, and tips. 
+Looking for more info? Read the full [Documentation](https://github.com/sboulema/CodeNav/blob/main/docs/index.md) with links, guides, troubleshooting, and tips.

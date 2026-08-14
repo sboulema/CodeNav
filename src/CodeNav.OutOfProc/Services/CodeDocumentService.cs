@@ -1,13 +1,15 @@
 ﻿using CodeNav.OutOfProc.Dialogs.FilterDialog;
 using CodeNav.OutOfProc.Dialogs.SettingsDialog;
 using CodeNav.OutOfProc.Helpers;
-using CodeNav.OutOfProc.Languages.CSharp.Mappers;
+using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.ToolWindows;
 using Microsoft.VisualStudio.Extensibility.UI;
 using System.Windows;
+using CSharpDocumentMapper = CodeNav.OutOfProc.Languages.CSharp.Mappers.DocumentMapper;
+using VisualBasicDocumentMapper = CodeNav.OutOfProc.Languages.VisualBasic.Mappers.DocumentMapper;
 
 namespace CodeNav.OutOfProc.Services;
 
@@ -16,6 +18,12 @@ public class CodeDocumentService(
     OutliningService outliningService,
     WindowFrameService windowFrameService)
 {
+    private readonly List<IDocumentMapper> documentMappers =
+    [
+        new CSharpDocumentMapper(),
+        new VisualBasicDocumentMapper(),
+    ];
+
     /// <summary>
     /// DataContext for the tool window.
     /// </summary>
@@ -62,9 +70,14 @@ public class CodeDocumentService(
                 return CodeDocumentViewModel;
             }
 
-            if (!DocumentMapper.CanMapDocument(filePath))
+            var documentMapper = documentMappers
+                .FirstOrDefault(mapper =>
+                    mapper.CanMapDocument(filePath, GlobalSettings!));
+
+            if (documentMapper == null)
             {
-                CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateNoCodeItemsFound();
+                CodeDocumentViewModel.CodeItems =
+                    PlaceholderHelper.CreateNoCodeItemsFound();
 
                 // No code items found, hide the tool window after showing the "No code items found" message
                 await HideToolWindow(cancellationToken);
@@ -82,7 +95,7 @@ public class CodeDocumentService(
                 loadingCancellationToken);
 
             // Get the new list of code items
-            var codeItems = await DocumentMapper.MapDocument(
+            var codeItems = await documentMapper.MapDocument(
                 text,
                 filePath,
                 CodeDocumentViewModel,
@@ -185,6 +198,8 @@ public class CodeDocumentService(
                 EnableCrashAnalytics = GlobalSettings.EnableCrashAnalytics,
                 ShowToolWindowForUnsupportedFiles = GlobalSettings.ShowToolWindowForUnsupportedFiles,
                 UseCompactMode = GlobalSettings.UseCompactMode,
+                EnableCSharp = GlobalSettings.EnableCSharp,
+                EnableVisualBasic = GlobalSettings.EnableVisualBasic,
             };
 
             var filterRules = GlobalSettings

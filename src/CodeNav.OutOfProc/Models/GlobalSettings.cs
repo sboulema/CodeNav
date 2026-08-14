@@ -45,6 +45,13 @@ public class GlobalSettings
     public bool UseCompactMode { get; set; }
 
     /// <summary>
+    /// Settings dialog - Languages enabled for CodeNav.
+    /// </summary>
+    public bool EnableCSharp { get; set; } = true;
+
+    public bool EnableVisualBasic { get; set; } = false;
+
+    /// <summary>
     /// Main toolbar - Setting to store the selected sort order for code items
     /// </summary>
     public SortOrderEnum SortOrder { get; set; } = SortOrderEnum.SortByFile;

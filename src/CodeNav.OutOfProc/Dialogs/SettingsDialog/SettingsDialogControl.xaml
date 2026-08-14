@@ -43,6 +43,21 @@
         </GroupBox>
 
         <GroupBox
+            Header="Languages"
+            Margin="5"
+            Padding="5">
+            <StackPanel>
+                <CheckBox IsChecked="{Binding EnableCSharp, Mode=TwoWay}">
+                    C#
+                </CheckBox>
+
+                <CheckBox IsChecked="{Binding EnableVisualBasic, Mode=TwoWay}">
+                    Visual Basic
+                </CheckBox>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox
             Header="Performance"
             Margin="5"
             Padding="5">
