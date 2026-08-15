@@ -18,6 +18,5 @@ Last but not least everything is written with async programming in mind.
 - Visual studio 2017, 2019 support
 
 ## Languages dropped in v10
-- Visual Basic
 - JavaScript
 - CSS

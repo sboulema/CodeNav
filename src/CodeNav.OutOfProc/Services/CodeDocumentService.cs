@@ -13,21 +13,37 @@ using VisualBasicDocumentMapper = CodeNav.OutOfProc.Languages.VisualBasic.Mapper
 
 namespace CodeNav.OutOfProc.Services;
 
-public class CodeDocumentService(
-    OutputWindowService logService,
-    OutliningService outliningService,
-    WindowFrameService windowFrameService)
+public class CodeDocumentService
 {
+    private readonly OutputWindowService logService;
+    private readonly OutliningService outliningService;
+    private readonly WindowFrameService windowFrameService;
+
     private readonly List<IDocumentMapper> documentMappers =
     [
         new CSharpDocumentMapper(),
         new VisualBasicDocumentMapper(),
     ];
 
+    public CodeDocumentService(
+        OutputWindowService logService,
+        OutliningService outliningService,
+        WindowFrameService windowFrameService)
+    {
+        this.logService = logService;
+        this.outliningService = outliningService;
+        this.windowFrameService = windowFrameService;
+
+        CodeDocumentViewModel = new CodeDocumentViewModel
+        {
+            CodeDocumentService = this,
+        };
+    }
+
     /// <summary>
     /// DataContext for the tool window.
     /// </summary>
-    public CodeDocumentViewModel CodeDocumentViewModel { get; set; } = new();
+    public CodeDocumentViewModel CodeDocumentViewModel { get; set; }
 
     /// <summary>
     /// DataContext for the settings dialog.
@@ -108,7 +124,6 @@ public class CodeDocumentService(
             await loadingCancellationTokenSource.CancelAsync();
 
             // Set properties on the CodeDocumentViewModel that are needed for other features
-            CodeDocumentViewModel.CodeDocumentService = this;
             CodeDocumentViewModel.FilePath = filePath ?? string.Empty;
 
             if (!codeItems.Any())
