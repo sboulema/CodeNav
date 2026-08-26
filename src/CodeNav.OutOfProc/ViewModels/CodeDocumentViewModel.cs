@@ -324,6 +324,11 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
 
         // Refresh the list of code items with the new filter rules
         await CodeDocumentService.LoadGlobalSettings(readFromDisk: true);
+
+        await Refresh(
+            commandParameter,
+            clientContext,
+            cancellationToken);
     }
 
     [DataMember]

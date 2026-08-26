@@ -1,8 +1,10 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Interfaces;
 using CodeNav.OutOfProc.Languages.TypeScript.Parsing;
 using CodeNav.OutOfProc.Mappers;
 using CodeNav.OutOfProc.ViewModels;
+using System.Windows;
 
 namespace CodeNav.OutOfProc.Languages.TypeScript.Mappers;
 
@@ -93,14 +95,38 @@ public static class CodeItemMapper
         return codeItem;
     }
 
-    private static CodeClassItem MapEnum(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
+    private static CodeItem MapEnum(TypeScriptNode node, CodeDocumentViewModel codeDocumentViewModel, string parentFullName)
     {
-        var codeItem = BaseMapper.MapBase<CodeClassItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        CodeItem codeItem;
+
+        var fullName = string.IsNullOrEmpty(parentFullName)
+            ? node.Name
+            : $"{parentFullName}.{node.Name}";
+
+        var enumMembers = MapNodes(node.Members, codeDocumentViewModel, fullName, isMember: false);
+
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, enumMembers, codeDocumentViewModel.FilterRules);
+
+        if (enumMembers.Any(enumMember => enumMember.Visibility == Visibility.Visible))
+        {
+            // Map enum as item containing members
+            codeItem = BaseMapper.MapBase<CodeClassItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+
+            ((CodeClassItem)codeItem).Parameters = node.Type;
+            codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name, ((CodeClassItem)codeItem).Parameters);
+            ((CodeClassItem)codeItem).Members.AddRange(enumMembers);
+        }
+        else
+        {
+            // Map enum as single item
+            codeItem = BaseMapper.MapBase<CodeFunctionItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
+
+            ((CodeFunctionItem)codeItem).Parameters = node.Type;
+            codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name, ((CodeFunctionItem)codeItem).Parameters);
+        }
+
         codeItem.Kind = CodeItemKindEnum.Enum;
-        codeItem.Parameters = node.Type;
         codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
-        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name, codeItem.Parameters);
-        codeItem.Members = MapNodes(node.Members, codeDocumentViewModel, codeItem.FullName, isMember: false);
 
         return codeItem;
     }

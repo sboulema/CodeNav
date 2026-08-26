@@ -22,8 +22,10 @@ public static class CodeItemExtensions
     /// </summary>
     /// <param name="codeDocument">Flat list of CodeItems</param>
     /// <returns>Flat list of CodeItems</returns>
-    public static IEnumerable<CodeItem> FilterNull(this IEnumerable<CodeItem> codeDocument)
-        => codeDocument.Where(codeItem => codeItem != null);
+    public static IEnumerable<CodeItem> FilterNull(this IEnumerable<CodeItem?> codeItems)
+        => codeItems
+            .Where(codeItem => codeItem != null)
+            .Cast<CodeItem>();
 
     public static void AddIfNotNull(this List<CodeItem> items, CodeItem? item)
     {

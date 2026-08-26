@@ -1,8 +1,10 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Mappers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System.Windows;
 
 namespace CodeNav.OutOfProc.Languages.VisualBasic.Mappers;
 
@@ -14,43 +16,60 @@ public static class EnumMapper
         SyntaxTree tree,
         CodeDocumentViewModel codeDocumentViewModel)
     {
-        var statement = member.EnumStatement;
+        CodeItem codeItem;
 
-        var codeItem = BaseMapper.MapBase<CodeClassItem>(
-            member,
-            semanticModel,
-            codeDocumentViewModel,
-            statement.Identifier,
-            modifiers: statement.Modifiers);
+        var enumMembers = member
+            .Members
+            .OfType<EnumMemberDeclarationSyntax>()
+            .Select(enumMember => MapEnumMember(enumMember, semanticModel, codeDocumentViewModel))
+            .ToList();
 
-        codeItem.Kind = CodeItemKindEnum.Enum;
-        codeItem.Moniker = IconMapper.MapMoniker(
-            codeItem.Kind,
-            codeItem.Access);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, enumMembers, codeDocumentViewModel.FilterRules);
 
-        var regions = RegionMapper.MapRegions(
-            tree,
-            member.Span,
-            codeDocumentViewModel);
-
-        foreach (var enumMember in member.Members.OfType<EnumMemberDeclarationSyntax>())
+        if (enumMembers.Any(enumMember => enumMember.Visibility == Visibility.Visible))
         {
-            var memberItem = MapEnumMember(
-                enumMember,
+            // Map enum as item containing members
+            codeItem = BaseMapper.MapBase<CodeClassItem>(
+                member,
                 semanticModel,
+                codeDocumentViewModel,
+                member.EnumStatement.Identifier,
+                modifiers: member.EnumStatement.Modifiers);
+
+            var regions = RegionMapper.MapRegions(
+                tree,
+                member.Span,
                 codeDocumentViewModel);
 
-            if (RegionMapper.AddToRegion(regions, memberItem))
+            RegionMapper.AddRegionsIfNotPresent(
+                ((CodeClassItem)codeItem).Members,
+                regions);
+
+            foreach (var enumMember in enumMembers)
             {
-                continue;
+                if (RegionMapper.AddToRegion(regions, enumMember))
+                {
+                    continue;
+                }
+
+                ((CodeClassItem)codeItem).Members.Add(enumMember);
             }
 
-            codeItem.Members.Add(memberItem);
+            ((CodeClassItem)codeItem).Members.AddRange(enumMembers);
+        }
+        else
+        {
+            // Map enum as single item
+            codeItem = BaseMapper.MapBase<CodeFunctionItem>(
+                member,
+                semanticModel,
+                codeDocumentViewModel,
+                member.EnumStatement.Identifier,
+                modifiers: member.EnumStatement.Modifiers);
         }
 
-        RegionMapper.AddRegionsIfNotPresent(
-            codeItem.Members,
-            regions);
+        codeItem.Kind = CodeItemKindEnum.Enum;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
         return codeItem;
     }
