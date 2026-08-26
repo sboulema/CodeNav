@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.UI;
 using Microsoft.VisualStudio.RpcContracts.Notifications;
+using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -25,6 +26,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         SortByTypeCommand = new(SortByType);
         ExpandAllCommand = new(ExpandAll);
         CollapseAllCommand = new(CollapseAll);
+        PinCommand = new(Pin);
         SettingsCommand = new(Settings);
 
         // Filter Toolbar
@@ -163,6 +165,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         set => SetProperty(ref _useCompactMode, value);
     }
 
+    private bool _isPinned;
+
+    /// <summary>
+    /// Indicates whether CodeNav is pinned to the current document.
+    /// </summary>
+    [DataMember]
+    public bool IsPinned
+    {
+        get => _isPinned;
+        set => SetProperty(ref _isPinned, value);
+    }
+
     #endregion
 
     #region Commands
@@ -223,6 +237,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     private async Task CollapseAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
         OutliningService.CollapseAll(CodeDocumentService?.CodeDocumentViewModel);
+    }
+
+    [DataMember]
+    public AsyncCommand PinCommand { get; }
+    private async Task Pin(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        IsPinned = commandParameter is bool value && value;
+
+        if (!IsPinned)
+        {
+            await Refresh(commandParameter, clientContext, cancellationToken);
+        }
     }
 
     [DataMember]

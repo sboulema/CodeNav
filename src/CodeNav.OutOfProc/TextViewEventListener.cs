@@ -43,6 +43,13 @@ internal class TextViewEventListener(
         {
             await codeDocumentService.LoadGlobalSettings();
 
+            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
+            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
+                args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            {
+                return;
+            }
+
             // if the document is too large, skip processing to avoid performance issues
             if (args.AfterTextView.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
@@ -102,6 +109,13 @@ internal class TextViewEventListener(
     {
         try
         {
+            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
+            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
+                textViewSnapshot.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            {
+                return;
+            }
+
             codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
 
             await codeDocumentService.HideToolWindow(cancellationToken);
@@ -118,6 +132,13 @@ internal class TextViewEventListener(
         try
         {
             await codeDocumentService.LoadGlobalSettings();
+
+            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
+            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
+                textViewSnapshot.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            {
+                return;
+            }
 
             if (textViewSnapshot.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
