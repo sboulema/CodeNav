@@ -116,6 +116,9 @@ internal class TextViewEventListener(
                 return;
             }
 
+            // The pinned document itself was closed, unpin so CodeNav can follow the active document again
+            codeDocumentService.CodeDocumentViewModel.IsPinned = false;
+
             codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
 
             await codeDocumentService.HideToolWindow(cancellationToken);

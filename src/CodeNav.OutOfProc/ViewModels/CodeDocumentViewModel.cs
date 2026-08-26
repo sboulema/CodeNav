@@ -192,6 +192,12 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
             return;
         }
 
+        // While pinned, only refresh with the pinned document, never with whatever is active in the editor
+        if (IsPinned && textViewSnapshot.FilePath != FilePath)
+        {
+            return;
+        }
+
         if (CodeDocumentService == null)
         {
             return;
@@ -243,8 +249,8 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand PinCommand { get; }
     private async Task Pin(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        IsPinned = commandParameter is bool value && value;
-
+        // IsPinned has already been toggled to its new value by the toolbar button's two-way binding.
+        // When unpinning, immediately sync back up with whatever document is currently active.
         if (!IsPinned)
         {
             await Refresh(commandParameter, clientContext, cancellationToken);
