@@ -54,8 +54,6 @@ public static class EnumMapper
 
                 ((CodeClassItem)codeItem).Members.Add(enumMember);
             }
-
-            ((CodeClassItem)codeItem).Members.AddRange(enumMembers);
         }
         else
         {
