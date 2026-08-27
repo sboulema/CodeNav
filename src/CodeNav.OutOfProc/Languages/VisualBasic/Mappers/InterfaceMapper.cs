@@ -1,72 +1,90 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Extensions;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Mappers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System.Windows;
 
 namespace CodeNav.OutOfProc.Languages.VisualBasic.Mappers;
 
 public static class InterfaceMapper
 {
-    public static CodeInterfaceItem MapInterface(
+    public static CodeItem MapInterface(
         InterfaceBlockSyntax member,
         SemanticModel semanticModel,
         SyntaxTree tree,
         CodeDocumentViewModel codeDocumentViewModel)
     {
-        var codeItem = BaseMapper.MapBase<CodeInterfaceItem>(
-            member,
-            semanticModel,
-            codeDocumentViewModel,
-            member.InterfaceStatement.Identifier,
-            modifiers: member.InterfaceStatement.Modifiers);
+        CodeItem codeItem;
 
-        codeItem.Kind = CodeItemKindEnum.Interface;
-        codeItem.Moniker = IconMapper.MapMoniker(
-            codeItem.Kind,
-            codeItem.Access);
+        var interfaceMembers = member
+            .Members
+            .Select(interfaceMember => DocumentMapper.MapMember(interfaceMember, tree, semanticModel, codeDocumentViewModel))
+            .FilterNull()
+            .ToList();
 
-        codeItem.Parameters = MapInheritance(member);
+        interfaceMembers
+            .ForEach(interfaceMember => interfaceMember.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember));
 
-        codeItem.Tooltip = TooltipMapper.Map(
-            member,
-            codeItem.Access,
-            string.Empty,
-            codeItem.Name,
-            codeItem.Parameters);
+        VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, interfaceMembers, codeDocumentViewModel.FilterRules);
 
-        var regions = RegionMapper.MapRegions(
-            tree,
-            member.Span,
-            codeDocumentViewModel);
-
-        foreach (var interfaceMember in member.Members)
+        if (interfaceMembers.Any(interfaceMember => interfaceMember.Visibility == Visibility.Visible))
         {
-            foreach (var memberItem in DocumentMapper.MapMembers(
-                interfaceMember,
-                tree,
+            codeItem = BaseMapper.MapBase<CodeInterfaceItem>(
+                member,
                 semanticModel,
-                codeDocumentViewModel))
+                codeDocumentViewModel,
+                member.InterfaceStatement.Identifier,
+                modifiers: member.InterfaceStatement.Modifiers);
+
+            ((CodeInterfaceItem)codeItem).Parameters = MapInheritance(member);
+            codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, ((CodeInterfaceItem)codeItem).Parameters);
+
+            var regions = RegionMapper.MapRegions(tree, member.Span, codeDocumentViewModel);
+
+            foreach (var interfaceMember in member.Members)
             {
-                if (memberItem == null)
+                foreach (var memberItem in DocumentMapper.MapMembers(
+                    interfaceMember,
+                    tree,
+                    semanticModel,
+                    codeDocumentViewModel))
                 {
-                    continue;
+                    if (memberItem == null)
+                    {
+                        continue;
+                    }
+
+                    memberItem.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember);
+
+                    if (RegionMapper.AddToRegion(regions, memberItem))
+                    {
+                        continue;
+                    }
+
+                    ((CodeInterfaceItem)codeItem).Members.Add(memberItem);
                 }
-
-                memberItem.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember);
-
-                if (RegionMapper.AddToRegion(regions, memberItem))
-                {
-                    continue;
-                }
-
-                codeItem.Members.Add(memberItem);
             }
+
+            RegionMapper.AddRegionsIfNotPresent(((CodeInterfaceItem)codeItem).Members, regions);
+        }
+        else
+        {
+            codeItem = BaseMapper.MapBase<CodePropertyItem>(
+                member,
+                semanticModel,
+                codeDocumentViewModel,
+                member.InterfaceStatement.Identifier,
+                modifiers: member.InterfaceStatement.Modifiers);
+
+            ((CodePropertyItem)codeItem).Parameters = MapInheritance(member);
+            codeItem.Tooltip = TooltipMapper.Map(member, codeItem.Access, string.Empty, codeItem.Name, ((CodePropertyItem)codeItem).Parameters);
         }
 
-        RegionMapper.AddRegionsIfNotPresent(
-            codeItem.Members,
-            regions);
+        codeItem.Kind = CodeItemKindEnum.Interface;
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
 
         return codeItem;
     }
