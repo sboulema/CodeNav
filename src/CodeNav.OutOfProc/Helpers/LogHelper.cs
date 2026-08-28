@@ -1,7 +1,7 @@
 ﻿using CodeNav.OutOfProc.Services;
 using CodeNav.OutOfProc.ViewModels;
-using Microsoft.VisualStudio.ApplicationInsights;
-using Microsoft.VisualStudio.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
@@ -11,20 +11,26 @@ namespace CodeNav.OutOfProc.Helpers;
 public static class LogHelper
 {
     private static TelemetryClient? _client;
-    private const string InstrumentationKey = "0913ac4a-1127-4d28-91cf-07673e70200f";
+    private const string ConnectionString = "InstrumentationKey=0913ac4a-1127-4d28-91cf-07673e70200f;IngestionEndpoint=https://westeurope-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/;ApplicationId=d3364940-b523-44c6-b46f-ddd7a63f8d15";
 
     public static void GetClient()
     {
-        _client = new TelemetryClient(new()
-        {
-            InstrumentationKey = InstrumentationKey,
-            TelemetryChannel = new InMemoryChannel(),
-        })
-        {
-            InstrumentationKey = InstrumentationKey,
-        };
+        var storageFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "CodeNav",
+            "Telemetry");
 
-        _client.Context.Component.Version = GetExecutingAssemblyVersion().ToString();
+        Directory.CreateDirectory(storageFolder);
+
+        _client = new(new()
+        {
+            ConnectionString = ConnectionString,
+            TelemetryChannel = new ServerTelemetryChannel
+            {
+                StorageFolder = storageFolder,
+                DeveloperMode = false
+            },
+        });
     }
 
     public static async Task LogException(
@@ -111,7 +117,9 @@ public static class LogHelper
                 _client.TrackException(exception, properties);
             }
 
+            // Flush telemetry and wait briefly to ensure transmission
             _client.Flush();
+            Thread.Sleep(100);
         }
         catch (Exception)
         {
