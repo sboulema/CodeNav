@@ -88,6 +88,8 @@ public class CodeDocumentService
                 return CodeDocumentViewModel;
             }
 
+            await LoadGlobalSettings();
+
             var documentMapper = documentMappers
                 .FirstOrDefault(mapper =>
                     mapper.CanMapDocument(filePath, GlobalSettings!));

@@ -102,7 +102,25 @@ public class CodeItem : NotifyPropertyChangedObject
     /// </remarks>
     internal string FullName = string.Empty;
 
+    /// <summary>
+    /// Primary kind of this code item.
+    /// </summary>
+    /// <remarks>
+    /// The primary kind describes what the code item is structurally, such as a
+    /// class, method, property, or field.
+    /// </remarks>
     public CodeItemKindEnum Kind;
+
+    /// <summary>
+    /// Additional kinds associated with this code item.
+    /// </summary>
+    /// <remarks>
+    /// Additional kinds provide contextual classifications without replacing the
+    /// primary <see cref="Kind"/>. For example, an interface method can have
+    /// <see cref="CodeItemKindEnum.Method"/> as its primary kind and
+    /// <see cref="CodeItemKindEnum.InterfaceMember"/> as an additional kind.
+    /// </remarks>
+    public HashSet<CodeItemKindEnum> AdditionalKinds { get; } = [];
 
     public CodeItemAccessEnum Access;
 

@@ -48,15 +48,15 @@ public class TextViewService
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
             var textView = await GetCurrentTextViewAsync();
 
-            if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
+            if (!IsSupportedLanguage(textView))
             {
                 if (outOfProcService == null)
                 {
                     return;
                 }
 
-                // Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
-                await outOfProcService.LogException($"Active text view is not in a C# editor. '{textView.TextBuffer.ContentType.TypeName}'");
+                // Log that the cursor and thus active text view is not in a supported language editor, for example the output window.
+                await outOfProcService.LogException($"Active text view is not in a supported language editor. '{textView.TextBuffer.ContentType.TypeName}'");
 
                 return;
             }
@@ -98,16 +98,16 @@ public class TextViewService
             // Not using context.GetActiveTextViewAsync here because VisualStudio.Extensibility doesn't support viewscroller yet.
             var textView = await GetCurrentTextViewAsync();
 
-            if (!textView.TextBuffer.ContentType.TypeName.Equals("CSharp"))
+            if (!IsSupportedLanguage(textView))
             {
                 if (outOfProcService == null)
                 {
                     return;
                 }
 
-                // Log that the cursor and thus active text view is not in a csharp editor, for example the output window.
-                await outOfProcService.LogException($"Active text view is not in a C# editor. '{textView.TextBuffer.ContentType.TypeName}'");
-                
+                // Log that the cursor and thus active text view is not in a supported language editor, for example the output window.
+                await outOfProcService.LogException($"Active text view is not in a supported language editor. '{textView.TextBuffer.ContentType.TypeName}'");
+
                 return;
             }
 
@@ -240,4 +240,21 @@ public class TextViewService
         => textView != null && textView.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document)
             ? document
             : null;
+
+    /// <summary>
+    /// Check if the given text view is in a supported language editor (C#, VB, TypeScript)
+    /// </summary>
+    /// <param name="textView">WPF Text View</param>
+    /// <returns></returns>
+    private static bool IsSupportedLanguage(IWpfTextView? textView)
+    {
+        if (textView == null)
+        {
+            return false;
+        }
+
+        var language = textView.TextBuffer.ContentType.TypeName;
+
+        return language == "CSharp" || language == "Basic" || language == "TypeScript";
+    }
 }

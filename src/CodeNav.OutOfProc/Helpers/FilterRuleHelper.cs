@@ -21,6 +21,7 @@ public static class FilterRuleHelper
             .Where(filterRule => filterRule.Access == codeItem.Access ||
                                  filterRule.Access == CodeItemAccessEnum.All)
             .Where(filterRule => filterRule.Kind == codeItem.Kind ||
+                                 codeItem.AdditionalKinds.Contains(filterRule.Kind) ||
                                  filterRule.Kind == CodeItemKindEnum.All)
             .Where(filterRule => filterRule.IsEmpty == null ||
                                  filterRule.IsEmpty == IsEmpty(codeItem))

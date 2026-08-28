@@ -44,6 +44,9 @@ public enum CodeItemKindEnum
     [EnumOrder(11)]
     Interface,
 
+    [EnumOrder(11)]
+    InterfaceMember,
+
     [EnumOrder(4)]
     LocalFunction,
 
