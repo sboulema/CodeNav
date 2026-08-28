@@ -87,36 +87,11 @@
                 <ToggleButton
                     Command="{Binding Path=PinCommand}"
                     CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                    IsChecked="{Binding IsPinned}">
-
-                    <ToggleButton.Style>
-                        <Style
-                            TargetType="{x:Type ToggleButton}"
-                            BasedOn="{DynamicResource ToolbarToggleButtonStyle}">
-                            <Setter Property="ToolTip" Value="Pin CodeNav to the current document" />
-
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsPinned}" Value="True">
-                                    <Setter Property="ToolTip" Value="Unpin CodeNav" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ToggleButton.Style>
-
+                    IsChecked="{Binding IsPinned}"
+                    ToolTip="Pin"
+                    Style="{DynamicResource ToolbarToggleButtonStyle}">
                     <ToggleButton.Content>
-                        <vs:Image Width="16" Height="16">
-                            <vs:Image.Style>
-                                <Style TargetType="{x:Type vs:Image}">
-                                    <Setter Property="Source" Value="KnownMonikers.Pin" />
-
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsPinned}" Value="True">
-                                            <Setter Property="Source" Value="KnownMonikers.Unpin" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </vs:Image.Style>
-                        </vs:Image>
+                        <vs:Image Source="KnownMonikers.Pin" Width="16" Height="16" />
                     </ToggleButton.Content>
                 </ToggleButton>
 
