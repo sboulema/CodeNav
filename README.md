@@ -24,7 +24,7 @@ Visual Studio extension to show the code structure of your current document
 - Synced collapsing/expanding outline regions
 - Option to hide the tool window for unsupported files and files without code items
 - Compact mode with less spacing optimizing screen real estate
-
+- Pin an active document to keep the CodeNav window open for that document even when switching to other documents
 
 # 💻 Supported Visual Studio versions
 

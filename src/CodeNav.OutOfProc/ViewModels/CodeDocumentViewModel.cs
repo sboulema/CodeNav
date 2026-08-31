@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.UI;
 using Microsoft.VisualStudio.RpcContracts.Notifications;
+using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -25,6 +26,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         SortByTypeCommand = new(SortByType);
         ExpandAllCommand = new(ExpandAll);
         CollapseAllCommand = new(CollapseAll);
+        PinCommand = new(Pin);
         SettingsCommand = new(Settings);
 
         // Filter Toolbar
@@ -163,6 +165,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         set => SetProperty(ref _useCompactMode, value);
     }
 
+    private bool _isPinned;
+
+    /// <summary>
+    /// Indicates whether CodeNav is pinned to the current document.
+    /// </summary>
+    [DataMember]
+    public bool IsPinned
+    {
+        get => _isPinned;
+        set => SetProperty(ref _isPinned, value);
+    }
+
     #endregion
 
     #region Commands
@@ -174,6 +188,12 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
         var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
 
         if (textViewSnapshot == null)
+        {
+            return;
+        }
+
+        // While pinned, only refresh with the pinned document, never with whatever is active in the editor
+        if (IsPinned && textViewSnapshot.FilePath != FilePath)
         {
             return;
         }
@@ -223,6 +243,18 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     private async Task CollapseAll(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
         OutliningService.CollapseAll(CodeDocumentService?.CodeDocumentViewModel);
+    }
+
+    [DataMember]
+    public AsyncCommand PinCommand { get; }
+    private async Task Pin(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
+    {
+        // IsPinned has already been toggled to its new value by the toolbar button's two-way binding.
+        // When unpinning, immediately sync back up with whatever document is currently active.
+        if (!IsPinned)
+        {
+            await Refresh(commandParameter, clientContext, cancellationToken);
+        }
     }
 
     [DataMember]

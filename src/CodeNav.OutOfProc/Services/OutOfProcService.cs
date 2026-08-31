@@ -39,6 +39,13 @@ internal class OutOfProcService(
             return;
         }
 
+        // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
+        if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
+            documentView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+        {
+            return;
+        }
+
         // Conditions:
         // - Frame is not a document frame
         // Actions:

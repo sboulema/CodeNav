@@ -84,6 +84,19 @@
 
                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="2 0" />
 
+                <ToggleButton
+                    Command="{Binding Path=PinCommand}"
+                    CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                    IsChecked="{Binding IsPinned}"
+                    ToolTip="Pin"
+                    Style="{DynamicResource ToolbarToggleButtonStyle}">
+                    <ToggleButton.Content>
+                        <vs:Image Source="KnownMonikers.Pin" Width="16" Height="16" />
+                    </ToggleButton.Content>
+                </ToggleButton>
+
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="2 0" />
+
                 <Button
                     Command="{Binding Path=SettingsCommand}"
                     ToolTip="Settings"
