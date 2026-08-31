@@ -31,7 +31,7 @@ public static class CodeItemMapper
         {
             CodeItemKindEnum.Namespace => MapContainer<CodeNamespaceItem>(node, codeDocumentViewModel, parentFullName),
             CodeItemKindEnum.Class => MapContainer<CodeClassItem>(node, codeDocumentViewModel, parentFullName, includeHeritage: true),
-            CodeItemKindEnum.Interface => MapContainer<CodeInterfaceItem>(node, codeDocumentViewModel, parentFullName, includeHeritage: true),
+            CodeItemKindEnum.Interface => MapInterface(node, codeDocumentViewModel, parentFullName, includeHeritage: true),
             CodeItemKindEnum.Region => MapRegion(node, codeDocumentViewModel, parentFullName, isMember, parentKind),
             CodeItemKindEnum.Enum => MapEnum(node, codeDocumentViewModel, parentFullName),
             CodeItemKindEnum.EnumMember => MapEnumMember(node, codeDocumentViewModel, parentFullName),
@@ -48,6 +48,30 @@ public static class CodeItemMapper
         string parentFullName,
         bool includeHeritage = false) where T : CodeItem, IMembers, new()
     {
+        var codeItem = BaseMapper.MapBase<T>(node, codeDocumentViewModel, parentFullName, isMember: false);
+        codeItem.Kind = node.Kind;
+
+        if (codeItem is CodeClassItem classItem)
+        {
+            classItem.Parameters = includeHeritage ? node.Heritage : string.Empty;
+        }
+
+        codeItem.Moniker = IconMapper.MapMoniker(codeItem.Kind, codeItem.Access);
+        codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name,
+            codeItem is CodeClassItem heritageItem ? heritageItem.Parameters : string.Empty);
+
+        var isChildMember = node.Kind is CodeItemKindEnum.Class or CodeItemKindEnum.Interface;
+        codeItem.Members = MapNodes(node.Members, codeDocumentViewModel, codeItem.FullName, isChildMember, node.Kind);
+
+        return codeItem;
+    }
+
+    private static CodeItem MapInterface(
+        TypeScriptNode node,
+        CodeDocumentViewModel codeDocumentViewModel,
+        string parentFullName,
+        bool includeHeritage = false)
+    {
         CodeItem codeItem;
 
         var fullName = string.IsNullOrEmpty(parentFullName)
@@ -56,19 +80,16 @@ public static class CodeItemMapper
         var isChildMember = node.Kind is CodeItemKindEnum.Class or CodeItemKindEnum.Interface;
         var members = MapNodes(node.Members, codeDocumentViewModel, fullName, isChildMember, node.Kind);
 
-        if (node.Kind is CodeItemKindEnum.Interface)
-        {
-            members
-                .ForEach(interfaceMember => interfaceMember.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember));
-        }
+        members
+            .ForEach(interfaceMember => interfaceMember.AdditionalKinds.Add(CodeItemKindEnum.InterfaceMember));
 
         VisibilityHelper.SetCodeItemVisibility(codeDocumentViewModel, members, codeDocumentViewModel.FilterRules);
 
         if (members.Any(enumMember => enumMember.Visibility == Visibility.Visible))
         {
-            codeItem = BaseMapper.MapBase<T>(node, codeDocumentViewModel, parentFullName, isMember: false);
+            codeItem = BaseMapper.MapBase<CodeInterfaceItem>(node, codeDocumentViewModel, parentFullName, isMember: false);
 
-            ((T)codeItem).Members.AddRange(members);
+            ((CodeInterfaceItem)codeItem).Members.AddRange(members);
 
             if (codeItem is CodeClassItem classItem)
             {
@@ -85,7 +106,7 @@ public static class CodeItemMapper
         codeItem.Tooltip = TooltipMapper.Map(codeItem.Access, string.Empty, codeItem.Name,
             codeItem is CodeClassItem heritageItem ? heritageItem.Parameters : string.Empty);
 
-        return (T)codeItem;
+        return codeItem;
     }
 
     private static CodeRegionItem MapRegion(

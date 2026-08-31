@@ -2,6 +2,10 @@
 
 Welcome to the CodeNav documentation. Browse the sections below to learn more about the extension and its development.
 
+## Troubleshooting
+
+Having issues with CodeNav? Read the [troubleshooting guide](troubleshooting.md) to learn how to collect error logs and report issues.
+
 ## Filter rules
 Read all on how to modify the appearance of code items usin [filter rules](filterrules.md)
 
