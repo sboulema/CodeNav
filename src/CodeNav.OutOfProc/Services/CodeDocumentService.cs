@@ -111,8 +111,12 @@ public class CodeDocumentService
     }
 
     /// <summary>
-    /// Update every non-pinned ViewModel with the given, newly active document.
+    /// Update ViewModels with the given, newly active document.
     /// </summary>
+    /// <remarks>
+    /// - ViewModel is not pinned: Update the ViewModel with the new document<br/>
+    /// - ViewModel is pinned and the document path is the same: Update the ViewModel with the new document
+    /// </remarks>
     public async Task UpdateCodeDocumentViewModels(
         VisualStudioExtensibility? extensibility,
         string? filePath,
@@ -123,8 +127,7 @@ public class CodeDocumentService
         lastText = text;
 
         var activeCodeDocumentViewModels = CodeDocumentViewModels
-            .Where(window => !(window.IsPinned && window.FilePath != filePath))
-            .ToList();
+            .Where(model => !model.IsPinned || model.FilePath == filePath);
 
         foreach (var codeDocumentViewModel in activeCodeDocumentViewModels)
         {

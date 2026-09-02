@@ -32,7 +32,7 @@ internal class TextViewEventListener(
     {
         AppliesTo =
         [
-            DocumentFilter.FromGlobPattern("**/*.{cs,vb}", true),
+            DocumentFilter.FromGlobPattern("**/*.{cs,vb,ts,tsx}", true),
         ],
     };
 
@@ -44,8 +44,8 @@ internal class TextViewEventListener(
             await codeDocumentService.LoadGlobalSettings();
 
             // Windows pinned to a different document (see issue #186) don't follow the active document
-            var activeWindows = codeDocumentService.CodeDocumentViewModels
-                .Where(window => !(window.IsPinned && window.FilePath != args.AfterTextView.FilePath))
+            var activeCodeDocumentViewModels = codeDocumentService.CodeDocumentViewModels
+                .Where(model => !(model.IsPinned && model.FilePath != args.AfterTextView.FilePath))
                 .ToList();
 
             // if the document is too large, skip processing to avoid performance issues
@@ -53,7 +53,7 @@ internal class TextViewEventListener(
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
             {
                 // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-                foreach (var window in activeWindows)
+                foreach (var window in activeCodeDocumentViewModels)
                 {
                     window.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
                 }
@@ -61,13 +61,9 @@ internal class TextViewEventListener(
                 return;
             }
 
-            // Document changed:
-            // - File path changed
-            // - Edits made in the document
-            // Action:
-            // - Update code items list
-            if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
-                activeWindows.Any(window => window.FilePath != args.AfterTextView.FilePath))
+            // Document changed - Update code items list
+            if ((args.Edits.Any() &&
+                codeDocumentService.SettingsDialogData.UpdateWhileTyping))
             {
 #pragma warning disable VSTHRD101 // Avoid unsupported async delegates
                 await debounceDispatcher.DebounceAsync(async () =>
@@ -86,7 +82,7 @@ internal class TextViewEventListener(
             if (args.Edits.Any() &&
                 codeDocumentService.SettingsDialogData.ShowHistoryIndicators)
             {
-                foreach (var window in activeWindows)
+                foreach (var window in activeCodeDocumentViewModels)
                 {
                     await HistoryHelper.AddItemToHistory(window, args.Edits);
                 }
@@ -97,7 +93,7 @@ internal class TextViewEventListener(
                 args.AfterTextView.Selection.ActivePosition.GetContainingLine().LineNumber &&
                 codeDocumentService.SettingsDialogData.AutoHighlight)
             {
-                foreach (var window in activeWindows)
+                foreach (var window in activeCodeDocumentViewModels)
                 {
                     await HighlightHelper.HighlightCurrentItem(
                         window,
