@@ -6,9 +6,9 @@ using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.Services;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
+using Microsoft.VisualStudio.Extensibility.ToolWindows;
 using Microsoft.VisualStudio.Extensibility.UI;
 using Microsoft.VisualStudio.RpcContracts.Notifications;
-using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 using System.Windows;
 
@@ -36,6 +36,8 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     }
 
     public CodeDocumentService? CodeDocumentService { get; set; }
+
+    public ToolWindow? ToolWindow { get; set; }
 
     public SortOrderEnum SortOrder = SortOrderEnum.SortByFile;
 
@@ -207,6 +209,7 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
             clientContext.Extensibility,
             textViewSnapshot.FilePath,
             textViewSnapshot.Document.Text.CopyToString(),
+            this,
             cancellationToken);
     }
 
@@ -214,21 +217,21 @@ public class CodeDocumentViewModel : NotifyPropertyChangedObject
     public AsyncCommand SortByNameCommand { get; }
     private async Task SortByName(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByName, cancellationToken);
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, this, SortOrderEnum.SortByName, cancellationToken);
     }
 
     [DataMember]
     public AsyncCommand SortByFileCommand { get; }
     private async Task SortByFile(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByFile, cancellationToken);
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, this, SortOrderEnum.SortByFile, cancellationToken);
     }
 
     [DataMember]
     public AsyncCommand SortByTypeCommand { get; }
     private async Task SortByType(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
-        await SortHelper.ChangeSort(clientContext, CodeDocumentService, SortOrderEnum.SortByType, cancellationToken);
+        await SortHelper.ChangeSort(clientContext, CodeDocumentService, this, SortOrderEnum.SortByType, cancellationToken);
     }
 
     [DataMember]

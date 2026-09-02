@@ -18,7 +18,10 @@ internal class ExtensionEntrypoint : Extension
             version: ExtensionAssemblyVersion,
             publisherName: "Samir Boulema",
             displayName: "CodeNav",
-            description: "Show the code structure of your current document."),
+            description: "Show the code structure of your current document.")
+        {
+            DotnetTargetVersions = [DotnetTarget.Net8, DotnetTarget.Custom("10.0")],
+        },
         LoadedWhen = ActivationConstraint.ClientContext(ClientContextKey.Shell.ActiveEditorContentType, "CSharp|Basic|TypeScript"),
     };
 
