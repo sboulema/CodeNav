@@ -2,6 +2,7 @@
 using CodeNav.OutOfProc.Models;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.Shell;
 using System.Text.Json;
 
@@ -39,13 +40,6 @@ internal class OutOfProcService(
             return;
         }
 
-        // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
-        if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
-            documentView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
-        {
-            return;
-        }
-
         // Conditions:
         // - Frame is not a document frame
         // Actions:
@@ -55,7 +49,7 @@ internal class OutOfProcService(
         {
             codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
 
-            await codeDocumentService.HideToolWindow(default);
+            await codeDocumentService.HideToolWindow(codeDocumentService.CodeDocumentViewModel, default);
 
             return;
         }
@@ -63,7 +57,7 @@ internal class OutOfProcService(
         // Frame has changed and has a text document, so we need to update the list of code items
         await codeDocumentService.LoadGlobalSettings();
 
-        await codeDocumentService.UpdateCodeDocumentViewModel(
+        await codeDocumentService.UpdateCodeDocumentViewModels(
             extensibility,
             documentView.FilePath,
             documentView.Text,

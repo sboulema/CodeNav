@@ -25,6 +25,7 @@ Visual Studio extension to show the code structure of your current document
 - Option to hide the tool window for unsupported files and files without code items
 - Compact mode with less spacing optimizing screen real estate
 - Pin an active document to keep the CodeNav window open for that document even when switching to other documents
+- Open a second, independent CodeNav window
 
 # 💻 Supported Visual Studio versions
 
@@ -44,7 +45,7 @@ Visual Studio extension to show the code structure of your current document
 [Open VSIX Gallery](https://www.vsixgallery.com/extension/CodeNav.dcdbcca4-3a88-432f-ba04-eb4a4cb64437)
 
 # 🤲 Usage
-The CodeNav tool window can be opened via the entry in the `Extensions` menu.
+The CodeNav tool window can be opened via the entries in the `Extensions` menu.
 
 # 🖼️ Screenshots
 ![Preview](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-light.png) ![Preview-Dark](https://raw.githubusercontent.com/sboulema/CodeNav/main/art/Screenshot-dark.png)

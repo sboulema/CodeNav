@@ -168,6 +168,11 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             var outliningManager = await GetOutliningManager(textView);
 
+            if (outliningManager == null)
+            {
+                return;
+            }
+
             // Switch to the UI thread to ensure we can interact with the outline regions.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -215,6 +220,11 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
             var textView = await _textViewService.GetCurrentTextViewAsync();
 
             var outliningManager = await GetOutliningManager(textView);
+
+            if (outliningManager == null)
+            {
+                return;
+            }
 
             // Switch to the UI thread to ensure we can interact with the outline regions.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -380,7 +390,7 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
             // Check if the new frame is the CodeNav tool window,
             // if so ignore it since we don't want to trigger updates when CodeNav is focused
-            if (windowCaption == "CodeNav")
+            if (windowCaption.StartsWith("CodeNav"))
             {
                 return;
             }

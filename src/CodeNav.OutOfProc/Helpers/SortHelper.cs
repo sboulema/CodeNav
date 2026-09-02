@@ -16,22 +16,21 @@ public static class SortHelper
     /// <remarks>Used in the main toolbar sort buttons</remarks>
     /// <param name="clientContext">ClientContext</param>
     /// <param name="codeDocumentService">CodeDocumentService</param>
+    /// <param name="codeDocumentViewModel">The view model of the tool window the sort was changed on</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Awaitable Task</returns>
     public static async Task ChangeSort(
         IClientContext clientContext,
         CodeDocumentService? codeDocumentService,
+        CodeDocumentViewModel? codeDocumentViewModel,
         SortOrderEnum sortOrder,
         CancellationToken cancellationToken)
     {
         var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
 
-        if (textViewSnapshot == null)
-        {
-            return;
-        }
-
-        if (codeDocumentService == null)
+        if (textViewSnapshot == null ||
+            codeDocumentService == null ||
+            codeDocumentViewModel == null)
         {
             return;
         }
@@ -40,12 +39,13 @@ public static class SortHelper
         codeDocumentService.GlobalSettings!.SortOrder = sortOrder;
         await SettingsHelper.SaveGlobalSettings(codeDocumentService);
 
-        ApplySort(codeDocumentService.CodeDocumentViewModel, sortOrder);
+        ApplySort(codeDocumentViewModel, sortOrder);
 
         await codeDocumentService.UpdateCodeDocumentViewModel(
             clientContext.Extensibility, 
             textViewSnapshot.FilePath,
             textViewSnapshot.Document.Text.CopyToString(),
+            codeDocumentViewModel,
             cancellationToken);
     }
 

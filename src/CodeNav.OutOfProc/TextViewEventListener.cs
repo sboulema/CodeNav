@@ -32,7 +32,7 @@ internal class TextViewEventListener(
     {
         AppliesTo =
         [
-            DocumentFilter.FromGlobPattern("**/*.{cs,vb}", true),
+            DocumentFilter.FromGlobPattern("**/*.{cs,vb,ts,tsx}", true),
         ],
     };
 
@@ -43,35 +43,32 @@ internal class TextViewEventListener(
         {
             await codeDocumentService.LoadGlobalSettings();
 
-            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
-            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
-                args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
-            {
-                return;
-            }
+            // Windows pinned to a different document (see issue #186) don't follow the active document
+            var activeCodeDocumentViewModels = codeDocumentService.CodeDocumentViewModels
+                .Where(model => !(model.IsPinned && model.FilePath != args.AfterTextView.FilePath))
+                .ToList();
 
             // if the document is too large, skip processing to avoid performance issues
             if (args.AfterTextView.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
             {
                 // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-                codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
+                foreach (var window in activeCodeDocumentViewModels)
+                {
+                    window.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
+                }
 
                 return;
             }
 
-            // Document changed:
-            // - File path changed
-            // - Edits made in the document
-            // Action:
-            // - Update code items list
-            if ((args.Edits.Any() && codeDocumentService.SettingsDialogData.UpdateWhileTyping) ||
-                args.AfterTextView.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            // Document changed - Update code items list
+            if ((args.Edits.Any() &&
+                codeDocumentService.SettingsDialogData.UpdateWhileTyping))
             {
 #pragma warning disable VSTHRD101 // Avoid unsupported async delegates
                 await debounceDispatcher.DebounceAsync(async () =>
                 {
-                    await codeDocumentService.UpdateCodeDocumentViewModel(
+                    await codeDocumentService.UpdateCodeDocumentViewModels(
                         Extensibility,
                         args.AfterTextView.FilePath,
                         args.AfterTextView.Document.Text.CopyToString(),
@@ -85,7 +82,10 @@ internal class TextViewEventListener(
             if (args.Edits.Any() &&
                 codeDocumentService.SettingsDialogData.ShowHistoryIndicators)
             {
-                await HistoryHelper.AddItemToHistory(codeDocumentService.CodeDocumentViewModel, args.Edits);
+                foreach (var window in activeCodeDocumentViewModels)
+                {
+                    await HistoryHelper.AddItemToHistory(window, args.Edits);
+                }
             }
 
             // Selection changed - Update highlights
@@ -93,9 +93,12 @@ internal class TextViewEventListener(
                 args.AfterTextView.Selection.ActivePosition.GetContainingLine().LineNumber &&
                 codeDocumentService.SettingsDialogData.AutoHighlight)
             {
-                await HighlightHelper.HighlightCurrentItem(
-                    codeDocumentService.CodeDocumentViewModel,
-                    args.AfterTextView.Selection.ActivePosition.Offset);
+                foreach (var window in activeCodeDocumentViewModels)
+                {
+                    await HighlightHelper.HighlightCurrentItem(
+                        window,
+                        args.AfterTextView.Selection.ActivePosition.Offset);
+                }
             }
         }
         catch (Exception e)
@@ -109,19 +112,21 @@ internal class TextViewEventListener(
     {
         try
         {
-            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
-            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
-                textViewSnapshot.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
+            foreach (var window in codeDocumentService.CodeDocumentViewModels)
             {
-                return;
+                // If this window is pinned to a different document, leave it untouched
+                if (window.IsPinned && textViewSnapshot.FilePath != window.FilePath)
+                {
+                    continue;
+                }
+
+                // The pinned document itself was closed, unpin so this window can follow the active document again
+                window.IsPinned = false;
+
+                window.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
+
+                await codeDocumentService.HideToolWindow(window, cancellationToken);
             }
-
-            // The pinned document itself was closed, unpin so CodeNav can follow the active document again
-            codeDocumentService.CodeDocumentViewModel.IsPinned = false;
-
-            codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateSelectDocumentItem();
-
-            await codeDocumentService.HideToolWindow(cancellationToken);
         }
         catch (Exception e)
         {
@@ -136,23 +141,24 @@ internal class TextViewEventListener(
         {
             await codeDocumentService.LoadGlobalSettings();
 
-            // If the document is pinned, skip processing if the file path has changed to avoid losing the pinned state
-            if (codeDocumentService.CodeDocumentViewModel.IsPinned &&
-                textViewSnapshot.FilePath != codeDocumentService.CodeDocumentViewModel.FilePath)
-            {
-                return;
-            }
+            // Windows pinned to a different document (see issue #186) don't follow the active document
+            var activeWindows = codeDocumentService.CodeDocumentViewModels
+                .Where(window => !(window.IsPinned && window.FilePath != textViewSnapshot.FilePath))
+                .ToList();
 
             if (textViewSnapshot.Document.Lines.Count >= codeDocumentService.SettingsDialogData.AutoLoadLineThreshold &&
                 codeDocumentService.SettingsDialogData.AutoLoadLineThreshold > 0)
             {
                 // Show the "line threshold passed" placeholder if the document exceeds the line threshold for auto-loading
-                codeDocumentService.CodeDocumentViewModel.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
+                foreach (var window in activeWindows)
+                {
+                    window.CodeItems = PlaceholderHelper.CreateLineThresholdPassedItem();
+                }
 
                 return;
             }
 
-            await codeDocumentService.UpdateCodeDocumentViewModel(
+            await codeDocumentService.UpdateCodeDocumentViewModels(
                 Extensibility,
                 textViewSnapshot.FilePath,
                 textViewSnapshot.Document.Text.CopyToString(),

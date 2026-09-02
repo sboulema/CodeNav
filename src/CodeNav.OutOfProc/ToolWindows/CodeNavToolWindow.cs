@@ -20,7 +20,7 @@ internal class CodeNavToolWindow(CodeDocumentService codeDocumentService) : Tool
     {
         Title = "CodeNav";
 
-        codeDocumentService.ToolWindow = this;
+        codeDocumentService.CodeDocumentViewModel.ToolWindow = this;
 
         return Task.CompletedTask;
     }

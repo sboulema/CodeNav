@@ -369,10 +369,11 @@ public class CodeItem : NotifyPropertyChangedObject
         await CodeDocumentViewModel!
             .CodeDocumentService!
             .UpdateCodeDocumentViewModel(
-            clientContext.Extensibility,
-            textViewSnapshot.FilePath,
-            textViewSnapshot.Document.Text.CopyToString(),
-            cancellationToken);
+                clientContext.Extensibility,
+                textViewSnapshot.FilePath,
+                textViewSnapshot.Document.Text.CopyToString(),
+                CodeDocumentViewModel,
+                cancellationToken);
     }
 
     [DataMember]
