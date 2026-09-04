@@ -259,6 +259,17 @@ public class CodeItem : NotifyPropertyChangedObject
     }
 
     #region Commands
+    /// <summary>
+    /// Handles a single click on a code item, navigating to it in the text editor
+    /// without shifting focus away from the CodeNav tool window.
+    /// </summary>
+    /// <remarks>
+    /// Scrolls the active text view so the item's span (its <see cref="IdentifierSpan"/> if
+    /// set, otherwise its full <see cref="Span"/>) becomes visible, then places a collapsed
+    /// caret at the start of that span. This only sets the selection/caret position — it does
+    /// not activate or focus the text editor.
+    /// The item is also recorded in the navigation history.
+    /// </remarks>
     [DataMember]
     public AsyncCommand ClickItemCommand { get; }
     public async Task ClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
@@ -268,6 +279,8 @@ public class CodeItem : NotifyPropertyChangedObject
         var span = IdentifierSpan != null
             ? IdentifierSpan.Value
             : Span;
+
+        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
 
         await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");
 
@@ -287,7 +300,7 @@ public class CodeItem : NotifyPropertyChangedObject
 
         await LogHelper.LogInfo(this, $"Moving caret to position '{span.Start}'");
 
-        await SetSelectionToPosition(span.Start, clientContext, cancellationToken);
+        await SetSelectionToPosition(textDocumentSnapshot, span.Start, clientContext, cancellationToken);
 
         await LogHelper.LogInfo(this, $"Adding item '{Name}' to history");
 
@@ -297,7 +310,11 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToDefinitionCommand { get; }
     private async Task GoToDefinition(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => await SetSelectionToPosition(Span.Start, clientContext, cancellationToken);
+    {
+        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
+
+        await SetSelectionToPosition(textDocumentSnapshot, Span.Start, clientContext, cancellationToken);
+    }
 
     [DataMember]
     public AsyncCommand ClearHistoryCommand { get; }
@@ -307,17 +324,38 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToEndCommand { get; }
     public async Task GoToEnd(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => await SetSelectionToPosition(Span.End, clientContext, cancellationToken);
+    {
+        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
+
+        await SetSelectionToPosition(textDocumentSnapshot, Span.End, clientContext, cancellationToken);
+    }
 
     [DataMember]
     public AsyncCommand SelectInCodeCommand { get; }
     public async Task SelectInCode(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-        => await SelectLines(clientContext, cancellationToken);
+    {
+        await OpenTextDocument(clientContext, cancellationToken);
 
+        await SelectLines(clientContext, cancellationToken);
+    }
+
+    /// <summary>
+    /// Handles a double click on a code item, moving the caret into the code and switching
+    /// focus to the text editor.
+    /// </summary>
+    /// <remarks>
+    /// Moves the caret to the start of the item's <see cref="OutlineSpan"/> (rather than its
+    /// <see cref="IdentifierSpan"/>/<see cref="Span"/>) via the in-proc text view service. This
+    /// uses a different code path than <see cref="ClickItem"/>: it activates the text editor,
+    /// so after a double click the user can start typing immediately without clicking into the
+    /// document first.
+    /// </remarks>
     [DataMember]
     public AsyncCommand DoubleClickItemCommand { get; }
     public async Task DoubleClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
     {
+        await OpenTextDocument(clientContext, cancellationToken, activate: true);
+
         var inProcService = await clientContext.Extensibility
             .ServiceBroker
             .GetProxyAsync<IInProcService>(IInProcService.Configuration.ServiceDescriptor, cancellationToken: cancellationToken);
@@ -403,7 +441,8 @@ public class CodeItem : NotifyPropertyChangedObject
 
     #endregion
 
-    private async Task SetSelectionToPosition(
+    private static async Task SetSelectionToPosition(
+        ITextDocumentSnapshot? textDocumentSnapshot,
         int position,
         IClientContext clientContext,
         CancellationToken cancellationToken)
@@ -411,22 +450,6 @@ public class CodeItem : NotifyPropertyChangedObject
         try
         {
             var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
-
-            if (textViewSnapshot == null)
-            {
-                return;
-            }
-
-            var textDocumentSnapshot = textViewSnapshot?.Document;
-
-            // If the code item has a different file path, open that document
-            if (FilePath != null &&
-                textViewSnapshot?.Uri != FilePath)
-            {
-                textDocumentSnapshot = await clientContext.Extensibility
-                    .Documents()
-                    .OpenTextDocumentAsync(FilePath, cancellationToken);
-            }
 
             if (textDocumentSnapshot == null)
             {
@@ -456,21 +479,7 @@ public class CodeItem : NotifyPropertyChangedObject
         {
             var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
 
-            if (textViewSnapshot == null)
-            {
-                return;
-            }
-
             var textDocumentSnapshot = textViewSnapshot?.Document;
-
-            // If the code item has a different file path, open that document
-            if (FilePath != null &&
-                textViewSnapshot?.Uri != FilePath)
-            {
-                textDocumentSnapshot = await clientContext.Extensibility
-                    .Documents()
-                    .OpenTextDocumentAsync(FilePath, cancellationToken);
-            }
 
             if (textDocumentSnapshot == null)
             {
@@ -494,5 +503,46 @@ public class CodeItem : NotifyPropertyChangedObject
         {
             // Ignore
         }
+    }
+
+    private Uri? GetFilePath()
+    {
+        // Return the file path set on this code item,
+        // that indicates the source of the code item is in a different file than the rest of the code items.
+        if (FilePath != null)
+        {
+            return FilePath;
+        }
+
+        // Return the general file path of the code document view model, if available.
+        if (!string.IsNullOrEmpty(CodeDocumentViewModel?.FilePath))
+        {
+            return new Uri(CodeDocumentViewModel!.FilePath);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Opens the text document associated with this code item in the editor.
+    /// </summary>
+    /// <param name="clientContext"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private async Task<ITextDocumentSnapshot?> OpenTextDocument(IClientContext clientContext, CancellationToken cancellationToken, bool activate = false)
+    {
+        var filePath = GetFilePath();
+
+        if (filePath == null)
+        {
+            return null;
+        }
+
+        return await clientContext.Extensibility
+            .Documents()
+            .OpenTextDocumentAsync(
+                filePath,
+                new(activate: activate),
+                cancellationToken);
     }
 }

@@ -48,6 +48,35 @@ public static class BaseMapper
         return codeItem;
     }
 
+    /// <summary>
+    /// Computes the outline span of a code item: the portion of its text that should be
+    /// collapsible/foldable in the editor's outlining margin.
+    /// </summary>
+    /// <remarks>
+    /// The outline span starts right after the item's name/identifier and runs to the end of
+    /// the item's full <paramref name="span"/> — this excludes the signature itself (e.g. the
+    /// <c>public void Foo(...)</c> part of a method) from the collapsible region, so folding
+    /// only hides the body, not the declaration.
+    /// <para>
+    /// If both <paramref name="nameSpan"/> and <paramref name="identifierSpan"/> are supplied,
+    /// <paramref name="identifierSpan"/> takes precedence as the start boundary. If neither is
+    /// supplied, the outline span starts at position 0, effectively covering the entire
+    /// <paramref name="span"/>.
+    /// </para>
+    /// </remarks>
+    /// <param name="span">The full text span of the code item.</param>
+    /// <param name="identifierSpan">
+    /// The span of the item's identifier, if known. When present, its end position is used as
+    /// the start of the outline span, taking priority over <paramref name="nameSpan"/>.
+    /// </param>
+    /// <param name="nameSpan">
+    /// The span of the item's display name, if known. Used as the start of the outline span
+    /// only when <paramref name="identifierSpan"/> is not supplied.
+    /// </param>
+    /// <returns>
+    /// A <see cref="TextSpan"/> starting after the name/identifier and extending to the end of
+    /// <paramref name="span"/>, used as the foldable region for this code item.
+    /// </returns>
     private static TextSpan MapOutlineSpan(
         TextSpan span,
         TextSpan? identifierSpan,
