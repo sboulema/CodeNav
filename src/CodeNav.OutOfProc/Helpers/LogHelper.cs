@@ -1,7 +1,7 @@
 ﻿using CodeNav.OutOfProc.Services;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
+using Microsoft.ApplicationInsights.Extensibility;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
@@ -15,22 +15,10 @@ public static class LogHelper
 
     public static void GetClient()
     {
-        var storageFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "CodeNav",
-            "Telemetry");
+        var config = TelemetryConfiguration.CreateDefault();
+        config.ConnectionString = ConnectionString;
 
-        Directory.CreateDirectory(storageFolder);
-
-        _client = new(new()
-        {
-            ConnectionString = ConnectionString,
-            TelemetryChannel = new ServerTelemetryChannel
-            {
-                StorageFolder = storageFolder,
-                DeveloperMode = false
-            },
-        });
+        _client = new TelemetryClient(config);
     }
 
     public static async Task LogException(
