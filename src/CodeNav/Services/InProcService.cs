@@ -2,7 +2,6 @@
 using CodeNav.OutOfProc.Services;
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Shell;
 using Microsoft.VisualStudio.Extensibility.VSSdkCompatibility;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -39,11 +38,6 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
         {
             ServiceAudience = BrokeredServiceAudience.Local | BrokeredServiceAudience.Public,
         };
-
-    public async Task DoSomethingAsync(CancellationToken cancellationToken)
-    {
-        await _extensibility.Shell().ShowPromptAsync("Hello from out-of-proc! (Showing this message from (in-proc)", PromptOptions.OK, cancellationToken);
-    }
 
     #region Outlining
 
@@ -312,28 +306,6 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
             (outOfProcService as IDisposable)?.Dispose();
         }
     }
-
-    #endregion
-
-    #region Text View
-
-    /// <summary>
-    /// Scroll to a given span in the text view
-    /// </summary>
-    /// <remarks>Caret will remain at its original position</remarks>
-    /// <param name="start">Start position of the span</param>
-    /// <param name="length">Length of the span</param>
-    /// <returns></returns>
-    public async Task TextViewScrollToSpan(int start, int length)
-        => await _textViewService.ScrollToSpan(start, length);
-
-    /// <summary>
-    /// Move the caret in the text view to the given position and keep the keyboard focus on the text view
-    /// </summary>
-    /// <param name="position">Position in the text view</param>
-    /// <returns>Awaitable Task</returns>
-    public async Task TextViewMoveCaretToPosition(int position)
-        => await _textViewService.MoveCaretToPosition(position);
 
     #endregion
 

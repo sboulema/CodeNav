@@ -10,17 +10,19 @@ namespace CodeNav.OutOfProc.Languages.CSharp.Mappers;
 public static class BaseMapper
 {
     /// <summary>
-    /// Map commonly shared code item properties based on the syntaxt token that is been mapped
+    /// Creates and populates a new <typeparamref name="T"/> instance with common code-item metadata
+    /// derived from a syntax node, such as name, full name, file path, access modifier, and span information.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="source">Syntax node of the code member</param>
-    /// <param name="semanticModel">Semantic model used during compilation</param>
-    /// <param name="codeDocumentViewModel">Code document view model used in the CodeNav tool window</param>
-    /// <param name="identifier">Syntax token of the code member identifier</param>
-    /// <param name="nameSyntax">Syntax token of the code member name</param>
-    /// <param name="name">Name of the code member</param>
-    /// <param name="modifiers">Accessibility modifiers of the code member</param>
-    /// <returns>Code item class or othe code class derived from code item</returns>
+    /// <typeparam name="T">The type of <see cref="CodeItem"/> to create.</typeparam>
+    /// <param name="source">The syntax node the code item is derived from.</param>
+    /// <param name="semanticModel">The semantic model used to resolve the item's full name.</param>
+    /// <param name="codeDocumentViewModel">The view model of the document the code item belongs to.</param>
+    /// <param name="identifier">The identifier token used to derive the name and identifier span, if available.</param>
+    /// <param name="nameSyntax">The name syntax used to derive the name and outline span, if available.</param>
+    /// <param name="name">A fallback name to use when neither <paramref name="identifier"/> nor <paramref name="nameSyntax"/> is provided.</param>
+    /// <param name="modifiers">The syntax token list used to determine the item's access modifier.</param>
+    /// <returns>A new <typeparamref name="T"/> instance populated with metadata from <paramref name="source"/>.</returns>
+
     public static T MapBase<T>(
         SyntaxNode source,
         SemanticModel semanticModel,
@@ -45,8 +47,15 @@ public static class BaseMapper
         codeItem.CodeDocumentViewModel = codeDocumentViewModel;
 
         codeItem.Span = source.Span;
+        codeItem.SpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, source.Span)!.Value;
+        codeItem.SpanEndLinePosition = MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
+
         codeItem.IdentifierSpan = identifier?.Span;
-        codeItem.OutlineSpan = MapOutlineSpan(codeItem.Span, codeItem.IdentifierSpan, nameSyntax?.Span); 
+        codeItem.IdentifierSpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, identifier?.Span);
+        codeItem.IdentifierSpanEndLinePosition = MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
+
+        codeItem.OutlineSpan = MapOutlineSpan(codeItem.Span, codeItem.IdentifierSpan, nameSyntax?.Span);
+        codeItem.OutlineSpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, codeItem.OutlineSpan);
 
         return codeItem;
     }
@@ -175,4 +184,32 @@ public static class BaseMapper
             _ => CodeItemAccessEnum.Private,
         };
     }
+
+    /// <summary>
+    /// Gets the zero-based line and column position for the start of the specified span.
+    /// </summary>
+    /// <param name="syntaxTree">The syntax tree the span belongs to.</param>
+    /// <param name="span">The span to resolve a line position for, or <see langword="null"/>.</param>
+    /// <returns>
+    /// The zero-based <see cref="LinePosition"/> for the start of <paramref name="span"/>,
+    /// or <see langword="null"/> if <paramref name="span"/> is <see langword="null"/>.
+    /// </returns>
+    public static LinePosition? MapStartLinePosition(SyntaxTree syntaxTree, TextSpan? span)
+        => span == null
+            ? null
+            : syntaxTree.GetLineSpan(span.Value).StartLinePosition;
+
+    /// <summary>
+    /// Gets the zero-based line and column position for the end of the specified span.
+    /// </summary>
+    /// <param name="syntaxTree">The syntax tree the span belongs to.</param>
+    /// <param name="span">The span to resolve a line position for, or <see langword="null"/>.</param>
+    /// <returns>
+    /// The zero-based <see cref="LinePosition"/> for the end of <paramref name="span"/>,
+    /// or <see langword="null"/> if <paramref name="span"/> is <see langword="null"/>.
+    /// </returns>
+    public static LinePosition? MapEndLinePosition(SyntaxTree syntaxTree, TextSpan? span)
+        => span == null
+            ? null
+            : syntaxTree.GetLineSpan(span.Value).EndLinePosition;
 }

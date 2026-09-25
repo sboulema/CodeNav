@@ -7,8 +7,10 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
 using Microsoft.VisualStudio.Extensibility.UI;
+using Microsoft.VisualStudio.RpcContracts.OpenDocument;
 using System.Runtime.Serialization;
 using System.Windows;
+using Range = Microsoft.VisualStudio.RpcContracts.Utilities.Range;
 
 namespace CodeNav.OutOfProc.ViewModels;
 
@@ -56,14 +58,39 @@ public class CodeItem : NotifyPropertyChangedObject
     public TextSpan Span { get; set; }
 
     /// <summary>
+    /// Gets or sets the zero-based line and column position of the start of <see cref="Span"/>.
+    /// </summary>
+    public LinePosition SpanStartLinePosition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zero-based line and column position of the end of <see cref="Span"/>.
+    /// </summary>
+    public LinePosition SpanEndLinePosition { get; set; }
+
+    /// <summary>
     /// Gets or sets the span of text represented by the identifier of this code item.
     /// </summary>
     public TextSpan? IdentifierSpan { get; set; }
 
     /// <summary>
+    /// Gets or sets the zero-based line and column position of the start of <see cref="IdentifierSpan"/>.
+    /// </summary>
+    public LinePosition? IdentifierSpanStartLinePosition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zero-based line and column position of the end of <see cref="IdentifierSpan"/>.
+    /// </summary>
+    public LinePosition? IdentifierSpanEndLinePosition { get; set; }
+
+    /// <summary>
     /// Gets or sets the span of text represented by the outline region of this code item.
     /// </summary>
     public TextSpan OutlineSpan { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zero-based line and column position of the start of <see cref="OutlineSpan"/>.
+    /// </summary>
+    public LinePosition? OutlineSpanStartLinePosition { get; set; }
 
     /// <summary>
     /// Icon showing the type (class, namespace, etc.) of the code item
@@ -276,31 +303,11 @@ public class CodeItem : NotifyPropertyChangedObject
     {
         await LogHelper.LogInfo(this, $"Clicking item '{Name}'");
 
-        var span = IdentifierSpan != null
-            ? IdentifierSpan.Value
-            : Span;
+        var linePosition = IdentifierSpanStartLinePosition != null
+            ? IdentifierSpanStartLinePosition.Value
+            : SpanStartLinePosition;
 
-        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
-
-        await LogHelper.LogInfo(this, $"Scrolling to span '{span}'");
-
-        var inProcService = await clientContext.Extensibility
-            .ServiceBroker
-            .GetProxyAsync<IInProcService>(IInProcService.Configuration.ServiceDescriptor, cancellationToken: cancellationToken);
-
-        try
-        {
-            Assumes.NotNull(inProcService);
-            await inProcService.TextViewScrollToSpan(span.Start, span.Length);
-        }
-        finally
-        {
-            (inProcService as IDisposable)?.Dispose();
-        }
-
-        await LogHelper.LogInfo(this, $"Moving caret to position '{span.Start}'");
-
-        await SetSelectionToPosition(textDocumentSnapshot, span.Start, clientContext, cancellationToken);
+        await OpenTextDocument(clientContext, cancellationToken, startLinePosition: linePosition);
 
         await LogHelper.LogInfo(this, $"Adding item '{Name}' to history");
 
@@ -310,11 +317,7 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToDefinitionCommand { get; }
     private async Task GoToDefinition(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-    {
-        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
-
-        await SetSelectionToPosition(textDocumentSnapshot, Span.Start, clientContext, cancellationToken);
-    }
+        => await OpenTextDocument(clientContext, cancellationToken, startLinePosition: SpanStartLinePosition);
 
     [DataMember]
     public AsyncCommand ClearHistoryCommand { get; }
@@ -324,20 +327,12 @@ public class CodeItem : NotifyPropertyChangedObject
     [DataMember]
     public AsyncCommand GoToEndCommand { get; }
     public async Task GoToEnd(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-    {
-        var textDocumentSnapshot = await OpenTextDocument(clientContext, cancellationToken);
-
-        await SetSelectionToPosition(textDocumentSnapshot, Span.End, clientContext, cancellationToken);
-    }
+        => await OpenTextDocument(clientContext, cancellationToken, startLinePosition: SpanEndLinePosition);
 
     [DataMember]
     public AsyncCommand SelectInCodeCommand { get; }
     public async Task SelectInCode(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-    {
-        await OpenTextDocument(clientContext, cancellationToken);
-
-        await SelectLines(clientContext, cancellationToken);
-    }
+        => await OpenTextDocument(clientContext, cancellationToken, startLinePosition: SpanStartLinePosition, endLinePosition: SpanEndLinePosition);
 
     /// <summary>
     /// Handles a double click on a code item, moving the caret into the code and switching
@@ -345,31 +340,14 @@ public class CodeItem : NotifyPropertyChangedObject
     /// </summary>
     /// <remarks>
     /// Moves the caret to the start of the item's <see cref="OutlineSpan"/> (rather than its
-    /// <see cref="IdentifierSpan"/>/<see cref="Span"/>) via the in-proc text view service. This
-    /// uses a different code path than <see cref="ClickItem"/>: it activates the text editor,
-    /// so after a double click the user can start typing immediately without clicking into the
-    /// document first.
+    /// <see cref="IdentifierSpan"/>/<see cref="Span"/>). This is different than <see cref="ClickItem"/>:
+    /// it activates the text editor, so after a double click the user can start typing immediately
+    /// without clicking into the document first.
     /// </remarks>
     [DataMember]
     public AsyncCommand DoubleClickItemCommand { get; }
     public async Task DoubleClickItem(object? commandParameter, IClientContext clientContext, CancellationToken cancellationToken)
-    {
-        await OpenTextDocument(clientContext, cancellationToken, activate: true);
-
-        var inProcService = await clientContext.Extensibility
-            .ServiceBroker
-            .GetProxyAsync<IInProcService>(IInProcService.Configuration.ServiceDescriptor, cancellationToken: cancellationToken);
-
-        try
-        {
-            Assumes.NotNull(inProcService);
-            await inProcService.TextViewMoveCaretToPosition(OutlineSpan.Start);
-        }
-        finally
-        {
-            (inProcService as IDisposable)?.Dispose();
-        }
-    }
+        => await OpenTextDocument(clientContext, cancellationToken, activate: true, startLinePosition: OutlineSpanStartLinePosition);
 
     [DataMember]
     public AsyncCommand CopyNameCommand { get; }
@@ -441,70 +419,6 @@ public class CodeItem : NotifyPropertyChangedObject
 
     #endregion
 
-    private static async Task SetSelectionToPosition(
-        ITextDocumentSnapshot? textDocumentSnapshot,
-        int position,
-        IClientContext clientContext,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
-
-            if (textDocumentSnapshot == null)
-            {
-                return;
-            }
-
-            // Select the requested line
-            await clientContext.Extensibility.Editor().EditAsync(batch =>
-            {
-                var caret = new TextPosition(textDocumentSnapshot, position);
-                textViewSnapshot!.AsEditable(batch).SetSelections(
-                [
-                    new Selection(activePosition: caret, anchorPosition: caret, insertionPosition: caret)
-                ]);
-            },
-            cancellationToken);
-        }
-        catch (Exception)
-        {
-            // Ignore
-        }
-    }
-
-    private async Task SelectLines(IClientContext clientContext, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var textViewSnapshot = await clientContext.GetActiveTextViewAsync(cancellationToken);
-
-            var textDocumentSnapshot = textViewSnapshot?.Document;
-
-            if (textDocumentSnapshot == null)
-            {
-                return;
-            }
-
-            // Select all lines corresponding to the code item
-            await clientContext.Extensibility.Editor().EditAsync(batch =>
-            {
-                textViewSnapshot!.AsEditable(batch).SetSelections(
-                [
-                    new Selection(
-                        new TextRange(
-                            new TextPosition(textDocumentSnapshot, Span.Start),
-                            new TextPosition(textDocumentSnapshot, Span.End)))
-                ]);
-            },
-            cancellationToken);
-        }
-        catch (Exception)
-        {
-            // Ignore
-        }
-    }
-
     private Uri? GetFilePath()
     {
         // Return the file path set on this code item,
@@ -524,12 +438,27 @@ public class CodeItem : NotifyPropertyChangedObject
     }
 
     /// <summary>
-    /// Opens the text document associated with this code item in the editor.
+    /// Opens the text document associated with this instance's file path, optionally selecting a
+    /// range in the document defined by <paramref name="startLinePosition"/> and <paramref name="endLinePosition"/>.
     /// </summary>
-    /// <param name="clientContext"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private async Task<ITextDocumentSnapshot?> OpenTextDocument(IClientContext clientContext, CancellationToken cancellationToken, bool activate = false)
+    /// <param name="clientContext">The client context used to access the extensibility services.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <param name="activate">If <see langword="true"/>, activates the document once opened; otherwise, opens it without activating it.</param>
+    /// <param name="startLinePosition">The zero-based start of the range to select, or <see langword="null"/> if no selection should be applied.</param>
+    /// <param name="endLinePosition">
+    /// The zero-based end of the range to select. If <see langword="null"/>, <paramref name="startLinePosition"/> is used as the end as well,
+    /// resulting in a collapsed (zero-length) selection.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the opened
+    /// <see cref="ITextDocumentSnapshot"/>, or <see langword="null"/> if the file path could not be resolved.
+    /// </returns>
+    private async Task<ITextDocumentSnapshot?> OpenTextDocument(
+        IClientContext clientContext,
+        CancellationToken cancellationToken,
+        bool activate = false,
+        LinePosition? startLinePosition = null,
+        LinePosition? endLinePosition = null)
     {
         var filePath = GetFilePath();
 
@@ -538,11 +467,19 @@ public class CodeItem : NotifyPropertyChangedObject
             return null;
         }
 
+        Range? selection = startLinePosition == null
+            ? null
+            : new Range(
+                startLinePosition.Value.Line,
+                startLinePosition.Value.Character,
+                endLinePosition?.Line ?? startLinePosition.Value.Line,
+                endLinePosition?.Character ?? startLinePosition.Value.Character);
+
         return await clientContext.Extensibility
             .Documents()
             .OpenTextDocumentAsync(
                 filePath,
-                new(activate: activate),
+                new(activate: activate, selection: selection),
                 cancellationToken);
     }
 }

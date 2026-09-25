@@ -4,12 +4,6 @@ namespace CodeNav.Services;
 
 public interface IInProcService
 {
-    Task DoSomethingAsync(CancellationToken cancellationToken);
-
-    Task TextViewScrollToSpan(int start, int length);
-
-    Task TextViewMoveCaretToPosition(int position);
-
     Task ExpandOutlineRegion(int start, int length);
 
     Task CollapseOutlineRegion(int start, int length);
