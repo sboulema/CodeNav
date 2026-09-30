@@ -86,39 +86,36 @@ public static class HistoryHelper
     /// <param name="codeDocumentViewModel">Document holding all code items</param>
     public static void ApplyHistoryIndicator(CodeDocumentViewModel codeDocumentViewModel)
     {
-        // Clear old indicators
-        codeDocumentViewModel
+        // Flatten the code item tree once and reuse it for clearing and lookup
+        var codeItems = codeDocumentViewModel
             .CodeItems
             .Flatten()
             .Where(item => item != null)
-            .ToList()
-            .ForEach(item => item.StatusMonikerVisibility = Visibility.Collapsed);
+            .ToList();
 
-        IEnumerable<(string, int)> rankedHistoryItemIds = [];
+        // Clear old indicators
+        codeItems.ForEach(item => item.StatusMonikerVisibility = Visibility.Collapsed);
+
+        // Materialize inside the lock, otherwise the lazy query is enumerated after the lock is released
+        List<(string Id, int Index)> rankedHistoryItemIds;
 
         lock (codeDocumentViewModel.HistoryLock)
         {
-            // Apply new indicators
-            rankedHistoryItemIds = codeDocumentViewModel
+            rankedHistoryItemIds = [.. codeDocumentViewModel
                 .HistoryItemIds
                 .Where(id => !string.IsNullOrEmpty(id))
-                .Select((historyItemId, index) => (historyItemId, index));
+                .Select((historyItemId, index) => (historyItemId, index))];
         }
 
-        foreach (var (historyItemId, index) in rankedHistoryItemIds)
-        {
-            var codeItem = codeDocumentViewModel.CodeItems
-                .Flatten()
-                .Where(item => item != null)
-                .FirstOrDefault(item => item.Id == historyItemId);
+        var codeItemsById = codeItems
+            .GroupBy(item => item.Id)
+            .ToDictionary(group => group.Key, group => group.First());
 
-            if (codeItem == null)
-            {
-                continue;
-            }
-
-            ApplyHistoryIndicator(codeItem, index);
-        }
+        // Apply new indicators
+        rankedHistoryItemIds
+            .Where(ranked => codeItemsById.ContainsKey(ranked.Id))
+            .ToList()
+            .ForEach(ranked => ApplyHistoryIndicator(codeItemsById[ranked.Id], ranked.Index));
     }
 
     /// <summary>
@@ -167,7 +164,10 @@ public static class HistoryHelper
             return;
         }
 
-        codeDocumentViewModel.HistoryItemIds.Clear();
+        lock (codeDocumentViewModel.HistoryLock)
+        {
+            codeDocumentViewModel.HistoryItemIds.Clear();
+        }
 
         ApplyHistoryIndicator(codeDocumentViewModel);
     }

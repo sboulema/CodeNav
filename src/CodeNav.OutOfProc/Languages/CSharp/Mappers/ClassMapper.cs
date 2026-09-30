@@ -190,11 +190,17 @@ public class ClassMapper
                 continue;
             }
 
+            var nodeSemanticModel = semanticModel.ForNode(syntaxNode);
+
+            if (nodeSemanticModel == null)
+            {
+                continue;
+            }
+
             var memberItem = DocumentMapper.MapMember(syntaxNode, syntaxNode.SyntaxTree,
-                semanticModel, codeDocumentViewModel, mapBaseClass: false);
+                nodeSemanticModel, codeDocumentViewModel, mapBaseClass: false);
 
             baseRegion.Members.AddIfNotNull(memberItem);
         }
     }
-
 }

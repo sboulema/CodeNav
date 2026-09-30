@@ -76,9 +76,21 @@ public static class MethodMapper
         return codeItem;
     }
 
+    /// <summary>
+    /// Determines whether the given syntax node declares an extension method.
+    /// </summary>
+    /// <param name="node">
+    /// The syntax node to check, typically a <see cref="MethodDeclarationSyntax"/>.
+    /// </param>
+    /// <param name="semanticModel">
+    /// The semantic model used to resolve the declared symbol. It must belong to the same
+    /// syntax tree as <paramref name="node"/>, which is not the case for members that are mapped
+    /// from a base class declared in another file. Use <c>ForNode</c> to obtain a matching model.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the node declares a method whose symbol is an extension method;<br/>
+    /// <c>false</c> if it does not.
+    /// </returns>
     private static bool IsExtensionMethod(SyntaxNode node, SemanticModel semanticModel)
-{
-    var symbol = semanticModel.GetDeclaredSymbol(node);
-    return symbol is IMethodSymbol { IsExtensionMethod: true };
-}
+        => semanticModel.GetDeclaredSymbol(node) is IMethodSymbol { IsExtensionMethod: true };
 }
