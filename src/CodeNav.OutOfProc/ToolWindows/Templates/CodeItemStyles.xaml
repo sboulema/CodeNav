@@ -109,258 +109,77 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <!-- Namespace Template -->
+            <!-- Namespace Template, header only. Members are shown by the TreeViewItem -->
             <DataTrigger Binding="{Binding DataTemplateType}" Value="Namespace">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <StackPanel>
-                                <!-- Show namespace as expander when not ignored -->
-                                <Expander
-                                    IsExpanded="{Binding IsExpanded}"
-                                    Visibility="{Binding IgnoreVisibility}"
-                                    Opacity="{Binding Opacity}"
-                                    HorizontalAlignment="Stretch">
-                                    <Expander.Header>
-                                        <StackPanel Orientation="Horizontal">
-                                            <vs:Image
-                                                Source="{Binding Moniker}"
-                                                Width="16"
-                                                Height="16"
-                                                Margin="0,0,3,0"
-                                                VerticalAlignment="Center" />
-                                            <TextBlock
-                                                FontSize="{Binding FontSize}"
-                                                VerticalAlignment="Center">
-                                                    <Run Text="{Binding Name}" 
-                                                         Style="{DynamicResource HighlightNameStyle}"/>
-                                                    <Run Text="{Binding Parameters}" 
-                                                         Foreground="DarkGray" />
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </Expander.Header>
-                                    <ItemsControl
-                                        x:Name="MembersItemsControl"
-                                        ItemsSource="{Binding Members}"
-                                        Margin="3"
-                                        VirtualizingPanel.IsVirtualizing="True"
-                                        VirtualizingPanel.VirtualizationMode="Recycling"
-                                        ScrollViewer.CanContentScroll="False">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <VirtualizingStackPanel />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <ContentControl Content="{Binding}">
-                                                </ContentControl>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                        <ItemsControl.ItemContainerStyle>
-                                            <Style>
-                                                <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                        <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ItemsControl.ItemContainerStyle>
-                                        <ItemsControl.Style>
-                                            <Style>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                        <Setter Property="FrameworkElement.Margin" Value="3 0" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ItemsControl.Style>
-                                    </ItemsControl>
-                                </Expander>
-
-                                <!-- Show namespace as list of its members if ignored -->
-                                <ItemsControl 
-                                    ItemsSource="{Binding Members}"
-                                    Visibility="{Binding NotIgnoreVisibility}"
-                                    VirtualizingPanel.IsVirtualizing="True"
-                                    VirtualizingPanel.VirtualizationMode="Recycling"
-                                    ScrollViewer.CanContentScroll="False">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <VirtualizingStackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <ContentControl Content="{Binding}">
-                                            </ContentControl>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                    <ItemsControl.ItemContainerStyle>
-                                        <Style>
-                                            <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                    <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ItemsControl.ItemContainerStyle>
-                                </ItemsControl>
+                            <StackPanel Orientation="Horizontal">
+                                <vs:Image
+                                    Source="{Binding Moniker}"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0,0,3,0"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    FontSize="{Binding FontSize}"
+                                    VerticalAlignment="Center">
+                                    <Run Text="{Binding Name}"
+                                         Style="{DynamicResource HighlightNameStyle}"/>
+                                    <Run Text="{Binding Parameters}"
+                                         Foreground="DarkGray" />
+                                </TextBlock>
                             </StackPanel>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <!-- Class Template -->
+            <!-- Class Template, header only -->
             <DataTrigger Binding="{Binding DataTemplateType}" Value="Class">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <StackPanel>
-                                <Expander
-                                    IsExpanded="{Binding IsExpanded}"
-                                    Opacity="{Binding Opacity}"
-                                    HorizontalAlignment="Stretch">
-                                    <Expander.Header>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Grid Width="17" Height="17">
-                                                <vs:Image Source="{Binding Moniker}"
-                                                  Width="16" Height="16"
-                                                  HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                  Panel.ZIndex="0" />
-                                                <vs:Image Source="{Binding OverlayMoniker}"
-                                                  Width="14" Height="14"
-                                                  HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                                  Panel.ZIndex="1" />
-                                            </Grid>
-                                            <TextBlock
-                                                FontSize="{Binding FontSize}"
-                                                VerticalAlignment="Center">
-                                                <Run Text="{Binding Name}" 
-                                                    Style="{DynamicResource HighlightNameStyle}" />
-                                                <Run Text="{Binding Parameters}" 
-                                                    Foreground="DarkGray" />
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </Expander.Header>
-                                    <ItemsControl
-                                        x:Name="MembersItemsControl"
-                                        ItemsSource="{Binding Members}"
-                                        Margin="3"
-                                        VirtualizingPanel.IsVirtualizing="True"
-                                        VirtualizingPanel.VirtualizationMode="Recycling"
-                                        ScrollViewer.CanContentScroll="False">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <VirtualizingStackPanel />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <ContentControl Content="{Binding}">
-                                                </ContentControl>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                        <ItemsControl.ItemContainerStyle>
-                                            <Style>
-                                                <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                                <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                        <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ItemsControl.ItemContainerStyle>
-                                        <ItemsControl.Style>
-                                            <Style>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                        <Setter Property="FrameworkElement.Margin" Value="3 0" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ItemsControl.Style>
-                                    </ItemsControl>
-                                </Expander>
+                            <StackPanel Orientation="Horizontal">
+                                <Grid Width="17" Height="17">
+                                    <vs:Image Source="{Binding Moniker}"
+                                      Width="16" Height="16"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                                      Panel.ZIndex="0" />
+                                    <vs:Image Source="{Binding OverlayMoniker}"
+                                      Width="14" Height="14"
+                                      HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                      Panel.ZIndex="1" />
+                                </Grid>
+                                <TextBlock
+                                    FontSize="{Binding FontSize}"
+                                    VerticalAlignment="Center">
+                                    <Run Text="{Binding Name}"
+                                        Style="{DynamicResource HighlightNameStyle}" />
+                                    <Run Text="{Binding Parameters}"
+                                        Foreground="DarkGray" />
+                                </TextBlock>
                             </StackPanel>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <!-- Region Template -->
+            <!-- Region Template, header only -->
             <DataTrigger Binding="{Binding DataTemplateType}" Value="Region">
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <Expander
-                                IsExpanded="{Binding IsExpanded}"
-                                Opacity="{Binding Opacity}"
-                                HorizontalAlignment="Stretch">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <vs:Image
-                                            Source="{Binding Moniker}"
-                                            Width="16"
-                                            Height="16"
-                                            Margin="0 0 3 0"
-                                            VerticalAlignment="Center" />
-                                        <TextBlock
-                                            Text="{Binding Name}"
-                                            FontSize="{Binding FontSize}"
-                                            VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </Expander.Header>
-                                <ItemsControl
-                                    x:Name="MembersItemsControl"
-                                    ItemsSource="{Binding Members}"
-                                    Margin="3"
-                                    VirtualizingPanel.IsVirtualizing="True"
-                                    VirtualizingPanel.VirtualizationMode="Recycling"
-                                    ScrollViewer.CanContentScroll="False">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <VirtualizingStackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <ContentControl Content="{Binding}">
-                                            </ContentControl>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                    <ItemsControl.ItemContainerStyle>
-                                        <Style>
-                                            <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                                            <Setter Property="FrameworkElement.Margin" Value="0 0 0 3"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                                    <Setter Property="FrameworkElement.Margin" Value="0 0 0 1"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ItemsControl.ItemContainerStyle>
-                                </ItemsControl>
-                            </Expander>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
-                                    <Setter Property="Margin" TargetName="MembersItemsControl" Value="3 0" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
+                            <StackPanel Orientation="Horizontal">
+                                <vs:Image
+                                    Source="{Binding Moniker}"
+                                    Width="16"
+                                    Height="16"
+                                    Margin="0 0 3 0"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    Text="{Binding Name}"
+                                    FontSize="{Binding FontSize}"
+                                    VerticalAlignment="Center" />
+                            </StackPanel>
                         </DataTemplate>
                     </Setter.Value>
                 </Setter>

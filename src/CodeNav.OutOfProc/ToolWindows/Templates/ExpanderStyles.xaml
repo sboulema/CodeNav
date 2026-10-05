@@ -166,4 +166,145 @@
         </Setter>
     </Style>
 
+    <!-- TreeViewItem used by the code items TreeView -->
+
+    <!-- Leaf items (members): only the header, which renders the code item button -->
+    <ControlTemplate x:Key="CodeItemLeafTreeViewItemTemplate" TargetType="TreeViewItem">
+        <ContentPresenter ContentSource="Header" />
+    </ControlTemplate>
+
+    <!-- Container items (namespace, class, region): bordered box with header, toggle and members -->
+    <ControlTemplate x:Key="CodeItemContainerTreeViewItemTemplate" TargetType="TreeViewItem">
+        <Border
+            x:Name="ItemBorder"
+            BorderThickness="1"
+            Background="Transparent"
+            Opacity="{Binding Opacity}"
+            SnapsToDevicePixels="true">
+
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle
+                            x:Name="ItemBorderBrush"
+                            StrokeThickness="1"
+                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}, Path=ActualWidth}"
+                            Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeViewItem}}, Path=ActualHeight}" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+
+            <StackPanel Orientation="Vertical">
+                <Grid x:Name="HeaderGrid" Background="Transparent" SnapsToDevicePixels="False" Margin="0 0 4 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="17"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="HeaderBorder"
+                        BorderThickness="0"
+                        BorderBrush="{StaticResource ExpanderHeaderGradientBrush}">
+                        <Button x:Name="HeaderButton"
+                            Command="{Binding Path=ClickItemCommand}"
+                            ContentTemplate="{TemplateBinding HeaderTemplate}"
+                            ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                            Content="{TemplateBinding Header}"
+                            Style="{DynamicResource CodeItemButtonStyle}"
+                            Background="Transparent"
+                            Foreground="{TemplateBinding Foreground}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            FontStyle="{TemplateBinding FontStyle}"
+                            FontStretch="{TemplateBinding FontStretch}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            HorizontalContentAlignment="Left"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center"
+                            FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}"
+                            BorderThickness="0"
+                            Padding="3"
+                            ContextMenu="{DynamicResource ItemContextMenu}"
+                            ToolTip="{Binding Tooltip}">
+                            <Button.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick" Command="{Binding Path=ToggleExpandCollapseCommand}" />
+                            </Button.InputBindings>
+                        </Button>
+                    </Border>
+
+                    <ToggleButton
+                        Grid.Column="1"
+                        x:Name="HeaderSite"
+                        IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                        Margin="1"
+                        MinWidth="0"
+                        MinHeight="0"
+                        Style="{StaticResource ExpanderDownHeaderStyle}"
+                        VerticalContentAlignment="Center" />
+                </Grid>
+                <ItemsPresenter x:Name="ItemsHost" Margin="3" Visibility="Collapsed" />
+            </StackPanel>
+        </Border>
+        <ControlTemplate.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsExpanded, RelativeSource={RelativeSource Self}}" Value="True"/>
+                    <Condition Binding="{Binding Path=DataContext.HasMembersVisibility, RelativeSource={RelativeSource Self}}" Value="Visible"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" TargetName="ItemsHost" Value="Visible"/>
+                <Setter Property="BorderThickness" TargetName="HeaderBorder" Value="0 0 0 1" />
+            </MultiDataTrigger>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+            <DataTrigger Binding="{Binding Path=DataContext.IsHighlighted, RelativeSource={RelativeSource Self}}" Value="False">
+                <Setter Property="Stroke" TargetName="ItemBorderBrush" Value="{DynamicResource {x:Static styles:VsBrushes.ComboBoxBorderKey}}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=DataContext.IsHighlighted, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Stroke" TargetName="ItemBorderBrush" Value="{DynamicResource {x:Static styles:VsBrushes.ClassDesignerDefaultConnectionKey}}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=DataContext.DataTemplateType, RelativeSource={RelativeSource Self}}" Value="Region">
+                <Setter Property="StrokeDashArray" TargetName="ItemBorderBrush" Value="5 3" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=DataContext.IsItalic, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="FontStyle" Value="Italic" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=DataContext.CodeDocumentViewModel.UseCompactMode, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Padding" TargetName="HeaderButton" Value="3 0" />
+                <Setter Property="Margin" TargetName="ItemsHost" Value="3 0" />
+            </DataTrigger>
+            <!-- Ignored namespace: hide the box and header, show its members directly -->
+            <DataTrigger Binding="{Binding Path=DataContext.IgnoreVisibility, RelativeSource={RelativeSource Self}}" Value="Collapsed">
+                <Setter Property="Visibility" TargetName="HeaderGrid" Value="Collapsed" />
+                <Setter Property="Visibility" TargetName="ItemsHost" Value="Visible" />
+                <Setter Property="Margin" TargetName="ItemsHost" Value="0" />
+                <Setter Property="BorderThickness" TargetName="ItemBorder" Value="0" />
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style TargetType="TreeViewItem">
+        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        <!-- The deepest highlighted item is the selected item, so it can be scrolled into view -->
+        <Setter Property="IsSelected" Value="{Binding IsScrollTarget, Mode=OneWay}" />
+        <Setter Property="Visibility" Value="{Binding Visibility}" />
+        <Setter Property="Margin" Value="0 0 0 3" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="Template" Value="{StaticResource CodeItemLeafTreeViewItemTemplate}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CodeDocumentViewModel.UseCompactMode}" Value="True">
+                <Setter Property="Margin" Value="0 0 0 1" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataTemplateType}" Value="Namespace">
+                <Setter Property="Template" Value="{StaticResource CodeItemContainerTreeViewItemTemplate}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataTemplateType}" Value="Class">
+                <Setter Property="Template" Value="{StaticResource CodeItemContainerTreeViewItemTemplate}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataTemplateType}" Value="Region">
+                <Setter Property="Template" Value="{StaticResource CodeItemContainerTreeViewItemTemplate}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

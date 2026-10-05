@@ -177,43 +177,40 @@
             </Grid>
 
             <!-- Code items -->
-            <Border Grid.Row="2"
-                BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ComboBoxBorderKey}}"
-                Margin="0 4 0 0">
-                <ScrollViewer x:Name="CodeItemsScrollViewer" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl
-                        ItemsSource="{Binding CodeItems}"
-                        VirtualizingPanel.IsVirtualizing="True"
-                        VirtualizingPanel.VirtualizationMode="Recycling"
-                        ScrollViewer.CanContentScroll="True">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{Binding}">
-                                </ContentControl>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style>
-                                <Setter Property="FrameworkElement.Visibility" Value="{Binding Visibility}"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                    </ItemsControl>
-                </ScrollViewer>
-                <Border.Style>
-                    <Style TargetType="{x:Type Border}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=CodeItemsScrollViewer, Path=ComputedVerticalScrollBarVisibility}" Value="Visible">
-                                <Setter Property="BorderThickness" Value="0 1 1 1" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-            </Border>
+            <TreeView Grid.Row="2"
+                ItemsSource="{Binding CodeItems}"
+                Margin="0 4 0 0"
+                Background="Transparent"
+                BorderThickness="0"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Standard"
+                ScrollViewer.CanContentScroll="True">
+                <TreeView.Template>
+                    <ControlTemplate TargetType="TreeView">
+                        <Border x:Name="CodeItemsBorder"
+                            BorderBrush="{DynamicResource {x:Static styles:VsBrushes.ComboBoxBorderKey}}"
+                            BorderThickness="0">
+                            <ScrollViewer x:Name="CodeItemsScrollViewer"
+                                Focusable="False"
+                                CanContentScroll="True"
+                                VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="CodeItemsScrollViewer" Property="ComputedVerticalScrollBarVisibility" Value="Visible">
+                                <Setter TargetName="CodeItemsBorder" Property="BorderThickness" Value="0 1 1 1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </TreeView.Template>
+                <TreeView.ItemTemplate>
+                    <!-- Used for every level, child TreeViewItems inherit the ItemTemplate of their parent -->
+                    <HierarchicalDataTemplate ItemsSource="{Binding Members}">
+                        <ContentControl Content="{Binding}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
         </Grid>
 
     </Border>
