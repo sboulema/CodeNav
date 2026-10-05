@@ -42,6 +42,7 @@ public static class HighlightHelper
             .ForEach(item =>
             {
                 item.IsHighlighted = false;
+                item.IsScrollTarget = false;
             });
 
     /// <summary>
@@ -49,16 +50,29 @@ public static class HighlightHelper
     /// </summary>
     /// <remarks>
     /// Highlighting changes the foreground, font weight and background of a code item
-    /// Deepest highlighted code item will be scrolled to, to ensure it is in view
+    /// The deepest highlighted code item is flagged with <see cref="CodeItem.IsScrollTarget"/>,
+    /// so it can be scrolled to, to ensure it is in view
     /// </remarks>
     /// <param name="codeDocumentViewModel">Code document</param>
     /// <param name="offset">Cursor position as a numeric offset from the start of the document</param>
     private static void Highlight(CodeDocumentViewModel codeDocumentViewModel, int offset)
-        => codeDocumentViewModel
+    {
+        var highlightedItems = codeDocumentViewModel
             .CodeItems
             .Flatten()
             .FilterNull()
             .Where(item => item.Span.Contains(offset))
-            .ToList()
-            .ForEach(item => item.IsHighlighted = true);
+            .ToList();
+
+        highlightedItems.ForEach(item => item.IsHighlighted = true);
+
+        var deepestItem = highlightedItems
+            .OrderBy(item => item.Span.Length)
+            .FirstOrDefault();
+
+        if (deepestItem != null)
+        {
+            deepestItem.IsScrollTarget = true;
+        }
+    }
 }

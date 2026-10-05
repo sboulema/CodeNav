@@ -163,6 +163,18 @@ public class CodeItem : NotifyPropertyChangedObject
         set => SetProperty(ref _isHighlighted, value);
     }
 
+    private bool _isScrollTarget;
+
+    /// <summary>
+    /// Indicator if the item is the deepest highlighted item and should be scrolled into view
+    /// </summary>
+    [DataMember]
+    public bool IsScrollTarget
+    {
+        get => _isScrollTarget;
+        set => SetProperty(ref _isScrollTarget, value);
+    }
+
     private bool _isBookmarked;
 
     /// <summary>

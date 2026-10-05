@@ -1,4 +1,6 @@
-﻿namespace CodeNav.Test.HelperTests;
+﻿using CodeNav.OutOfProc.Extensions;
+
+namespace CodeNav.Test.HelperTests;
 
 [TestFixture]
 internal class HighlightHelperTests : BaseTest
@@ -30,6 +32,41 @@ internal class HighlightHelperTests : BaseTest
         FindHighlightedItems(highlightedItems, document.CodeItems);
 
         Assert.That(highlightedItems, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task DeepestHighlightedItemShouldBeScrollTarget()
+    {
+        var document = await MapToCodeDocumentViewModel("TestProperties.cs");
+
+        await HighlightHelper.HighlightCurrentItem(document, 263); // linenumber 13
+
+        var scrollTargets = document.CodeItems
+            .Flatten()
+            .FilterNull()
+            .Where(item => item.IsScrollTarget)
+            .ToList();
+
+        var highlightedClass = (document.CodeItems.First() as IMembers)?.Members.First() as CodeClassItem;
+        var highlightedItem = highlightedClass?.Members[2];
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(scrollTargets, Has.Count.EqualTo(1));
+            Assert.That(scrollTargets.First(), Is.SameAs(highlightedItem));
+        }
+    }
+
+    [Test]
+    public async Task ScrollTargetShouldBeClearedWhenUnhighlighting()
+    {
+        var document = await MapToCodeDocumentViewModel("TestProperties.cs");
+
+        await HighlightHelper.HighlightCurrentItem(document, 263); // linenumber 13
+
+        HighlightHelper.UnHighlight(document);
+
+        Assert.That(document.CodeItems.Flatten().FilterNull().Any(item => item.IsScrollTarget), Is.False);
     }
 
     private static void FindHighlightedItems(List<CodeItem> found, IEnumerable<CodeItem> source)
