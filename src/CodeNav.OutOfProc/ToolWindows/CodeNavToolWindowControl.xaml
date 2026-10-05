@@ -182,9 +182,11 @@
                 Margin="0 4 0 0"
                 Background="Transparent"
                 BorderThickness="0"
+                HorizontalContentAlignment="Stretch"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.VirtualizationMode="Standard"
-                ScrollViewer.CanContentScroll="True">
+                ScrollViewer.CanContentScroll="True"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <TreeView.Template>
                     <ControlTemplate TargetType="TreeView">
                         <Border x:Name="CodeItemsBorder"
@@ -193,6 +195,7 @@
                             <ScrollViewer x:Name="CodeItemsScrollViewer"
                                 Focusable="False"
                                 CanContentScroll="True"
+                                HorizontalScrollBarVisibility="Disabled"
                                 VerticalScrollBarVisibility="Auto">
                                 <ItemsPresenter />
                             </ScrollViewer>

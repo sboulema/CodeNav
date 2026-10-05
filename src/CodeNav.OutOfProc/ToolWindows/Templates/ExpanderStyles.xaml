@@ -284,10 +284,10 @@
 
     <Style TargetType="TreeViewItem">
         <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-        <!-- The deepest highlighted item is the selected item, so it can be scrolled into view -->
         <Setter Property="IsSelected" Value="{Binding IsScrollTarget, Mode=OneWay}" />
         <Setter Property="Visibility" Value="{Binding Visibility}" />
         <Setter Property="Margin" Value="0 0 0 3" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="Template" Value="{StaticResource CodeItemLeafTreeViewItemTemplate}" />
