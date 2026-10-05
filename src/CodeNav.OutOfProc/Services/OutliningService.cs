@@ -40,14 +40,9 @@ public class OutliningService : DisposableObject
             var outlineRegionsJsonString = await _inProcService.SubscribeToRegionEvents();
 
             // Synchronize all outline regions with the code items
-            var outlineRegions = JsonSerializer.Deserialize<List<OutlineRegion>>(outlineRegionsJsonString);
+            var outlineRegions = JsonSerializer.Deserialize<List<OutlineRegion>>(outlineRegionsJsonString) ?? [];
 
-            if (outlineRegions!.Any() != true)
-            {
-                return;
-            }
-
-            outlineRegions!.ForEach(outlineRegion =>
+            outlineRegions.ForEach(outlineRegion =>
                 SetIsExpanded(codeDocumentViewModel, outlineRegion.SpanStart, outlineRegion.SpanEnd, outlineRegion.IsExpanded));
         }
         catch (Exception e)

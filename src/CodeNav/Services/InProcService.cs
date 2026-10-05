@@ -56,7 +56,7 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
 
         if (outliningManager == null)
         {
-            return string.Empty;
+            return JsonSerializer.Serialize(Enumerable.Empty<OutlineRegion>());
         }
 
         // Subscribing to outline events
@@ -345,6 +345,12 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
     public async void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame)
 #pragma warning restore VSTHRD100 // Avoid async void methods
     {
+        // Check if the new frame is different from the old frame
+        if (oldFrame == newFrame)
+        {
+            return;
+        }
+
         var outOfProcService = await _extensibility.ServiceBroker
             .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
 
@@ -352,9 +358,10 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
         {
             Assumes.NotNull(outOfProcService);
 
-            // Check if the new frame is different from the old frame
-            if (oldFrame == newFrame)
+            // No active frame (focus left VS, last document closed, ...): there is no document to show
+            if (newFrame == null)
             {
+                await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(new DocumentView { IsDocumentFrame = false }));
                 return;
             }
 
@@ -379,14 +386,42 @@ internal class InProcService : IInProcService, IVsWindowFrameEvents
             // Notify about new document frame with text, filepath
             await outOfProcService.ProcessActiveFrameChanged(JsonSerializer.Serialize(documentView));
         }
+        catch (Exception e)
+        {
+            if (outOfProcService != null)
+            {
+                await outOfProcService.LogException($"Failed to process active frame change. '{e.Message}'");
+            }
+        }
         finally
         {
             (outOfProcService as IDisposable)?.Dispose();
         }
     }
 
+    /// <summary>
+    /// Get the caption (title) of the given window frame
+    /// </summary>
+    /// <remarks>
+    /// Used to detect whether the newly activated frame is the CodeNav tool window.
+    /// Switches to the UI thread, since the window object can only be accessed from there.
+    /// Never throws: failures are logged through the out-of-proc service.
+    /// </remarks>
+    /// <param name="windowFrame">
+    /// Window frame to get the caption for. Can be <c>null</c>, for example when
+    /// there is no active frame after focus left Visual Studio.
+    /// </param>
+    /// <returns>
+    /// The window caption, or <see cref="string.Empty"/> if the frame is <c>null</c>,
+    /// has no window object, or the caption could not be retrieved.
+    /// </returns>
     private async Task<string> GetWindowCaption(IVsWindowFrame windowFrame)
     {
+        if (windowFrame == null)
+        {
+            return string.Empty;
+        }
+
         var outOfProcService = await _extensibility.ServiceBroker
             .GetProxyAsync<IOutOfProcService>(IOutOfProcService.Configuration.ServiceDescriptor, cancellationToken: default);
 
