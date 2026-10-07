@@ -86,9 +86,9 @@ public static class InterfaceMapper
 
     private static CodeImplementedInterfaceItem MapImplementedInterface(string name,
         ImmutableArray<ISymbol> members, INamedTypeSymbol implementingClass, SyntaxNode currentClass,
-        SemanticModel semanticModel, SyntaxTree tree, CodeDocumentViewModel codeDocumentViewModel)
+        SemanticModel semanticModel, SyntaxTree syntaxTree, CodeDocumentViewModel codeDocumentViewModel)
     {
-        var item = new CodeImplementedInterfaceItem
+        var codeItem = new CodeImplementedInterfaceItem
         {
             Name = name,
             FullName = name,
@@ -129,25 +129,30 @@ public static class InterfaceMapper
                 continue;
             }
 
-            var interfaceMember = DocumentMapper.MapMember(memberDeclaration, tree, semanticModel, codeDocumentViewModel);
+            var interfaceMember = DocumentMapper.MapMember(memberDeclaration, syntaxTree, semanticModel, codeDocumentViewModel);
             if (interfaceMember == null)
             {
                 continue;
             }
 
             interfaceMember.OverlayMoniker = ImageMoniker.KnownValues.InterfacePublic;
-            item.Members.Add(interfaceMember);
+            codeItem.Members.Add(interfaceMember);
         }
 
-        if (item.Members.Any())
+        if (codeItem.Members.Any())
         {
-            var start = item.Members.Min(codeItem => codeItem.Span.Start);
-            var end = item.Members.Max(codeItem => codeItem.Span.End);
+            var start = codeItem.Members.Min(codeItem => codeItem.Span.Start);
+            var end = codeItem.Members.Max(codeItem => codeItem.Span.End);
 
-            item.Span = new(start, end - start);
+            codeItem.Span = new(start, end - start);
+            codeItem.SpanStartLinePosition = SpanHelper.MapStartLinePosition(syntaxTree, codeItem.Span)!.Value;
+            codeItem.SpanEndLinePosition = SpanHelper.MapEndLinePosition(syntaxTree, codeItem.Span)!.Value;
+
+            codeItem.OutlineSpan = codeItem.Span;
+            codeItem.OutlineSpanStartLinePosition = codeItem.SpanStartLinePosition;
         }
 
-        return item;
+        return codeItem;
     }
 
     public static CodeItem? MapInterface(InterfaceDeclarationSyntax? member,

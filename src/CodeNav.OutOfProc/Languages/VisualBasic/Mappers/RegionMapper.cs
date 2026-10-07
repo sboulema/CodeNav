@@ -81,6 +81,8 @@ public static class RegionMapper
                 region.Span.Start,
                 regionEnd.Span.End - region.Span.Start);
 
+            region.SpanEndLinePosition = SpanHelper.MapEndLinePosition(regionEnd.SyntaxTree, region.Span)!.Value;
+
             region.OutlineSpan = new(
                 region.OutlineSpan.Start,
                 regionEnd.Span.End - region.Span.Start);
@@ -125,6 +127,8 @@ public static class RegionMapper
     {
         var name = MapRegionName(regionStart);
 
+        var span = new TextSpan(regionStart.Span.Start, 0);
+
         return new()
         {
             Name = name,
@@ -132,24 +136,19 @@ public static class RegionMapper
             Id = name,
             Tooltip = name,
             Kind = CodeItemKindEnum.Region,
-            Span = new(
-                regionStart.Span.Start,
-                0),
-            OutlineSpan = new(
-                regionStart.Span.Start,
-                0),
-            IdentifierSpan = MapIdentifierSpan(regionStart),
+            Span = span,
+            SpanStartLinePosition = SpanHelper.MapStartLinePosition(regionStart.SyntaxTree, span)!.Value,
+            SpanEndLinePosition = SpanHelper.MapEndLinePosition(regionStart.SyntaxTree, span)!.Value,
+            OutlineSpan = span,
+            OutlineSpanStartLinePosition = SpanHelper.MapStartLinePosition(regionStart.SyntaxTree, span)!.Value,
+            IdentifierSpan = regionStart.Span,
+            IdentifierSpanStartLinePosition = SpanHelper.MapStartLinePosition(regionStart.SyntaxTree, regionStart.Span),
+            IdentifierSpanEndLinePosition = SpanHelper.MapEndLinePosition(regionStart.SyntaxTree, regionStart.Span)!.Value,
             Moniker = IconMapper.MapMoniker(
                 CodeItemKindEnum.Region,
                 CodeItemAccessEnum.Unknown),
             CodeDocumentViewModel = codeDocumentViewModel,
         };
-    }
-
-    private static TextSpan MapIdentifierSpan(
-        SyntaxTrivia regionStart)
-    {
-        return regionStart.Span;
     }
 
     private static string MapRegionName(

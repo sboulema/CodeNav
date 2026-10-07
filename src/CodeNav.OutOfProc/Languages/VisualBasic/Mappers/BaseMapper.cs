@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -39,11 +40,18 @@ public static class BaseMapper
         codeItem.CodeDocumentViewModel = codeDocumentViewModel;
 
         codeItem.Span = source.Span;
+        codeItem.SpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, source.Span)!.Value;
+        codeItem.SpanEndLinePosition = SpanHelper.MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
+
         codeItem.IdentifierSpan = identifier?.Span;
+        codeItem.IdentifierSpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, codeItem.IdentifierSpan);
+        codeItem.IdentifierSpanEndLinePosition = SpanHelper.MapEndLinePosition(source.SyntaxTree, codeItem.IdentifierSpan);
+
         codeItem.OutlineSpan = MapOutlineSpan(
             codeItem.Span,
             codeItem.IdentifierSpan,
             nameSyntax?.Span);
+        codeItem.OutlineSpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, codeItem.OutlineSpan);
 
         return codeItem;
     }

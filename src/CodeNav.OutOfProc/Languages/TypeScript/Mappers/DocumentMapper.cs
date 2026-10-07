@@ -2,6 +2,7 @@
 using CodeNav.OutOfProc.Languages.TypeScript.Parsing;
 using CodeNav.OutOfProc.Models;
 using CodeNav.OutOfProc.ViewModels;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Extensibility;
 
 namespace CodeNav.OutOfProc.Languages.TypeScript.Mappers;
@@ -30,9 +31,12 @@ public class DocumentMapper : IDocumentMapper
     {
         var nodes = TypeScriptParser.Parse(text);
 
+        var sourceText = SourceText.From(text);
+
         var codeItems = CodeItemMapper.MapNodes(
             nodes,
             codeDocumentViewModel,
+            sourceText,
             parentFullName: string.Empty,
             isMember: false);
 

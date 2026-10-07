@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -47,15 +48,15 @@ public static class BaseMapper
         codeItem.CodeDocumentViewModel = codeDocumentViewModel;
 
         codeItem.Span = source.Span;
-        codeItem.SpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, source.Span)!.Value;
-        codeItem.SpanEndLinePosition = MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
+        codeItem.SpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, source.Span)!.Value;
+        codeItem.SpanEndLinePosition = SpanHelper.MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
 
         codeItem.IdentifierSpan = identifier?.Span;
-        codeItem.IdentifierSpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, identifier?.Span);
-        codeItem.IdentifierSpanEndLinePosition = MapEndLinePosition(source.SyntaxTree, source.Span)!.Value;
+        codeItem.IdentifierSpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, identifier?.Span);
+        codeItem.IdentifierSpanEndLinePosition = SpanHelper.MapEndLinePosition(source.SyntaxTree, identifier?.Span);
 
         codeItem.OutlineSpan = MapOutlineSpan(codeItem.Span, codeItem.IdentifierSpan, nameSyntax?.Span);
-        codeItem.OutlineSpanStartLinePosition = MapStartLinePosition(source.SyntaxTree, codeItem.OutlineSpan);
+        codeItem.OutlineSpanStartLinePosition = SpanHelper.MapStartLinePosition(source.SyntaxTree, codeItem.OutlineSpan);
 
         return codeItem;
     }
@@ -184,32 +185,4 @@ public static class BaseMapper
             _ => CodeItemAccessEnum.Private,
         };
     }
-
-    /// <summary>
-    /// Gets the zero-based line and column position for the start of the specified span.
-    /// </summary>
-    /// <param name="syntaxTree">The syntax tree the span belongs to.</param>
-    /// <param name="span">The span to resolve a line position for, or <see langword="null"/>.</param>
-    /// <returns>
-    /// The zero-based <see cref="LinePosition"/> for the start of <paramref name="span"/>,
-    /// or <see langword="null"/> if <paramref name="span"/> is <see langword="null"/>.
-    /// </returns>
-    public static LinePosition? MapStartLinePosition(SyntaxTree syntaxTree, TextSpan? span)
-        => span == null
-            ? null
-            : syntaxTree.GetLineSpan(span.Value).StartLinePosition;
-
-    /// <summary>
-    /// Gets the zero-based line and column position for the end of the specified span.
-    /// </summary>
-    /// <param name="syntaxTree">The syntax tree the span belongs to.</param>
-    /// <param name="span">The span to resolve a line position for, or <see langword="null"/>.</param>
-    /// <returns>
-    /// The zero-based <see cref="LinePosition"/> for the end of <paramref name="span"/>,
-    /// or <see langword="null"/> if <paramref name="span"/> is <see langword="null"/>.
-    /// </returns>
-    public static LinePosition? MapEndLinePosition(SyntaxTree syntaxTree, TextSpan? span)
-        => span == null
-            ? null
-            : syntaxTree.GetLineSpan(span.Value).EndLinePosition;
 }

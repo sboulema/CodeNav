@@ -1,4 +1,5 @@
 ﻿using CodeNav.OutOfProc.Constants;
+using CodeNav.OutOfProc.Helpers;
 using CodeNav.OutOfProc.Languages.TypeScript.Parsing;
 using CodeNav.OutOfProc.ViewModels;
 using Microsoft.CodeAnalysis.Text;
@@ -18,6 +19,7 @@ public static class BaseMapper
     public static T MapBase<T>(
         TypeScriptNode node,
         CodeDocumentViewModel codeDocumentViewModel,
+        SourceText sourceText,
         string parentFullName,
         bool isMember) where T : CodeItem, new()
     {
@@ -37,8 +39,15 @@ public static class BaseMapper
         codeItem.CodeDocumentViewModel = codeDocumentViewModel;
 
         codeItem.Span = node.Span;
+        codeItem.SpanStartLinePosition = SpanHelper.MapStartLinePosition(sourceText, node.Span)!.Value;
+        codeItem.SpanEndLinePosition = SpanHelper.MapEndLinePosition(sourceText, node.Span)!.Value;
+
         codeItem.IdentifierSpan = node.IdentifierSpan;
+        codeItem.IdentifierSpanStartLinePosition = SpanHelper.MapStartLinePosition(sourceText, node.IdentifierSpan);
+        codeItem.IdentifierSpanEndLinePosition = SpanHelper.MapEndLinePosition(sourceText, node.IdentifierSpan);
+
         codeItem.OutlineSpan = MapOutlineSpan(node.Span, node.IdentifierSpan);
+        codeItem.OutlineSpanStartLinePosition = SpanHelper.MapStartLinePosition(sourceText, codeItem.OutlineSpan);
 
         return codeItem;
     }
