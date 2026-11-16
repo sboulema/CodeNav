@@ -4,6 +4,9 @@ updates:
   directory: "/src"
   schedule:
     interval: daily
+  ignore:
+    - dependency-name: "Microsoft.VisualStudio.Extensibility.Sdk"
+    - dependency-name: "Microsoft.VisualStudio.Extensibility.Build"
   assignees:
     - "sboulema"
 
